@@ -100,6 +100,7 @@ return [
     'coaches'=>[
         'coaches'=>'coaches',
         'create'=>'Create',
+        'edit'=>'Edit',
         'name'=>'Name',
         'description'=>'Description',
         'image'=>'Image',
