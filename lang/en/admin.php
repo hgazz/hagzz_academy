@@ -110,5 +110,19 @@ return [
         'updated_successfully'=>'Coach updated successfully',
         'deleted_successfully'=>'Coach deleted successfully',
     ],
+    'profile'=>[
+        'profile'=>'profile',
+        'user'=>'user',
+        'Settings'=>'Settings',
+        'General Information'=>'General Information',
+        'name'=>'Name',
+        'email'=>'Email',
+        'phone'=>'phone',
+        'facebook'=>'facebook',
+        'instagram'=>'instagram',
+        'owner_name'=>'Owner Name',
+        'save'=>'save',
+        'Updated Successfully'=>'Updated Successfully',
+    ]
 
 ];

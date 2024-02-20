@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -35,6 +36,11 @@ Route::group(
 
     Route::group(['prefix' => 'academy', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+
+        Route::controller(ProfileController::class)->group(function (){
+            Route::get('profile','index')->name('profile.index');
+            Route::put('profile/update/{user}', 'update')->name('profile.update');
+        });
 
     });
 });
