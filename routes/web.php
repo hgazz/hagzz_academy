@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Address\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -40,6 +41,15 @@ Route::group(
         Route::controller(ProfileController::class)->group(function (){
             Route::get('profile','index')->name('profile.index');
             Route::put('profile/update/{user}', 'update')->name('profile.update');
+        });
+
+        Route::controller(AddressController::class)->group(function (){
+            Route::get('address','index')->name('address.index');
+            Route::get('address/create', 'create')->name('address.create');
+            Route::post('address/store', 'store')->name('address.store');
+            Route::get('address/edit/{address}','edit')->name('address.edit');
+            Route::put('address/update/{address}','update')->name('address.update');
+            Route::delete('address/delete/{address}','delete')->name('address.delete');
         });
 
     });

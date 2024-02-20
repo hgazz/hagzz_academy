@@ -123,6 +123,20 @@ return [
         'owner_name'=>'Owner Name',
         'save'=>'save',
         'Updated Successfully'=>'Updated Successfully',
+    ],
+    'address'=>[
+        'address'=>'address',
+        'create'=>'create',
+        'area'=>'area',
+        'academy'=>'academy',
+        'longitude'=>'longitude',
+        'latitude'=>'latitude',
+        'city'=>'city',
+        'select_address'=>'select academy',
+        'address successfully update'=>'address successfully update',
+        'address successfully deleted'=>'address successfully deleted',
+        'address successfully created'=>'address successfully created',
+
     ]
 
 ];

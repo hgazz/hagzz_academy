@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Address extends Model
 {
-    use HasFactory;
+    use HasFactory,HasTranslations;
 
     protected $fillable = [
         'academy_id',
@@ -19,6 +20,19 @@ class Address extends Model
         'active',
     ];
 
+    public $translatable = ['address'];
+    public static $translatableColumns = [
+        'address'=>[
+            'type'=>'text',
+            'validations'=>'required|string|max:255',
+            'is_textarea'=>false
+        ]
+    ];
+
+    public static function getTranslatableFields()
+    {
+        return array_keys(self::$translatableColumns);
+    }
     public function academy()
     {
         return $this->belongsTo(Academies::class, 'academy_id');
