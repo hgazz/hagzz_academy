@@ -31,7 +31,8 @@ class Academies extends Authenticatable
         'name',
         'facebook',
         'instagram',
-        'image'
+        'image',
+        'logo',
     ];
 
     protected $hidden = [
