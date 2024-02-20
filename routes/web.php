@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Address\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -52,5 +53,14 @@ Route::group(
             Route::delete('address/delete/{address}','delete')->name('address.delete');
         });
 
+        // coach routes
+        Route::controller(CoachController::class)->group(function(){
+            Route::get('coach','index')->name('coach');
+            Route::get('coach/create','create')->name('coach.create');
+            Route::post('coach/store','store')->name('coach.store');
+            Route::get('coach/edit/{coach}','edit')->name('coach.edit');
+            Route::put('coach/update/{coach}','update')->name('coach.update');
+            Route::delete('coach/delete/{coach}','delete')->name('coach.delete');
+        });
     });
 });

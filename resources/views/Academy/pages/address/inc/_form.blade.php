@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="longitude">longitude</label>
+            <label for="longitude">{{ trans('admin.address.longitude') }}</label>
             <input class="form-control" type="text" value="{{(isset($address) ? $address->longitude : old('longitude'))}}" id="longitude" name="longitude">
             @error('longitude')
             <span class="text-danger">*{{$message}}</span>
@@ -25,7 +25,7 @@
         </div>
 
         <div class="col-md-6 mb-3">
-            <label for="latitude">latitude</label>
+            <label for="latitude">{{ trans('admin.address.latitude') }}</label>
             <input class="form-control" type="text" value="{{(isset($address) ? $address->latitude : old('latitude'))}}" id="latitude" name="latitude">
             @error('latitude')
             <span class="text-danger">*{{$message}}</span>
