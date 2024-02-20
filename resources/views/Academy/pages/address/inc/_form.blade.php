@@ -33,24 +33,6 @@
         </div>
     </div>
 
-
-    <div class="row">
-        <div class="form-group mb-4">
-            <label for="exampleFormControlSelect1">{{ trans('admin.address.academy') }}</label>
-            <select class="form-select" id="exampleFormControlSelect1" name="academy_id">
-                <option value="">{{ trans('admin.address.select_address') }}</option>
-                @foreach($academies as $academy)
-                    @if(!is_null($academy->name))
-                        <option value="{{ $academy->id }}" @selected(old('academy_id', isset($address) ? $address->academy_id : '') == $academy->id)>{{ $academy->name }}</option>
-                    @endif
-                @endforeach
-            </select>
-            @error('academy_id')
-            <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-
     <div class="row">
         <div class="form-group mb-4">
             <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
@@ -83,7 +65,8 @@
     </div>
 
 </div>
-<input class="form-check" name="active" @if(isset($address) ?? $address->active) checked @endif  type="checkbox">
+<label for="active">{{ trans('admin.address.active') }}</label>
+<input class="form-check" id="active" name="active" @if(isset($address) ?? $address->active) checked @endif  type="checkbox">
 @error('active')
 <span class="text-danger">{{ $message }}</span>
 @enderror

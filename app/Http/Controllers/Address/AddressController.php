@@ -29,8 +29,7 @@ class AddressController extends Controller
     {
         $cities = $this->getCities();
         $areas = $this->getAreas();
-        $academies = $this->getAcademies();
-        return view('Academy.pages.address.create',compact('cities', 'areas','academies'));
+        return view('Academy.pages.address.create',compact('cities', 'areas'));
     }
 
     public function store(AddressRequest  $request)
@@ -39,7 +38,7 @@ class AddressController extends Controller
      $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
      $this->addressModel->create(array_merge($transactions , [
          'active'=>$active,
-         'academy_id'=>$request->academy_id,
+         'academy_id'=> auth()->id(),
          'city_id'=>$request->city_id,
          'area_id'=>$request->area_id,
          'longitude'=>$request->longitude,
@@ -54,8 +53,7 @@ class AddressController extends Controller
     {
         $cities = $this->getCities();
         $areas = $this->getAreas();
-        $academies = $this->getAcademies();
-        return view('Academy.pages.address.edit',compact('address', 'cities', 'areas', 'academies'));
+        return view('Academy.pages.address.edit',compact('address', 'cities', 'areas'));
     }
 
     public function update(Address $address , AddressRequest $request)
@@ -64,7 +62,6 @@ class AddressController extends Controller
         $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
         $address->update(array_merge($transactions , [
             'active'=>$active,
-            'academy_id'=>$request->academy_id,
             'city_id'=>$request->city_id,
             'area_id'=>$request->area_id,
             'longitude'=>$request->longitude,
