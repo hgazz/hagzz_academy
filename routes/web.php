@@ -67,12 +67,12 @@ Route::group(
         });
 
         Route::controller( ClasessController::class)->group(function(){
-            Route::get('clasess','index')->name('clasess.index');
-            Route::get('clasess/create','create')->name('clasess.create');
-            Route::post('clacess/store','store')->name('clacess.store');
-            Route::get('clasess/edit/{class}','edit')->name('clasess.edit');
-            Route::put('clasess/update/{class}','update')->name('clasess.update');
-            Route::delete('clasess/delete/{class}','delete')->name('clasess.delete');
+            Route::get('classes','index')->name('class.index');
+            Route::get('class/create','create')->name('class.create');
+            Route::post('class/store','store')->name('class.store');
+            Route::get('class/edit/{class}','edit')->name('class.edit');
+            Route::put('class/update/{class}','update')->name('class.update');
+            Route::delete('class/delete/{class}','delete')->name('class.delete');
         });
 
         Route::controller(GalleryController::class)->group(function(){

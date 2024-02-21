@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.coaches.edit'))
+@section('title', trans('admin.clasess.edit'))
 
 
 @section('content')
@@ -22,8 +22,8 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.coach') }}">{{ trans('admin.coaches.coaches') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.coaches.edit') }}</li>
+                                    <li class="breadcrumb-item"><a href="{{ route('academy.class.index') }}">{{ trans('admin.coaches.coaches') }}</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.clasess.edit') }}</li>
                                 </ol>
                             </nav>
 
@@ -36,11 +36,11 @@
 
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-                <form method="POST" action="{{ route('academy.clasess.update', $class) }}">
+                <form method="POST" action="{{ route('academy.class.update', $class) }}">
                     @method('PUT')
                     <div class="card">
                         <div class="card-header">
-                            <h3>{{ trans('admin.coaches.edit') }}</h3>
+                            <h3>{{ trans('admin.clasess.edit') }}</h3>
                         </div>
                         <div class="card-body">
                             @include('Academy.pages.clasess.partials._form')
