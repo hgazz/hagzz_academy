@@ -37,6 +37,15 @@ class AddressController extends Controller
 
     public function getAreaByCity($city)
     {
+//        dd($city);
+        $city = City::findOrFail($city);
+        $areas = Area::where('city_id', $city->id)->get();
+        return response()->json($areas);
+    }
+
+    public function editArea($city)
+    {
+        dd(12);
         $city = City::findOrFail($city);
         $areas = Area::where('city_id', $city->id)->get();
         return response()->json($areas);
