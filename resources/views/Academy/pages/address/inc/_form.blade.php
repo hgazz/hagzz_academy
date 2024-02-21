@@ -36,10 +36,12 @@
     <div class="row">
         <div class="form-group mb-4">
             <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
-            <select class="form-select" id="exampleFormControlSelect1" name="city_id">
+            <select class="form-select" id="city"  name="city_id" >
                 <option value="">{{ trans('admin.area.select_city') }}</option>
                 @foreach($cities as $city)
-                    <option value="{{ $city->id }}" @selected(old('city_id', isset($address) ? $address->city_id : '') == $city->id)>{{ $city->name }}</option>
+{{--                    <input type="hidden" value="{{$city->id}}" id="city_id">--}}
+                    <option  value="{{ $city->id }}"  @selected(old('city_id', isset($address) ? $address->city_id : '') == $city->id)>{{ $city->name }}</option>
+
                 @endforeach
             </select>
             @error('city_id')
@@ -50,12 +52,12 @@
 
     <div class="row">
         <div class="form-group mb-4">
-            <label for="exampleFormControlSelect1">{{ trans('admin.address.area') }}</label>
-            <select class="form-select" id="exampleFormControlSelect1" name="area_id">
+            <label for="areaSelect">{{ trans('admin.address.area') }}</label>
+            <select class="form-select" id="areaSelect" name="area_id">
                 <option value="">{{ trans('admin.area.select_city') }}</option>
-                @foreach($areas as $area)
-                    <option value="{{ $area->id }}" @selected(old('city_id', isset($address) ? $address->area_id : '') == $area->id)>{{ $area->name }}</option>
-                @endforeach
+{{--                @foreach($areas as $area)--}}
+{{--                    <option value="{{ $area->id }}" @selected(old('city_id', isset($address) ? $address->area_id : '') == $area->id)>{{ $area->name }}</option>--}}
+{{--                @endforeach--}}
             </select>
             @error('area_id')
             <span class="text-danger">{{ $message }}</span>
@@ -70,3 +72,28 @@
 @error('active')
 <span class="text-danger">{{ $message }}</span>
 @enderror
+
+<input type="hidden" value="{{app()->getLocale()}}" id="local">
+<script>
+   var city = document.getElementById('city');
+   var areaSelect = document.getElementById('areaSelect');
+   var local = document.getElementById('local');
+  city.addEventListener('change',function (){
+        var cityId = city.value;
+        fetch(`area/${cityId}`)
+        .then(response => response.json())
+            .then(data =>{
+                areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
+
+                // Populate the area select with fetched areas
+                data.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id;
+                    option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
+                    areaSelect.appendChild(option);
+                });
+                // Enable the area select
+                areaSelect.disabled = false;
+            })
+  })
+</script>

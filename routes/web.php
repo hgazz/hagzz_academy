@@ -51,6 +51,7 @@ Route::group(
             Route::get('address/edit/{address}','edit')->name('address.edit');
             Route::put('address/update/{address}','update')->name('address.update');
             Route::delete('address/delete/{address}','delete')->name('address.delete');
+            Route::get('address/area/{city}','getAreaByCity')->name('area.getAreaByCity');
         });
 
         // coach routes

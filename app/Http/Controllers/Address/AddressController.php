@@ -8,6 +8,8 @@ use App\Http\Requests\Address\AddressRequest;
 use App\Http\Traits\AcademyTrait;
 use App\Http\Traits\CityAndAreaTrait;
 use App\Models\Address;
+use App\Models\Area;
+use App\Models\City;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 
@@ -30,8 +32,15 @@ class AddressController extends Controller
         $cities = $this->getCities();
         $areas = $this->getAreas();
         return view('Academy.pages.address.create',compact('cities', 'areas'));
+        return response()->json($areas);
     }
 
+    public function getAreaByCity($city)
+    {
+        $city = City::findOrFail($city);
+        $areas = Area::where('city_id', $city->id)->get();
+        return response()->json($areas);
+    }
     public function store(AddressRequest  $request)
     {
       $active = ($request->active == "on") ? true : false;
