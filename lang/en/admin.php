@@ -139,7 +139,28 @@ return [
         'address successfully update'=>'address successfully update',
         'address successfully deleted'=>'address successfully deleted',
         'address successfully created'=>'address successfully created',
-
-    ]
+    ],
+    'clasess'=>[
+        'clasess'=>'Classes',
+        'create'=>'Create',
+        'edit'=>'Edit',
+        'title'=>'title',
+        'title_en' => 'title (english)',
+        'title_ar' => 'title (arabic)',
+        'subtitle'=>'subtitle',
+        'date'=>'date',
+        'created_successfully'=>'Class Created successfully',
+        'updated_successfully'=>'Class Updated successfully',
+        'deleted_successfully'=>'Class Deleted successfully',
+    ],
+    'gallery'=>[
+        'gallery'=>'Gallery',
+        'create'=>'Create',
+        'edit'=>'Edit',
+        'image'=>'image',
+        'created_successfully'=>'Gallery created successfully',
+        'updated_successfully'=>'Gallery updated successfully',
+        'deleted_successfully'=>'Gallery deleted successfully',
+    ],
 
 ];

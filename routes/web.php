@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Address\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClasessController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -51,6 +53,7 @@ Route::group(
             Route::get('address/edit/{address}','edit')->name('address.edit');
             Route::put('address/update/{address}','update')->name('address.update');
             Route::delete('address/delete/{address}','delete')->name('address.delete');
+            Route::get('address/area/{city}','getAreaByCity')->name('area.getAreaByCity');
         });
 
         // coach routes
@@ -62,5 +65,24 @@ Route::group(
             Route::put('coach/update/{coach}','update')->name('coach.update');
             Route::delete('coach/delete/{coach}','delete')->name('coach.delete');
         });
+
+        Route::controller( ClasessController::class)->group(function(){
+            Route::get('clasess','index')->name('clasess.index');
+            Route::get('clasess/create','create')->name('clasess.create');
+            Route::post('clacess/store','store')->name('clacess.store');
+            Route::get('clasess/edit/{class}','edit')->name('clasess.edit');
+            Route::put('clasess/update/{class}','update')->name('clasess.update');
+            Route::delete('clasess/delete/{class}','delete')->name('clasess.delete');
+        });
+
+        Route::controller(GalleryController::class)->group(function(){
+            Route::get('gallery','index')->name('gallery.index');
+            Route::get('gallery/create','create')->name('gallery.create');
+            Route::post('gallery/store','store')->name('gallery.store');
+            Route::get('gallery/edit/{gallery}','edit')->name('gallery.edit');
+            Route::put('gallery/update/{gallery}','update')->name('gallery.update');
+            Route::delete('gallery/delete/{gallery}','delete')->name('gallery.delete');
+        });
+
     });
 });
