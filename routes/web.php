@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClasessController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -72,6 +73,15 @@ Route::group(
             Route::get('clasess/edit/{class}','edit')->name('clasess.edit');
             Route::put('clasess/update/{class}','update')->name('clasess.update');
             Route::delete('clasess/delete/{class}','delete')->name('clasess.delete');
+        });
+
+        Route::controller(GalleryController::class)->group(function(){
+            Route::get('gallery','index')->name('gallery.index');
+            Route::get('gallery/create','create')->name('gallery.create');
+            Route::post('gallery/store','store')->name('gallery.store');
+            Route::get('gallery/edit/{gallery}','edit')->name('gallery.edit');
+            Route::put('gallery/update/{gallery}','update')->name('gallery.update');
+            Route::delete('gallery/delete/{gallery}','delete')->name('gallery.delete');
         });
 
     });

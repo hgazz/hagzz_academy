@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.clasess.clasess'))
+@section('title', trans('admin.gallery.gallery'))
 
 @push('css')
     <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.clasess.clasess') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.gallery.gallery') }}</li>
                                 </ol>
                             </nav>
 
@@ -51,10 +51,10 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{route('academy.clasess.create')}}">
-                        <h3>{{ trans('admin.clasess.create') }}</h3>
+                    <a href="{{route('academy.gallery.create')}}">
+                        <h3>{{ trans('admin.gallery.create') }}</h3>
                     </a>
-                    <a href="{{route('academy.clasess.create')}}">
+                    <a href="{{route('academy.gallery.create')}}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                              class="feather feather-plus">
