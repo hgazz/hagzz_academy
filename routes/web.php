@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Address\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClasessController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -63,5 +64,15 @@ Route::group(
             Route::put('coach/update/{coach}','update')->name('coach.update');
             Route::delete('coach/delete/{coach}','delete')->name('coach.delete');
         });
+
+        Route::controller( ClasessController::class)->group(function(){
+            Route::get('clasess','index')->name('clasess.index');
+            Route::get('clasess/create','create')->name('clasess.create');
+            Route::post('clacess/store','store')->name('clacess.store');
+            Route::get('clasess/edit/{class}','edit')->name('clasess.edit');
+            Route::put('clasess/update/{class}','update')->name('clasess.update');
+            Route::delete('clasess/delete/{class}','delete')->name('clasess.delete');
+        });
+
     });
 });

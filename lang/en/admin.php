@@ -139,7 +139,15 @@ return [
         'address successfully update'=>'address successfully update',
         'address successfully deleted'=>'address successfully deleted',
         'address successfully created'=>'address successfully created',
-
+    ],
+    'clasess'=>[
+        'clasess'=>'clasess',
+        'title'=>'title',
+        'subtitle'=>'subtitle',
+        'date'=>'date',
+        'created_successfully'=>'Class created successfully',
+        'updated_successfully'=>'Class successfully deleted',
+        'deleted_successfully'=>'Class successfully created',
     ]
 
 ];
