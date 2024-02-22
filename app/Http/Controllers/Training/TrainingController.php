@@ -91,7 +91,7 @@ class TrainingController extends Controller
         DB::transaction(function () use ($training){
            $training->delete();
             $this->deleteFile($this->trainingModel::PATH . $training->getRawOriginal('icon'));
-            TrainingClass::where('training_id',$training->id);
+            TrainingClass::where('training_id',$training->id)->delete();
         });
         session()->flash('success',trans('admin.training.deleted_successfully'));
         return to_route('academy.training.index');
