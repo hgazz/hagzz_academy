@@ -162,5 +162,23 @@ return [
         'updated_successfully'=>'Gallery updated successfully',
         'deleted_successfully'=>'Gallery deleted successfully',
     ],
+    'training'=>[
+        'training'=>'training',
+        'create'=>'Create',
+        'edit'=>'Edit',
+        'image'=>'image',
+        'created_successfully'=>'Training created successfully',
+        'updated_successfully'=>'Training updated successfully',
+        'deleted_successfully'=>'Training deleted successfully',
+        'name'=>'name',
+        'class'=>'class',
+        'description'=>'description',
+        'start_date'=>'start date',
+        'end_date'=>'end date',
+        'coach'=>'coach',
+        'Choose Coach'=>'Choose Coach',
+        'Classes'=>'Classes',
+        'Choose Classes'=>'Classes'
+    ]
 
 ];

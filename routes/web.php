@@ -7,6 +7,7 @@ use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Training\TrainingController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -84,5 +85,13 @@ Route::group(
             Route::delete('gallery/delete/{gallery}','delete')->name('gallery.delete');
         });
 
+        Route::controller(TrainingController::class)->group(function (){
+            Route::get('training','index')->name('training.index');
+            Route::get('training/create','create')->name('training.create');
+            Route::post('training/store','store')->name('training.store');
+            Route::get('training/edit/{training}','edit')->name('training.edit');
+            Route::put('training/update/{training}','update')->name('training.update');
+            Route::delete('training/delete/{training}','delete')->name('training.delete');
+        });
     });
 });

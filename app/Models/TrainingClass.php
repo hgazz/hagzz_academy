@@ -14,6 +14,7 @@ class TrainingClass extends Model
         'class_id'
     ];
 
+    public $timestamps = false;
     public function training()
     {
         return $this->belongsTo(Training::class, 'training_id');
