@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Gallery extends Model
 {
     use HasFactory;
-
+    public function getImageAttribute($value)
+    {
+        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+    }
+    const  PATH ='images/gallery';
     protected $fillable = [
         'image',
     ];

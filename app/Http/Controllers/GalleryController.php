@@ -35,7 +35,7 @@ class GalleryController extends Controller
             'image' => $image,
         ]);
         session()->flash('success', trans('admin.gallery.created_successfully'));
-        return to_route('academy.gallery');
+        return to_route('academy.gallery.index');
     }
 
     public function edit(Gallery $gallery)
@@ -50,7 +50,7 @@ class GalleryController extends Controller
             'image' => $image,
         ]);
         session()->flash('success', trans('admin.gallery.updated_successfully'));
-        return to_route('academy.gallery');
+        return to_route('academy.gallery.index');
     }
 
     public function delete(Gallery $gallery)
@@ -58,6 +58,6 @@ class GalleryController extends Controller
         $gallery->delete();
         $this->deleteFile($this->galleryModel::PATH . $gallery->getRawOriginal('image'));
         session()->flash('success', trans('admin.gallery.deleted_successfully'));
-        return to_route('academy.gallery');
+        return to_route('academy.gallery.index');
     }
 }
