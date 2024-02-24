@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.coaches.create'))
+@section('title', trans('admin.clasess.create'))
 
 
 @section('content')
@@ -22,8 +22,8 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.coach') }}">{{ trans('admin.coaches.coaches') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.coaches.create') }}</li>
+                                    <li class="breadcrumb-item"><a href="{{ route('academy.class.index') }}">{{ trans('admin.clasess.clasess') }}</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.clasess.create') }}</li>
                                 </ol>
                             </nav>
 
@@ -36,10 +36,10 @@
 
         <div class="row layout-top-spacing">
              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-        <form method="POST" action="{{ route('academy.clacess.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('academy.class.store') }}" enctype="multipart/form-data">
             <div class="card">
                 <div class="card-header">
-                    <h3>{{ trans('admin.coaches.create') }}</h3>
+                    <h3>{{ trans('admin.clasess.create') }}</h3>
                 </div>
                 <div class="card-body">
                     @include('Academy.pages.clasess.partials._form')

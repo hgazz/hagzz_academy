@@ -32,7 +32,7 @@ class ClasessController extends Controller
             'date'=>$request->date,
         ]));
         session()->flash('success',trans('admin.clasess.created_successfully'));
-        return redirect(route('academy.clasess.index'));
+        return redirect(route('academy.class.index'));
     }
 
     public function edit(TClass $class)
@@ -47,13 +47,13 @@ class ClasessController extends Controller
             'date'=>$request->date,
         ]));
         session()->flash('success',trans('admin.clasess.updated_successfully'));
-        return redirect(route('academy.clasess.index'));
+        return redirect(route('academy.class.index'));
     }
 
     public function delete(TClass $class)
     {
         $class->delete();
         session()->flash('success',trans('admin.clasess.deleted_successfully'));
-        return redirect(route('academy.clasess.index'));
+        return redirect(route('academy.class.index'));
     }
 }
