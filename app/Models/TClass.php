@@ -30,6 +30,10 @@ class TClass extends Model
         ]
     ];
 
+    public function trainings()
+    {
+        return $this->belongsToMany(Training::class ,'training_classes','class_id','training_id');
+    }
     public static function getTranslatableFields()
     {
         return array_keys(self::$translatableColumns);
