@@ -55,7 +55,7 @@ class AddressController extends Controller
       $active = ($request->active == "on") ? true : false;
      $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
      $this->addressModel->create(array_merge($transactions , [
-         'active'=>$active,
+         'active'=>$request->has('active') ? 1 : 0,
          'academy_id'=> auth()->id(),
          'city_id'=>$request->city_id,
          'area_id'=>$request->area_id,
@@ -79,7 +79,7 @@ class AddressController extends Controller
         $active = ($request->active == "on") ? true : false;
         $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
         $address->update(array_merge($transactions , [
-            'active'=>$active,
+            'active'=>$request->has('active') ? 1 : 0,
             'city_id'=>$request->city_id,
             'area_id'=>$request->area_id,
             'longitude'=>$request->longitude,

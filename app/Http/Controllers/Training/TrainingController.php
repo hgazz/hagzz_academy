@@ -47,13 +47,7 @@ class TrainingController extends Controller
            ]));
 
            $classes = $request->class_id;
-           foreach ($classes as $class){
-               DB::table('training_classes')->insert([
-                   'class_id'=>$class,
-                   'training_id'=>$training->id
-               ]);
-           }
-
+           $training->classes()->attach($classes);
        });
        session()->flash('success',trans('admin.training.created_successfully'));
        return to_route('academy.training.index');
@@ -91,7 +85,7 @@ class TrainingController extends Controller
         DB::transaction(function () use ($training){
            $training->delete();
             $this->deleteFile($this->trainingModel::PATH . $training->getRawOriginal('icon'));
-            TrainingClass::where('training_id',$training->id)->delete();
+            $training->classes()->detach($training->id);
         });
         session()->flash('success',trans('admin.training.deleted_successfully'));
         return to_route('academy.training.index');
