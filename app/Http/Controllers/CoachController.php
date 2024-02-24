@@ -48,7 +48,7 @@ class CoachController extends Controller
     {
         $imageName = $request->hasFile('image') ? $this->upload($request->file('image') , $this->coachModel::PATH,  $coach->getRawOriginal('image')) : $coach->getRawOriginal('image');
         $coach->update(array_merge($request->validated(),[
-            'image'=>$imageName,
+            'image'=> $imageName,
             'active'=> $request->has('active') ? 1 : 0,
             'academy_id'=> auth()->id()
         ]));
@@ -59,6 +59,7 @@ class CoachController extends Controller
     public function delete(Coach $coach)
     {
         $coach->delete();
+        $this->deleteFile($this->coachModel::PATH. DIRECTORY_SEPARATOR .$coach->getRawOriginal('image'));
         session()->flash('success', trans('admin.coaches.deleted_successfully'));
         return to_route('academy.coach');
     }
