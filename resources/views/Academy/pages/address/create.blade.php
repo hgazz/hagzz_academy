@@ -53,3 +53,30 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script>
+        var city = document.getElementById('city');
+        var areaSelect = document.getElementById('areaSelect');
+        var local = document.getElementById('local');
+        city.addEventListener('change',function (){
+            var cityId = city.value;
+
+            fetch(`area/${cityId}`)
+                .then(response => response.json())
+                .then(data =>{
+                    areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
+
+                    // Populate the area select with fetched areas
+                    data.forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area.id;
+                        option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
+                        areaSelect.appendChild(option);
+                    });
+                    // Enable the area select
+                    areaSelect.disabled = false;
+                })
+        })
+    </script>
+@endpush
