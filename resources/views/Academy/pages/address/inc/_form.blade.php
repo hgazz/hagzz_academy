@@ -35,14 +35,30 @@
 
     <div class="row">
         <div class="form-group mb-4">
-            <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
-            <select class="form-select" id="city"  name="city_id" >
-                <option value="0">{{ trans('admin.area.select_city') }}</option>
-                @foreach($cities as $city)
-{{--                    <input type="hidden" value="{{$city->id}}" id="city_id">--}}
-                    <option  value="{{ $city->id }}"  @selected(old('city_id', isset($address) ? $address->city_id : '') == $city->id)>{{ $city->name }}</option>
-
+            <label for="exampleFormControlSelect1">{{ trans('admin.address.country') }}</label>
+            <select class="form-select" id="country"  name="country_id" >
+                <option value="0">{{ trans('admin.address.country') }}</option>
+                @foreach($countries as $country)
+                    <option  value="{{ $country->id }}"  @selected(old('country_id', isset($address) ? $address->country_id : '') == $country->id)>{{ $country->name }}</option>
                 @endforeach
+            </select>
+            @error('country_id')
+            <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group mb-4">
+            <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
+            <select class="form-select citySelected" id="city"  name="city_id" >
+                <input type="hidden" value="{{old('city_id', isset($address) ? $address->city_id : '')}}" id="select_city_id">
+{{--                <option disabled>{{ trans('admin.area.select_city') }}</option>--}}
+{{--                @foreach($cities as $city)--}}
+{{--                    <input type="hidden" value="{{$city->id}}" id="city_id">--}}
+{{--                    <option  value="{{ $city->id }}"  @selected(old('city_id', isset($address) ? $address->city_id : '') == $city->id)>{{ $city->name }}</option>--}}
+
+{{--                @endforeach--}}
             </select>
             @error('city_id')
             <span class="text-danger">{{ $message }}</span>
@@ -55,6 +71,7 @@
             <label for="areaSelect">{{ trans('admin.address.area') }}</label>
             <select class="form-select" id="areaSelect" name="area_id">
                 <option value="">{{ trans('admin.area.select_city') }}</option>
+                <input type="hidden" value="{{old('city_id', isset($address) ? $address->area_id : '')}}" id="select_area_id">
 {{--                @foreach($areas as $area)--}}
 {{--                    <option value="{{ $area->id }}" @selected(old('city_id', isset($address) ? $address->area_id : '') == $area->id)>{{ $area->name }}</option>--}}
 {{--                @endforeach--}}

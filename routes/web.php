@@ -56,6 +56,8 @@ Route::group(
             Route::delete('address/delete/{address}','delete')->name('address.delete');
             Route::get('address/area/{city}','getAreaByCity')->name('area.getAreaByCity');
             Route::get('address/edit/area/{city}','getAreaByCity')->name('area.getAreaByCity');
+            Route::get('address/country/{country}','getAllCountry')->name('country.getCountry');
+            Route::get('address/edit/country/{country}','getAllCountry')->name('country.getCountry');
 
         });
 

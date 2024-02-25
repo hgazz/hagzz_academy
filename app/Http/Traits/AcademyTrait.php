@@ -3,11 +3,12 @@
 namespace App\Http\Traits;
 
 use App\Models\Academies;
+use App\Models\Country;
 
 trait AcademyTrait
 {
-    private function getAcademies()
+    private function getCountry()
     {
-        return Academies::get(['id','name']);
+        return Country::get(['id','name']);
     }
 }

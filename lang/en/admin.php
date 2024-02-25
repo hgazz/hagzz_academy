@@ -139,6 +139,8 @@ return [
         'address successfully update'=>'address successfully update',
         'address successfully deleted'=>'address successfully deleted',
         'address successfully created'=>'address successfully created',
+        'country'=>'country',
+        'edit'=>'edit',
     ],
     'clasess'=>[
         'clasess'=>'Classes',
