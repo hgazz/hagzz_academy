@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.area.create'))
+@section('title', trans('admin.address.create'))
 
 
 @section('content')
@@ -22,8 +22,8 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.address.index') }}">{{ trans('admin.area.areas') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.area.create') }}</li>
+                                    <li class="breadcrumb-item"><a href="{{ route('academy.address.index') }}">{{ trans('admin.address.address') }}</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.address.create') }}</li>
                                 </ol>
                             </nav>
 
@@ -39,7 +39,7 @@
                 <form method="POST" action="{{ route('academy.address.store') }}" enctype="multipart/form-data">
                     <div class="card">
                         <div class="card-header">
-                            <h3>{{ trans('admin.area.create') }}</h3>
+                            <h3>{{ trans('admin.address.create') }}</h3>
                         </div>
                         <div class="card-body">
                             @include('Academy.pages.address.inc._form')

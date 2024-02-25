@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Training;
+namespace App\Http\Controllers;
 
 use App\DataTables\TrainingDataTable;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Training\TrainigRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
 use App\Models\Training;
-use App\Models\TrainingClass;
 use App\Services\TranslatableService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TrainingController extends Controller
@@ -84,7 +81,7 @@ class TrainingController extends Controller
     {
         DB::transaction(function () use ($training){
            $training->delete();
-            $this->deleteFile($this->trainingModel::PATH . $training->getRawOriginal('icon'));
+            $this->deleteFile($this->trainingModel::PATH . $training->getRawOriginal('image'));
             $training->classes()->detach($training->id);
         });
         session()->flash('success',trans('admin.training.deleted_successfully'));
