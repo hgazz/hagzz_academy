@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Address;
+namespace App\Http\Controllers;
 
 use App\DataTables\AddressDataTable;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Address\AddressRequest;
 use App\Http\Traits\AcademyTrait;
 use App\Http\Traits\CityAndAreaTrait;
@@ -11,7 +10,6 @@ use App\Models\Address;
 use App\Models\Area;
 use App\Models\City;
 use App\Services\TranslatableService;
-use Illuminate\Http\Request;
 
 class AddressController extends Controller
 {
@@ -32,12 +30,10 @@ class AddressController extends Controller
         $cities = $this->getCities();
         $areas = $this->getAreas();
         return view('Academy.pages.address.create',compact('cities', 'areas'));
-        return response()->json($areas);
     }
 
     public function getAreaByCity($city)
     {
-//        dd($city);
         $city = City::findOrFail($city);
         $areas = Area::where('city_id', $city->id)->get();
         return response()->json($areas);
@@ -45,23 +41,21 @@ class AddressController extends Controller
 
     public function editArea($city)
     {
-        dd(12);
         $city = City::findOrFail($city);
         $areas = Area::where('city_id', $city->id)->get();
         return response()->json($areas);
     }
     public function store(AddressRequest  $request)
     {
-      $active = ($request->active == "on") ? true : false;
-     $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
-     $this->addressModel->create(array_merge($transactions , [
-         'active'=>$active,
-         'academy_id'=> auth()->id(),
-         'city_id'=>$request->city_id,
-         'area_id'=>$request->area_id,
-         'longitude'=>$request->longitude,
-         'latitude'=>$request->latitude,
-     ]));
+         $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
+         $this->addressModel->create(array_merge($transactions , [
+             'active'=>$request->has('active') ? 1 : 0,
+             'academy_id'=> auth()->id(),
+             'city_id'=>$request->city_id,
+             'area_id'=>$request->area_id,
+             'longitude'=>$request->longitude,
+             'latitude'=>$request->latitude,
+         ]));
 
      session()->flash('success',trans('admin.address.address successfully created'));
      return to_route('academy.address.index');
@@ -79,7 +73,7 @@ class AddressController extends Controller
         $active = ($request->active == "on") ? true : false;
         $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
         $address->update(array_merge($transactions , [
-            'active'=>$active,
+            'active'=>$request->has('active') ? 1 : 0,
             'city_id'=>$request->city_id,
             'area_id'=>$request->area_id,
             'longitude'=>$request->longitude,

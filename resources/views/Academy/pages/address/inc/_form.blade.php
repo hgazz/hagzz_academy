@@ -37,7 +37,7 @@
         <div class="form-group mb-4">
             <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
             <select class="form-select" id="city"  name="city_id" >
-                <option value="">{{ trans('admin.area.select_city') }}</option>
+                <option value="0">{{ trans('admin.area.select_city') }}</option>
                 @foreach($cities as $city)
 {{--                    <input type="hidden" value="{{$city->id}}" id="city_id">--}}
                     <option  value="{{ $city->id }}"  @selected(old('city_id', isset($address) ? $address->city_id : '') == $city->id)>{{ $city->name }}</option>
@@ -68,7 +68,7 @@
 
 </div>
 <label for="active">{{ trans('admin.address.active') }}</label>
-<input class="form-check" id="active" name="active" @if(isset($address) ?? $address->active) checked @endif  type="checkbox">
+<input class="form-check" id="active" name="active" @if(isset($address) && $address->active) checked @endif  type="checkbox">
 @error('active')
 <span class="text-danger">{{ $message }}</span>
 @enderror

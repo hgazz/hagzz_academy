@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\ProfileRequest;
 use App\Http\Traits\FileUpload;
 use App\Models\Academies;
-use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {

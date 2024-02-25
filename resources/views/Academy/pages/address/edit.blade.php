@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.area.edit'))
+@section('title', trans('admin.address.edit'))
 
 
 @section('content')
@@ -22,8 +22,8 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.address.index') }}">{{ trans('admin.area.address') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.area.edit') }}</li>
+                                    <li class="breadcrumb-item"><a href="{{ route('academy.address.index') }}">{{ trans('admin.address.address') }}</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.address.edit') }}</li>
                                 </ol>
                             </nav>
 
@@ -40,7 +40,7 @@
                     @method('PUT')
                     <div class="card">
                         <div class="card-header">
-                            <h3>{{ trans('admin.area.edit') }}</h3>
+                            <h3>{{ trans('admin.address.edit') }}</h3>
                         </div>
                         <div class="card-body">
                             @include('Academy.pages.address.inc._form')
@@ -64,54 +64,73 @@
             let citySelected = city.selectedIndex;
             // let cityId = city.value;
             let url = window.location.href;
-            console.log("url", url);
-            console.log(cityId, citySelected);
-            fetch(`area/${cityId}`)
-                .then(response => response.json())
-                .then(data =>{
-                    areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
+            // console.log("url", url);
+            // console.log(cityId, citySelected);
+            if (cityId != 0){
+                fetch(`area/${cityId}`)
+                    .then(response => {
+                        if(!response.ok) {
+                            // console.log("not ok")
+                            return;
+                            // return response.json();
+                        }
+                        return response.json();
+                    } )
+                    .then(data =>{
+                        console.log("data", data);
+                        areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
 
-                    // Populate the area select with fetched areas
-                    data.forEach(area => {
-                        const option = document.createElement('option');
-                        option.value = area.id;
-                        option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
-                        areaSelect.appendChild(option);
-                    });
-                    // Enable the area select
-                    areaSelect.disabled = false;
-                })
+                        // Populate the area select with fetched areas
+                        data &&  data.forEach(area => {
+                            const option = document.createElement('option');
+                            option.value = area.id;
+                            option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
+                            areaSelect.appendChild(option);
+                            if (data != undefined) {
+                                option.selected = (area.id == area.city_id)?true : false;
+                            }
+                        });
+                        // Enable the area select
+                        areaSelect.disabled = false;
+                    })
+            }
         })
         city.addEventListener('change',function (){
             let cityId = city.value;
             let citySelected = city.selectedIndex;
-            // let cityId = city.value;
-            let url = window.location.href;
-            console.log("url", url);
-            console.log(cityId, citySelected);
-                fetch(`area/${cityId}`)
-                .then(response => {
-                    if(!response.ok) {
-                        console.log("not ok")
-                        return;
-                        // return response.json();
-                    }
-                    return response.json();
-                } )
-                .then(data =>{
-                    console.log("data", data);
-                    areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
 
-                    // Populate the area select with fetched areas
-                    data &&  data.forEach(area => {
-                        const option = document.createElement('option');
-                        option.value = area.id;
-                        option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
-                        areaSelect.appendChild(option);
-                    });
-                    // Enable the area select
-                    areaSelect.disabled = false;
-                })
+            let url = window.location.href;
+            // console.log("url", url);
+            // console.log(cityId, citySelected);
+            if (cityId != 0){
+                fetch(`area/${cityId}`)
+                    .then(response => {
+                        if(!response.ok) {
+                            // console.log("not ok")
+                            return;
+                            // return response.json();
+                        }
+                        return response.json();
+                    } )
+                    .then(data =>{
+                        console.log("data", data);
+                        areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
+
+                        // Populate the area select with fetched areas
+                        data &&  data.forEach(area => {
+                            const option = document.createElement('option');
+                            option.value = area.id;
+                            option.textContent = (local.value == 'en')  ? `${area.name.en}` : `${area.name.ar}`;
+                            areaSelect.appendChild(option);
+                            if (data != undefined) {
+                                option.selected = (area.id == area.city_id)?true : false;
+                            }
+                        });
+                        // Enable the area select
+                        areaSelect.disabled = false;
+                    })
+            }
+
         })
     </script>
 @endpush

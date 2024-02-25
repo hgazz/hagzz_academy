@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Address\AddressController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClasessController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\Profile\ProfileController;
-use App\Http\Controllers\Training\TrainingController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
