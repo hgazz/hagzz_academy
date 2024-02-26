@@ -23,7 +23,7 @@
     </div>
     <div class="col-md-6 mb-3">
         <label for="active">{{ trans('admin.address.active') }}</label>
-        <input class="form-check" id="active" name="active" @if(isset($address) ?? $address->active) checked @endif  type="checkbox">
+        <input class="form-check" id="active" name="active" @checked(old('active', (isset($coach) ? $coach->getRawOriginal('active') : ''))) type="checkbox">
         @error('active')
         <span class="text-danger">{{ $message }}</span>
         @enderror
