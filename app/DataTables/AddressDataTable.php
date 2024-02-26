@@ -23,6 +23,9 @@ class AddressDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->editColumn('address', fn($raw) => $raw->address)
+            ->addColumn('country_id', function (Address $address) {
+                return $address->country->name;
+            })
             ->addColumn('city_id', function (Address $address) {
                 return $address->city->name;
             })
@@ -78,6 +81,7 @@ class AddressDataTable extends DataTable
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'address', 'data' => 'address', 'title' => trans('admin.address.address')],
+            ['name' => 'country.name', 'data' => 'country_id', 'title' => trans('admin.address.country')],
             ['name' => 'city.name', 'data' => 'city_id', 'title' => trans('admin.address.city')],
             ['name' => 'area.name', 'data' => 'area_id', 'title' => trans('admin.address.area')],
             ['name' => 'academy.name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],

@@ -56,9 +56,28 @@
 
 @push('js')
     <script>
+        var country = document.getElementById('country');
         var city = document.getElementById('city');
         var areaSelect = document.getElementById('areaSelect');
         var local = document.getElementById('local');
+
+        country.addEventListener('change', function(){
+           var countryId = country.value;
+            fetch(`country/${countryId}`)
+                .then(response =>response.json())
+                .then(cities=>{
+                   city.innerHTML = '<option value="" disabled selected>Select City</option>';
+                   cities.forEach(el=> {
+                       const option = document.createElement('option');
+                       option.value = el.id;
+                       option.textContent = (local.value == 'en')  ? `${el.name.en}` : `${el.name.ar}`;
+                           city.appendChild(option);
+
+                   })
+                    city.disabled = false;
+                })
+        });
+
         city.addEventListener('change',function (){
             var cityId = city.value;
 

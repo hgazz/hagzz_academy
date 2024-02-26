@@ -29,7 +29,7 @@ class AddressRequest extends FormRequest
             'area_id'=>'required|exists:areas,id',
             'longitude'=>'nullable|string',
             'latitude'=>'nullable|string',
-//            'active'=>'nullable|boolean',
+            'country_id'=>'required|exists:countries,id',
         ];
         return  TranslatableService::validateTranslatableFields(Address::$translatableColumns) + $rules;
     }

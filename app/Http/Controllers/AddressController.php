@@ -9,6 +9,7 @@ use App\Http\Traits\CityAndAreaTrait;
 use App\Models\Address;
 use App\Models\Area;
 use App\Models\City;
+use App\Models\Country;
 use App\Services\TranslatableService;
 
 class AddressController extends Controller
@@ -29,8 +30,10 @@ class AddressController extends Controller
     {
         $cities = $this->getCities();
         $areas = $this->getAreas();
-        return view('Academy.pages.address.create',compact('cities', 'areas'));
+        $countries = $this->getCountry();
+        return view('Academy.pages.address.create',compact('cities', 'areas','countries'));
     }
+
 
     public function getAreaByCity($city)
     {
@@ -45,6 +48,12 @@ class AddressController extends Controller
         $areas = Area::where('city_id', $city->id)->get();
         return response()->json($areas);
     }
+    public function getAllCountry($country)
+    {
+        $country = Country::findOrFail($country);
+        $cities = City::where('country_id', $country->id)->get();
+        return response()->json($cities);
+    }
     public function store(AddressRequest  $request)
     {
          $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
@@ -55,6 +64,7 @@ class AddressController extends Controller
              'area_id'=>$request->area_id,
              'longitude'=>$request->longitude,
              'latitude'=>$request->latitude,
+             'country_id'=>$request->country_id
          ]));
 
      session()->flash('success',trans('admin.address.address successfully created'));
@@ -65,7 +75,8 @@ class AddressController extends Controller
     {
         $cities = $this->getCities();
         $areas = $this->getAreas();
-        return view('Academy.pages.address.edit',compact('address', 'cities', 'areas'));
+        $countries = $this->getCountry();
+        return view('Academy.pages.address.edit',compact('address', 'cities', 'areas','countries'));
     }
 
     public function update(Address $address , AddressRequest $request)
