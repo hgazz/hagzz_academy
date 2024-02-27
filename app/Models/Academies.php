@@ -55,4 +55,9 @@ class Academies extends Authenticatable
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
 
+    public function sports()
+    {
+        return $this->belongsToMany(Sport::class,'academy_sport','academy_id','sport_id');
+    }
+
 }

@@ -154,6 +154,8 @@ return [
         'created_successfully'=>'Class Created successfully',
         'updated_successfully'=>'Class Updated successfully',
         'deleted_successfully'=>'Class Deleted successfully',
+        'select_sport' => 'Select Sport',
+        'sport' => 'Sport'
     ],
     'gallery'=>[
         'gallery'=>'Gallery',

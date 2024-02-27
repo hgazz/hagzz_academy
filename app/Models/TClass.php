@@ -13,7 +13,9 @@ class TClass extends Model
     protected $fillable = [
         'title',
         'subtitle',
-        'date'
+        'date',
+        'academy_id',
+        'sport_id',
     ];
     public $translatable = ['title','subtitle'];
 
@@ -39,4 +41,13 @@ class TClass extends Model
         return array_keys(self::$translatableColumns);
     }
 
+    public function academy()
+    {
+        return $this->belongsTo(Academies::class, 'academy_id', 'id');
+    }
+
+    public function sport()
+    {
+        return $this->belongsTo(Sport::class, 'sport_id', 'id');
+    }
 }

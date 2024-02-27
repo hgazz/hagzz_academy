@@ -22,6 +22,7 @@ class TClassDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->editColumn('sport_id', fn($raw) => $raw->sport->name)
             ->editColumn('title', fn($raw) => $raw->title)
             ->editColumn('subtitle', fn($raw) => $raw->subtitle)
             ->addColumn('action', function (TClass $class) {
@@ -35,7 +36,7 @@ class TClassDataTable extends DataTable
      */
     public function query(TClass $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('sport');
     }
 
     /**
@@ -69,6 +70,7 @@ class TClassDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
+            ['name' => 'sport_id', 'data' => 'sport_id', 'title' => trans('admin.clasess.sport')],
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],
             ['name' => 'subtitle', 'data' => 'subtitle', 'title' => trans('admin.clasess.subtitle')],
             ['name' => 'date', 'data' => 'date', 'title' => trans('admin.clasess.date')],

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClasessController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
@@ -71,7 +71,7 @@ Route::group(
             Route::delete('coach/delete/{coach}','delete')->name('coach.delete');
         });
 
-        Route::controller( ClasessController::class)->group(function(){
+        Route::controller( ClassesController::class)->group(function(){
             Route::get('classes','index')->name('class.index');
             Route::get('class/create','create')->name('class.create');
             Route::post('class/store','store')->name('class.store');
