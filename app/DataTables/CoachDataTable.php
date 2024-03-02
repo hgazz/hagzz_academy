@@ -39,7 +39,7 @@ class CoachDataTable extends DataTable
      */
     public function query(Coach $model): QueryBuilder
     {
-        return $model->newQuery()->with('academy');
+        return $model->newQuery()->with('academy')->whereBelongsTo(auth('academy')->user(),'academy');
     }
 
     /**

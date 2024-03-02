@@ -36,7 +36,7 @@ class TClassDataTable extends DataTable
      */
     public function query(TClass $model): QueryBuilder
     {
-        return $model->newQuery()->with('sport');
+        return $model->newQuery()->with('sport')->whereBelongsTo(auth('academy')->user(),'academy');
     }
 
     /**

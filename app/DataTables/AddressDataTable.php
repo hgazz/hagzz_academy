@@ -46,7 +46,7 @@ class AddressDataTable extends DataTable
      */
     public function query(Address $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->whereBelongsTo(auth('academy')->user(),'academy');
     }
 
     /**

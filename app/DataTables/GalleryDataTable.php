@@ -36,7 +36,7 @@ class GalleryDataTable extends DataTable
      */
     public function query(Gallery $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->whereBelongsTo(auth('academy')->user(),'academy');
     }
 
     /**

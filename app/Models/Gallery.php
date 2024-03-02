@@ -15,5 +15,11 @@ class Gallery extends Model
     const  PATH ='images/gallery';
     protected $fillable = [
         'image',
+        'academy_id',
     ];
+
+    public function academy()
+    {
+        return $this->belongsTo(Academies::class, 'academy_id');
+    }
 }

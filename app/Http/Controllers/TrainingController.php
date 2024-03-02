@@ -40,7 +40,8 @@ class TrainingController extends Controller
                'image'=>$imageName,
                'start_date'=>$request->start_date,
                'end_date'=>$request->end_date,
-               'coach_id'=>$request->coach_id
+               'coach_id'=>$request->coach_id,
+               'academy_id' => auth()->id()
 
            ]));
 

@@ -51,7 +51,7 @@ class TrainingDataTable extends DataTable
      */
     public function query(Training $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->whereBelongsTo(auth('academy')->user(), 'academy');
     }
 
     /**

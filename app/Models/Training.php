@@ -18,6 +18,7 @@ class Training extends Model
         'end_date',
         'description',
         'coach_id',
+        'academy_id',
     ];
 
     public $translatable = ['name','description'];
@@ -52,5 +53,10 @@ class Training extends Model
     public function getImageAttribute($value)
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+    }
+
+    public function academy()
+    {
+        return $this->belongsTo(Academies::class, 'academy_id');
     }
 }
