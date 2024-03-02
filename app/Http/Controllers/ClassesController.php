@@ -7,6 +7,7 @@ use App\Http\Requests\Class\ClassRequest;
 use App\Models\Sport;
 use App\Models\TClass;
 use App\Services\TranslatableService;
+use Illuminate\Http\Request;
 
 class ClassesController extends Controller
 {
@@ -58,10 +59,14 @@ class ClassesController extends Controller
         return redirect(route('academy.class.index'));
     }
 
-    public function delete(TClass $class)
+    public function delete(Request $request)
     {
+        $class = $this->classModel->findOrFail($request->id);
         $class->delete();
-        session()->flash('success',trans('admin.clasess.deleted_successfully'));
-        return redirect(route('academy.class.index'));
+        return response()->json(['data' => [
+            'status' => 'success',
+            'model'   => trans('admin.clasess.clasess'),
+            'message' => trans('admin.clasess.deleted_successfully'),
+        ]]);
     }
 }

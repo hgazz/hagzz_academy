@@ -53,7 +53,7 @@ Route::group(
             Route::post('address/store', 'store')->name('address.store');
             Route::get('address/edit/{address}','edit')->name('address.edit');
             Route::put('address/update/{address}','update')->name('address.update');
-            Route::delete('address/delete/{address}','delete')->name('address.delete');
+            Route::delete('address/delete','delete')->name('address.delete');
             Route::get('address/area/{city}','getAreaByCity')->name('area.getAreaByCity');
             Route::get('address/edit/area/{city}','getAreaByCity')->name('area.getAreaByCity');
             Route::get('address/country/{country}','getAllCountry')->name('country.getCountry');
@@ -68,7 +68,7 @@ Route::group(
             Route::post('coach/store','store')->name('coach.store');
             Route::get('coach/edit/{coach}','edit')->name('coach.edit');
             Route::put('coach/update/{coach}','update')->name('coach.update');
-            Route::delete('coach/delete/{coach}','delete')->name('coach.delete');
+            Route::delete('coach/delete','delete')->name('coach.delete');
         });
 
         Route::controller( ClassesController::class)->group(function(){
@@ -77,7 +77,7 @@ Route::group(
             Route::post('class/store','store')->name('class.store');
             Route::get('class/edit/{class}','edit')->name('class.edit');
             Route::put('class/update/{class}','update')->name('class.update');
-            Route::delete('class/delete/{class}','delete')->name('class.delete');
+            Route::delete('class/delete','delete')->name('class.delete');
         });
 
         Route::controller(GalleryController::class)->group(function(){
@@ -86,7 +86,7 @@ Route::group(
             Route::post('gallery/store','store')->name('gallery.store');
             Route::get('gallery/edit/{gallery}','edit')->name('gallery.edit');
             Route::put('gallery/update/{gallery}','update')->name('gallery.update');
-            Route::delete('gallery/delete/{gallery}','delete')->name('gallery.delete');
+            Route::delete('gallery/delete','delete')->name('gallery.delete');
         });
 
         Route::controller(TrainingController::class)->group(function (){
@@ -95,7 +95,7 @@ Route::group(
             Route::post('training/store','store')->name('training.store');
             Route::get('training/edit/{training}','edit')->name('training.edit');
             Route::put('training/update/{training}','update')->name('training.update');
-            Route::delete('training/delete/{training}','delete')->name('training.delete');
+            Route::delete('training/delete','delete')->name('training.delete');
         });
     });
 });

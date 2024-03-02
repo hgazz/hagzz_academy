@@ -11,6 +11,7 @@ use App\Models\Area;
 use App\Models\City;
 use App\Models\Country;
 use App\Services\TranslatableService;
+use Illuminate\Http\Request;
 
 class AddressController extends Controller
 {
@@ -94,11 +95,15 @@ class AddressController extends Controller
         return to_route('academy.address.index');
     }
 
-    public function delete(Address $address)
+    public function delete(Request $request)
     {
+        $address = $this->addressModel->findOrFail($request->id);
         $address->delete();
-        session()->flash('success',trans('admin.address.address successfully deleted'));
-        return to_route('academy.address.index');
+        return response()->json(['data' => [
+            'status' => 'success',
+            'model'   => trans('admin.address.address'),
+            'message' => trans('admin.address.address successfully deleted'),
+        ]]);
     }
 
 }

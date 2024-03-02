@@ -53,11 +53,15 @@ class GalleryController extends Controller
         return to_route('academy.gallery.index');
     }
 
-    public function delete(Gallery $gallery)
+    public function delete(Request $request)
     {
+        $gallery = $this->galleryModel->findOrFail($request->id);
         $gallery->delete();
         $this->deleteFile($this->galleryModel::PATH . $gallery->getRawOriginal('image'));
-        session()->flash('success', trans('admin.gallery.deleted_successfully'));
-        return to_route('academy.gallery.index');
+        return response()->json(['data' => [
+            'status' => 'success',
+            'model'   => trans('admin.gallery.gallery'),
+            'message' => trans('admin.gallery.deleted_successfully'),
+        ]]);
     }
 }

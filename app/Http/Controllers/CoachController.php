@@ -56,11 +56,15 @@ class CoachController extends Controller
         return to_route('academy.coach');
     }
 
-    public function delete(Coach $coach)
+    public function delete(Request $request)
     {
+        $coach = $this->coachModel->findOrFail($request->id);
         $coach->delete();
         $this->deleteFile($this->coachModel::PATH. DIRECTORY_SEPARATOR .$coach->getRawOriginal('image'));
-        session()->flash('success', trans('admin.coaches.deleted_successfully'));
-        return to_route('academy.coach');
+        return response()->json(['data' => [
+            'status' => 'success',
+            'model'   => trans('admin.coaches.coaches'),
+            'message' => trans('admin.coaches.deleted_successfully'),
+        ]]);
     }
 }
