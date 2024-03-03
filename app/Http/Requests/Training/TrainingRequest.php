@@ -4,9 +4,10 @@ namespace App\Http\Requests\Training;
 
 use App\Models\Training;
 use App\Services\TranslatableService;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TrainigRequest extends FormRequest
+class TrainingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,7 +20,7 @@ class TrainigRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -28,7 +29,7 @@ class TrainigRequest extends FormRequest
             'end_date'=>'required|date|after_or_equal:'. now()->toDateString(),
             'coach_id'=>'required|integer|exists:coaches,id',
             'image'=> $this->validateImage(),
-            'class_id'=>'required|exists:t_classes,id',
+            'price'=> 'required|integer'
         ];
 
         return TranslatableService::validateTranslatableFields(Training::$translatableColumns) + $rules;

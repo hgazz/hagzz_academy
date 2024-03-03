@@ -14,23 +14,41 @@
         @endforeach
 
     </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="date">{{ trans('admin.clasess.date') }}</label>
+            <input class="form-control" type="date" value="{{(isset($class) ? $class->date : old('date'))}}" id="date" name="date">
+            @error('date')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="sport_id">{{ trans('admin.clasess.sport') }}</label>
+            <select class="form-select" name="sport_id" id="sport_id">
+                <option value="">{{ trans('admin.clasess.select_sport') }}</option>
+                @foreach($sports as $sport)
+                    <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($class) ? $class->sport_id : '')))>{{$sport->name}}</option>
+                @endforeach
+            </select>
+            @error('academy_id')
+            <span class="text-danger" >{{$message}}</span>
+            @enderror
+        </div>
+    </div>
     <div class="col-md-6 mb-3">
-        <label for="date">{{ trans('admin.clasess.date') }}</label>
-        <input class="form-control" type="date" value="{{(isset($class) ? $class->date : old('date'))}}" id="data" name="date">
-        @error('date')
+        <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.Classes')}} </label>
+        <select id="classes" class="form-select pt-2" name="training_id[]" multiple>
+            <option value=""> {{trans('admin.training.Choose Classes')}} </option>
+
+            @foreach($trainings as $training)
+                <option  @selected(old('training_id[]', isset($class) ? in_array($training->id , $class->trainings->pluck('id')->toArray()) : '') == $training->id) value="{{$training->id}}" >{{$training->name}}</option>
+            @endforeach
+        </select>
+        @error('training_id[]')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
+
 </div>
-<div class="col-md-6 mb-3">
-    <select class="form-select" name="sport_id">
-        <option value="">{{ trans('admin.clasess.select_sport') }}</option>
-        @foreach($sports as $sport)
-            <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($class) ? $class->sport_id : '')))>{{$sport->name}}</option>
-        @endforeach
-    </select>
-    @error('academy_id')
-    <span class="text-danger" >{{$message}}</span>
-    @enderror
-</div>
+
 

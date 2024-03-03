@@ -182,7 +182,10 @@ return [
         'coach'=>'coach',
         'Choose Coach'=>'Choose Coach',
         'Classes'=>'Classes',
-        'Choose Classes'=>'Classes'
+        'Choose Classes'=>'Classes',
+        'price' => 'Price',
+        'start_time' => 'Start Time',
+        'end_time' => 'End Time',
     ]
 
 ];

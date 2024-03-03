@@ -38,7 +38,22 @@ class AddressDataTable extends DataTable
             ->addColumn('action', function (Address $address) {
                 return view('Academy.pages.address._action', compact('address'))->render();
             })
-            ->rawColumns(['action', 'city_id','area_id','academy_id']);
+            ->filterColumn('city.name', function ($query, $keyword) {
+                $query->whereHas('city',function ($q) use($keyword){
+                    $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
+                });
+            })
+            ->filterColumn('area.name', function ($query, $keyword) {
+                $query->whereHas('area',function ($q) use($keyword){
+                    $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
+                });
+            })
+            ->filterColumn('country.name', function ($query, $keyword) {
+                $query->whereHas('country',function ($q) use($keyword){
+                    $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
+                });
+            })
+            ->rawColumns(['action', 'country_id','city_id','area_id','academy_id']);
     }
 
     /**
@@ -46,7 +61,34 @@ class AddressDataTable extends DataTable
      */
     public function query(Address $model): QueryBuilder
     {
-        return $model->newQuery()->whereBelongsTo(auth('academy')->user(),'academy');
+        $query = $model->newQuery()
+            ->with(['country', 'city', 'area', 'academy'])
+            ->whereBelongsTo(auth('academy')->user(),'academy');
+        $country = request()->input('country.name');
+        if ($country) {
+            $query->whereHas('city', function ($q) use ($country) {
+                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+                $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$country}%"]);
+            });
+        }
+
+        $city = request()->input('city.name');
+        if ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+                $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$city}%"]);
+            });
+        }
+
+        $area = request()->input('area.name');
+        if ($area) {
+            $query->whereHas('city', function ($q) use ($area) {
+                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+                $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$area}%"]);
+            });
+        }
+
+        return $query->select('addresses.*');
     }
 
     /**
@@ -87,7 +129,6 @@ class AddressDataTable extends DataTable
             ['name' => 'academy.name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],
             ['name' => 'longitude', 'data' => 'longitude', 'title' => trans('admin.address.longitude')],
             ['name' => 'latitude', 'data' => 'latitude', 'title' => trans('admin.address.latitude')],
-
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }

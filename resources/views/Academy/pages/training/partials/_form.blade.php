@@ -48,8 +48,24 @@
     </div>
 
     <div class="col-md-6 mb-3">
+        <label for="start_time">{{ trans('admin.training.start_time') }}</label>
+        <input class="form-control" type="time" value="{{(isset($training) ? $training->start_time : old('start_time'))}}" id="start_time" name="start_time">
+        @error('start_time')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label for="end_time">{{ trans('admin.training.end_time') }}</label>
+        <input class="form-control" type="time" value="{{(isset($training) ? $training->end_time : old('end_time'))}}" id="end_time" name="end_time">
+        @error('end_time')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
         <label for="coaches"><span class="text-danger">*</span> {{trans('admin.training.coach')}} </label>
-        <select class="form-select" name="coach_id">
+        <select id="coaches" class="form-select" name="coach_id">
             <option> {{trans('admin.training.Choose Coach')}} </option>
             @foreach($coaches as $coach)
                 <option  @selected(old('coach_id', isset($training) ?  $training->coach_id : '') == $coach->id) value="{{$coach->id}}">{{$coach->name}}</option>
@@ -60,18 +76,10 @@
         @enderror
     </div>
 
-{{--    @dd($training->classes)--}}
-
     <div class="col-md-6 mb-3">
-        <label for="coaches"><span class="text-danger">*</span> {{trans('admin.training.Classes')}} </label>
-        <select class="form-select pt-2" name="class_id[]" multiple>
-            <option value=""> {{trans('admin.training.Choose Classes')}} </option>
-
-                @foreach($classes as $class)
-                    <option  @selected(old('class_id[]', isset($training) ? in_array($class->id , $training->classes->pluck('id')->toArray()) : '') == $class->id) value="{{$class->id}}" >{{$class->title}}</option>
-                @endforeach
-        </select>
-        @error('class_id')
+        <label for="price">{{ trans('admin.training.price') }}</label>
+        <input class="form-control" type="number" value="{{(isset($training) ? $training->price : old('price'))}}" id="price" name="price">
+        @error('price')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
