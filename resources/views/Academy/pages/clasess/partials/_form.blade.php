@@ -14,6 +14,21 @@
         @endforeach
 
     </div>
+    <div class="col-md-6 mb-3">
+        <label for="start_time">{{ trans('admin.training.start_time') }}</label>
+        <input class="form-control" type="time" value="{{(isset($class) ? $class->start_time : old('start_time'))}}" id="start_time" name="start_time">
+        @error('start_time')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label for="end_time">{{ trans('admin.training.end_time') }}</label>
+        <input class="form-control" type="time" value="{{(isset($class) ? $class->end_time : old('end_time'))}}" id="end_time" name="end_time">
+        @error('end_time')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="date">{{ trans('admin.clasess.date') }}</label>
@@ -36,15 +51,14 @@
         </div>
     </div>
     <div class="col-md-6 mb-3">
-        <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.Classes')}} </label>
-        <select id="classes" class="form-select pt-2" name="training_id[]" multiple>
-            <option value=""> {{trans('admin.training.Choose Classes')}} </option>
-
+        <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
+        <select id="classes" class="form-select pt-2" name="training_id" >
+            <option value=""> {{trans('admin.training.training')}} </option>
             @foreach($trainings as $training)
-                <option  @selected(old('training_id[]', isset($class) ? in_array($training->id , $class->trainings->pluck('id')->toArray()) : '') == $training->id) value="{{$training->id}}" >{{$training->name}}</option>
+                <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : ''))) >{{$training->name}}</option>
             @endforeach
         </select>
-        @error('training_id[]')
+        @error('training_id')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>

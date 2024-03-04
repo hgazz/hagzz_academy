@@ -16,6 +16,9 @@ class TClass extends Model
         'date',
         'academy_id',
         'sport_id',
+        'start_time',
+        'end_time',
+        'training_id',
     ];
     public $translatable = ['title','subtitle'];
 
@@ -32,9 +35,9 @@ class TClass extends Model
         ]
     ];
 
-    public function trainings()
+    public function training()
     {
-        return $this->belongsToMany(Training::class ,'training_classes','class_id','training_id');
+        return $this->belongsTo(Training::class,'training_id');
     }
     public static function getTranslatableFields()
     {

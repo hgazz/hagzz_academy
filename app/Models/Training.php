@@ -50,7 +50,7 @@ class Training extends Model
 
     public function classes()
     {
-        return $this->belongsToMany(TClass::class ,'training_classes','training_id','class_id');
+        return $this->hasMany(TClass::class ,'training_id');
     }
 
     public function getImageAttribute($value)

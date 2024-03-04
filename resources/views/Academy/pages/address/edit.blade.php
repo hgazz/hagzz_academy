@@ -137,7 +137,7 @@
                             return response.json();
                         }
                         return response.json();
-                    } )
+                    })
                     .then(data =>{
                         areaSelect.innerHTML = '<option value="" disabled selected>Select Area</option>';
 
