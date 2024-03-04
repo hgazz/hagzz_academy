@@ -96,6 +96,7 @@ Route::group(
             Route::get('training/edit/{training}','edit')->name('training.edit');
             Route::put('training/update/{training}','update')->name('training.update');
             Route::delete('training/delete','delete')->name('training.delete');
+            Route::put('active/{training}','updateActive')->name('training.updateActive');
         });
     });
 });

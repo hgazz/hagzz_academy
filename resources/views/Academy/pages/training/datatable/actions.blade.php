@@ -10,6 +10,15 @@
             </svg>
         </a>
 
+        <form action="{{route('academy.training.updateActive',$training)}}" method="post" class="mx-3">
+            @csrf @method('PUT')
+            @if($training->active)
+                <button class="btn text-danger">{{trans('admin.training.InActive')}}</button>
+                @else
+                <button class="btn text-success">{{trans('admin.training.Active')}}</button>
+            @endif
+        </form>
+
         <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
         <a href="javascript:void(0)" data-href="{{ route('academy.training.delete', $training) }}"  data-id="{{ $training->id }}" data-name="Training" type="submit"
            class="show_confirm_two text-danger" style="border: none;">
