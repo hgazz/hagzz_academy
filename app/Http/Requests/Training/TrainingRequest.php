@@ -29,7 +29,12 @@ class TrainingRequest extends FormRequest
             'end_date'=>'required|date|after_or_equal:'. now()->toDateString(),
             'coach_id'=>'required|integer|exists:coaches,id',
             'image'=> $this->validateImage(),
-            'price'=> 'required|integer'
+            'price'=> 'required|integer',
+            'gender' => 'required|in:All,Men,Women',
+            'level' => 'required|in:Beginner,Intermediate,Advanced',
+            'age_group' => 'required|in:All,Kids,Juniors,Adults',
+            'address_id' => 'required|exists:addresses,id',
+            'max_players' => 'required|integer',
         ];
 
         return TranslatableService::validateTranslatableFields(Training::$translatableColumns) + $rules;
@@ -37,6 +42,6 @@ class TrainingRequest extends FormRequest
 
     private function validateImage()
     {
-        return request()->isMethod('POST') ? 'required|image|mimes:jpg,png,gif,webp,svg,jpeg' : 'nullable|image|mimes:jpg,png,gif,webp,svg,jpeg';
+        return request()->isMethod('POST') ? 'required|image|mimes:png,webp,svg' : 'nullable|image|mimes:png,,webp,svg';
     }
 }

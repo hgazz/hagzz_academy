@@ -48,17 +48,9 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label for="start_time">{{ trans('admin.training.start_time') }}</label>
-        <input class="form-control" type="time" value="{{(isset($training) ? $training->start_time : old('start_time'))}}" id="start_time" name="start_time">
-        @error('start_time')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-
-    <div class="col-md-6 mb-3">
-        <label for="end_time">{{ trans('admin.training.end_time') }}</label>
-        <input class="form-control" type="time" value="{{(isset($training) ? $training->end_time : old('end_time'))}}" id="end_time" name="end_time">
-        @error('end_time')
+        <label for="max_players">{{ trans('admin.training.max_players') }}</label>
+        <input class="form-control" type="number" value="{{(isset($training) ? $training->max_players : old('max_players'))}}" id="max_players" name="max_players">
+        @error('max_players')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
@@ -75,11 +67,63 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-
+    <div class="col-md-6 mb-3">
+        <label for="address_id"><span class="text-danger">*</span> {{trans('admin.training.address')}} </label>
+        <select id="address_id" class="form-select" name="address_id">
+            <option> {{trans('admin.training.select_address')}} </option>
+            @foreach($addresses as $address)
+                <option  @selected(old('address_id', isset($training) ?  $training->address_id : '') == $address->id) value="{{$address->id}}">{{$address->address}}</option>
+            @endforeach
+        </select>
+        @error('address_id')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
     <div class="col-md-6 mb-3">
         <label for="price">{{ trans('admin.training.price') }}</label>
         <input class="form-control" type="number" value="{{(isset($training) ? $training->price : old('price'))}}" id="price" name="price">
         @error('price')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label for="level"><span class="text-danger">*</span> {{trans('admin.training.levels')}} </label>
+        <select id="level" class="form-select" name="level">
+            <option> {{trans('admin.training.select_level')}} </option>
+            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Beginner') value="Beginner">{{trans('admin.training.beginner')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Intermediate') value="Intermediate">{{trans('admin.training.intermediate')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Advanced') value="Advanced">{{trans('admin.training.advanced')}}</option>
+
+        </select>
+        @error('level')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="gender"><span class="text-danger">*</span> {{trans('admin.training.gender')}} </label>
+        <select id="gender" class="form-select" name="gender">
+            <option> {{trans('admin.training.select_gender')}} </option>
+            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Men') value="Men">{{trans('admin.training.men')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Women') value="Women">{{trans('admin.training.women')}}</option>
+
+        </select>
+        @error('gender')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="age_group"><span class="text-danger">*</span> {{trans('admin.training.age_group')}} </label>
+        <select id="age_group" class="form-select" name="age_group">
+            <option> {{trans('admin.training.select_gender')}} </option>
+            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Kids') value="Kids">{{trans('admin.training.kids')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Juniors') value="Juniors">{{trans('admin.training.juniors')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Adults') value="Adults">{{trans('admin.training.adults')}}</option>
+
+        </select>
+        @error('age_group')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>

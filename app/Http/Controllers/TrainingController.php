@@ -6,6 +6,7 @@ use App\DataTables\TrainingDataTable;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
+use App\Models\Address;
 use App\Models\Training;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
@@ -14,10 +15,11 @@ use Illuminate\Support\Facades\DB;
 class TrainingController extends Controller
 {
     use CoacheTrait ,FileUpload;
-   private $trainingModel;
-   public function __construct(Training $training)
+   private $trainingModel, $addressModel;
+   public function __construct(Training $training, Address $address)
    {
        $this->trainingModel = $training;
+       $this->addressModel = $address;
    }
 
    public function index(TrainingDataTable $dataTable)
@@ -27,7 +29,8 @@ class TrainingController extends Controller
    public function create()
    {
        $coaches = $this->getCoaches();
-        return view('Academy.pages.training.create',compact('coaches'));
+       $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
+        return view('Academy.pages.training.create',compact('coaches', 'addresses'));
    }
    public function store(TrainingRequest $request)
    {
@@ -42,6 +45,11 @@ class TrainingController extends Controller
                'end_time' => $request->end_time,
                'coach_id'=> $request->coach_id,
                'price'=> $request->price,
+               'max_players'=> $request->max_players,
+               'level'=> $request->level,
+               'gender' => $request->gender,
+               'age_group' => $request->age_group,
+               'address_id' => $request->address_id,
                'academy_id' => auth()->id()
 
            ]));
@@ -53,7 +61,8 @@ class TrainingController extends Controller
     public function edit(Training $training)
     {
         $coaches = $this->getCoaches();
-        return view('Academy.pages.training.edit',compact('coaches','training'));
+        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
+        return view('Academy.pages.training.edit',compact('coaches','training', 'addresses'));
     }
 
     public function update(Training $training , TrainingRequest $request)
@@ -68,7 +77,12 @@ class TrainingController extends Controller
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'coach_id' => $request->coach_id,
-                'price' => $request->price
+                'price' => $request->price,
+                'max_players'=> $request->max_players,
+                'level'=> $request->level,
+                'gender' => $request->gender,
+                'age_group' => $request->age_group,
+                'address_id' => $request->address_id,
              ]));
         });
         session()->flash('success',trans('admin.training.updated_successfully'));
