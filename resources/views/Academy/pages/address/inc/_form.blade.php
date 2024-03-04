@@ -5,7 +5,7 @@
             <div class="col-md-6 mb-3">
                 <label for="{{$name}}" class="form-label">{{$name}}</label>
                 <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
-                       value="@if ($name == 'address_en') {{old($name, $address?->getTranslation('address','en')  ?? '')}} @else {{old($name, $address?->getTranslation('address','ar')  ?? '')}} @endif"
+                       value="@if ($name == 'address_en') {{old($name, isset($address) ? $address->getTranslation('address','en')  : '')}} @else {{old($name, isset($address) ? $address->getTranslation('address','ar')  : '')}} @endif"
                        placeholder="Enter {{$name}}" data-parsley-required-message="Please enter {{$name}}">
                 @error($name)
                 <span class="text-danger">*{{$message}}</span>
