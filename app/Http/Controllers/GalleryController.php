@@ -33,7 +33,7 @@ class GalleryController extends Controller
         $image = $this->upload($request->file('image'), $this->galleryModel::PATH);
         $this->galleryModel->create([
             'image' => $image,
-            'academic' => auth()->id()
+            'academy_id' => auth()->id()
         ]);
         session()->flash('success', trans('admin.gallery.created_successfully'));
         return to_route('academy.gallery.index');
