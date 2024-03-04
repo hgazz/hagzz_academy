@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.0",
         "mcamara/laravel-localization": "^1.8",
+        "nesbot/carbon": "^2.72",
         "php-flasher/flasher-pnotify-laravel": "^1.15",
         "spatie/laravel-translatable": "^6.5",
         "yajra/laravel-datatables": "^10.0",
