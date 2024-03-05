@@ -204,8 +204,8 @@ return [
         'kids' => 'Kids',
         'juniors' => 'Juniors',
         'adults' => 'Adults',
-        'status_inactive_successfully'=>'status_inactive_successfully',
-        'status_active_successfully'=>'status_active_successfully',
+        'status_inactive_successfully'=>'Status Inactive Successfully',
+        'status_active_successfully'=>'Status Active Successfully',
         'InActive'=>'InActive',
         'Active'=>'Active'
     ]
