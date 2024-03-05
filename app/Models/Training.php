@@ -25,6 +25,7 @@ class Training extends Model
         'address_id',
         'coach_id',
         'academy_id',
+        'active',
     ];
 
     public $translatable = ['name','description'];

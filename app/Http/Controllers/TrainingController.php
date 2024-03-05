@@ -90,6 +90,23 @@ class TrainingController extends Controller
 
     }
 
+    public function updateActive(Training $training)
+    {
+        if ($training->active){
+            $newStatus = 0;
+            $successMessage = trans('admin.training.status_inactive_successfully');
+        } else {
+            $newStatus = 1;
+            $successMessage = trans('admin.training.status_active_successfully');
+        }
+
+        $training->update([
+            'active' => $newStatus,
+        ]);
+
+        session()->flash('success', $successMessage);
+        return redirect()->route('academy.training.index');
+    }
     public function delete(Request $request)
     {
        $training = $this->trainingModel->findOrFail($request->id);
