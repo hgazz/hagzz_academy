@@ -158,6 +158,7 @@ return [
         'sport' => 'Sport',
         'start_time' => 'Start Time',
         'end_time' => 'End Time',
+        'training' => 'Training',
     ],
     'gallery'=>[
         'gallery'=>'Gallery',
