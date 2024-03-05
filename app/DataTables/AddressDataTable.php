@@ -33,10 +33,15 @@ class AddressDataTable extends DataTable
                 return $address->area->name;
             })
             ->addColumn('academy_id', function (Address $address) {
-                return $address->academy->name;
+                return $address->academy->commercial_name;
             })
             ->addColumn('action', function (Address $address) {
                 return view('Academy.pages.address._action', compact('address'))->render();
+            })
+            ->filterColumn('academy.commercial_name', function ($query, $keyword) {
+                $query->whereHas('city',function ($q) use($keyword){
+                    $q->whereRaw("JSON_SEARCH(lower(commercial_name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
+                });
             })
             ->filterColumn('city.name', function ($query, $keyword) {
                 $query->whereHas('city',function ($q) use($keyword){
@@ -64,11 +69,20 @@ class AddressDataTable extends DataTable
         $query = $model->newQuery()
             ->with(['country', 'city', 'area', 'academy'])
             ->whereBelongsTo(auth('academy')->user(),'academy');
+
         $country = request()->input('country.name');
         if ($country) {
             $query->whereHas('city', function ($q) use ($country) {
                 // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
                 $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$country}%"]);
+            });
+        }
+
+        $academy = request()->input('academy.commercial_name');
+        if ($academy) {
+            $query->whereHas('academy', function ($q) use ($academy) {
+                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+                $q->whereRaw("JSON_SEARCH(lower(commercial_name), 'one', lower(?)) IS NOT NULL", ["%{$academy}%"]);
             });
         }
 
@@ -126,7 +140,7 @@ class AddressDataTable extends DataTable
             ['name' => 'country.name', 'data' => 'country_id', 'title' => trans('admin.address.country')],
             ['name' => 'city.name', 'data' => 'city_id', 'title' => trans('admin.address.city')],
             ['name' => 'area.name', 'data' => 'area_id', 'title' => trans('admin.address.area')],
-            ['name' => 'academy.name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],
+            ['name' => 'academy.commercial_name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],
             ['name' => 'longitude', 'data' => 'longitude', 'title' => trans('admin.address.longitude')],
             ['name' => 'latitude', 'data' => 'latitude', 'title' => trans('admin.address.latitude')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
