@@ -4,7 +4,7 @@
         <ul class="navbar-item theme-brand flex-row  text-center">
             <li class="nav-item theme-logo">
                 <a href="{{ route('academy.index') }}">
-                    <img src="{{ asset('assetsAdmin/logo/46_21.png') }}"  alt="Bokit">
+                    <img src="{{ asset('assetsAdmin/logo/40_40.png') }}"  alt="Bokit">
                 </a>
             </li>
             <li class="nav-item theme-text">
