@@ -32,14 +32,14 @@ class AddressDataTable extends DataTable
             ->addColumn('area_id', function (Address $address) {
                 return $address->area->name;
             })
-            ->addColumn('academy.commercial_name', function (Address $address) {
+            ->editColumn('academy_id', function (Address $address) {
                 return $address->academy->commercial_name;
             })
             ->addColumn('action', function (Address $address) {
                 return view('Academy.pages.address._action', compact('address'))->render();
             })
             ->filterColumn('academy.commercial_name', function ($query, $keyword) {
-                $query->whereHas('city',function ($q) use($keyword){
+                $query->whereHas('academy',function ($q) use($keyword){
                     $q->whereRaw("JSON_SEARCH(lower(commercial_name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
@@ -58,7 +58,7 @@ class AddressDataTable extends DataTable
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action', 'country_id','city_id','area_id','academy.commercial_name']);
+            ->rawColumns(['action', 'country_id','city_id','area_id','academy_id']);
     }
 
     /**
@@ -67,7 +67,7 @@ class AddressDataTable extends DataTable
     public function query(Address $model): QueryBuilder
     {
         $query = $model->newQuery()
-            ->with(['country', 'city', 'area', 'academy'])
+            ->with(['country', 'city', 'area', 'academy:id,commercial_name'])
             ->whereBelongsTo(auth('academy')->user(),'academy');
 
         $country = request()->input('country.name');
@@ -140,7 +140,7 @@ class AddressDataTable extends DataTable
             ['name' => 'country.name', 'data' => 'country_id', 'title' => trans('admin.address.country')],
             ['name' => 'city.name', 'data' => 'city_id', 'title' => trans('admin.address.city')],
             ['name' => 'area.name', 'data' => 'area_id', 'title' => trans('admin.address.area')],
-            ['name' => 'academy.commercial_name', 'data' => 'academy.commercial_name', 'title' => trans('admin.address.academy')],
+            ['name' => 'academy.commercial_name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],
             ['name' => 'longitude', 'data' => 'longitude', 'title' => trans('admin.address.longitude')],
             ['name' => 'latitude', 'data' => 'latitude', 'title' => trans('admin.address.latitude')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],

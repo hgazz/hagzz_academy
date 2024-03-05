@@ -11,7 +11,7 @@ class Academies extends Authenticatable
 {
     use HasFactory, HasTranslations;
 
-    public $translatable = ['commercial_name'];
+    public array $translatable = ['commercial_name'];
     const PATH ='images/academies';
     protected $fillable = [
         'email',

@@ -9,7 +9,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Address extends Model
 {
-    use HasFactory,HasTranslations;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'academy_id',
