@@ -90,6 +90,8 @@ class TClassDataTable extends DataTable
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],
             ['name' => 'subtitle', 'data' => 'subtitle', 'title' => trans('admin.clasess.subtitle')],
             ['name' => 'date', 'data' => 'date', 'title' => trans('admin.clasess.date')],
+            ['name' => 'start_time', 'data' => 'start_time', 'title' => trans('admin.clasess.start_time')],
+            ['name' => 'end_time', 'data' => 'end_time', 'title' => trans('admin.clasess.end_time')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }

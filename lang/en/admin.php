@@ -155,7 +155,9 @@ return [
         'updated_successfully'=>'Class Updated successfully',
         'deleted_successfully'=>'Class Deleted successfully',
         'select_sport' => 'Select Sport',
-        'sport' => 'Sport'
+        'sport' => 'Sport',
+        'start_time' => 'Start Time',
+        'end_time' => 'End Time',
     ],
     'gallery'=>[
         'gallery'=>'Gallery',
