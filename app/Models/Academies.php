@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Translatable\HasTranslations;
 
 class Academies extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
+    public $translatable = ['commercial_name'];
     const PATH ='images/academies';
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'full_name_arabic',
         'email',
         'phone',
         'password',
@@ -45,12 +44,8 @@ class Academies extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function getFullNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
-    }
 
-    public function getImageAttribute($value)
+    public function getLogoAttribute($value)
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
