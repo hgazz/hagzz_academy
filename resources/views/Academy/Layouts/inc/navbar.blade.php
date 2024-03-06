@@ -4,7 +4,7 @@
         <ul class="navbar-item theme-brand flex-row  text-center">
             <li class="nav-item theme-logo">
                 <a href="{{ route('academy.index') }}">
-                    <img src="{{ asset('assetsAdmin/logo/40_40.png') }}"  alt="Bokit">
+                    <img src="{{ asset('assetsAdmin/logo/40_40.svg') }}"  alt="Bokit">
                 </a>
             </li>
             <li class="nav-item theme-text">
@@ -166,7 +166,7 @@
                 <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar-container">
                         <div class="avatar avatar-sm avatar-indicators avatar-online">
-                            <img alt="avatar" src="{{ asset('assetsAdmin/logo/40_20.png') }}" width="40px" height="40px" class="rounded-circle">
+                            <img alt="avatar" src="{{ asset('assetsAdmin/logo/40_40.svg') }}" width="40px" height="40px" class="rounded-circle">
                         </div>
                     </div>
                 </a>

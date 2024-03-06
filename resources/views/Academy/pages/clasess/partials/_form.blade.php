@@ -62,7 +62,26 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label for="out_comes">{{ trans('admin.clasess.out_comes') }}</label>
+        <textarea class="form-control" type="out_comes"  id="out_comes" name="out_comes">
+            {!! (isset($class) ? $class->out_comes : old('out_comes'))!!}
+        </textarea>
+        @error('out_comes')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
+        <textarea class="form-control" type="bring_with_me"  id="bring_with_me" name="bring_with_me">
+            {!! (isset($class) ? $class->bring_with_me : old('bring_with_me'))!!}
+        </textarea>
+        @error('bring_with_me')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
 </div>
 
 

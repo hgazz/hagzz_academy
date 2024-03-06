@@ -159,6 +159,8 @@ return [
         'start_time' => 'Start Time',
         'end_time' => 'End Time',
         'training' => 'Training',
+        'out_comes' => 'Outcomes',
+        'bring_with_me' => 'Bring With Me',
     ],
     'gallery'=>[
         'gallery'=>'Gallery',
