@@ -36,7 +36,7 @@
 
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-                <form method="POST" action="{{ route('academy.coach.update', $coach) }}">
+                <form method="POST" action="{{ route('academy.coach.update', $coach) }}" enctype="multipart/form-data">
                     @method('PUT')
                     <div class="card">
                         <div class="card-header">
