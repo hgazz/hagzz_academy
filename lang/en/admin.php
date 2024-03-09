@@ -110,7 +110,8 @@ return [
         'academy'=>'Academy',
         'created_successfully'=>'Coach created successfully',
         'updated_successfully'=>'Coach updated successfully',
-        'deleted_successfully'=>'Coach deleted successfully',
+        'deleted_successfully'=>'Coach deleted successfully',,
+        'license'=> 'license',
     ],
     'profile'=>[
         'profile'=>'profile',

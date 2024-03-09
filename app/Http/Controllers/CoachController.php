@@ -33,7 +33,8 @@ class CoachController extends Controller
         $this->coachModel->create(array_merge($request->validated() , [
             'image'=>$imageName,
             'active'=> $request->has('active') ? 1 : 0,
-            'academy_id'=> auth()->id()
+            'academy_id'=> auth()->id(),
+            'license' => $request->license
         ]));
         session()->flash('success',trans('admin.coaches.created_successfully'));
         return to_route('academy.coach');
@@ -50,7 +51,8 @@ class CoachController extends Controller
         $coach->update(array_merge($request->validated(),[
             'image'=> $imageName,
             'active'=> $request->has('active') ? 1 : 0,
-            'academy_id'=> auth()->id()
+            'academy_id'=> auth()->id(),
+            'license' => $request->license
         ]));
         session()->flash('success',trans('admin.coaches.updated_successfully'));
         return to_route('academy.coach');

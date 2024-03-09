@@ -26,6 +26,7 @@ class CoachRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'image' => $this->checkImage(),
+            'license' => 'required|string',
         ];
     }
 

@@ -15,6 +15,13 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
+        <label for="license">{{ trans('admin.coaches.license') }}</label>
+        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->license : old('license'))}}" id="license" name="license">
+        @error('license')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
         <label for="image">{{ trans('admin.coaches.image') }}</label>
         <input class="form-control" type="file"  id="image" name="image">
         @error('image')

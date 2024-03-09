@@ -16,6 +16,7 @@ class Coach extends Model
         'image',
         'active',
         'academy_id',
+        'license'
     ];
 
     public function academy()
