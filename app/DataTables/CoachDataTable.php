@@ -25,13 +25,10 @@ class CoachDataTable extends DataTable
             ->addColumn('image', function (Coach $coach) {
                 return '<img src="' . $coach->image . '" width="100" height="100">';
             })
-            ->editColumn('academy_id', function (Coach $coach) {
-                return $coach->academy->first_name . ' ' . $coach->academy->last_name;
-            })
             ->addColumn('action', function (Coach $coach) {
                 return view('Academy.pages.coaches.datatable.actions', compact('coach'))->render();
             })
-            ->rawColumns(['image', 'academy_id', 'action']);
+            ->rawColumns(['image', 'action']);
     }
 
     /**
@@ -76,7 +73,6 @@ class CoachDataTable extends DataTable
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.coaches.name')],
             ['name' => 'description', 'data' => 'description', 'title' => trans('admin.coaches.description')],
             ['name' => 'image', 'data' => 'image', 'title' => trans('admin.coaches.image')],
-            ['name' => 'academy_id', 'data' => 'academy_id', 'title' => trans('admin.coaches.academy')],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
