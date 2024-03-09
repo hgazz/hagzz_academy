@@ -15,13 +15,12 @@ class TClass extends Model
         'title',
         'subtitle',
         'date',
-        'academy_id',
-        'sport_id',
         'start_time',
         'end_time',
         'training_id',
         'out_comes',
         'bring_with_me',
+        'sport_id'
     ];
     public $translatable = ['title','subtitle'];
 

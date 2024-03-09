@@ -20,7 +20,7 @@ class TrainingRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -35,6 +35,7 @@ class TrainingRequest extends FormRequest
             'age_group' => 'required|in:All,Kids,Juniors,Adults',
             'address_id' => 'required|exists:addresses,id',
             'max_players' => 'required|integer',
+            'sport_id' => 'required|exists:sports,id',
         ];
 
         return TranslatableService::validateTranslatableFields(Training::$translatableColumns) + $rules;

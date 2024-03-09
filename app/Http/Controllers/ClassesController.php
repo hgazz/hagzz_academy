@@ -40,8 +40,6 @@ class ClassesController extends Controller
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
              $this->classModel->create(array_merge($translatable , [
                 'date'=> $request->date,
-                'academy_id' => auth()->id(),
-                'sport_id' => $request->sport_id,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
@@ -70,8 +68,6 @@ class ClassesController extends Controller
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
             $class->update(array_merge($translatable ,[
                 'date'=> $request->date,
-                'academy_id' => auth()->id(),
-                'sport_id' => $request->sport_id,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,

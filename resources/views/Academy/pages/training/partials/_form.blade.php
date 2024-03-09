@@ -68,6 +68,18 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
+        <label for="sport_id">{{ trans('admin.clasess.sport') }}</label>
+        <select class="form-select" name="sport_id" id="sport_id">
+            <option value="">{{ trans('admin.clasess.select_sport') }}</option>
+            @foreach($sports as $sport)
+                <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')))>{{$sport->name}}</option>
+            @endforeach
+        </select>
+        @error('academy_id')
+        <span class="text-danger" >{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
         <label for="address_id"><span class="text-danger">*</span> {{trans('admin.training.address')}} </label>
         <select id="address_id" class="form-select" name="address_id">
             <option> {{trans('admin.training.select_address')}} </option>

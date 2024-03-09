@@ -22,4 +22,9 @@ class Sport extends Model
     {
         return  config('services.s3.url'). DIRECTORY_SEPARATOR . self::PATH . $value;
     }
+
+    public function academies()
+    {
+        return $this->belongsToMany(Academies::class,'academy_sport','sport_id','academy_id')->withPivot('sport_id');
+    }
 }

@@ -23,16 +23,10 @@ class TClassDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->editColumn('training_id', fn($raw) => $raw->training->name)
-            ->editColumn('sport_id', fn($raw) => $raw->sport->name)
             ->editColumn('title', fn($raw) => $raw->title)
             ->editColumn('subtitle', fn($raw) => $raw->subtitle)
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
-            })
-            ->filterColumn('sport.name', function ($query, $keyword) {
-                $query->whereHas('sport',function ($q) use($keyword){
-                    $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
-                });
             })
             ->filterColumn('training.name', function ($query, $keyword) {
                 $query->whereHas('training',function ($q) use($keyword){
@@ -47,16 +41,10 @@ class TClassDataTable extends DataTable
      */
     public function query(TClass $model): QueryBuilder
     {
-       $query = $model->newQuery()->with(['sport','training'])
-           ->whereBelongsTo(auth('academy')->user(),'academy');
-
-        $sport = request()->input('sport.name');
-        if ($sport) {
-            $query->whereHas('sport', function ($q) use ($sport) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
-                $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$sport}%"]);
-            });
-        }
+       $query = $model->newQuery()->with('training')
+           ->whereHas('training.academy', function ($query) {
+               $query->where('academy_id', auth('academy')->id());
+           });
 
         $sport = request()->input('training.name');
         if ($sport) {
@@ -101,7 +89,6 @@ class TClassDataTable extends DataTable
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.clasess.training')],
-            ['name' => 'sport.name', 'data' => 'sport_id', 'title' => trans('admin.clasess.sport')],
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],
             ['name' => 'subtitle', 'data' => 'subtitle', 'title' => trans('admin.clasess.subtitle')],
             ['name' => 'date', 'data' => 'date', 'title' => trans('admin.clasess.date')],

@@ -27,7 +27,6 @@ class ClassRequest extends FormRequest
     {
         $rules = [
             'date' =>['required',new ValidateDate()],
-            'sport_id' =>'required|exists:sports,id',
             'training_id'=>'required|exists:trainings,id',
         ];
         return  TranslatableService::validateTranslatableFields(TClass::$translatableColumns) + $rules;

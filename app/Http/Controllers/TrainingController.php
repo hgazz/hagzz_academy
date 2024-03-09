@@ -7,6 +7,7 @@ use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
 use App\Models\Address;
+use App\Models\Sport;
 use App\Models\Training;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
@@ -28,9 +29,10 @@ class TrainingController extends Controller
    }
    public function create()
    {
+       $sports = auth('academy')->user()->sports;
        $coaches = $this->getCoaches();
        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.create',compact('coaches', 'addresses'));
+        return view('Academy.pages.training.create',compact('coaches', 'addresses', 'sports'));
    }
    public function store(TrainingRequest $request)
    {
@@ -50,7 +52,8 @@ class TrainingController extends Controller
                'gender' => $request->gender,
                'age_group' => $request->age_group,
                'address_id' => $request->address_id,
-               'academy_id' => auth()->id()
+               'academy_id' => auth()->id(),
+               'sport_id' => $request->sport_id,
 
            ]));
        });
@@ -61,8 +64,9 @@ class TrainingController extends Controller
     public function edit(Training $training)
     {
         $coaches = $this->getCoaches();
+        $sports = auth('academy')->user()->sports;
         $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.edit',compact('coaches','training', 'addresses'));
+        return view('Academy.pages.training.edit',compact('coaches', 'sports','training', 'addresses'));
     }
 
     public function update(Training $training , TrainingRequest $request)
@@ -83,6 +87,7 @@ class TrainingController extends Controller
                 'gender' => $request->gender,
                 'age_group' => $request->age_group,
                 'address_id' => $request->address_id,
+                 'sport_id' => $request->sport_id,
              ]));
         });
         session()->flash('success',trans('admin.training.updated_successfully'));
