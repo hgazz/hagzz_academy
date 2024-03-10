@@ -215,7 +215,19 @@ return [
         'status_inactive_successfully'=>'Status Inactive Successfully',
         'status_active_successfully'=>'Status Active Successfully',
         'InActive'=>'InActive',
-        'Active'=>'Active'
+        'Active'=>'Active',
+        'level'=>'level',
+        'max player'=>'max player',
+        'Coach'=>'Coach',
+        'Show Details'=>'Show Details',
+        'All users who joined the user training'=>'All users who joined the user training',
+        'phone'=>'Phone',
+        'order number'=>'Order Number',
+        'amount'=>'Amount',
+        'booking'=>'booking',
+        'Total Balance'=>'Total Balance',
+        'Followers'=>'Followers',
+        ''
     ]
 
 ];

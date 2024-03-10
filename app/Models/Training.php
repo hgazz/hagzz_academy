@@ -47,6 +47,10 @@ class Training extends Model
     {
         return array_keys(self::$translatableColumns);
     }
+    public function joins()
+    {
+        return $this->hasMany(Join::class, 'training_id');
+    }
     public function coach()
     {
         return $this->belongsTo(Coach::class, 'coach_id');
@@ -65,5 +69,9 @@ class Training extends Model
     public function academy()
     {
         return $this->belongsTo(Academies::class, 'academy_id');
+    }
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
     }
 }

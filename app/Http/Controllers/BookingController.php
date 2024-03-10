@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Training;
+
+class BookingController extends Controller
+{
+    public function index()
+    {
+        $trainings = Training::with([
+            'coach'=>function($q){
+                $q->select('id','name');
+            }
+        ])->where('academy_id',auth('academy')->id())->get();
+        return view('Academy.pages.booking.index',compact('trainings'));
+    }
+
+    public function show($id)
+    {
+        $training = Training::with([
+           'joins.user'=>function($q){
+                 $q->select('id','name','phone','gender','image');
+           },
+            'joins.invoice'=>function($q){
+                $q->select('id','order_number','status','amount');
+            }
+       ])->findOrFail($id);
+        return view('Academy.pages.booking.show', compact('training'));
+    }
+}
