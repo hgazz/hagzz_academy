@@ -138,7 +138,7 @@
                                                                     <input type="file" class="form-control"
                                                                            name="logo"/>
                                                                 </div>
-                                                                <img src="{{'https://bokit-app.s3.eu-north-1.amazonaws.com/images/academies/'.$user->logo}}" class="mt-2" width="50" height="50">
+                                                                <img src="{{$user->logo}}" class="mt-2" width="50" height="50">
                                                                 @error('logo')
                                                                 <span class="text-danger">{{$message}}</span>
                                                                 @enderror

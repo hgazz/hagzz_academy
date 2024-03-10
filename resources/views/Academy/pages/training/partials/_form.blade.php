@@ -75,7 +75,7 @@
                 <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')))>{{$sport->name}}</option>
             @endforeach
         </select>
-        @error('academy_id')
+        @error('sport_id')
         <span class="text-danger" >{{$message}}</span>
         @enderror
     </div>
