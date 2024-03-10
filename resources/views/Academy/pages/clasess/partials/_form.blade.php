@@ -53,6 +53,7 @@
 
 </div>
 @if(request()->url() === route('academy.class.create'))
+
 <div class="row">
     <div class="col-md-6 mb-3" id="outcomes-container">
         <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
