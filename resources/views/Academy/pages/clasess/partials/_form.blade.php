@@ -103,7 +103,7 @@
                 @endfor
             </div>
         <div class="col-md-6 mb-3" id="bring-with-me-container">
-            @for($i = 0; $i < count($class->brings_with_me); $i++)
+            @for($i = 0; $i < count($class->bring_with_me); $i++)
                 <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
                 <!-- Initial input field -->
                 <div class="input-group mb-2">
