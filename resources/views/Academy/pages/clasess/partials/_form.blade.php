@@ -91,43 +91,41 @@
 
             <div class="col-md-6 mb-3" id="outcomes-container">
                 @php
-                    $outcomes = json_decode($class->out_comes, true);
-                    $numberOfOutcomes = is_array($outcomes) ? count($outcomes) : 0;
+                    $numberOfOutcomes = count($class->out_comes);
                 @endphp
                 @for($i = 0; $i < $numberOfOutcomes; $i++)
                     <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
                     <!-- Initial input field -->
                     <div class="input-group mb-2">
-                        <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $outcomes[$i] }}" id="outcomes">
+                        <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $class->out_comes[$i] }}" id="outcomes">
                         <div class="input-group-append">
                             <button class="btn btn-danger remove-outcome" type="button">-</button>
                         </div>
                     </div>
-                    <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
                     @error('outcomes.*')
                     <span class="text-danger">*{{$message}}</span>
                     @enderror
                 @endfor
+                <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
             </div>
             <div class="col-md-6 mb-3" id="bring-with-me-container">
                 @php
-                    $bring_with_me = json_decode($class->bring_with_me, true);
-                    $numberBringsWithMe = is_array($bring_with_me) ? count($bring_with_me) : 0;
+                    $numberBringsWithMe = count($class->bring_with_me);
                 @endphp
                 @for($i = 0; $i < $numberBringsWithMe; $i++)
                     <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
                     <!-- Initial input field -->
                     <div class="input-group mb-2">
-                        <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="{{ $bring_with_me[$i] }}" id="bring_with_me">
+                        <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="{{ $class->bring_with_me[$i] }}" id="bring_with_me">
                         <div class="input-group-append">
                             <button class="btn btn-danger remove-bring-with-me" type="button">-</button>
                         </div>
                     </div>
-                    <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
                     @error('bring_with_me.*')
                     <span class="text-danger">*{{$message}}</span>
                     @enderror
                 @endfor
+                <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
             </div>
         </div>
     @endisset

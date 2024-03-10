@@ -88,7 +88,8 @@ class ClassesController extends Controller
     public function delete(Request $request)
     {
         try {
-             $this->classModel->findOrFail($request->id);
+             $class = $this->classModel->findOrFail($request->id);
+             $class->delete();
             return response()->json(['data' => [
                 'status' => 'success',
                 'model'   => trans('admin.clasess.clasess'),
