@@ -1,14 +1,6 @@
 @extends('Academy.Layouts.master')
 
 @section('title', trans('admin.training.training'))
-
-@push('css')
-
-@endpush
-
-
-
-
 @section('content')
     <div class="middle-content container-xxl p-0">
 

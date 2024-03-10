@@ -8,11 +8,9 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $trainings = Training::with([
-            'coach'=>function($q){
-                $q->select('id','name');
-            }
-        ])->where('academy_id',auth('academy')->id())->get();
+        $trainings = Training::with(['coach:id,name'])
+            ->whereBelongsTo(auth('academy')->user(), 'academy')
+            ->get();
         return view('Academy.pages.booking.index',compact('trainings'));
     }
 
