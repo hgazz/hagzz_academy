@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\DashboardController;
@@ -97,6 +98,10 @@ Route::group(
             Route::put('training/update/{training}','update')->name('training.update');
             Route::delete('training/delete','delete')->name('training.delete');
             Route::put('active/{training}','updateActive')->name('training.updateActive');
+        });
+        Route::controller(BookingController::class)->group(function (){
+            Route::get('booking','index')->name('booking.index');
+            Route::get('booking/show/{id}','show')->name('booking.show');
         });
     });
 });
