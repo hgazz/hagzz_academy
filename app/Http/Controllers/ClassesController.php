@@ -38,19 +38,22 @@ class ClassesController extends Controller
 
         try {
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
+            $outcomesJson = json_encode($request->input('outcomes'));
+            $bringWithMeJson = json_encode($request->input('bring_with_me'));
              $this->classModel->create(array_merge($translatable , [
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'out_comes' => $request->out_comes,
-                'bring_with_me' => $request->bring_with_me,
+                'out_comes' => $outcomesJson,
+                'bring_with_me' => $bringWithMeJson,
             ]));
             session()->flash('success',trans('admin.clasess.created_successfully'));
             return redirect(route('academy.class.index'));
         }catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
-            return back();
+//            session()->flash('error', $e->getMessage());
+//            return back();
+            return $e->getMessage();
         }
 
     }
@@ -66,13 +69,15 @@ class ClassesController extends Controller
     {
         try {
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
+            $outcomesJson = json_encode($request->input('outcomes'));
+            $bringWithMeJson = json_encode($request->input('bring_with_me'));
             $class->update(array_merge($translatable ,[
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'out_comes' => $request->out_comes,
-                'bring_with_me' => $request->bring_with_me,
+                'out_comes' => $outcomesJson,
+                'bring_with_me' => $bringWithMeJson,
             ]));
 
             session()->flash('success',trans('admin.clasess.updated_successfully'));
@@ -80,6 +85,7 @@ class ClassesController extends Controller
         }catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
             return back();
+
         }
 
     }

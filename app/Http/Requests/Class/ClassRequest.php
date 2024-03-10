@@ -28,8 +28,8 @@ class ClassRequest extends FormRequest
         $rules = [
             'date' =>['required',new ValidateDate()],
             'training_id'=>'required|exists:trainings,id',
-            'out_comes' => 'required|string',
-            'bring_with_me' => 'required|string',
+            'outcomes.*' => 'nullable|string',
+            'bring_with_me.*' => 'nullable|string',
         ];
         return  TranslatableService::validateTranslatableFields(TClass::$translatableColumns) + $rules;
     }

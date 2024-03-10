@@ -72,7 +72,7 @@
         <select class="form-select" name="sport_id" id="sport_id">
             <option value="">{{ trans('admin.clasess.select_sport') }}</option>
             @foreach($sports as $sport)
-                <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')))>{{$sport->name}}</option>
+                <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')) == $port->id)>{{$sport->name}}</option>
             @endforeach
         </select>
         @error('sport_id')

@@ -18,7 +18,7 @@ class ValidateDate implements ValidationRule
         $training =  Training::where('id',request('training_id'))->first();
 
         if (is_null($training)){
-            $fail('The :Training Failed is Required');
+            $fail('The :You Must Select Training First');
         }else{
             $startDate = Carbon::parse($training->start_date);
             $endDate = Carbon::parse($training->end_date);
