@@ -53,6 +53,7 @@
 
 </div>
 @if(request()->url() === route('academy.class.create'))
+
 <div class="row">
     <div class="col-md-6 mb-3" id="outcomes-container">
         <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
@@ -97,7 +98,7 @@
                     <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
                     <!-- Initial input field -->
                     <div class="input-group mb-2">
-                        <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $numberOfOutcomes[$i] }}" id="outcomes">
+                        <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $outcomes[$i] }}" id="outcomes">
                         <div class="input-group-append">
                             <button class="btn btn-danger remove-outcome" type="button">-</button>
                         </div>

@@ -38,22 +38,19 @@ class ClassesController extends Controller
 
         try {
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
-            $outcomesJson = json_encode($request->input('outcomes'));
-            $bringWithMeJson = json_encode($request->input('bring_with_me'));
              $this->classModel->create(array_merge($translatable , [
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'out_comes' => $outcomesJson,
-                'bring_with_me' => $bringWithMeJson,
+                'out_comes' => $request->input('outcomes'),
+                'bring_with_me' => $request->input('bring_with_me'),
             ]));
             session()->flash('success',trans('admin.clasess.created_successfully'));
             return redirect(route('academy.class.index'));
         }catch (\Exception $e) {
-//            session()->flash('error', $e->getMessage());
-//            return back();
-            return $e->getMessage();
+            session()->flash('error', $e->getMessage());
+            return back();
         }
 
     }
@@ -69,15 +66,13 @@ class ClassesController extends Controller
     {
         try {
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
-            $outcomesJson = json_encode($request->input('outcomes'));
-            $bringWithMeJson = json_encode($request->input('bring_with_me'));
             $class->update(array_merge($translatable ,[
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'out_comes' => $outcomesJson,
-                'bring_with_me' => $bringWithMeJson,
+                'out_comes' => $request->input('outcomes'),
+                'bring_with_me' => $request->input('bring_with_me'),
             ]));
 
             session()->flash('success',trans('admin.clasess.updated_successfully'));

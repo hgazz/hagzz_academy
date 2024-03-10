@@ -38,7 +38,7 @@ class TClass extends Model
     ];
 
     protected $casts = [
-        'outcomes' => 'array',
+        'out_comes' => 'array',
         'bring_with_me' => 'array',
     ];
     public function training()
@@ -60,16 +60,16 @@ class TClass extends Model
         return $this->belongsTo(Sport::class, 'sport_id', 'id');
     }
 
-    public function getOutComesAttribute($value)
-    {
-        return json_decode($value, true);
-
-    }
-
-    public function getBringWithYouAttribute($value)
-    {
-        return json_decode($value, true);
-
-    }
+//    public function getOutComesAttribute($value)
+//    {
+//        return json_decode($value, true);
+//
+//    }
+//
+//    public function getBringWithMeAttribute($value)
+//    {
+//        return json_decode($value, true);
+//
+//    }
 
 }
