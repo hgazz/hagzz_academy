@@ -51,9 +51,8 @@ class ClassesController extends Controller
             session()->flash('success',trans('admin.clasess.created_successfully'));
             return redirect(route('academy.class.index'));
         }catch (\Exception $e) {
-//            session()->flash('error', $e->getMessage());
-//            return back();
-            return $e->getMessage();
+            session()->flash('error', $e->getMessage());
+            return back();
         }
 
     }
