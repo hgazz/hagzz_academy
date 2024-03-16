@@ -4,7 +4,7 @@
         @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Training::class) as $name => $data)
             @if(!$data['is_textarea'])
                 <div class="col-md-6 mb-3">
-                    <label for="{{$name}}" class="form-label">{{$name}}</label>
+                    <label for="{{$name}}" class="form-label">{{trans('admin.training.'.$name)}}</label>
                     <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
                            value="@if ($name == 'name_en') {{old($name, isset($training) ? $training->getTranslation('name','en')  : '')}}  @else {{old($name, isset($training) ? $training->getTranslation('name','ar')  : '')}} @endif"
                            placeholder="Enter {{$name}}" data-parsley-required-message="Please enter {{$name}}">
@@ -16,7 +16,7 @@
             <div class="col-md-6 mb-3">
                 <label for="{{$name}}">
                     <span class="text-danger">*</span>
-                    {{$name}}
+                    {{trans('admin.training.'.$name)}}
                 </label>
 
                 <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter {{$name}}">
