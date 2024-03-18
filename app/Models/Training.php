@@ -10,10 +10,8 @@ use Spatie\Translatable\HasTranslations;
 class Training extends Model
 {
     use HasFactory,HasTranslations;
-    const PATH = 'images/trainings';
     protected $fillable = [
         'name',
-        'image',
         'price',
         'start_date',
         'end_date',
@@ -60,11 +58,6 @@ class Training extends Model
     public function classes()
     {
         return $this->hasMany(TClass::class ,'training_id');
-    }
-
-    public function getImageAttribute($value)
-    {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
 
     public function academy()

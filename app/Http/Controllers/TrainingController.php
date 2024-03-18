@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class TrainingController extends Controller
 {
-    use CoacheTrait ,FileUpload;
+    use CoacheTrait;
    private $trainingModel, $addressModel;
    public function __construct(Training $training, Address $address)
    {
@@ -37,10 +37,8 @@ class TrainingController extends Controller
    public function store(TrainingRequest $request)
    {
        DB::transaction(function() use ($request){
-           $imageName = $this->upload($request->file('image') , $this->trainingModel::PATH);
            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
            $this->trainingModel->create(array_merge($translatable,[
-               'image'=> $imageName,
                'start_date'=> $request->start_date,
                'end_date'=> $request->end_date,
                'start_time' => $request->start_time,
@@ -72,10 +70,8 @@ class TrainingController extends Controller
     public function update(Training $training , TrainingRequest $request)
     {
         DB::transaction(function () use ($request, $training) {
-            $imageName = $request->hasFile('image') ? $this->upload($request->file('image') , $this->trainingModel::PATH,  $training->getRawOriginal('image')) : $training->getRawOriginal('image');
             $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
              $training->update(array_merge($translatable, [
-                'image' => $imageName,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'start_time' => $request->start_time,
@@ -116,7 +112,6 @@ class TrainingController extends Controller
     {
        $training = $this->trainingModel->findOrFail($request->id);
        $training->delete();
-       $this->deleteFile($this->trainingModel::PATH . $training->getRawOriginal('image'));
        return response()->json(['data' => [
             'status' => 'success',
             'model'   => trans('admin.training.training'),

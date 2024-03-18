@@ -25,16 +25,6 @@ class TrainingDataTable extends DataTable
             ->editColumn('coach_id', function (Training $training) {
                 return $training->coach->name;
             })
-
-            ->addColumn('image', function (Training $training) {
-                return '<img src="' . $training->image . '" width="100" height="100">';
-            })
-//            ->addColumn('class', function (Training $trainingClass) {
-//                foreach ($trainingClass->classes as $class) {
-//                  return  $class->title;
-//                }
-//
-//            })
             ->addColumn('action', function (Training $training) {
                 return view('Academy.pages.training.datatable.actions', compact('training'))->render();
             })
@@ -85,7 +75,6 @@ class TrainingDataTable extends DataTable
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
             ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
-            ['name' => 'image', 'data' => 'image', 'title' => trans('admin.training.image')],
             ['name' => 'description', 'data' => 'description', 'title' => trans('admin.training.description')],
             ['name' => 'coach.name', 'data' => 'coach_id', 'title' => trans('admin.training.coach')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],

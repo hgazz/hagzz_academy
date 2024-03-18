@@ -140,13 +140,5 @@
         @enderror
     </div>
 
-    <div class="col-md-6 mb-3">
-        <label for="image"><span class="text-danger">*</span> {{trans('admin.training.image')}} </label>
-        <input type="file" class="form-control" id="image" name="image">
-        @error('image')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-
 </div>
 
