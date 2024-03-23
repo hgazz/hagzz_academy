@@ -8,10 +8,12 @@ use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
 use App\Models\Academies;
 use App\Models\Address;
+use App\Models\Join;
 use App\Models\Notification;
 use App\Models\Sport;
 use App\Models\Training;
 use App\Models\User;
+use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -92,13 +94,13 @@ class TrainingController extends Controller
                 ]));
                 //notifications to users
                 if ($training->wasChanged(['start_date', 'end_date'])) {
-                    Notification::create([
-                        'id' => Str::uuid(),
-                        'type' => 'Booking Rescheduled',
-                        'notifiable_type' => Academies::class,
-                        'notifiable_id' => auth('academy')->id(),
-                        'data' => 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates'
-                    ]);
+                    $title = 'Booking Rescheduled';
+                    $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
+                    $joins = Join::where('training_id', $training->id)->get();
+                    $joins->map(function ($join) use ($title, $body) {
+                        NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+                    });
+
                 }
             });
             session()->flash('success',trans('admin.training.updated_successfully'));
