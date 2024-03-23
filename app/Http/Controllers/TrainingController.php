@@ -90,15 +90,16 @@ class TrainingController extends Controller
                     'address_id' => $request->address_id,
                     'sport_id' => $request->sport_id,
                 ]));
-
                 //notifications to users
-                Notification::create([
-                    'id'=>Str::uuid(),
-                    'type'=>'Booking Rescheduled',
-                    'notifiable_type'=> Academies::class,
-                    'notifiable_id'=> auth('academy')->id(),
-                    'data'=>'The Training you booked with '. $training->academy->commercial_name .' is rescheduled, please check the new dates'
-                ]);
+                if ($training->wasChanged(['start_date', 'end_date'])) {
+                    Notification::create([
+                        'id' => Str::uuid(),
+                        'type' => 'Booking Rescheduled',
+                        'notifiable_type' => Academies::class,
+                        'notifiable_id' => auth('academy')->id(),
+                        'data' => 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates'
+                    ]);
+                }
             });
             session()->flash('success',trans('admin.training.updated_successfully'));
             return to_route('academy.training.index');
