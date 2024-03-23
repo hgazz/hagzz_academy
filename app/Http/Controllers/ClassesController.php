@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\DataTables\TClassDataTable;
 use App\Http\Requests\Class\ClassRequest;
+use App\Models\Academies;
+use App\Models\Join;
+use App\Models\Notification;
 use App\Models\Sport;
 use App\Models\TClass;
 use App\Models\Training;
+use App\Models\User;
+use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ClassesController extends Controller
 {
@@ -65,6 +71,7 @@ class ClassesController extends Controller
     public function update(TClass $class , ClassRequest $request)
     {
         try {
+            DB::beginTransaction();
             $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
             $class->update(array_merge($translatable ,[
                 'date'=> $request->date,
@@ -75,6 +82,17 @@ class ClassesController extends Controller
                 'bring_with_me' => $request->input('bring_with_me'),
             ]));
 
+            //notifications to users
+            if ($class->wasChanged('date')) {
+                $title = 'Session Rescheduled';
+                $body = 'The next session at ' . auth('academy')->user()->commercial_name. ' is rescheduled, please check the new dates';
+                $joins = Join::where('training_id', $class->training_id)->get();
+                $joins->map(function ($join) use ($title, $body) {
+                    NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+                });
+            }
+
+            DB::commit();
             session()->flash('success',trans('admin.clasess.updated_successfully'));
             return redirect(route('academy.class.index'));
         }catch (\Exception $e) {

@@ -6,12 +6,18 @@ use App\DataTables\TrainingDataTable;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
+use App\Models\Academies;
 use App\Models\Address;
+use App\Models\Join;
+use App\Models\Notification;
 use App\Models\Sport;
 use App\Models\Training;
+use App\Models\User;
+use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TrainingController extends Controller
 {
@@ -69,25 +75,41 @@ class TrainingController extends Controller
 
     public function update(Training $training , TrainingRequest $request)
     {
-        DB::transaction(function () use ($request, $training) {
-            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
-             $training->update(array_merge($translatable, [
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'coach_id' => $request->coach_id,
-                'price' => $request->price,
-                'max_players'=> $request->max_players,
-                'level'=> $request->level,
-                'gender' => $request->gender,
-                'age_group' => $request->age_group,
-                'address_id' => $request->address_id,
-                 'sport_id' => $request->sport_id,
-             ]));
-        });
-        session()->flash('success',trans('admin.training.updated_successfully'));
-        return to_route('academy.training.index');
+        try {
+            DB::transaction(function () use ($request, $training) {
+                $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
+                $training->update(array_merge($translatable, [
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'start_time' => $request->start_time,
+                    'end_time' => $request->end_time,
+                    'coach_id' => $request->coach_id,
+                    'price' => $request->price,
+                    'max_players'=> $request->max_players,
+                    'level'=> $request->level,
+                    'gender' => $request->gender,
+                    'age_group' => $request->age_group,
+                    'address_id' => $request->address_id,
+                    'sport_id' => $request->sport_id,
+                ]));
+                //notifications to users
+                if ($training->wasChanged(['start_date', 'end_date'])) {
+                    $title = 'Booking Rescheduled';
+                    $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
+                    $joins = Join::where('training_id', $training->id)->get();
+                    $joins->map(function ($join) use ($title, $body) {
+                        NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+                    });
+
+                }
+            });
+            session()->flash('success',trans('admin.training.updated_successfully'));
+            return to_route('academy.training.index');
+        }catch (\Exception $e){
+            return  response($e->getMessage());
+        }
+
+
 
     }
 
