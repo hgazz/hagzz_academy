@@ -8,6 +8,8 @@ use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
 use App\Models\Academies;
 use App\Models\Address;
+use App\Models\Coach;
+use App\Models\Follow;
 use App\Models\Join;
 use App\Models\Notification;
 use App\Models\Sport;
@@ -44,7 +46,7 @@ class TrainingController extends Controller
    {
        DB::transaction(function() use ($request){
            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
-           $this->trainingModel->create(array_merge($translatable,[
+          $training = $this->trainingModel->create(array_merge($translatable,[
                'start_date'=> $request->start_date,
                'end_date'=> $request->end_date,
                'start_time' => $request->start_time,
@@ -58,8 +60,26 @@ class TrainingController extends Controller
                'address_id' => $request->address_id,
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
-
            ]));
+           $AcademyTitle = 'Don’t miss out!';
+           $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
+           $academyFollows = Follow::where([
+               'followable_type' => Academies::class,
+               'followable_id' => auth('academy')->id(),
+           ])->get();
+           $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody) {
+               NotificationService::dbNotification($follow->user_id,Academies::class, $AcademyTitle, $AcademyTitle, $AcademyBody);
+           });
+
+           $coachTitle = 'Don’t miss out!';
+           $coachBody = $training->coach->name . ' is leading a new training.Tap for details';
+           $coachFollows = Follow::where([
+               'followable_type' => Coach::class,
+               'followable_id' => $training->coach_id,
+           ])->get();
+           $coachFollows->map(function ($follow) use ($coachTitle, $coachBody) {
+               NotificationService::dbNotification($follow->user_id,Academies::class, $coachTitle, $coachTitle, $coachBody);
+           });
        });
        session()->flash('success',trans('admin.training.created_successfully'));
        return to_route('academy.training.index');
