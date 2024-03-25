@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Spatie\Translatable\HasTranslations;
 
 class Academies extends Authenticatable
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, Notifiable;
 
     public array $translatable = ['commercial_name'];
     const PATH ='images/academies';

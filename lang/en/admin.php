@@ -235,7 +235,10 @@ return [
         'booking'=>'booking',
         'Total Balance'=>'Total Balance',
         'Followers'=>'Followers',
-        ''
+    ],
+    'notifications'=> [
+        'notifications'=>'Notifications',
+        'view_all'=>'View All',
     ]
 
 ];
