@@ -34,9 +34,8 @@ class ClassesController extends Controller
 
     public function create()
     {
-        $sports = $this->sportModel->get();
-        $trainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.clasess.create', compact('sports', 'trainings'));
+        $academyTrainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
+        return view('Academy.pages.clasess.create', compact( 'academyTrainings'));
     }
 
     public function store(ClassRequest $request)
@@ -63,9 +62,8 @@ class ClassesController extends Controller
 
     public function edit(TClass $class)
     {
-        $sports = $this->sportModel->get();
-        $trainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.clasess.edit',compact('class', 'sports', 'trainings'));
+        $academyTrainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
+        return view('Academy.pages.clasess.edit',compact('class', 'academyTrainings'));
     }
 
     public function update(TClass $class , ClassRequest $request)

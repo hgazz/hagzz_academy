@@ -41,7 +41,7 @@
             <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
             <select id="classes" class="form-select pt-2" name="training_id" >
                 <option value=""> {{trans('admin.clasess.select_training')}} </option>
-                @foreach($trainings as $training)
+                @foreach($academyTrainings as $training)
                     <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{$training->name}}</option>
                 @endforeach
             </select>
