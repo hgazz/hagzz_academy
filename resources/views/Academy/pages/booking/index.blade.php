@@ -40,7 +40,7 @@
         <!--  END BREADCRUMBS  -->
         <div class="container mt-4">
             <div class="row">
-                    @foreach($trainings as $training)
+                    @forelse($academyTrainings as $training)
                     <div class="col-md-4">
                         <div class="card" style="width: 18rem;">
                             <img src="{{$training->image}}" class="card-img-top h-25" alt="">
@@ -60,7 +60,8 @@
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                @empty
+                @endforelse
             </div>
         </div>
     </div>
