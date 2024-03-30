@@ -54,12 +54,11 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-
     <div class="col-md-6 mb-3">
         <label for="coaches"><span class="text-danger">*</span> {{trans('admin.training.coach')}} </label>
         <select id="coaches" class="form-select" name="coach_id">
             <option> {{trans('admin.training.Choose Coach')}} </option>
-            @foreach($coaches as $coach)
+            @foreach($academyCoaches as $coach)
                 <option  @selected(old('coach_id', isset($training) ?  $training->coach_id : '') == $coach->id) value="{{$coach->id}}">{{$coach->name}}</option>
             @endforeach
         </select>

@@ -24,11 +24,12 @@ use Illuminate\Support\Str;
 class TrainingController extends Controller
 {
     use CoacheTrait;
-   private $trainingModel, $addressModel;
-   public function __construct(Training $training, Address $address)
+   private $trainingModel, $addressModel, $coachModel;
+   public function __construct(Training $training, Address $address, Coach $coach)
    {
        $this->trainingModel = $training;
        $this->addressModel = $address;
+       $this->coachModel = $coach;
    }
 
    public function index(TrainingDataTable $dataTable)
@@ -38,9 +39,9 @@ class TrainingController extends Controller
    public function create()
    {
        $sports = auth('academy')->user()->sports;
-       $coaches = $this->getCoaches();
+       $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get(['id','name']);
        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.create',compact('coaches', 'addresses', 'sports'));
+        return view('Academy.pages.training.create',compact('academyCoaches', 'addresses', 'sports'));
    }
    public function store(TrainingRequest $request)
    {
@@ -87,10 +88,10 @@ class TrainingController extends Controller
 
     public function edit(Training $training)
     {
-        $coaches = $this->getCoaches();
+        $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get(['id','name']);
         $sports = auth('academy')->user()->sports;
         $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.edit',compact('coaches', 'sports','training', 'addresses'));
+        return view('Academy.pages.training.edit',compact('academyCoaches', 'sports','training', 'addresses'));
     }
 
     public function update(Training $training , TrainingRequest $request)
