@@ -112,6 +112,7 @@ class TrainingController extends Controller
                     'age_group' => $request->age_group,
                     'address_id' => $request->address_id,
                     'sport_id' => $request->sport_id,
+                    'discount_price' => $request->discount_price,
                 ]));
                 //notifications to users
                 if ($training->wasChanged(['start_date', 'end_date'])) {

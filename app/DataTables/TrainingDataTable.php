@@ -73,6 +73,7 @@ class TrainingDataTable extends DataTable
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.training.name')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
+            ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.training.discount')],
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
             ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
             ['name' => 'description', 'data' => 'description', 'title' => trans('admin.training.description')],

@@ -199,6 +199,7 @@ return [
         'Classes' => 'الفصول',
         'Choose Classes' => 'اختر الفصول',
         'price' => 'السعر',
+        'discount' => 'الخصم',
         'start_time' => 'وقت البدء',
         'end_time' => 'وقت الانتهاء',
         'levels' => 'المستويات',

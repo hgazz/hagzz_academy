@@ -200,6 +200,7 @@ return [
         'Classes'=>'Classes',
         'Choose Classes'=>'Classes',
         'price' => 'Price',
+        'discount' => 'Discount',
         'start_time' => 'Start Time',
         'end_time' => 'End Time',
         'levels' => 'Levels',

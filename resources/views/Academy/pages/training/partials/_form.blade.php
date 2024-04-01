@@ -97,7 +97,13 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-
+    <div class="col-md-6 mb-3">
+        <label for="discount_price">{{ trans('admin.training.discount') }}</label>
+        <input class="form-control" type="number" value="{{(isset($training) ? $training->discount_price : old('discount_price'))}}" id="discount_price" name="discount_price">
+        @error('discount_price')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
     <div class="col-md-6 mb-3">
         <label for="level"><span class="text-danger">*</span> {{trans('admin.training.levels')}} </label>
         <select id="level" class="form-select" name="level">
