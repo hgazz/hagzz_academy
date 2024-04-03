@@ -62,6 +62,9 @@
                         </div>
 
                     </div>
+                    <a class="btn btn-primary w-25 mt-3" href="{{route('academy.address.export')}}">
+                        Export
+                    </a>
                     <div class="card-body">
                         {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
                     </div>

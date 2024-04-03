@@ -59,6 +59,7 @@ Route::group(
             Route::get('address/edit/area/{city}','getAreaByCity')->name('area.getAreaByCity');
             Route::get('address/country/{country}','getAllCountry')->name('country.getCountry');
             Route::get('address/edit/country/{country}','getAllCountry')->name('country.getCountry');
+            Route::get('address/export','export')->name('address.export');
 
         });
 
@@ -70,6 +71,7 @@ Route::group(
             Route::get('coach/edit/{coach}','edit')->name('coach.edit');
             Route::put('coach/update/{coach}','update')->name('coach.update');
             Route::delete('coach/delete','delete')->name('coach.delete');
+            Route::get('coach/export','export')->name('coach.export');
         });
 
         Route::controller( ClassesController::class)->group(function(){
@@ -79,6 +81,7 @@ Route::group(
             Route::get('class/edit/{class}','edit')->name('class.edit');
             Route::put('class/update/{class}','update')->name('class.update');
             Route::delete('class/delete','delete')->name('class.delete');
+            Route::get('class/export','export')->name('class.export');
         });
 
         Route::controller(GalleryController::class)->group(function(){
@@ -98,6 +101,7 @@ Route::group(
             Route::put('training/update/{training}','update')->name('training.update');
             Route::delete('training/delete','delete')->name('training.delete');
             Route::put('active/{training}','updateActive')->name('training.updateActive');
+            Route::get('training/export','export')->name('training.export');
         });
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking','index')->name('booking.index');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TClassDataTable;
+use App\Exports\clasessExport;
 use App\Http\Requests\Class\ClassRequest;
 use App\Models\Academies;
 use App\Models\Join;
@@ -16,6 +17,7 @@ use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClassesController extends Controller
 {
@@ -116,5 +118,10 @@ class ClassesController extends Controller
                 'status' => 'failed',
             ]]);
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new clasessExport() , 'classes.xlsx');
     }
 }

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\CoachDataTable;
+use App\Exports\Coaches;
 use App\Http\Requests\Coach\CoachRequest;
 use App\Http\Traits\FileUpload;
 use App\Models\Coach;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CoachController extends Controller
 {
@@ -68,5 +70,10 @@ class CoachController extends Controller
             'model'   => trans('admin.coaches.coaches'),
             'message' => trans('admin.coaches.deleted_successfully'),
         ]]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new Coaches() , 'coaches.xlsx');
     }
 }

@@ -10,6 +10,7 @@ use Spatie\Translatable\HasTranslations;
 class Training extends Model
 {
     use HasFactory,HasTranslations;
+
     protected $fillable = [
         'name',
         'price',
@@ -68,5 +69,9 @@ class Training extends Model
     public function address()
     {
         return $this->belongsTo(Address::class, 'address_id');
+    }
+    public function sport()
+    {
+        return $this->belongsTo(Sport::class,'sport_id');
     }
 }
