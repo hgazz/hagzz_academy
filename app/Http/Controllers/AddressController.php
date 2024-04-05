@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\AddressDataTable;
+use App\Exports\AddressExport;
 use App\Http\Requests\Address\AddressRequest;
 use App\Http\Traits\AcademyTrait;
 use App\Http\Traits\CityAndAreaTrait;
@@ -12,6 +13,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AddressController extends Controller
 {
@@ -104,6 +106,11 @@ class AddressController extends Controller
             'model'   => trans('admin.address.address'),
             'message' => trans('admin.address.address successfully deleted'),
         ]]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new AddressExport() , 'address.xlsx');
     }
 
 }

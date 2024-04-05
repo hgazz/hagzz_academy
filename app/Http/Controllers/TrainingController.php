@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TrainingDataTable;
+use App\Exports\TrainingExport;
+use App\Exports\TrainingsExport;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
@@ -20,6 +22,7 @@ use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TrainingController extends Controller
 {
@@ -161,5 +164,10 @@ class TrainingController extends Controller
             'model'   => trans('admin.training.training'),
             'message' => trans('admin.training.deleted_successfully'),
        ]]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new TrainingsExport() ,'training.xlsx');
     }
 }
