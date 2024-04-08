@@ -24,7 +24,7 @@ class ProfileRequest extends FormRequest
         return [
             'name' => 'nullable|string|min:3|max:255',
             'owner_name' => 'nullable|string|min:3|max:255',
-            'logo'=>'nullable|image|mimes:jpg,png,gif,webp,svg,jpeg',
+            'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg',
             'phone'=>'nullable|string|min:7',
             'email'=>'nullable|email|string',
             'facebook'=>'nullable|string',

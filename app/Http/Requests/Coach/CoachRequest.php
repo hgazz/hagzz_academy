@@ -26,12 +26,12 @@ class CoachRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'image' => $this->checkImage(),
-            'license' => 'required|string',
+            'license' => 'nullable|string',
         ];
     }
 
     protected function checkImage()
     {
-        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,jpg,svg|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
     }
 }
