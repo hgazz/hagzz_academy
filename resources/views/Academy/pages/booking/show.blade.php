@@ -36,7 +36,7 @@
                 @foreach($training->joins as $join)
                     <div class="col-md-4">
                         <div class="card" style="width: 18rem;">
-                            <img src="{{$join->user->image}}" class="card-img-top" alt="...">
+                            <img src="{{$join->user->image}}" class="card-img-top" alt="{{$join->user->name}}" width="120px" height="100px">
                             <div class="card-body">
                                 <span class="card-text">{{trans('admin.training.name')}} :  {{$join->user->name}}</span>
                                 <br>

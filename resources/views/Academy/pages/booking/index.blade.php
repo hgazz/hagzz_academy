@@ -41,9 +41,9 @@
         <div class="container mt-4">
             <div class="row">
                     @forelse($academyTrainings as $training)
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-1">
                         <div class="card" style="width: 18rem;">
-                            <img src="{{$training->image}}" class="card-img-top h-25" alt="">
+                            <img src="{{$training->sport->icon}}" class="card-img-top h-25" alt="{{$training->name}}" width="200px" height="120px">
                             <div class="card-body">
                                 <h5 class="card-title text-primary">{{$training->name}}</h5>
                                 <p class="card-text">{{$training->description}}</p>
