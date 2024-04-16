@@ -27,7 +27,7 @@ class TClass extends Model
     public static $translatableColumns = [
         'title'=>[
             'type'=>'text',
-            'validations'=>'required|string|max:255',
+            'validations'=>'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
             'is_textarea'=>false
         ],
         'subtitle'=>[
