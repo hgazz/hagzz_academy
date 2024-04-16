@@ -1,6 +1,27 @@
 @csrf
 <div class="row">
     <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
+            <select id="classes" class="form-select pt-2" name="training_id" >
+                <option value=""> {{trans('admin.clasess.select_training')}} </option>
+                @foreach($academyTrainings as $training)
+                    <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{$training->name}}</option>
+                @endforeach
+            </select>
+            @error('training_id')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="date">{{ trans('admin.clasess.date') }}</label>
+            <input class="form-control" type="date" value="{{ isset($class) ? $class->date : old('date') }}" id="date" name="date">
+            @error('date')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
+    </div>
+    <div class="row">
         @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\TClass::class) as $name => $data)
             <div class="col-md-6 mb-3">
                 <label for="{{$name}}" class="form-label">{{trans('admin.clasess.' . $name)}}</label>
@@ -34,28 +55,6 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="date">{{ trans('admin.clasess.date') }}</label>
-            <input class="form-control" type="date" value="{{ isset($class) ? $class->date : old('date') }}" id="date" name="date">
-            @error('date')
-            <span class="text-danger">*{{$message}}</span>
-            @enderror
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
-            <select id="classes" class="form-select pt-2" name="training_id" >
-                <option value=""> {{trans('admin.clasess.select_training')}} </option>
-                @foreach($academyTrainings as $training)
-                    <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{$training->name}}</option>
-                @endforeach
-            </select>
-            @error('training_id')
-            <span class="text-danger">*{{$message}}</span>
-            @enderror
-        </div>
-    </div>
-
 </div>
 @if(request()->url() === route('academy.class.create'))
 

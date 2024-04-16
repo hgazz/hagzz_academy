@@ -24,9 +24,11 @@ class CoachRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
             'description' => 'required|string',
             'image' => $this->checkImage(),
             'license' => 'nullable|string',
+            'license_type' => 'nullable|string',
         ];
     }
 

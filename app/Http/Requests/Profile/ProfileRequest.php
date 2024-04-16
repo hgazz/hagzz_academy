@@ -22,11 +22,11 @@ class ProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string|min:3|max:255',
-            'owner_name' => 'nullable|string|min:3|max:255',
+            'name' => 'required|string|min:3|max:255',
+            'owner_name' => 'required|string|min:3|max:255',
             'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg',
-            'phone'=>'nullable|string|min:7',
-            'email'=>'nullable|email|string',
+            'phone'=>'required|string|min:7',
+            'email'=>'required|email|string',
             'facebook'=>'nullable|string',
             'instagram'=>'nullable|string',
         ];

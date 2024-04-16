@@ -20,24 +20,6 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="longitude">{{ trans('admin.address.longitude') }}</label>
-            <input class="form-control" type="text" value="{{(isset($address) ? $address->longitude : old('longitude'))}}" id="longitude" name="longitude">
-            @error('longitude')
-            <span class="text-danger">*{{$message}}</span>
-            @enderror
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label for="latitude">{{ trans('admin.address.latitude') }}</label>
-            <input class="form-control" type="text" value="{{(isset($address) ? $address->latitude : old('latitude'))}}" id="latitude" name="latitude">
-            @error('latitude')
-            <span class="text-danger">*{{$message}}</span>
-            @enderror
-        </div>
-    </div>
-
-    <div class="row">
         <div class="form-group mb-4">
             <label for="exampleFormControlSelect1">{{ trans('admin.address.country') }}</label>
             <select class="form-select" id="country"  name="country_id" >
@@ -74,7 +56,6 @@
         <div class="form-group mb-4">
             <label for="areaSelect">{{ trans('admin.address.area') }}</label>
             <select class="form-select" id="areaSelect" name="area_id">
-                <option value="">{{ trans('admin.area.select_city') }}</option>
                 <input type="hidden" value="{{old('city_id', isset($address) ? $address->area_id : '')}}" id="select_area_id">
 {{--                @foreach($areas as $area)--}}
 {{--                    <option value="{{ $area->id }}" @selected(old('city_id', isset($address) ? $address->area_id : '') == $area->id)>{{ $area->name }}</option>--}}
@@ -86,7 +67,23 @@
         </div>
 
     </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="longitude">{{ trans('admin.address.longitude') }}</label>
+            <input class="form-control" type="text" value="{{(isset($address) ? $address->longitude : old('longitude'))}}" id="longitude" name="longitude">
+            @error('longitude')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
 
+        <div class="col-md-6 mb-3">
+            <label for="latitude">{{ trans('admin.address.latitude') }}</label>
+            <input class="form-control" type="text" value="{{(isset($address) ? $address->latitude : old('latitude'))}}" id="latitude" name="latitude">
+            @error('latitude')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
+    </div>
 </div>
 <label for="active">{{ trans('admin.address.active') }}</label>
 <input class="form-check" id="active" name="active" @if(isset($address) && $address->active) checked @endif  type="checkbox">

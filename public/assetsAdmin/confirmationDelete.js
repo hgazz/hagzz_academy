@@ -94,7 +94,7 @@ $(document).ready(function () {
                             } else {
                                 Swal.fire(
                                     'Error!',
-                                    `Error : ${res.message} !`,
+                                    `Error : ${res.data.message} !`,
                                     'error'
                                 )
                             }

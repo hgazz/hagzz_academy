@@ -20,14 +20,14 @@
             <div class="col-md-6 mb-3">
                 <label for="{{$name}}">
                     <span class="text-danger">*</span>
-                    {{trans('admin.training.'.$name)}}
+                    {{ $name === 'description_en' ? trans('admin.training.description_en') : trans('admin.training.description_ar') }}
                 </label>
 
-                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter {{$name}}">
+                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">
                     @if($name == 'description_en') {{old($name , isset($training) ? $training->getTranslation('description','en') : '')}} @else {{old($name , isset($training) ? $training->getTranslation('description','ar') : '')}} @endif
                 </textarea>
                 @error($name)
-                <span class="text-danger">*{{$message}}</span>
+                    <span class="text-danger">*{{$message}}</span>
                 @enderror
             </div>
         @endif
@@ -50,12 +50,16 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
-
     <div class="col-md-6 mb-3">
-        <label for="max_players">{{ trans('admin.training.max_players') }}</label>
-        <input class="form-control" type="number" value="{{(isset($training) ? $training->max_players : old('max_players'))}}" id="max_players" name="max_players">
-        @error('max_players')
-        <span class="text-danger">*{{$message}}</span>
+        <label for="sport_id">{{ trans('admin.clasess.sport') }}</label>
+        <select class="form-select" name="sport_id" id="sport_id">
+            <option value="">{{ trans('admin.clasess.select_sport') }}</option>
+            @foreach($sports as $sport)
+                <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')) == $sport->id)>{{$sport->name}}</option>
+            @endforeach
+        </select>
+        @error('sport_id')
+        <span class="text-danger" >{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
@@ -71,15 +75,10 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="sport_id">{{ trans('admin.clasess.sport') }}</label>
-        <select class="form-select" name="sport_id" id="sport_id">
-            <option value="">{{ trans('admin.clasess.select_sport') }}</option>
-            @foreach($sports as $sport)
-                <option value="{{$sport->id}}" @selected(old('sport_id',  (isset($training) ? $training->sport_id : '')) == $sport->id)>{{$sport->name}}</option>
-            @endforeach
-        </select>
-        @error('sport_id')
-        <span class="text-danger" >{{$message}}</span>
+        <label for="max_players">{{ trans('admin.training.max_players') }}</label>
+        <input class="form-control" type="number" value="{{(isset($training) ? $training->max_players : old('max_players'))}}" id="max_players" name="max_players">
+        @error('max_players')
+        <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">

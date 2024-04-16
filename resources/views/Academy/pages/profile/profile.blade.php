@@ -116,43 +116,62 @@
                                                                     <div class="col-md-6">
                                                                         <div class="form-group">
                                                                             <label for="fullName">{{trans('admin.profile.name')}}</label>
-                                                                            <input type="text" class="form-control mb-3" name="name" id="fullName" placeholder="Name" value="{{$user->name ?? ''}}">
+                                                                            <input type="text" class="form-control" name="name" id="fullName" placeholder="Name" value="{{$user->name ?? ''}}">
+                                                                            @error('name')
+                                                                            <span class="text-danger">{{$message}}</span>
+                                                                            @enderror
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="col-md-6">
                                                                         <div class="form-group">
                                                                             <label for="profession">{{trans('admin.profile.owner_name')}}</label>
-                                                                            <input type="text" class="form-control mb-3" name="owner_name" id="profession" placeholder="owner_name" value="{{$user->owner_name ?? ''}}">
+                                                                            <input type="text" class="form-control" name="owner_name" id="profession" placeholder="owner_name" value="{{$user->owner_name ?? ''}}">
+                                                                            @error('owner_name')
+                                                                            <span class="text-danger">{{$message}}</span>
+                                                                            @enderror
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="col-md-6">
                                                                         <div class="form-group">
                                                                             <label for="address">{{trans('admin.profile.email')}}</label>
-                                                                            <input type="email" class="form-control mb-3" name="email" id="address" placeholder="Email" value="{{$user->email ?? ''}}" >
+                                                                            <input type="email" class="form-control" name="email" id="address" placeholder="Email" value="{{$user->email ?? ''}}" >
+                                                                            @error('email')
+                                                                            <span class="text-danger">{{$message}}</span>
+                                                                            @enderror
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         <div class="form-group">
                                                                             <label for="location">{{trans('admin.profile.phone')}}</label>
-                                                                            <input type="tel" name="phone" class="form-control mb-3" id="location" placeholder="Phone" value="{{$user->phone ?? ''}}">
+                                                                            <input type="tel" name="phone" class="form-control" id="location" placeholder="Phone" value="{{$user->phone ?? ''}}">
+                                                                            @error('phone')
+                                                                            <span class="text-danger">{{$message}}</span>
+                                                                            @enderror
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="col-md-11 mx-auto">
                                                                         <div class="row">
-                                                                            <div class="col-md-6">
+                                                                            <div class="col-md-6 mt-2">
                                                                                 <div class="input-group social-fb mb-3">
                                                                                     <span class="input-group-text me-3" id="fb"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></span>
                                                                                     <input type="text" class="form-control" name="facebook" placeholder="Facebook Username" aria-label="Username" aria-describedby="fb" value="{{$user->facebook ?? ''}}">
+                                                                                    @error('facebook')
+                                                                                    <span class="text-danger">{{$message}}</span>
+                                                                                    @enderror
                                                                                 </div>
                                                                             </div>
 
-                                                                            <div class="col-md-6">
+                                                                            <div class="col-md-6 mt-2">
                                                                                 <div class="input-group social-github mb-3">
-                                                                                    <span class="input-group-text me-3" id="github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></span>
+                                                                                    <span class="input-group-text me-3" id="instagram">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></span>
                                                                                     <input type="text" class="form-control" name="instagram" placeholder="Instagram Username" aria-label="Username" aria-describedby="github" value="{{$user->instagram ?? ''}}">
+                                                                                    @error('instagram')
+                                                                                    <span class="text-danger">{{$message}}</span>
+                                                                                    @enderror
                                                                                 </div>
                                                                             </div>
                                                                         </div>

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Coach extends Model
 {
@@ -14,9 +16,11 @@ class Coach extends Model
         'name',
         'description',
         'image',
+        'phone',
         'active',
         'academy_id',
-        'license'
+        'license',
+        'license_type'
     ];
 
     public function academy()
@@ -30,8 +34,18 @@ class Coach extends Model
     }
 
 
-    public function getImageAttribute($value)
+    public function getImageAttribute($value): string
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+    }
+
+    public function trainings(): HasMany
+    {
+        return $this->hasMany(Training::class, 'coach_id');
+    }
+
+    public function sports(): BelongsToMany
+    {
+        return $this->belongsToMany(Sport::class, 'coach_sports');
     }
 }

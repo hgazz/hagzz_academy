@@ -111,6 +111,10 @@ return [
         'updated_successfully' => 'تم تحديث المدرب بنجاح',
         'deleted_successfully' => 'تم حذف المدرب بنجاح',
         'license' => 'الرخصة',
+        'license_type'=> 'نوع الرخصه',
+        'phone' => 'الهاتف',
+        'error_delete' => 'لا يمكن حذف المدرب لوجود تدريبات مرتبطة به',
+        'select_sport' => 'اختر الرياضة',
     ],
     'profile' => [
         'profile' => 'الملف الشخصي',

@@ -112,6 +112,10 @@ return [
         'updated_successfully'=>'Coach updated successfully',
         'deleted_successfully'=>'Coach deleted successfully',
         'license'=> 'license',
+        'license_type'=> 'License Type',
+        'phone' => 'Phone',
+        'error_delete' => 'You are not allowed to delete this coach where it exists trainings',
+        'select_sport' => 'Select Sport'
     ],
     'profile'=>[
         'profile'=>'profile',
@@ -191,8 +195,8 @@ return [
         'name_en' => 'Name (English)',
         'class'=>'class',
         'description'=>'Description',
-        'description_en'=>'Description (Arabic)',
-        'description_ar'=>'Description (English)',
+        'description_ar'=>'Description (Arabic)',
+        'description_en'=>'Description (English)',
         'start_date'=>'start date',
         'end_date'=>'end date',
         'coach'=>'coach',
