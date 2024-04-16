@@ -64,9 +64,6 @@
         <label for="coaches"><span class="text-danger">*</span> {{trans('admin.training.coach')}} </label>
         <select id="coaches" class="form-select" name="coach_id">
             <option> {{trans('admin.training.Choose Coach')}} </option>
-            @foreach($academyCoaches as $coach)
-                <option  @selected(old('coach_id', isset($training) ?  $training->coach_id : '') == $coach->id) value="{{$coach->id}}">{{$coach->name}}</option>
-            @endforeach
         </select>
         @error('coach_id')
         <span class="text-danger">*{{$message}}</span>
@@ -148,3 +145,37 @@
 
 </div>
 
+<script>
+    let sports  = document.getElementById('sport_id');
+    let coachesSelect = document.getElementById('coaches');
+
+    document.addEventListener('DOMContentLoaded', function(){
+        let selectedValue = sports.value;
+        if (selectedValue !== ''){
+            fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                .then(response => response.json())
+                .then(data =>{
+                    coachesSelect.innerHTML = '';
+                    data.forEach(coaches=>{
+                        coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                    })
+                })
+
+        }
+    })
+
+    sports.addEventListener('change', function() {
+        let selectedValue = sports.value;
+        if (selectedValue !== ''){
+            fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                .then(response => response.json())
+                .then(data =>{
+                    coachesSelect.innerHTML = '';
+                    data.forEach(coaches=>{
+                        coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                    })
+                })
+
+        }
+    });
+</script>

@@ -11,6 +11,7 @@ use App\Http\Traits\FileUpload;
 use App\Models\Academies;
 use App\Models\Address;
 use App\Models\Coach;
+use App\Models\CoachSport;
 use App\Models\Follow;
 use App\Models\Join;
 use App\Models\Notification;
@@ -46,6 +47,16 @@ class TrainingController extends Controller
        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
         return view('Academy.pages.training.create',compact('academyCoaches', 'addresses', 'sports'));
    }
+
+    public function getCoachesBySports($id)
+    {
+        $coaches = CoachSport::with([
+            'coach'=> function($q){
+                $q->select('id','name')->where('academy_id',auth()->id());
+            }
+        ])->where('sport_id', $id)->get();
+        return response()->json($coaches);
+    }
    public function store(TrainingRequest $request)
    {
        DB::transaction(function() use ($request){
