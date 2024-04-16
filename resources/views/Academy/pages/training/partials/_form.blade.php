@@ -23,9 +23,7 @@
                     {{ $name === 'description_en' ? trans('admin.training.description_en') : trans('admin.training.description_ar') }}
                 </label>
 
-                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">
-                    @if($name == 'description_en') {{old($name , isset($training) ? $training->getTranslation('description','en') : '')}} @else {{old($name , isset($training) ? $training->getTranslation('description','ar') : '')}} @endif
-                </textarea>
+                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">@if($name == 'description_en'){{old($name , isset($training) ? $training->getTranslation('description','en') : '')}}@else{{old($name , isset($training) ? $training->getTranslation('description','ar') : '')}}@endif</textarea>
                 @error($name)
                     <span class="text-danger">*{{$message}}</span>
                 @enderror
