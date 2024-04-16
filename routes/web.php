@@ -102,6 +102,7 @@ Route::group(
             Route::delete('training/delete','delete')->name('training.delete');
             Route::put('active/{training}','updateActive')->name('training.updateActive');
             Route::get('training/export','export')->name('training.export');
+            Route::get('training/getCoachesBySports/{id}','getCoachesBySports');
         });
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking','index')->name('booking.index');
