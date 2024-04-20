@@ -40,7 +40,8 @@
     </div>
     <div class="col-md-6 mb-3">
         <label for="image">{{ trans('admin.coaches.image') }}</label>
-        <input class="form-control" type="file"  id="image" name="image">
+        <input class="form-control" type="file"  id="image" name="image" onchange="previewImage(event)">
+        <img id="imagePreview" src="{{(isset($coach) ? $coach->image : '#')}}" alt="Image Preview" width="400px" height="400px" class="mt-3 ">
         @error('image')
         <span class="text-danger">*{{$message}}</span>
         @enderror
@@ -74,5 +75,19 @@
                 placeholder: "{{ trans('admin.coaches.select_sport') }}"
             });
         });
+    </script>
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.replace('d-none','d-block');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
 @endpush
