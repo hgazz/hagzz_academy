@@ -42,14 +42,17 @@
             <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-8 col-12 d-flex flex-column align-self-center mx-auto">
                 <div class="card mt-3 mb-3">
                     <div class="card-body">
-
                         <div class="row">
-                            <div class="col-md-12 mb-3">
-
-                                <h2>{{ trans('admin.auth.sign_in') }}</h2>
-                                <p>{{ trans('admin.auth.enter_your_email_and_password') }}</p>
-
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h2>{{ trans('admin.auth.sign_in') }}</h2>
+                                    <p>{{ trans('admin.auth.enter_your_email_and_password') }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <img src="{{ asset('assetsAdmin/logo/40_20.svg') }}" class="img-fluid w-100 h100" alt="hagzz">
+                                </div>
                             </div>
+
 
                             @if(session()->has('error'))
                             <div class="alert alert-danger">

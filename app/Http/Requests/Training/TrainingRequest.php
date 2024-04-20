@@ -24,7 +24,11 @@ class TrainingRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return[
+            'name_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'name_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
+            'description_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'description_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
             'start_date'=>'required|date|after_or_equal:'. now()->toDateString(),
             'end_date'=>'required|date|after_or_equal:'. now()->toDateString(),
             'coach_id'=>'required|integer|exists:coaches,id',
@@ -37,6 +41,5 @@ class TrainingRequest extends FormRequest
             'sport_id' => 'required|exists:sports,id',
         ];
 
-        return TranslatableService::validateTranslatableFields(Training::$translatableColumns) + $rules;
     }
 }

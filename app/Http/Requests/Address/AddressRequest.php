@@ -20,18 +20,19 @@ class AddressRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'city_id'=>'required|exists:cities,id',
             'area_id'=>'required|exists:areas,id',
             'longitude'=>'nullable|string',
             'latitude'=>'nullable|string',
+            'address_en' => 'required|string|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'address_ar' => 'required|string|regex:/\p{Arabic}/u',
             'country_id'=>'required|exists:countries,id',
         ];
-        return  TranslatableService::validateTranslatableFields(Address::$translatableColumns) + $rules;
     }
 
 
