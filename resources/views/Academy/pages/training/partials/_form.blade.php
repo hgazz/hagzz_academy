@@ -145,8 +145,7 @@
 
 </div>
 
-@push('js')
-    <script>
+<script>
         let sports  = document.getElementById('sport_id');
         let coachesSelect = document.getElementById('coaches');
 
@@ -180,4 +179,4 @@
             }
         });
     </script>
-@endpush
+
