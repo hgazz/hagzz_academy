@@ -3,6 +3,8 @@
 namespace App\DataTables;
 
 use App\Models\Coach;
+use App\Models\Join;
+use App\Models\TClass;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -25,10 +27,31 @@ class CoachDataTable extends DataTable
             ->addColumn('image', function (Coach $coach) {
                 return '<img src="' . $coach->image . '" width="100" height="100">';
             })
+            ->editColumn('license', fn($raw) => $raw->license ? trans('admin.coaches.is_licensed') : trans('admin.coaches.no_licensed'))
+            ->addColumn('total_bookings', function (Coach $coach) {
+                return Join::whereHas('training', function ($query) use ($coach) {
+                    $query->where('coach_id', $coach->id)
+                        ->where('academy_id', auth('academy')->id());
+                })->count();
+            })
+            ->addColumn('active_bookings', function (Coach $coach) {
+                return Join::whereHas('training', function ($query) use ($coach) {
+                    $query->where('coach_id', $coach->id)
+                        ->whereActive(1)
+                        ->where('academy_id', auth('academy')->id());
+                })->count();
+            })
+            ->addColumn('total_hours', function (Coach $coach) {
+               $class = TClass::whereHas('training', function($query) use ($coach) {
+                    $query->where('coach_id', $coach->id)
+                        ->where('academy_id', auth('academy')->id());
+                })->first();
+               return ceil($class->duration_in_hours) ?? 0;
+            })
             ->addColumn('action', function (Coach $coach) {
                 return view('Academy.pages.coaches.datatable.actions', compact('coach'))->render();
             })
-            ->rawColumns(['image', 'action']);
+            ->rawColumns(['image', 'total_bookings', 'active_bookings', 'total_hours', 'action']);
     }
 
     /**
@@ -37,7 +60,7 @@ class CoachDataTable extends DataTable
     public function query(Coach $model): QueryBuilder
     {
         return $model->newQuery()
-            ->with('academy')
+            ->with(['academy', 'trainings'])
             ->whereBelongsTo(auth('academy')->user(),'academy');
     }
 
@@ -50,6 +73,8 @@ class CoachDataTable extends DataTable
                     ->setTableId('coach-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
+                    ->scrollX()
+                    ->scrollY()
                     //->dom('Bfrtip')
                     ->orderBy(1)
                     ->selectStyleSingle()
@@ -73,6 +98,10 @@ class CoachDataTable extends DataTable
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.coaches.name')],
             ['name' => 'description', 'data' => 'description', 'title' => trans('admin.coaches.description')],
             ['name' => 'image', 'data' => 'image', 'title' => trans('admin.coaches.image')],
+            ['name' => 'license', 'data' => 'license', 'title' => trans('admin.coaches.is_licensed')],
+            ['name' => 'total_bookings', 'data' => 'total_bookings', 'title' => trans('admin.coaches.total_bookings'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'active_bookings', 'data' => 'active_bookings', 'title' => trans('admin.coaches.active_bookings'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'total_hours', 'data' => 'total_hours', 'title' => trans('admin.coaches.total_hours'), 'orderable' => false, 'searchable' => false],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];

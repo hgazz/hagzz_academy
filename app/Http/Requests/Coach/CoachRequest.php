@@ -29,6 +29,8 @@ class CoachRequest extends FormRequest
             'image' => $this->checkImage(),
             'license' => 'nullable|string',
             'license_type' => 'nullable|string',
+            'birth_date' => 'date',
+            'gender' => 'required|in:male,female',
         ];
     }
 

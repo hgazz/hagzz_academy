@@ -45,7 +45,9 @@ class CoachController extends Controller
                 'active'=> $request->has('active') ? 1 : 0,
                 'academy_id'=> auth()->id(),
                 'license' => $request->license,
-                'license_type' => $request->license_type
+                'license_type' => $request->license_type,
+                'gender' => $request->gender,
+                'birth_date' => $request->birth_date,
             ]));
             $coach->sports()->attach($request->sport_id);
             DB::commit();
@@ -76,7 +78,9 @@ class CoachController extends Controller
                 'active'=> $request->has('active') ? 1 : 0,
                 'academy_id'=> auth()->id(),
                 'license' => $request->license,
-                'license_type' => $request->license_type
+                'license_type' => $request->license_type,
+                'gender' => $request->gender,
+                'birth_date' => $request->birth_date,
             ]));
             $coach->sports()->sync($request->sport_id);
             DB::commit();

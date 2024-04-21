@@ -39,6 +39,24 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
+        <label for="birth_date">{{ trans('admin.coaches.birth_date') }}</label>
+        <input class="form-control" type="date" value="{{(isset($coach) ?  $coach->birth_date : old('birth_date'))}}" id="birth_date" name="birth_date">
+        @error('birth_date')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="gender">{{trans('admin.coaches.select_sport')}}</label>
+        <select class="form-select" name="gender" id="gender">
+            <option value="">{{ trans('admin.coaches.select_gender') }}</option>
+            <option value="male" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'male')>{{ trans('admin.coaches.male') }}</option>
+            <option value="female" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'female')>{{ trans('admin.coaches.female') }}</option>
+        </select>
+        @error('gender')
+        <span class="text-danger">{{$message}}</span>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
         <label for="image">{{ trans('admin.coaches.image') }}</label>
         <input class="form-control" type="file"  id="image" name="image" onchange="previewImage(event)">
         <img id="imagePreview" src="{{(isset($coach) ? $coach->image : '#')}}" alt="Image Preview" width="400px" height="400px" class="mt-3 ">

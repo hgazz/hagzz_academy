@@ -20,7 +20,9 @@ class Coach extends Model
         'active',
         'academy_id',
         'license',
-        'license_type'
+        'license_type',
+        'gender',
+        'birth_date'
     ];
 
     public function academy()

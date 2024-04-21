@@ -49,7 +49,7 @@
                                     <p>{{ trans('admin.auth.enter_your_email_and_password') }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <img src="{{ asset('assetsAdmin/logo/40_20.svg') }}" class="img-fluid w-100 h100" alt="hagzz">
+                                    <img src="{{ asset('assetsAdmin/logo/Icon-Black.svg') }}" class="img-thumbnail w-100 h100" alt="hagzz">
                                 </div>
                             </div>
 
