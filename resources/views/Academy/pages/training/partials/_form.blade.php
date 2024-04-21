@@ -156,8 +156,8 @@
                     .then(response => response.json())
                     .then(data =>{
                         coachesSelect.innerHTML = '';
-                        data.forEach(coaches=>{
-                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                        data.coaches.forEach(coach=>{
+                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name}</option>`;
                         })
                     })
 
@@ -171,8 +171,8 @@
                     .then(response => response.json())
                     .then(data =>{
                         coachesSelect.innerHTML = '';
-                        data.forEach(coaches=>{
-                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                        data.coaches.forEach(coach=>{
+                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name}</option>`;
                         })
                     })
 

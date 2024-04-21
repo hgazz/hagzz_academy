@@ -50,12 +50,23 @@ class TrainingController extends Controller
 
     public function getCoachesBySports($id)
     {
-        $coaches = CoachSport::with([
-            'coach'=> function($q){
-                $q->select('id','name')->where('academy_id',auth()->id());
-            }
-        ])->where('sport_id', $id)->get();
-        return response()->json($coaches);
+        $coaches = CoachSport::where('sport_id', $id)
+            ->whereHas('coach', function ($query)  {
+                // Filter coaches by the academy of the authenticated user
+                $query->select('id', 'name')
+                ->where('academy_id', auth('academy')->id());
+            })
+            ->with(['coach' => function ($query) {
+                $query->select('id', 'name'); // Limit fields to avoid unnecessary data
+            }])
+            ->get()
+            ->pluck('coach')
+            ->unique(); // Remove duplicate coaches (if any)
+
+        // Return a structured JSON response
+        return response()->json([
+            'coaches' => $coaches
+        ]);
     }
    public function store(TrainingRequest $request)
    {
