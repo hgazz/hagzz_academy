@@ -108,4 +108,38 @@
             }
         }
     </script>
+    <script>
+        let sports  = document.getElementById('sport_id');
+        let coachesSelect = document.getElementById('coaches');
+
+        document.addEventListener('DOMContentLoaded', function(){
+            let selectedValue = sports.value;
+            if (selectedValue !== ''){
+                fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                    .then(response => response.json())
+                    .then(data =>{
+                        coachesSelect.innerHTML = '';
+                        data.forEach(coaches=>{
+                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                        })
+                    })
+
+            }
+        })
+
+        sports.addEventListener('change', function() {
+            let selectedValue = sports.value;
+            if (selectedValue !== ''){
+                fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                    .then(response => response.json())
+                    .then(data =>{
+                        coachesSelect.innerHTML = '';
+                        data.forEach(coaches=>{
+                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
+                        })
+                    })
+
+            }
+        });
+    </script>
 @endpush
