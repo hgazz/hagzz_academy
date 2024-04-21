@@ -46,7 +46,7 @@ class CoachDataTable extends DataTable
                     $query->where('coach_id', $coach->id)
                         ->where('academy_id', auth('academy')->id());
                 })->first();
-               return $coach->trainings()->count() > 0 !== null ? ceil($class->duration_in_hours) : 0;
+               return $coach->trainings()->count() > 0 !== null ? ceil($class?->duration_in_hours) : 0;
             })
             ->addColumn('action', function (Coach $coach) {
                 return view('Academy.pages.coaches.datatable.actions', compact('coach'))->render();
