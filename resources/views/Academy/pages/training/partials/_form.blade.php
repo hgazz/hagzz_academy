@@ -157,7 +157,7 @@
                     .then(data =>{
                         coachesSelect.innerHTML = '';
                         data.forEach(coaches=>{
-                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach}</option>`;
+                            coachesSelect.innerHTML += `<option value="${coaches.coach.id}">${coaches.coach.name}</option>`;
                         })
                     })
 
