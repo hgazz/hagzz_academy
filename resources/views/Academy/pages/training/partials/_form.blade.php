@@ -153,7 +153,7 @@
         document.addEventListener('DOMContentLoaded', function(){
             let selectedValue = sports.value;
             if (selectedValue !== ''){
-                fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
                     .then(response => response.json())
                     .then(data =>{
                         coachesSelect.innerHTML = '';
@@ -168,7 +168,7 @@
         sports.addEventListener('change', function() {
             let selectedValue = sports.value;
             if (selectedValue !== ''){
-                fetch(`/academy/training/getCoachesBySports/${selectedValue}`)
+                fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
                     .then(response => response.json())
                     .then(data =>{
                         coachesSelect.innerHTML = '';
