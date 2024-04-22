@@ -87,14 +87,19 @@ class TrainingController extends Controller
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
            ]));
+          $details = [
+              'training_id' => $training->id,
+              'longitude' => $training->longitude,
+              'latitude' => $training->latitude
+          ];
            $AcademyTitle = 'Don’t miss out!';
            $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
            $academyFollows = Follow::where([
                'followable_type' => Academies::class,
                'followable_id' => auth('academy')->id(),
            ])->get();
-           $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody) {
-               NotificationService::dbNotification($follow->user_id,Academies::class, $AcademyTitle, $AcademyTitle, $AcademyBody);
+           $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody, $details) {
+               NotificationService::dbNotification($follow->user_id,Academies::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
            });
 
            $coachTitle = 'Don’t miss out!';
@@ -103,8 +108,8 @@ class TrainingController extends Controller
                'followable_type' => Coach::class,
                'followable_id' => $training->coach_id,
            ])->get();
-           $coachFollows->map(function ($follow) use ($coachTitle, $coachBody) {
-               NotificationService::dbNotification($follow->user_id,Academies::class, $coachTitle, $coachTitle, $coachBody);
+           $coachFollows->map(function ($follow) use ($coachTitle, $coachBody, $details) {
+               NotificationService::dbNotification($follow->user_id,Academies::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
            });
        });
        session()->flash('success',trans('admin.training.created_successfully'));
@@ -139,13 +144,18 @@ class TrainingController extends Controller
                     'sport_id' => $request->sport_id,
                     'discount_price' => $request->discount_price,
                 ]));
+                $details = [
+                    'training_id' => $training->id,
+                    'longitude' => $training->longitude,
+                    'latitude' => $training->latitude
+                ];
                 //notifications to users
                 if ($training->wasChanged(['start_date', 'end_date'])) {
                     $title = 'Booking Rescheduled';
                     $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
                     $joins = Join::where('training_id', $training->id)->get();
-                    $joins->map(function ($join) use ($title, $body) {
-                        NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+                    $joins->map(function ($join) use ($title, $body, $details) {
+                        NotificationService::dbNotification($join->user_id,User::class, 1, $title, $body, auth('academy')->user()->image, $details);
                     });
 
                 }

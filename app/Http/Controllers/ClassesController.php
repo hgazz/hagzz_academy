@@ -81,14 +81,18 @@ class ClassesController extends Controller
                 'out_comes' => $request->input('outcomes'),
                 'bring_with_me' => $request->input('bring_with_me'),
             ]));
-
+            $details = [
+                'training_id' => $class->training_id,
+                'longitude' => $class->training->longitude,
+                'latitude' => $class->training->latitude
+            ];
             //notifications to users
             if ($class->wasChanged('date')) {
                 $title = 'Session Rescheduled';
                 $body = 'The next session at ' . auth('academy')->user()->commercial_name. ' is rescheduled, please check the new dates';
                 $joins = Join::where('training_id', $class->training_id)->get();
-                $joins->map(function ($join) use ($title, $body) {
-                    NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+                $joins->map(function ($join) use ($title, $body, $details) {
+                    NotificationService::dbNotification($join->user_id,User::class, 1, $title, $body, auth('academy')->user()->image, $details);
                 });
             }
 
