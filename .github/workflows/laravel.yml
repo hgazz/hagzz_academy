@@ -61,7 +61,7 @@ jobs:
             echo "Optimize Cach"
             sudo php artisan optimize:clear
             echo "Migrate DB"
-            sudo php artisan migrate
+            sudo php artisan migrate --force
         
       
       - name:  Deploy Develop
