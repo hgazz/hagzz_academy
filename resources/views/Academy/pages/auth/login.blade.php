@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
-    <title>{{ trans('admin.auth.admin') . ' | '   . trans('admin.auth.login') }}</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('assetsAdmin/src/assets/img/favicon.ico') }}"/>
+    <title>{{ trans('admin.partner') . ' | '   . trans('admin.auth.login') }}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('assetsAdmin/logo/Tab icon.svg') }}"/>
     <link href="{{ asset('assetsAdmin/layouts/vertical-light-menu/css/light/loader.css') }}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('assetsAdmin/layouts/vertical-light-menu/css/dark/loader.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('assetsAdmin/layouts/vertical-light-menu/loader.js') }}"></script>

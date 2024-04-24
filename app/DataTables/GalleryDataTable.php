@@ -23,7 +23,7 @@ class GalleryDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('image', function (Gallery $gallery) {
-                return '<img src="' . $gallery->image . '" width="100" height="100">';
+                return '<img src="' . $gallery->image . '" width="120" height="80" class="img-thumbnail">';
             })
             ->addColumn('action', function (Gallery $gallery) {
                 return view('Academy.pages.gallery.datatable.actions', compact('gallery'))->render();

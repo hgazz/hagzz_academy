@@ -49,7 +49,7 @@ class NotificationService
             'title' => $title,
             'data' => $body,
             'image' => $image,
-            'details' => json_encode($details)
+            'details' => $details
         ]);
 
     }

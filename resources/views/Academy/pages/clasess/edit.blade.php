@@ -22,7 +22,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.class.index') }}">{{ trans('admin.coaches.coaches') }}</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('academy.class.index') }}">{{ trans('admin.clasess.clasess') }}</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.clasess.edit') }}</li>
                                 </ol>
                             </nav>

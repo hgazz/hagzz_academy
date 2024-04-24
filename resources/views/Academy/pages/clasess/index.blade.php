@@ -49,21 +49,16 @@
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <a class="btn btn-success w-25 mt-3 mb-2" href="{{route('academy.class.export')}}">
-                    Export
+                    {{ trans('admin.export') }}
                 </a>
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <a href="{{route('academy.class.create')}}">
-                        <h3>{{ trans('admin.clasess.create') }}</h3>
+                        <h3>{{ trans('admin.clasess.clasess') }}</h3>
                     </a>
-                    <a href="{{route('academy.class.create')}}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-plus">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
+                    <a href="{{route('academy.class.create')}}" class="btn btn-primary">
+                        {{ trans('admin.clasess.create') }}
                     </a>
                 </div>
 

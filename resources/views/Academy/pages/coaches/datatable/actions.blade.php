@@ -1,31 +1,13 @@
-
-<td class="text-center">
-    <div class="action-btns d-flex">
-        <a href="{{route('academy.coach.edit', $coach)}}" class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
-           data-placement="top"
-           title="{{ trans('admin.academies.edit') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2">
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-        </a>
-
-        <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
-        <a href="javascript:void(0)" data-href="{{ route('academy.coach.delete', $coach) }}"  data-id="{{ $coach->id }}" data-name="Coach" type="submit"
-           class="show_confirm_two text-danger" style="border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="feather feather-trash-2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-        </a>
-
-
-
+<td>
+    <div class="btn-group">
+        <button type="button" class="btn btn-dark btn-sm">{{ trans('admin.open') }}</button>
+        <button type="button" class="btn btn-dark btn-sm dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuReference1">
+            <a class="dropdown-item" href="{{route('academy.coach.edit', $coach)}}">{{ trans('admin.edit') }}</a>
+            <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+            <a class="dropdown-item" href="javascript:void(0);" data-href="{{ route('academy.coach.delete', $coach) }}"  data-id="{{ $coach->id }}" data-name="Coach">{{ trans('admin.delete') }}</a>
+        </div>
     </div>
 </td>
-
-
