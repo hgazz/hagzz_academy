@@ -65,7 +65,8 @@
         <div class="input-group mb-2">
             <input class="form-control outcome-input" type="text" name="outcomes[]" value="" id="outcomes">
             <div class="input-group-append">
-                <button class="btn btn-danger remove-outcome" type="button">-</button>
+                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
             </div>
         </div>
         <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
@@ -79,7 +80,8 @@
         <div class="input-group mb-2">
             <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="" id="outcomes">
             <div class="input-group-append">
-                <button class="btn btn-danger remove-bring-with-me" type="button">-</button>
+                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
             </div>
         </div>
         <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
@@ -103,7 +105,8 @@
                     <div class="input-group mb-2">
                         <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $class->out_comes[$i] }}" id="outcomes">
                         <div class="input-group-append">
-                            <button class="btn btn-danger remove-outcome" type="button">-</button>
+                            <button class="btn btn-danger m-2 remove-outcome" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
                         </div>
                     </div>
                     @error('outcomes.*')
@@ -122,7 +125,8 @@
                     <div class="input-group mb-2">
                         <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="{{ $class->bring_with_me[$i] }}" id="bring_with_me">
                         <div class="input-group-append">
-                            <button class="btn btn-danger remove-bring-with-me" type="button">-</button>
+                            <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
                         </div>
                     </div>
                     @error('bring_with_me.*')
@@ -167,8 +171,10 @@
                     newInput.classList.add('input-group', 'mb-2');
                     newInput.innerHTML = `
             <input class="form-control outcome-input" type="text" name="outcomes[]" value="">
+
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary remove-outcome" type="button">-</button>
+                <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
             </div>
         `;
                     // Add event listener for the remove button in the new input group
@@ -194,8 +200,10 @@
                 newInput.classList.add('input-group', 'mb-2');
                 newInput.innerHTML = `
             <input class="form-control outcome-input" type="text" name="outcomes[]" value="${value}">
+
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary remove-outcome" type="button">-</button>
+                <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
             </div>
         `;
                 newInput.querySelector('.remove-outcome').addEventListener('click', function() {
@@ -214,8 +222,10 @@
                     newInput.classList.add('input-group', 'mb-2');
                     newInput.innerHTML = `
             <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="${value}">
+
             <div class="input-group-append">
-                <button class="btn btn-danger remove-bring-with-me" type="button">-</button>
+                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
             </div>
         `;
                     newInput.querySelector('.remove-bring-with-me').addEventListener('click', function() {
