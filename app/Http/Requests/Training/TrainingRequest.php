@@ -26,9 +26,9 @@ class TrainingRequest extends FormRequest
     public function rules(): array
     {
         return[
-            'name_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'name_en' => 'required|string|max:255|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
             'name_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
-            'description_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'description_en' => 'required|string|max:255|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
             'description_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
             'start_date'=>'required|date|after_or_equal:'. now()->toDateString(),
             'end_date'=>'required|date|after_or_equal:'. now()->toDateString(),

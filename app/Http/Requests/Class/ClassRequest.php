@@ -26,9 +26,9 @@ class ClassRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'title_en' => 'required|string|max:255|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
             'title_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
-            'subtitle_en' => 'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
+            'subtitle_en' => 'required|string|max:255|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
             'subtitle_ar' => 'required|string|max:255|regex:/\p{Arabic}/u',
             'date' =>['required',new ValidateDate()],
             'training_id'=>'required|exists:trainings,id',
