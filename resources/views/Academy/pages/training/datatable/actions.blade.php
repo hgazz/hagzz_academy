@@ -1,10 +1,7 @@
 <td>
-    <div class="btn-group">
-        <button type="button" class="btn btn-dark btn-sm">{{ trans('admin.open') }}</button>
-        <button type="button" class="btn btn-dark btn-sm dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuReference1">
+    <div class="btn-group  mb-2 me-4" role="group">
+        <button id="btndefault" type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('admin.actions') }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+        <div class="dropdown-menu" aria-labelledby="btndefault">
             <a class="dropdown-item" href="{{ route('academy.training.edit', $training) }}">{{ trans('admin.edit') }}</a>
             <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
             <a class="dropdown-item" href="javascript:void(0);" data-href="{{ route('academy.training.delete', $training) }}"  data-id="{{ $training->id }}" data-name="Training">{{ trans('admin.delete') }}</a>

@@ -5,42 +5,42 @@
 <div class="row">
     <div class="col-md-6 mb-3">
         <label for="name">{{ trans('admin.coaches.name') }}</label>
-        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->name : old('name'))}}" id="name" name="name">
+        <input class="form-control" type="text" value="{{old('name', (isset($coach) ? $coach->name : ''))}}" id="name" name="name">
         @error('name')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="description">{{ trans('admin.coaches.description') }}</label>
-        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->description : old('description'))}}" id="description" name="description">
+        <input class="form-control" type="text" value="{{ old('description',(isset($coach) ? $coach->description :''))}}" id="description" name="description">
         @error('description')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="license">{{ trans('admin.coaches.license') }}</label>
-        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->license : old('license'))}}" id="license" name="license">
+        <input class="form-control" type="text" value="{{old('license', (isset($coach) ? $coach->license: ''))}}" id="license" name="license">
         @error('license')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="license_type">{{ trans('admin.coaches.license_type') }}</label>
-        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->license_type : old('license_type'))}}" id="license_type" name="license_type">
+        <input class="form-control" type="text" value="{{ old('license_type',(isset($coach) ? $coach->license_type : ''))}}" id="license_type" name="license_type">
         @error('license_type')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="phone">{{ trans('admin.coaches.phone') }}</label>
-        <input class="form-control" type="text" value="{{(isset($coach) ? $coach->phone : old('phone'))}}" id="phone" name="phone">
+        <input class="form-control" type="text" value="{{ old('phone',(isset($coach) ? $coach->phone : '')) }}" id="phone" name="phone">
         @error('phone')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="birth_date">{{ trans('admin.coaches.birth_date') }}</label>
-        <input class="form-control" type="date" value="{{(isset($coach) ?  $coach->birth_date : old('birth_date'))}}" id="birth_date" name="birth_date">
+        <input class="form-control" type="date" value="{{old('birth_date', (isset($coach) ?  $coach->birth_date : ''))}}" id="birth_date" name="birth_date">
         @error('birth_date')
         <span class="text-danger">*{{$message}}</span>
         @enderror
