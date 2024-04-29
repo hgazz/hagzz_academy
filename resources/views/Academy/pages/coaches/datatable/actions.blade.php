@@ -4,7 +4,7 @@
         <div class="dropdown-menu" aria-labelledby="btndefault">
             <a class="dropdown-item" href="{{route('academy.coach.edit', $coach)}}">{{ trans('admin.edit') }}</a>
             <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
-            <a class="dropdown-item" href="javascript:void(0);" data-href="{{ route('academy.coach.delete', $coach) }}"  data-id="{{ $coach->id }}" data-name="Coach">{{ trans('admin.delete') }}</a>
+            <a class="dropdown-item show_confirm_two" href="javascript:void(0);" data-href="{{ route('academy.coach.delete', $coach) }}"  data-id="{{ $coach->id }}" data-name="Coach">{{ trans('admin.delete') }}</a>
         </div>
     </div>
 </td>
