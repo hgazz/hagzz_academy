@@ -124,6 +124,15 @@ class ClassesController extends Controller
         }
     }
 
+    public function bulkDelete(Request $request)
+    {
+        foreach (json_decode($request->ids) as $id) {
+            $class = $this->classModel->findOrFail($id);
+            $class->delete();
+        }
+        session()->flash('success', trans('admin.clasess.deleted_successfully'));
+        return to_route('academy.class.index');
+    }
     public function export()
     {
         return Excel::download(new clasessExport() , 'classes.xlsx');

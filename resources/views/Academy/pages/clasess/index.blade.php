@@ -63,6 +63,12 @@
                 </div>
 
             </div>
+            <form class="mt-3" action="{{route('academy.class.bulkDelete')}}" method="post">
+                @csrf @method('DELETE')
+                <input type="hidden" name="ids" id="ids">
+                <button class="btn btn-danger w-25 d-none dt-button" >Delete</button>
+            </form>
+
             <div class="card-body">
                 {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
             </div>

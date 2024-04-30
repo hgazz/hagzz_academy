@@ -82,6 +82,7 @@ Route::group(
             Route::put('class/update/{class}','update')->name('class.update');
             Route::delete('class/delete','delete')->name('class.delete');
             Route::get('class/export','export')->name('class.export');
+            Route::delete('class/bulkDelete','bulkDelete')->name('class.bulkDelete');
         });
 
         Route::controller(GalleryController::class)->group(function(){

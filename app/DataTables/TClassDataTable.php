@@ -28,12 +28,15 @@ class TClassDataTable extends DataTable
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
             })
+            ->addColumn('checkbox',function (TClass $class){
+                return view('Academy.pages.clasess.datatable.checkbox',compact('class'));
+            })
             ->filterColumn('training.name', function ($query, $keyword) {
                 $query->whereHas('training',function ($q) use($keyword){
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action']);
+            ->rawColumns(['action','checkbox']);
     }
 
     /**
@@ -87,6 +90,7 @@ class TClassDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            ['name' => 'checkbox', 'data' => 'checkbox', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.clasess.training')],
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],
