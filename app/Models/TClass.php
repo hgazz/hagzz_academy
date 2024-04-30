@@ -22,19 +22,10 @@ class TClass extends Model
         'bring_with_me',
         'sport_id'
     ];
-    public $translatable = ['title','subtitle'];
+    public $translatable = [];
 
     public static $translatableColumns = [
-        'title'=>[
-            'type'=>'text',
-            'validations'=>'required|string|max:255|regex:/(^([a-zA-Z 0-9 - , & \']+)(\d+)?$)/u',
-            'is_textarea'=>false
-        ],
-        'subtitle'=>[
-            'type'=>'text',
-            'validations'=>'required|string|max:255',
-            'is_textarea'=>false
-        ]
+
     ];
 
     protected $casts = [

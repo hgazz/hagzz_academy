@@ -94,7 +94,7 @@ class TClassDataTable extends DataTable
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.clasess.training')],
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],
-            ['name' => 'subtitle', 'data' => 'subtitle', 'title' => trans('admin.clasess.subtitle')],
+//            ['name' => 'subtitle', 'data' => 'subtitle', 'title' => trans('admin.clasess.subtitle')],
             ['name' => 'date', 'data' => 'date', 'title' => trans('admin.clasess.date')],
             ['name' => 'start_time', 'data' => 'start_time', 'title' => trans('admin.clasess.start_time')],
             ['name' => 'end_time', 'data' => 'end_time', 'title' => trans('admin.clasess.end_time')],

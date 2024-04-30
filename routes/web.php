@@ -104,6 +104,10 @@ Route::group(
             Route::put('active/{training}','updateActive')->name('training.updateActive');
             Route::get('training/export','export')->name('training.export');
             Route::get('training/getCoachesBySports/{id}','getCoachesBySports');
+            Route::get('training/createBooking/{training}','createBooking')->name('training.createBooking');
+            Route::post('trainings/areas','getAreaByCity')->name('training.getAreaByCity');
+            Route::post('trainings/cities','getCityByCountry')->name('training.getCities');
+            Route::post('trainings/booking','storeBooking')->name('training.storeBooking');
         });
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking','index')->name('booking.index');

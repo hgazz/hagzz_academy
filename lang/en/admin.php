@@ -256,7 +256,16 @@ return [
         'booking'=>'Booking',
         'Total Balance'=>'Total Balance',
         'Followers'=>'Followers',
-        'discount_rule' => 'Discount Value must be less than Price'
+        'discount_rule' => 'Discount Value must be less than Price',
+        'training_name'=>'Training Name',
+        'male'=>'male',
+        'female'=>'female',
+        'country'=>'country',
+        'Select County'=>'Select County',
+        'birth_date'=>'Birth Date',
+        'Booking created successfully'=>'Booking created successfully',
+        'select_city'=>'select city',
+        'select_area'=>'select area',
     ],
     'notifications'=> [
         'notifications'=>'Notifications',
