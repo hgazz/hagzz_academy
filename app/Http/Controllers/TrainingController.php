@@ -197,7 +197,7 @@ class TrainingController extends Controller
                 'academy_name' => auth('academy')->user()->commercial_name
             ];
             $AcademyTitle = 'Don’t miss out!';
-            $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
+            $AcademyBody = 'just added a new activity. Check it out!';
             $academyFollows = Follow::where([
                 'followable_type' => Academies::class,
                 'followable_id' => auth('academy')->id(),
