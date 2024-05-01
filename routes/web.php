@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\CoachController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
@@ -112,6 +113,9 @@ Route::group(
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking','index')->name('booking.index');
             Route::get('booking/show/{id}','show')->name('booking.show');
+        });
+        Route::controller(CustomerController::class)->group(function (){
+            Route::get('users','index')->name('users.index');
         });
     });
 });
