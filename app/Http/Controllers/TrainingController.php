@@ -90,7 +90,8 @@ class TrainingController extends Controller
           $details = [
               'training_id' => $training->id,
               'longitude' => $training->longitude,
-              'latitude' => $training->latitude
+              'latitude' => $training->latitude,
+              'academy_name' => auth('academy')->user()->commercial_name
           ];
            $AcademyTitle = 'Don’t miss out!';
            $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
@@ -99,7 +100,7 @@ class TrainingController extends Controller
                'followable_id' => auth('academy')->id(),
            ])->get();
            $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody, $details) {
-               NotificationService::dbNotification($follow->user_id,Academies::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
+               NotificationService::dbNotification($follow->user_id,User::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
            });
 
            $coachTitle = 'Don’t miss out!';
@@ -109,7 +110,7 @@ class TrainingController extends Controller
                'followable_id' => $training->coach_id,
            ])->get();
            $coachFollows->map(function ($follow) use ($coachTitle, $coachBody, $details) {
-               NotificationService::dbNotification($follow->user_id,Academies::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
+               NotificationService::dbNotification($follow->user_id,User::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
            });
        });
        session()->flash('success',trans('admin.training.created_successfully'));
@@ -147,7 +148,8 @@ class TrainingController extends Controller
                 $details = [
                     'training_id' => $training->id,
                     'longitude' => $training->longitude,
-                    'latitude' => $training->latitude
+                    'latitude' => $training->latitude,
+                    'academy_name' => auth('academy')->user()->commercial_name
                 ];
                 //notifications to users
                 if ($training->wasChanged(['start_date', 'end_date'])) {
