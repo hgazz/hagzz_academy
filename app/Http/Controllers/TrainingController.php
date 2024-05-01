@@ -87,31 +87,8 @@ class TrainingController extends Controller
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
            ]));
-          $details = [
-              'training_id' => $training->id,
-              'longitude' => $training->longitude,
-              'latitude' => $training->latitude,
-              'academy_name' => auth('academy')->user()->commercial_name
-          ];
-           $AcademyTitle = 'Don’t miss out!';
-           $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
-           $academyFollows = Follow::where([
-               'followable_type' => Academies::class,
-               'followable_id' => auth('academy')->id(),
-           ])->get();
-           $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody, $details) {
-               NotificationService::dbNotification($follow->user_id,User::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
-           });
+           $this->sendNotification($training);
 
-           $coachTitle = 'Don’t miss out!';
-           $coachBody = $training->coach->name . ' is leading a new training.Tap for details';
-           $coachFollows = Follow::where([
-               'followable_type' => Coach::class,
-               'followable_id' => $training->coach_id,
-           ])->get();
-           $coachFollows->map(function ($follow) use ($coachTitle, $coachBody, $details) {
-               NotificationService::dbNotification($follow->user_id,User::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
-           });
        });
        session()->flash('success',trans('admin.training.created_successfully'));
        return to_route('academy.training.index');
@@ -186,6 +163,7 @@ class TrainingController extends Controller
             'active' => $newStatus,
         ]);
 
+        $this->sendNotification($training);
         session()->flash('success', $successMessage);
         return redirect()->route('academy.training.index');
     }
@@ -203,5 +181,40 @@ class TrainingController extends Controller
     public function export()
     {
         return Excel::download(new TrainingsExport() ,'training.xlsx');
+    }
+
+    /**
+     * @param Training $training
+     * @return void
+     */
+    public function sendNotification(Training $training): void
+    {
+        if ($training->active) {
+            $details = [
+                'training_id' => $training->id,
+                'longitude' => $training->longitude,
+                'latitude' => $training->latitude,
+                'academy_name' => auth('academy')->user()->commercial_name
+            ];
+            $AcademyTitle = 'Don’t miss out!';
+            $AcademyBody = auth('academy')->user()->commercial_name . 'just added a new activity. Check it out!';
+            $academyFollows = Follow::where([
+                'followable_type' => Academies::class,
+                'followable_id' => auth('academy')->id(),
+            ])->get();
+            $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody, $details) {
+                NotificationService::dbNotification($follow->user_id, User::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
+            });
+
+            $coachTitle = 'Don’t miss out!';
+            $coachBody = $training->coach->name . ' is leading a new training.Tap for details';
+            $coachFollows = Follow::where([
+                'followable_type' => Coach::class,
+                'followable_id' => $training->coach_id,
+            ])->get();
+            $coachFollows->map(function ($follow) use ($coachTitle, $coachBody, $details) {
+                NotificationService::dbNotification($follow->user_id, User::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
+            });
+        }
     }
 }
