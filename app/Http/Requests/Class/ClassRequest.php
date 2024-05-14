@@ -27,7 +27,7 @@ class ClassRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'date' =>['required'],
+            'date' =>['required',new ValidateDate()],
             'training_id'=>'required|exists:trainings,id',
             'outcomes.*' => 'nullable|string',
             'bring_with_me.*' => 'nullable|string',

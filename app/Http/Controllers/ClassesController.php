@@ -84,7 +84,8 @@ class ClassesController extends Controller
             $details = [
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->longitude,
-                'latitude' => $class->training->latitude
+                'latitude' => $class->training->latitude,
+                'academy_name' => auth('academy')->user()->commercial_name
             ];
             //notifications to users
             if ($class->wasChanged('date')) {
