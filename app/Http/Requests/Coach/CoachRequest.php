@@ -23,7 +23,7 @@ class CoachRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|alpha',
+            'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]*$/',
             'phone' => 'required|string|max:20',
             'description' => 'required|string',
             'image' => $this->checkImage(),
