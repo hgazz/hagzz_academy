@@ -42,6 +42,13 @@ Route::group(
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::get('booking/filter', [DashboardController::class, 'filterBookings'])->name('filter-bookings');
+        Route::get('/revenue-data', [DashboardController::class, 'getRevenueDataByMonth'])->name('revenue-data');
+        Route::get('/chart/users-by-month', [DashboardController::class, 'getUserDataByMonthAjax'])->name('getUserDataByMonth');
+        Route::get('/chart/users-by-year', [DashboardController::class, 'getUserDataByYearAjax'])->name('getUserDataByYear');
+        Route::get('/beginner/sports', [DashboardController::class, 'getBeginnerSportsCount'])->name('beginner.sports');
+        Route::get('/intermediate/sports', [DashboardController::class, 'getIntermediateSportsCount'])->name('intermediate.sports');
+        Route::get('/advanced/sports', [DashboardController::class, 'getAdvancedSportsCount'])->name('advanced.sports');
 
         Route::controller(ProfileController::class)->group(function (){
             Route::get('profile','index')->name('profile.index');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Profile;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProfileRequest extends FormRequest
@@ -17,13 +18,12 @@ class ProfileRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'owner_name' => 'required|string|min:3|max:255',
             'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg',
             'phone'=>'required|string|min:7',
             'email'=>'required|email|string',

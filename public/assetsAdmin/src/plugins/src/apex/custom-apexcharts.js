@@ -18,90 +18,90 @@ window.addEventListener("load", function(){
 
         // Simple Line
 
-        var sline = {
-        chart: {
-            fontFamily: 'Nunito, Arial, sans-serif',
-            height: 350,
-            type: 'line',
-            zoom: {
-            enabled: false
-            },
-            toolbar: {
-            show: false,
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'straight'
-        },
-        series: [{
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-        }],
-        title: {
-            text: 'Product Trends by Month',
-            align: 'left'
-        },
-        grid: {
-            row: {
-            colors: ['#3b3f5c', 'transparent'], // takes an array which will be repeated on columns
-            opacity: 0.5
-            },
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-        }
-        }
+        // var sline = {
+        // chart: {
+        //     fontFamily: 'Nunito, Arial, sans-serif',
+        //     height: 350,
+        //     type: 'line',
+        //     zoom: {
+        //     enabled: false
+        //     },
+        //     toolbar: {
+        //     show: false,
+        //     }
+        // },
+        // dataLabels: {
+        //     enabled: false
+        // },
+        // stroke: {
+        //     curve: 'straight'
+        // },
+        // series: [{
+        //     name: "Desktops",
+        //     data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+        // }],
+        // title: {
+        //     text: 'Product Trends by Month',
+        //     align: 'left'
+        // },
+        // grid: {
+        //     row: {
+        //     colors: ['#3b3f5c', 'transparent'], // takes an array which will be repeated on columns
+        //     opacity: 0.5
+        //     },
+        // },
+        // xaxis: {
+        //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        // }
+        // }
 
 
         // Simple Line Area
 
-        var sLineArea = {
-            chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
-                height: 350,
-                type: 'area',
-                toolbar: {
-                show: false,
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'smooth'
-            },
-            series: [{
-                name: 'series1',
-                data: [31, 40, 28, 51, 42, 109, 100]
-            }, {
-                name: 'series2',
-                data: [11, 32, 45, 32, 34, 52, 41]
-            }],
-            legend: {
-                markers: {
-                    width: 10,
-                    height: 10,
-                    offsetX: -5,
-                    offsetY: 0
-                },
-                itemMargin: {
-                    horizontal: 10,
-                    vertical: 0
-                }
-            },
-            xaxis: {
-                type: 'datetime',
-                categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                
-            },
-            tooltip: {
-                x: {
-                    format: 'dd/MM/yy HH:mm'
-                },
-            }
-        }
+        // var sLineArea = {
+        //     chart: {
+        //         fontFamily: 'Nunito, Arial, sans-serif',
+        //         height: 350,
+        //         type: 'area',
+        //         toolbar: {
+        //         show: false,
+        //         }
+        //     },
+        //     dataLabels: {
+        //         enabled: false
+        //     },
+        //     stroke: {
+        //         curve: 'smooth'
+        //     },
+        //     series: [{
+        //         name: 'series1',
+        //         data: [31, 40, 28, 51, 42, 109, 100]
+        //     }, {
+        //         name: 'series2',
+        //         data: [11, 32, 45, 32, 34, 52, 41]
+        //     }],
+        //     legend: {
+        //         markers: {
+        //             width: 10,
+        //             height: 10,
+        //             offsetX: -5,
+        //             offsetY: 0
+        //         },
+        //         itemMargin: {
+        //             horizontal: 10,
+        //             vertical: 0
+        //         }
+        //     },
+        //     xaxis: {
+        //         type: 'datetime',
+        //         categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
+        //     },
+        //     tooltip: {
+        //         x: {
+        //             format: 'dd/MM/yy HH:mm'
+        //         },
+        //     }
+        // }
 
         // Simple Column
 
@@ -118,7 +118,7 @@ window.addEventListener("load", function(){
                 bar: {
                     horizontal: false,
                     columnWidth: '55%',
-                    endingShape: 'rounded'  
+                    endingShape: 'rounded'
                 },
             },
             dataLabels: {
@@ -261,7 +261,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Mixed Chart
+        // Mixed chart
 
         var options = {
         chart: {
@@ -318,7 +318,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Donut Chart
+        // Donut chart
 
 
         var donutChart = {
@@ -360,7 +360,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Radial Chart
+        // Radial chart
 
         var radialChart = {
             chart: {
@@ -392,7 +392,7 @@ window.addEventListener("load", function(){
                 }
             },
             series: [44, 55, 67, 83],
-            labels: ['Apples', 'Oranges', 'Bananas', 'Berries'],    
+            labels: ['Apples', 'Oranges', 'Bananas', 'Berries'],
         }
 
     } else {
@@ -409,42 +409,42 @@ window.addEventListener("load", function(){
 
         // Simple Line
 
-        var sline = {
-        chart: {
-            fontFamily: 'Nunito, Arial, sans-serif',
-            height: 350,
-            type: 'line',
-            zoom: {
-            enabled: false
-            },
-            toolbar: {
-            show: false,
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'straight'
-        },
-        series: [{
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-        }],
-        title: {
-            text: 'Product Trends by Month',
-            align: 'left'
-        },
-        grid: {
-            row: {
-            colors: ['#e0e6ed', 'transparent'], // takes an array which will be repeated on columns
-            opacity: 0.5
-            },
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-        }
-        }
+        // var sline = {
+        // chart: {
+        //     fontFamily: 'Nunito, Arial, sans-serif',
+        //     height: 350,
+        //     type: 'line',
+        //     zoom: {
+        //     enabled: false
+        //     },
+        //     toolbar: {
+        //     show: false,
+        //     }
+        // },
+        // dataLabels: {
+        //     enabled: false
+        // },
+        // stroke: {
+        //     curve: 'straight'
+        // },
+        // series: [{
+        //     name: "Desktops",
+        //     data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+        // }],
+        // title: {
+        //     text: 'Revenue by Month',
+        //     align: 'left'
+        // },
+        // grid: {
+        //     row: {
+        //     colors: ['#e0e6ed', 'transparent'], // takes an array which will be repeated on columns
+        //     opacity: 0.5
+        //     },
+        // },
+        // xaxis: {
+        //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        // }
+        // }
 
 
         // Simple Line Area
@@ -485,7 +485,7 @@ window.addEventListener("load", function(){
             },
             xaxis: {
                 type: 'datetime',
-                categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                
+                categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
             },
             tooltip: {
                 x: {
@@ -509,7 +509,7 @@ window.addEventListener("load", function(){
                 bar: {
                     horizontal: false,
                     columnWidth: '55%',
-                    endingShape: 'rounded'  
+                    endingShape: 'rounded'
                 },
             },
             dataLabels: {
@@ -652,7 +652,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Mixed Chart
+        // Mixed chart
 
         var options = {
         chart: {
@@ -709,7 +709,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Donut Chart
+        // Donut chart
 
 
         var donutChart = {
@@ -751,7 +751,7 @@ window.addEventListener("load", function(){
         }
 
 
-        // Radial Chart
+        // Radial chart
 
         var radialChart = {
             chart: {
@@ -783,9 +783,9 @@ window.addEventListener("load", function(){
                 }
             },
             series: [44, 55, 67, 83],
-            labels: ['Apples', 'Oranges', 'Bananas', 'Berries'],    
+            labels: ['Apples', 'Oranges', 'Bananas', 'Berries'],
         }
-        
+
     }
 
     // Simple Line
@@ -836,7 +836,7 @@ window.addEventListener("load", function(){
     simpleBar.render();
 
 
-    // Mixed Chart
+    // Mixed chart
 
     var mixed = new ApexCharts(
     document.querySelector("#mixed-chart"),
@@ -846,7 +846,7 @@ window.addEventListener("load", function(){
     mixed.render();
 
 
-    // Donut Chart
+    // Donut chart
 
     var donut = new ApexCharts(
         document.querySelector("#donut-chart"),
@@ -856,7 +856,7 @@ window.addEventListener("load", function(){
     donut.render();
 
 
-    // Radial Chart
+    // Radial chart
     var radialChart = new ApexCharts(
         document.querySelector("#radial-chart"),
         radialChart
@@ -911,13 +911,13 @@ window.addEventListener("load", function(){
                     borderColor: '#191e3a'
                 },
             })
-            
+
             simpleBar.updateOptions({
                 grid: {
                     borderColor: '#191e3a'
                 },
             })
-            
+
             mixed.updateOptions({
                 grid: {
                     borderColor: '#191e3a'
@@ -929,8 +929,8 @@ window.addEventListener("load", function(){
                     colors: '#0e1726'
                 }
             })
-            
-            
+
+
         } else {
             // Apex.grid = {
             //     borderColor: '#ebedf2'
@@ -943,7 +943,7 @@ window.addEventListener("load", function(){
             // }
 
 
-            
+
 
             simpleLine.updateOptions({
                 grid: {
@@ -973,13 +973,13 @@ window.addEventListener("load", function(){
                     borderColor: '#ebedf2'
                 },
             })
-            
+
             simpleBar.updateOptions({
                 grid: {
                     borderColor: '#ebedf2'
                 },
             })
-            
+
             mixed.updateOptions({
                 grid: {
                     borderColor: '#ebedf2'
@@ -991,9 +991,9 @@ window.addEventListener("load", function(){
                     colors: '#e0e6ed'
                 }
             })
-            
+
         }
-         
+
      })
-    
+
 })
