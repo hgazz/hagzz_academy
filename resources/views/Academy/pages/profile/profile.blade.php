@@ -182,7 +182,7 @@
                                             stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
                                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                             <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                        </svg> Home</button>
+                                        </svg> {{ trans('admin.home') }}</button>
                                 </li>
 
                             </ul>
@@ -306,89 +306,92 @@
                                     <div class="container">
                                         <div class="tab">
                                             <button class="tablinks" onclick="openTab(event, 'personal')"
-                                                id="defaultOpen">Personal</button>
-                                            <button class="tablinks" onclick="openTab(event, 'contract')">Contract
-                                                Information</button>
+                                                id="defaultOpen">{{ trans('admin.Personal') }}</button>
+                                            <button class="tablinks" onclick="openTab(event, 'contract')">{{ trans('admin.contract_information') }}</button>
 
-                                            <button class="tablinks" onclick="openTab(event, 'bank')">Bank
-                                                Information</button>
+                                            <button class="tablinks" onclick="openTab(event, 'bank')">{{ trans('admin.bank_information') }}</button>
                                             <button class="tablinks"
-                                                onclick="openTab(event, 'settlements')">settlements</button>
+                                                onclick="openTab(event, 'settlements')">{{ trans('admin.settlements') }}</button>
                                         </div>
 
-                                            
+
                                         <div class="tabs-data">
                                             <div id="personal" class="tabcontent">
-                                                <form action="" class="text-center">
-                                                    <h3 class="text-center">Account Information</h3>
-    
-                                                    <label for="email">Email:</label>
-                                                    <input type="email" id="email" name="email"
+                                                <form action="{{ route('academy.profile.update', auth()->user()) }}" class="text-center" method="post">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <h3 class="text-center">{{ trans('admin.contract_information') }}</h3>
+
+                                                    <label for="email">{{ trans('admin.profile.email') }}: </label>
+                                                    <input type="email" id="email" name="email" value="{{ old('email', auth('academy')->user()->email)}}"
                                                         placeholder="Email">
-                                                    <label for="username">Username:</label>
-                                                    <input type="text" id="username" name="username"
+                                                    <label for="username">{{ trans('admin.profile.name') }}: </label>
+                                                    <input type="text" id="username" name="name" value="{{ old('name', auth()->user()->commercial_name) }}"
                                                         placeholder="Username">
-                                                    <label for="photo">Upload Your Photo:</label>
-                                                    <input type="file" id="photo" name="photo"
+                                                    <label for="phone">{{ trans('admin.profile.phone') }}: </label>
+                                                    <input type="text" id="phone" name="phone" value="{{ old('phone', auth()->user()->phone) }}"
+                                                        placeholder="Phone">
+                                                    <label for="photo">{{ trans('admin.logo') }}:</label>
+                                                    <input type="file" id="photo" name="logo"
                                                         accept="image/*">
                                                     <hr>
-                                                    <h3 class="text-center">Social Links</h3>
-    
+                                                    <h3 class="text-center">{{ trans('admin.social_links') }}</h3>
+
                                                     {{-- social links part --}}
-                                                    <label for="link__facebook">Facebook Link</label>
-                                                    <input type="text" id="link__facebook" name="link__facebook"
-                                                        placeholder="Enter Facebok Page Link">
-                                                    <label for="link__instagram">Instagram Link</label>
-                                                    <input type="text" id="link__instagram" name="link__instagram"
-                                                        placeholder="Enter Instagram Page Link">
-                                                    <label for="link__linkedIn">LinkedIn Link</label>
-                                                    <input type="text" id="link__linkedIn" name="link__linkedIn"
+                                                    <label for="link__facebook">{{ trans('admin.facebook_link') }}</label>
+                                                    <input type="text" id="link__facebook" name="facebook"
+                                                        placeholder="Enter Facebok Page Link" value="{{ old('facebook', auth('academy')->user()->facebook) }}">
+                                                    <label for="link__instagram">{{ trans('admin.instagram_link') }}</label>
+                                                    <input type="text" id="link__instagram" name="instagram"
+                                                        placeholder="Enter Instagram Page Link" value="{{ old('instagram', auth('academy')->user()->instagram) }}">
+                                                    <label for="link__linkedIn">{{ trans('admin.linkedIn_link') }}</label>
+                                                    <input type="text" id="link__linkedIn" name="linkedin" value="{{ old('linkedin', auth('academy')->user()->linkedin) }}"
                                                         placeholder="Enter LinkedIn Page Link">
-                                                    <label for="link__website">Website Link</label>
-                                                    <input type="text" id="link__website" name="link__website"
-                                                        placeholder="Enter Website Link">
+                                                    <label for="link__website">{{ trans('admin.website_link') }}</label>
+                                                    <input type="text" id="link__website" name="website"
+                                                        placeholder="Enter Website Link" value="{{ old('website', auth('academy')->user()->website) }}">
                                                     <button class="btn btn-secondary fs-4 mt-3 w-100 m-auto"
-                                                        type="submit">Save Information</button>
+                                                        type="submit">{{ trans('admin.profile.save') }}</button>
                                                 </form>
                                             </div>
-    
+
                                             <div id="contract" class="tabcontent">
-                                                <h3 class="text-center">Contract Information</h3>
-    
-                                                <label for="cname">Contract Name:</label>
-                                                <input disabled type="text" id="cname" name="cname"
-                                                    placeholder="Contract Name">
-                                                <label for="cdate">Contract Date</label>
+                                                <h3 class="text-center">{{ trans('admin.contract_information') }}</h3>
+
+                                                <label for="cname">{{ trans('admin.contract_number') }}:</label>
+                                                <input disabled type="text" id="cname" name="contract_number"
+                                                    placeholder="Contract Name" value="{{ old('contract_number', auth('academy')->user()->contract_number) }}">
+                                                <label for="cdate">{{ trans('admin.contract_date') }}</label>
                                                 <input disabled type="date" id="cdate" name="cdate"
-                                                    placeholder="Contract Date">
-                                                <label for="csdate">Contract Start Date</label>
+                                                    placeholder="Contract Date" value="{{ old('contract_date', auth('academy')->user()->contract_date) }}">
+                                                <label for="csdate">{{ trans('admin.contract_start_date') }}</label>
                                                 <input disabled type="date" id="csdate" name="csdate"
-                                                    placeholder="Contract Start Date">
-                                                <label for="cedate">Contract End Date</label>
+                                                    placeholder="Contract Start Date" value="{{ old('start_date', auth('academy')->user()->start_date) }}">
+                                                <label for="cedate">{{ trans('admin.contract_end_date') }}</label>
                                                 <input disabled type="date" id="cedate" name="cedate"
-                                                    placeholder="Contract End Date">
+                                                    placeholder="Contract End Date" value="{{ old('end_date', auth('academy')->user()->end_date) }}">
                                             </div>
-    
+
                                             <div id="bank" class="tabcontent">
-                                                <h3 class="text-center">Bank Information</h3>
-                                                <label for="btype">Bank Account Type</label>
+                                                <h3 class="text-center">{{ trans('admin.bank_information') }}</h3>
+                                                <label for="btype">{{ trans('admin.bank_type') }}</label>
                                                 <input disabled type="text" id="btype" name="btype"
-                                                    placeholder="Bank Type">
-                                                <label for="bname">Bank Account Name</label>
-                                                <input disabled type="text" id="bname" name="bname"
+                                                    placeholder="Bank Type" value="{{ old('bank_account_type', auth('academy')->user()->bank_account_type) }}">
+                                                <label for="bname">{{ trans('admin.bank_name') }}</label>
+                                                <input disabled type="text" id="bname" name="bname" value="{{ old('bank_name', auth('academy')->user()->bank_name) }}"
                                                     placeholder="Bank Name">
-                                                <label for="bnum">Bank Account Number</label>
-                                                <input disabled type="text" id="bnum" name="bnum"
+                                                <label for="bnum">{{ trans('admin.bank_account_number') }}</label>
+                                                <input disabled type="text" id="bnum" name="bnum" value="{{ old('bank_account_number', auth('academy')->user()->bank_account_number)}}"
                                                     placeholder="Bank Number">
                                             </div>
-    
+
                                             <div id="settlements" class="tabcontent">
-                                                <h3 class="text-center">settlements</h3>
-                                                <label for="nrefund">Non Refund Days Count</label>
-                                                <input disabled type="number" id="nrefund" name="nrefund"
+                                                <h3 class="text-center">{{ trans('admin.settlements') }}</h3>
+                                                <label for="nrefund">{{ trans('admin.non_refund_days_acount') }}</label>
+                                                <input disabled type="number" id="nrefund" name="nrefund" value="{{ old('non_refund_days_count', auth('academy')->user()->non_refund_days_count) }}"
                                                     placeholder="Non Refund Days Count">
-                                                <label for="scount">settlements Days Count</label>
-                                                <input disabled type="number" id="scount" name="scount"
+                                                <label for="scount">{{ trans('admin.settlement_days_count') }}</label>
+                                                <input disabled type="number" id="scount" name="scount" value="{{ old('settlement_days_count', auth('academy')->user()->settlement_days_count)}}"
                                                     placeholder="settlements Days Count">
                                             </div>
 

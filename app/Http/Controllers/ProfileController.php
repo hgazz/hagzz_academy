@@ -25,13 +25,14 @@ class ProfileController extends Controller
     {
         $imageName = $request->hasFile('logo') ? $this->upload($request->file('logo') , $this->academies::PATH,  $user->getRawOriginal('logo')) : $user->getRawOriginal('logo');
         $user->update([
-            'name'=>$request->name,
-            'owner_name'=>$request->owner_name,
+            'commercial_name'=>$request->name,
             'logo'=> $imageName,
             'phone'=>$request->phone,
             'email'=>$request->email,
             'facebook'=>$request->facebook,
             'instagram'=>$request->instagram,
+            'linkedin'=>$request->linkedin,
+            'website'=>$request->website
         ]);
         session()->flash('success',trans('admin.profile.Updated Successfully'));
         return back();
