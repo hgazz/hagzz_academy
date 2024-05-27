@@ -92,7 +92,7 @@
                                         class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
                                         <h5 class="fs-6">{{ trans('admin.next_settlement_date') }}</h5>
                                         <p class="w-value">
-                                            {{ $settlements ? \Illuminate\Support\Carbon::now($settlements->settlement_date)->addDays(auth()->user()->settlement_days_count) : 0 }}
+                                            {{ $settlements ? \Illuminate\Support\Carbon::now($settlements->settlement_date)->addDays(auth()->user()->settlement_days_count) : '-' }}
                                         </p>
                                     </div>
                                 </div>
