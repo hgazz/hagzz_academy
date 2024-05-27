@@ -13,6 +13,7 @@ class Invoice extends Model
 
     protected $guarded = [];
 
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -27,4 +28,5 @@ class Invoice extends Model
     {
         return $this->hasMany(Join::class);
     }
+
 }

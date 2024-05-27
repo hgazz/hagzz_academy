@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\CoachController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
@@ -89,6 +90,7 @@ Route::group(
             Route::put('class/update/{class}','update')->name('class.update');
             Route::delete('class/delete','delete')->name('class.delete');
             Route::get('class/export','export')->name('class.export');
+            Route::delete('class/bulkDelete','bulkDelete')->name('class.bulkDelete');
         });
 
         Route::controller(GalleryController::class)->group(function(){
@@ -110,10 +112,17 @@ Route::group(
             Route::put('active/{training}','updateActive')->name('training.updateActive');
             Route::get('training/export','export')->name('training.export');
             Route::get('training/getCoachesBySports/{id}','getCoachesBySports');
+            Route::get('training/createBooking/{training}','createBooking')->name('training.createBooking');
+            Route::post('trainings/areas','getAreaByCity')->name('training.getAreaByCity');
+            Route::post('trainings/cities','getCityByCountry')->name('training.getCities');
+            Route::post('trainings/booking','storeBooking')->name('training.storeBooking');
         });
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking','index')->name('booking.index');
             Route::get('booking/show/{id}','show')->name('booking.show');
+        });
+        Route::controller(CustomerController::class)->group(function (){
+            Route::get('users','index')->name('users.index');
         });
     });
 });
