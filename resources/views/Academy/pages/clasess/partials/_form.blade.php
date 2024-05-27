@@ -87,7 +87,6 @@
 @else
     @isset($class)
         <div class="row">
-
             <div class="col-md-6 mb-3" id="outcomes-container">
                 @php
                     $numberOfOutcomes = count($class->out_comes);
