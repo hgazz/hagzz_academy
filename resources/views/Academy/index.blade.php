@@ -458,9 +458,6 @@
                     series: [{
                         name: "Revenue",
                         data: data.ordersData
-                    }, {
-                        name: "Refund",
-                        data: data.orderReturnsData
                     }],
                     title: {
                         text: 'Revenue by Month',
