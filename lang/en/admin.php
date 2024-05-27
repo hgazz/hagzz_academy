@@ -160,7 +160,7 @@ return [
         'created_successfully'=>'Coach created successfully',
         'updated_successfully'=>'Coach updated successfully',
         'deleted_successfully'=>'Coach deleted successfully',
-        'license'=> 'license',
+        'license'=> 'License',
         'license_type'=> 'License Type',
         'phone' => 'Phone Number',
         'error_delete' => 'You are not allowed to delete this coach where it exists trainings',
@@ -188,6 +188,9 @@ return [
         'owner_name'=>'Owner Name',
         'save'=>'Save',
         'Updated Successfully'=>'Updated Successfully',
+        'gender'=>'gender',
+        'following'=>'Following',
+        'image'=>'image'
     ],
     'address'=>[
         'address'=>'Locations',
@@ -299,7 +302,16 @@ return [
         'booking'=>'Booking',
         'Total Balance'=>'Total Settlement Amount',
         'Followers'=>'Followers',
-        'discount_rule' => 'Discount Value must be less than Price'
+        'discount_rule' => 'Discount Value must be less than Price',
+        'training_name'=>'Training Name',
+        'male'=>'male',
+        'female'=>'female',
+        'country'=>'country',
+        'Select County'=>'Select County',
+        'birth_date'=>'Birth Date',
+        'Booking created successfully'=>'Booking created successfully',
+        'select_city'=>'select city',
+        'select_area'=>'select area',
     ],
     'notifications'=> [
         'notifications'=>'Notifications',

@@ -18,13 +18,14 @@ class ProfileRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg',
+            'owner_name' => 'required|string|min:3|max:255',
+            'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg,png,webp',
             'phone'=>'required|string|min:7',
             'email'=>'required|email|string',
             'facebook'=>'nullable|string',

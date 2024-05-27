@@ -21,25 +21,8 @@
             @enderror
         </div>
     </div>
-    <div class="row">
-        @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\TClass::class) as $name => $data)
-            <div class="col-md-6 mb-3">
-                <label for="{{$name}}" class="form-label">{{trans('admin.clasess.' . $name)}}</label>
-                <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
-                       @php
-                           $field = $name == 'title_en' || $name == 'title_ar' ? 'title' : 'subtitle';
-                           $language = in_array($name, ['title_en', 'subtitle_en']) ? 'en' : 'ar';
-                           $defaultValue = isset($class) ? $class->getTranslation($field, $language) : '';
-                       @endphp
-                       value="{{ old($name, $defaultValue) }}"
-                       placeholder="Enter {{$name}}" data-parsley-required-message="Please enter {{$name}}">
-                @error($name)
-                <span class="text-danger">*{{$message}}</span>
-                @enderror
-            </div>
-        @endforeach
 
-    </div>
+
     <div class="col-md-6 mb-3">
         <label for="start_time">{{ trans('admin.training.start_time') }}</label>
         <input class="form-control" type="time" value="{{ old('start_time', (isset($class) ? $class->start_time : ''))}}" id="start_time" name="start_time">
@@ -52,6 +35,16 @@
         <label for="end_time">{{ trans('admin.training.end_time') }}</label>
         <input class="form-control" type="time" value="{{ old('end_time', (isset($class) ? $class->end_time : ''))}}" id="end_time" name="end_time">
         @error('end_time')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="title" class="form-label">{{trans('admin.clasess.title_en')}}</label>
+        <input type="text" id="title" name="title" maxlength="50" class="form-control"
+               value="{{ old('title', (isset($class) ? $class->title : ''))}}"
+               placeholder="Enter Title">
+        @error('title')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>

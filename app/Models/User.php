@@ -55,6 +55,10 @@ class User extends Authenticatable
         return $this->belongsTo(Country::class, 'country_id');
     }
 
+    public function following()
+    {
+        return $this->HasMany(Follow::class, 'user_id');
+    }
     public function city()
     {
         return $this->belongsTo(City::class, 'city_id');

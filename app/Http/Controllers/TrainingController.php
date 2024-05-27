@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\DataTables\TrainingDataTable;
 use App\Exports\TrainingExport;
 use App\Exports\TrainingsExport;
+use App\Http\Requests\BookingRequest;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Http\Traits\FileUpload;
 use App\Models\Academies;
 use App\Models\Address;
+use App\Models\Area;
+use App\Models\City;
 use App\Models\Coach;
 use App\Models\CoachSport;
+use App\Models\Country;
 use App\Models\Follow;
+use App\Models\Invoice;
 use App\Models\Join;
 use App\Models\Notification;
 use App\Models\Sport;
@@ -176,6 +181,58 @@ class TrainingController extends Controller
             'model'   => trans('admin.training.training'),
             'message' => trans('admin.training.deleted_successfully'),
        ]]);
+    }
+
+    public function createBooking(Training $training)
+    {
+        $countries = Country::get(['id','name']);
+        return view('Academy.pages.training.create_booking', get_defined_vars());
+    }
+    public function getAreaByCity(Request $request)
+    {
+        $areas = Area::where('city_id', $request->city_id)->get();
+        return response()->json($areas);
+    }
+
+    public function getCityByCountry(Request $request)
+    {
+        $cities = City::where('country_id', $request->country_id)->get();
+        return response()->json($cities);
+    }
+    public function storeBooking(BookingRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'country_id' => $request->country_id,
+                'city_id' => $request->city_id,
+                'area_id' => $request->area_id,
+                'user_type'=> 'system',
+                'birth_date'=>$request->birth_date,
+            ]);
+            $booking = Invoice::create([
+                'user_id' => $user->id,
+                'training_id' => $request->training_id,
+                'amount' => $request->price,
+                'order_number' => uniqid(),
+                'status' => 'paid',
+                'user_type' => 'offline'
+            ]);
+            Join::create([
+                'user_id' => $user->id,
+                'training_id' => $request->training_id,
+                'price' => $booking->amount,
+                'invoice_id' => $booking->id,
+            ]);
+            DB::commit();
+            session()->flash('success', __('admin.training.Booking created successfully'));
+            return to_route('academy.training.index');
+        }catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function export()

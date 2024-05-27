@@ -44,15 +44,15 @@ class ClassesController extends Controller
     {
 
         try {
-            $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
-             $this->classModel->create(array_merge($translatable , [
-                'date'=> $request->date,
-                'training_id' => $request->training_id,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'out_comes' => $request->input('outcomes'),
-                'bring_with_me' => $request->input('bring_with_me'),
-            ]));
+             $this->classModel->create([
+                 'title' => $request->title,
+                 'date'=> $request->date,
+                 'training_id' => $request->training_id,
+                 'start_time' => $request->start_time,
+                 'end_time' => $request->end_time,
+                 'out_comes' => $request->input('outcomes'),
+                 'bring_with_me' => $request->input('bring_with_me'),
+            ]);
             session()->flash('success',trans('admin.clasess.created_successfully'));
             return redirect(route('academy.class.index'));
         }catch (\Exception $e) {
@@ -72,15 +72,15 @@ class ClassesController extends Controller
     {
         try {
             DB::beginTransaction();
-            $translatable = TranslatableService::generateTranslatableFields($this->classModel::getTranslatableFields() , $request->validated());
-            $class->update(array_merge($translatable ,[
+            $class->update([
+                'title' => $request->title,
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'out_comes' => $request->input('outcomes'),
                 'bring_with_me' => $request->input('bring_with_me'),
-            ]));
+            ]);
             $details = [
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->longitude,
@@ -125,6 +125,15 @@ class ClassesController extends Controller
         }
     }
 
+    public function bulkDelete(Request $request)
+    {
+        foreach (json_decode($request->ids) as $id) {
+            $class = $this->classModel->findOrFail($id);
+            $class->delete();
+        }
+        session()->flash('success', trans('admin.clasess.deleted_successfully'));
+        return to_route('academy.class.index');
+    }
     public function export()
     {
         return Excel::download(new clasessExport() , 'classes.xlsx');
