@@ -67,12 +67,10 @@ class DashboardController extends Controller
     {
         $ordersData = $this->chartsService->getBookingsDataByMonth();
 
-        $orderReturnsData = $this->chartsService->getOrderReturnsDataByMonth();
 
         return response()->json([
             'ordersData' => $ordersData['joinsData'],
-            'orderReturnsData' => $orderReturnsData['orderReturnsData'],
-            'totalProfit' => $ordersData['total'] - $orderReturnsData['total']
+            'totalProfit' => $ordersData['total']
         ]);
     }
 
