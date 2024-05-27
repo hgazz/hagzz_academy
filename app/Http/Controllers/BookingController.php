@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\BookingDataTable;
 use App\Models\Training;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function index(BookingDataTable $dataTable)
     {
-        $academyTrainings = Training::with(['coach:id,name'])
-            ->whereBelongsTo(auth('academy')->user(), 'academy')
-            ->get();
-        return view('Academy.pages.booking.index',compact('academyTrainings'));
+        return $dataTable->render('Academy.pages.booking.index');
     }
 
     public function show($id)

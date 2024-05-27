@@ -3,7 +3,15 @@
 @section('title', trans('admin.training.training'))
 
 @push('css')
-
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/src/table/datatable/datatables.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/light/table/datatable/dt-global_style.css') }}">
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('assetsAdmin/src/plugins/css/light/table/datatable/custom_dt_miscellaneous.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/dt-global_style.css') }}">
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/custom_dt_miscellaneous.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endpush
 
 
@@ -38,30 +46,14 @@
             </div>
         </div>
         <!--  END BREADCRUMBS  -->
-        <div class="container mt-4">
-            <div class="row">
-                    @forelse($academyTrainings as $training)
-                    <div class="col-md-4 mb-1">
-                        <div class="card" style="width: 18rem;">
-                            <img src="{{$training->sport->icon}}" class="card-img-top h-25" alt="{{$training->name}}" width="200px" height="120px">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">{{$training->name}}</h5>
-                                <p class="card-text">{{$training->description}}</p>
-                                <span class="text-primary">{{$training->start_date}}</span>
-                                /
-                                <span class="">{{$training->end_date}}</span>
-                                <br>
-                                <span class="text-muted mt-2">{{trans('admin.training.level')}} : {{$training->level}}</span>
-                                /
-                                <span class="text-muted">{{trans('admin.training.max player ')}}: {{$training->max_players}}</span>
+        <div class="row layout-top-spacing">
+            <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                <div class="card">
 
-                                <p class="text-muted">{{trans('admin.training.Coach')}}: {{$training->coach->name}}</p>
-                                <a href="{{route('academy.booking.show',$training->id)}}" class="btn btn-outline-primary w-100">{{trans('admin.training.Show Details')}}</a>
-                            </div>
-                        </div>
+                    <div class="card-body">
+                    {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
                     </div>
-                @empty
-                @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -70,5 +62,6 @@
 
 
 @push('js')
-
+    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.js"></script>
+    {!! $dataTable->scripts() !!}
 @endpush
