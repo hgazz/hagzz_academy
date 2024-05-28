@@ -13,7 +13,7 @@
     <tbody>
     @foreach($classes as $class)
         <tr>
-            <td>{{ $class->academy->commercial_name ?? 'null' }}</td>
+            <td>{{ $class->training->academy->commercial_name ?? 'null' }}</td>
             <td>{{ $class->training->name ?? 'null' }}</td>
             <td>{{ $class->sport->name ?? 'null' }}</td>
             <td>{{ $class->title ?? 'null' }}</td>
