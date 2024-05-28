@@ -46,7 +46,7 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="gender">{{trans('admin.coaches.select_sport')}}</label>
+        <label for="gender">{{trans('admin.coaches.select_gender')}}</label>
         <select class="form-select" name="gender" id="gender">
             <option value="">{{ trans('admin.coaches.select_gender') }}</option>
             <option value="male" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'male')>{{ trans('admin.coaches.male') }}</option>

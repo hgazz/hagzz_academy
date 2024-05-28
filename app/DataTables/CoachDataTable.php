@@ -102,7 +102,7 @@ class CoachDataTable extends DataTable
             ['name' => 'total_bookings', 'data' => 'total_bookings', 'title' => trans('admin.coaches.total_bookings'), 'orderable' => false, 'searchable' => false],
             ['name' => 'active_bookings', 'data' => 'active_bookings', 'title' => trans('admin.coaches.active_bookings'), 'orderable' => false, 'searchable' => false],
             ['name' => 'total_hours', 'data' => 'total_hours', 'title' => trans('admin.coaches.total_hours'), 'orderable' => false, 'searchable' => false],
-            ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active')],
+            ['name' => 'active', 'data' => 'active', 'title' => trans('admin.banners.status')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }
