@@ -24,7 +24,6 @@ class ProfileRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'owner_name' => 'required|string|min:3|max:255',
             'logo'=>'nullable|image|mimes:jpg,webp,svg,jpeg,png,webp',
             'phone'=>'required|string|min:7',
             'email'=>'required|email|string',
