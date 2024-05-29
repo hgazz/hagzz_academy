@@ -11,7 +11,7 @@
                                $defaultValue = isset($training) ? $training->getTranslation('name', $language) : '';
                            @endphp
                            value="{{ old($name, $defaultValue) }}"
-                           placeholder="Enter {{$name}}" data-parsley-required-message="Please enter {{$name}}">
+                           placeholder="{{$name}}" data-parsley-required-message="Please enter {{$name}}">
                     @error($name)
                     <span class="text-danger">*{{$message}}</span>
                     @enderror

@@ -11,7 +11,11 @@ class clasessExport implements FromView
 
     public function view(): View
     {
-        $classes = TClass::with(['academy','training','sport'])->where('academy_id',auth('academy')->id())->get();
+        $classes = TClass::with(['academy','training','sport'])
+            ->whereHas('training', function ($query) {
+                $query->where('academy_id', auth('academy')->id());
+            })
+            ->get();
         return view('Academy.pages.clasess.export',compact('classes'));
     }
 }
