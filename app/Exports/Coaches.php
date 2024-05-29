@@ -12,7 +12,7 @@ class Coaches implements FromView
 
     public function view(): View
     {
-        $coachesExport = Coach::with(['academy'])->get();
+        $coachesExport = Coach::with(['academy'])->where('academy_id', auth('academy')->id())->get();
         return view('Academy.pages.coaches.export',compact('coachesExport'));
     }
 }
