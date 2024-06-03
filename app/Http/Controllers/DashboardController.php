@@ -143,12 +143,16 @@ class DashboardController extends Controller
     }
     private function getAllMaleUsersCount()
     {
-        return User::select('id')->whereGender('male')->count();
+        return User::whereHas('joins.training', function ($query) {
+            $query->where('academy_id', auth('academy')->id());
+        })->select('id')->whereGender('male')->count();
     }
 
     private function getAllFemaleUsersCount()
     {
-        return User::select('id')->whereGender('female')->count();
+        return User::whereHas('joins.training', function ($query) {
+            $query->where('academy_id', auth('academy')->id());
+        })->select('id')->whereGender('female')->count();
     }
 
     /**

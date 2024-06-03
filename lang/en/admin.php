@@ -316,6 +316,12 @@ return [
     'notifications'=> [
         'notifications'=>'Notifications',
         'view_all'=>'View All',
+    ],
+    'settlement' => [
+        'Settlements' => 'Settlements',
+        'total_amount' => 'Total Settlement Amount',
+        'settlement_date' => 'Settlement Date',
+        'status' => 'Status',
     ]
 
 ];

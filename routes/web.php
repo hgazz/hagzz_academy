@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -123,6 +124,10 @@ Route::group(
         });
         Route::controller(CustomerController::class)->group(function (){
             Route::get('users','index')->name('users.index');
+        });
+
+        Route::controller(SettlementController::class)->group(function (){
+            Route::get('settlements','index')->name('settlement.index');
         });
     });
 });

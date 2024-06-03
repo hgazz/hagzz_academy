@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -69,8 +70,13 @@ class User extends Authenticatable
         return $this->belongsTo(Area::class, 'area_id');
     }
 
-    public function getImageAttribute($value)
+    public function getImageAttribute($value): string
     {
         return is_null($value) ? asset('assetsAdmin/logo/40_20.svg') : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+    }
+
+    public function joins(): HasMany
+    {
+        return $this->hasMany(Join::class, 'user_id');
     }
 }

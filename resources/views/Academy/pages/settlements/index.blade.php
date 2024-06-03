@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.training.booking'))
+@section('title', trans('admin.settlement.Settlements'))
 
 @push('css')
     <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.css" rel="stylesheet">
@@ -47,7 +47,7 @@
                                     <li class="breadcrumb-item"><a
                                             href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
                                     <li class="breadcrumb-item active"
-                                        aria-current="page">{{ trans('admin.profile.user') }}</li>
+                                        aria-current="page">{{ trans('admin.settlement.Settlements') }}</li>
                                 </ol>
                             </nav>
 
