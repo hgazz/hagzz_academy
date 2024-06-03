@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class AddressController extends Controller
 {
     use CityAndAreaTrait,AcademyTrait;
-    private $addressModel;
+    private Address $addressModel;
     public function __construct(Address $address)
     {
         $this->addressModel = $address;
@@ -61,13 +61,14 @@ class AddressController extends Controller
     {
          $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
          $this->addressModel->create(array_merge($transactions , [
-             'active'=>$request->has('active') ? 1 : 0,
+             'active'=> $request->has('active') ? 1 : 0,
              'academy_id'=> auth()->id(),
-             'city_id'=>$request->city_id,
-             'area_id'=>$request->area_id,
-             'longitude'=>$request->longitude,
-             'latitude'=>$request->latitude,
-             'country_id'=>$request->country_id
+             'city_id'=> $request->city_id,
+             'area_id'=> $request->area_id,
+             'longitude'=> $request->longitude,
+             'latitude'=> $request->latitude,
+             'country_id'=> $request->country_id,
+             'location_owned'=> (bool)$request->location_owned
          ]));
 
      session()->flash('success',trans('admin.address.address successfully created'));
@@ -84,14 +85,15 @@ class AddressController extends Controller
 
     public function update(Address $address , AddressRequest $request)
     {
-        $active = ($request->active == "on") ? true : false;
         $transactions = TranslatableService::generateTranslatableFields($this->addressModel::getTranslatableFields() , $request->validated());
         $address->update(array_merge($transactions , [
-            'active'=>$request->has('active') ? 1 : 0,
-            'city_id'=>$request->city_id,
-            'area_id'=>$request->area_id,
-            'longitude'=>$request->longitude,
-            'latitude'=>$request->latitude,
+            'active'=> $request->has('active') ? 1 : 0,
+            'country_id'=> $request->country_id,
+            'city_id'=> $request->city_id,
+            'area_id'=> $request->area_id,
+            'longitude'=> $request->longitude,
+            'latitude'=> $request->latitude,
+            'location_owned'=> (bool)$request->location_owned
         ]));
         session()->flash('success',trans('admin.address.address successfully update'));
         return to_route('academy.address.index');

@@ -11,7 +11,9 @@ class AddressExport implements FromView
 
     public function view(): View
     {
-        $addresses = Address::with(['academy','country','city','area'])->where('academy_id', auth('academy')->id())->get();
+        $query = Address::with(['academy','country','city','area'])
+            ->where('academy_id', auth('academy')->id());
+        $addresses = $query->get();
         return view('Academy.pages.address.export',compact('addresses'));
     }
 }

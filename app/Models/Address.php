@@ -20,10 +20,11 @@ class Address extends Model
         'address',
         'active',
         'country_id',
+        'location_owned'
     ];
 
-    public $translatable = ['address'];
-    public static $translatableColumns = [
+    public array $translatable = ['address'];
+    public static array $translatableColumns = [
         'address'=>[
             'type'=>'text',
             'validations'=>'required|string|max:255',

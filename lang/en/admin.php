@@ -60,6 +60,10 @@ return [
     'inprogress_training' => 'In-progress Training',
     'upcoming_training' => 'Upcoming Training',
     'training_cancelled' => 'Training Cancelled',
+    'location_owned' => 'Location owned',
+    'yes' => 'Yes',
+    'no' => 'No',
+    'print' => 'Print',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',

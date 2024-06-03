@@ -85,11 +85,25 @@
         </div>
     </div>
 </div>
-<label for="active">{{ trans('admin.address.active') }}</label>
-<input class="form-check" id="active" name="active" @if(isset($address) && $address->active) checked @endif  type="checkbox">
-@error('active')
-<span class="text-danger">{{ $message }}</span>
-@enderror
+<div class="row">
+    <div class="col-md-6">
+        <label for="active">{{ trans('admin.address.active') }}</label>
+        <input class="form-check" id="active" name="active" @if(isset($address) && $address->active) checked @endif  type="checkbox">
+        @error('active')
+        <span class="text-danger">{{ $message }}</span>
+        @enderror
+    </div>
+    <div class="col-md-6">
+        <label for="location_owned">{{ trans('admin.location_owned') }}</label>
+        <input class="form-check" id="location_owned" name="location_owned" @checked(old('location_owned', isset($address) ? $address->location_owned : ''))  value="1" type="checkbox">
+        @error('location_owned')
+        <span class="text-danger">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+
+
 
 <input type="hidden" value="{{app()->getLocale()}}" id="local">
 

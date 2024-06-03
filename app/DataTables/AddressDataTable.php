@@ -35,6 +35,9 @@ class AddressDataTable extends DataTable
             ->editColumn('academy_id', function (Address $address) {
                 return $address->academy->commercial_name;
             })
+            ->editColumn('location_owned', function (Address $address) {
+                return $address->location_owned ? trans('admin.yes') : trans('admin.no');
+            })
             ->addColumn('action', function (Address $address) {
                 return view('Academy.pages.address._action', compact('address'))->render();
             })
@@ -58,7 +61,7 @@ class AddressDataTable extends DataTable
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action', 'country_id','city_id','area_id','academy_id']);
+            ->rawColumns(['action', 'country_id','city_id','area_id','academy_id', 'location_owned']);
     }
 
     /**
@@ -114,19 +117,28 @@ class AddressDataTable extends DataTable
                     ->setTableId('address-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->scrollX()
-                    ->scrollY()
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->dom('Bfrtip')
+            ->parameters([
+                'responsive'   => true,
+                'autoWidth'    => false,
+                'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                'buttons'      => [
+                    ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
+                    ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
+
+                ],
+                'order' => [
+                    0, 'desc'
+                ],
+                'language' =>
+                    (app()->getLocale() === 'ar') ?
+                        [
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
+                        ] :
+                        [
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')
+                        ]
+            ]);
     }
 
     /**
@@ -143,6 +155,7 @@ class AddressDataTable extends DataTable
             ['name' => 'academy.commercial_name', 'data' => 'academy_id', 'title' => trans('admin.address.academy')],
             ['name' => 'longitude', 'data' => 'longitude', 'title' => trans('admin.address.longitude')],
             ['name' => 'latitude', 'data' => 'latitude', 'title' => trans('admin.address.latitude')],
+            ['name' => 'location_owned', 'data' => 'location_owned', 'title' => trans('admin.location_owned')],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }
