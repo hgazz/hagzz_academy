@@ -62,16 +62,30 @@ class BookingDataTable extends DataTable
                     ->setTableId('booking-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
                     ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
+                    ->scrollX()
+                    ->scrollY()
+                    ->dom('Bfltip')
+                    ->parameters([
+                        'responsive'   => true,
+                        'autoWidth'    => false,
+                        'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                        'buttons'      => [
+                            ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
+                            ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
+
+                        ],
+                        'order' => [
+                            0, 'desc'
+                        ],
+                        'language' =>
+                            (app()->getLocale() === 'ar') ?
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
+                                ] :
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')
+                                ]
                     ]);
     }
 

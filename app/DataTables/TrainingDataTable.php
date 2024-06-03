@@ -55,7 +55,7 @@ class TrainingDataTable extends DataTable
                     ->minifiedAjax()
                     ->scrollX()
                     ->scrollY()
-                    ->dom('Bfrtip')
+                    ->dom('Bfltip')
                     ->parameters([
                         'responsive'   => true,
                         'autoWidth'    => false,

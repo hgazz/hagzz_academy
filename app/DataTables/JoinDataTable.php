@@ -31,6 +31,9 @@ class JoinDataTable extends DataTable
             ->addColumn('gender', function ($query) {
                 return $query->user->gender ?? '';
             })
+            ->addColumn('birth_date', function ($query) {
+                return $query->user->birth_date ?? '';
+            })
             ->addColumn('image', function (Join$join) {
                 return '<img src="' . $join->user->image . '" width="120" height="80" class="img-thumbnail">';
             })
@@ -41,7 +44,7 @@ class JoinDataTable extends DataTable
                 }
                 return '<i class="fa-solid fa-check fs-2 text-success"></i>';
             })
-            ->rawColumns(['action', 'username','phone','gender','image','following']);
+            ->rawColumns(['action', 'username','phone','gender','image','following', 'birth_date']);
     }
 
     /**
@@ -65,16 +68,30 @@ class JoinDataTable extends DataTable
                     ->setTableId('join-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
+                    ->scrollX()
+                    ->scrollY()
                     ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
+                    ->dom('Bfltip')
+                    ->parameters([
+                        'responsive'   => true,
+                        'autoWidth'    => false,
+                        'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                        'buttons'      => [
+                            ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
+                            ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
+
+                        ],
+                        'order' => [
+                            0, 'desc'
+                        ],
+                        'language' =>
+                            (app()->getLocale() === 'ar') ?
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
+                                ] :
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')
+                                ]
                     ]);
     }
 
@@ -89,6 +106,7 @@ class JoinDataTable extends DataTable
             ['name' => 'username', 'data' => 'username', 'title' => trans('admin.profile.name')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.profile.phone')],
             ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.profile.gender')],
+            ['name' => 'birth_date', 'data' => 'birth_date', 'title' => trans('admin.birth_date')],
             ['name' => 'following', 'data' => 'following', 'title' => trans('admin.profile.following')],
         ];
     }

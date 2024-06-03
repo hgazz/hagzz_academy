@@ -64,6 +64,7 @@ return [
     'yes' => 'Yes',
     'no' => 'No',
     'print' => 'Print',
+    'birth_date' => 'Birth Date',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',

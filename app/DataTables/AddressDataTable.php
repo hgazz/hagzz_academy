@@ -117,7 +117,9 @@ class AddressDataTable extends DataTable
                     ->setTableId('address-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-            ->dom('Bfrtip')
+            ->dom('Bfltip')
+            ->scrollX()
+            ->scrollY()
             ->parameters([
                 'responsive'   => true,
                 'autoWidth'    => false,
