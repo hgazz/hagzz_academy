@@ -372,6 +372,72 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="row widget-statistic">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                        <div class="widget widget-one_hybrid widget-followers">
+                            <div class="widget-heading">
+                                <div class="w-title m-0">
+                                    <div class="w-icon p-0 bg-transparent">
+                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="conference-background-selected"/>
+                                    </div>
+                                    <div class="">
+                                        <p class="w-value">{{ $fullTrainings }}</p>
+                                        <h5 class="">{{ trans('admin.training_completed') }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                        <div class="widget widget-one_hybrid widget-followers">
+                            <div class="widget-heading">
+                                <div class="w-title m-0">
+                                    <div class="w-icon p-0 bg-transparent">
+                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="add-user-male--v1"/>
+                                    </div>
+                                    <div class="">
+                                        <p class="w-value">{{ $inProgressTrainings }}</p>
+                                        <h5 class="">{{ trans('admin.inprogress_training') }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                        <div class="widget widget-one_hybrid widget-followers">
+                            <div class="widget-heading">
+                                <div class="w-title m-0">
+                                    <div class="w-icon p-0 bg-transparent">
+                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="collaborating-in-circle"/>
+                                    </div>
+                                    <div class="">
+                                        <p class="w-value">{{ $upcomingTrainings }}</p>
+                                        <h5 class="">{{ trans('admin.upcoming_training') }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                        <div class="widget widget-one_hybrid widget-followers">
+                            <div class="widget-heading">
+                                <div class="w-title m-0">
+                                    <div class="w-icon p-0 bg-transparent">
+                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="collaborating-in-circle"/>
+                                    </div>
+                                    <div class="">
+                                        <p class="w-value">{{ $cancelledTrainings }}</p>
+                                        <h5 class="">{{ trans('admin.training_cancelled') }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

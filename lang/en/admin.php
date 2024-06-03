@@ -56,6 +56,10 @@ return [
     'non_refund_days_acount' => 'Non Refund Days Count',
     'settlement_days_count' => 'settlement Days Count',
     'logo' => 'Logo',
+    'training_completed' => 'Training Completed',
+    'inprogress_training' => 'In-progress Training',
+    'upcoming_training' => 'Upcoming Training',
+    'training_cancelled' => 'Training Cancelled',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',

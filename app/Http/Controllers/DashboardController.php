@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\BookingFilterTrait;
+use App\Http\Traits\TrainingsTrait;
 use App\Http\Traits\UsersTrait;
 use App\Models\Join;
 use App\Models\Settlement;
 use App\Models\Sport;
+use App\Models\Training;
 use App\Models\User;
 use App\Services\Chart\ChartsService;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +19,7 @@ use Illuminate\Support\Facades\Response;
 
 class DashboardController extends Controller
 {
-    use BookingFilterTrait, UsersTrait;
+    use BookingFilterTrait, UsersTrait, TrainingsTrait;
 
     private ChartsService $chartsService;
 
@@ -32,7 +34,6 @@ class DashboardController extends Controller
 
     public function index()
     {
-
         $totalUsers = $this->getAllUsersCount();
         $maleUsers = $this->getAllMaleUsersCount();
         $femaleUsers = $this->getAllFemaleUsersCount();
@@ -42,7 +43,11 @@ class DashboardController extends Controller
         $intermediateLevels = $this->getIntermediateSportsCount();
         $advancedLevels = $this->getAdvancedSportsCount();
         $settlements = Settlement::whereBelongsTo( auth('academy')->user(), 'partner')->latest()->first();
-        return view('Academy.index', compact('totalUsers','maleUsers', 'femaleUsers', 'usersBooking', 'newCustomers', 'beginnerLevels', 'intermediateLevels', 'advancedLevels', 'settlements'));
+        $fullTrainings = $this->getFullTrainings();
+        $cancelledTrainings = $this->getCancelledTrainings();
+        $upcomingTrainings = $this->getUpcomingTrainings();
+        $inProgressTrainings = $this->getInProgressTrainings();
+        return view('Academy.index', get_defined_vars());
     }
 
     public function filterBookings(Request $request)
