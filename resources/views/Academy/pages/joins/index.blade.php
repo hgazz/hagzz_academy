@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.settlement.settlements'))
+@section('title', trans('admin.bookings.bookings'))
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
@@ -33,7 +33,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.settlement.settlements') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.bookings.bookings') }}</li>
                                 </ol>
                             </nav>
 
@@ -76,7 +76,7 @@
 
 
 @push('js')
-    {{--    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.js"></script>--}}
+{{--        <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.js"></script>--}}
     <script src="{{ asset('assetsAdmin/src/plugins/src/table/datatable/datatables.js') }}"></script>
 {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>--}}
 {{--    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>--}}

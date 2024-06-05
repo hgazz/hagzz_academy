@@ -38,13 +38,13 @@ class ReportController extends Controller
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
-           $data =  $query->where('partner_id', auth('academy')->id())
+            $query->where('partner_id', auth('academy')->id())
                ->whereBetween('created_at', [$startDate, $endDate]);
-           $settlement = $data->get();
+           $settlement = $query->get();
             session(['settlementData' => $settlement]);
         }
 
-        return $dataTable->with('query', $data)->render('Academy.pages.settlements.index');
+        return $dataTable->with('query', $query)->render('Academy.pages.settlements.index');
     }
 
     public function export()
@@ -81,10 +81,9 @@ class ReportController extends Controller
 
     public function bookingExport()
     {
-
          return Excel::download(new InvoiceExport(), 'invoice.xlsx');
     }
-//
+
     public function joins(JoinDataTable $dataTable)
     {
         return $dataTable->render('Academy.pages.joins.index');

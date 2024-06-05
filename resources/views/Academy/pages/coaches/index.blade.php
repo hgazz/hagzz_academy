@@ -58,9 +58,10 @@
         <!--  END BREADCRUMBS  -->
 
         <div class="row layout-top-spacing">
-        <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-            <div class="card-header">
-                <div class="row">
+            <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
                     <form method="GET" action="{{ route('academy.report.coach.filter') }}">
                         <div class="col-md-5">
                             <label>Start Date</label>

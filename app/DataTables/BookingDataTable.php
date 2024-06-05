@@ -32,6 +32,12 @@ class BookingDataTable extends DataTable
             ->addColumn('training', function ($query) {
                 return $query->training->name ?? '';
             })
+            ->addColumn('commercial_name', function ($query) {
+                return $query->training->academy->commercial_name ?? '';
+            })
+            ->addColumn('coach_name', function ($query) {
+                return $query->training->coach->name ?? '';
+            })
             ->addColumn('following', function ($query) {
                 $followingUserIds = $query->user->following->pluck('user_id')->toArray();
                 if (empty($followingUserIds)){
@@ -39,7 +45,7 @@ class BookingDataTable extends DataTable
                 }
                 return '<i class="fa-solid fa-check fs-2 text-success"></i>';
             })
-            ->rawColumns(['username','phone','training','following']);
+            ->rawColumns(['username','phone','training','following', 'commercial_name', 'coach_name']);
     }
 
     /**
@@ -47,7 +53,7 @@ class BookingDataTable extends DataTable
      */
     public function query(Join $model): QueryBuilder
     {
-        return $model->newQuery()->with(['user','training'])
+        return $model->newQuery()->with(['user','training' => ['academy', 'coach']])
             ->whereHas('training',function($q){
             $q->where('academy_id',auth('academy')->id());
         });
@@ -99,6 +105,8 @@ class BookingDataTable extends DataTable
             ['name' => 'username', 'data' => 'username', 'title' => trans('admin.profile.name')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.profile.phone')],
             ['name' => 'training.name', 'data' => 'training', 'title' => trans('admin.training.training'), 'searchable' => false],
+            ['name' => 'training.academy.commercial_name', 'data' => 'commercial_name', 'title' => trans('admin.address.academy'), 'searchable' => false],
+            ['name' => 'training.coach.name', 'data' => 'coach_name', 'title' => trans('admin.coach_name'), 'searchable' => false],
             ['name' => 'following', 'data' => 'following', 'title' => trans('admin.profile.following')],
         ];
     }

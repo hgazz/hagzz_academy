@@ -88,6 +88,8 @@ class InvoiceDataTable extends DataTable
                 'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
                 'buttons' => [
                     $hideButtonsArray,
+                    ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
+                    ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
                 ],
                 'order' => [
                     0, 'desc'
