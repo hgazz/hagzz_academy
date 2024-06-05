@@ -54,6 +54,7 @@ jobs:
           script: |
             echo "CH-Dir"
             cd ${{ secrets.REMOTE_PATH }}
+            source ~/script
             echo "Pull"
             sudo git pull origin master
             echo "Update Composer"
