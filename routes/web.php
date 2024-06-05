@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
@@ -117,9 +118,10 @@ Route::group(
             Route::post('trainings/areas','getAreaByCity')->name('training.getAreaByCity');
             Route::post('trainings/cities','getCityByCountry')->name('training.getCities');
             Route::post('trainings/booking','storeBooking')->name('training.storeBooking');
+            Route::delete('training/bulk','bulkDelete')->name('training.bulkDelete');
+            Route::post('trainings/publish','publish')->name('training.publish');
         });
         Route::controller(BookingController::class)->group(function (){
-            Route::get('booking','index')->name('booking.index');
             Route::get('booking/show/{id}','show')->name('booking.show');
         });
         Route::controller(CustomerController::class)->group(function (){
@@ -129,5 +131,22 @@ Route::group(
         Route::controller(SettlementController::class)->group(function (){
             Route::get('settlements','index')->name('settlement.index');
         });
+
+        Route::prefix('report')->as('report.')->controller(ReportController::class)
+            ->group(function (){
+                Route::get('settlement','settlement')->name('settlement.index');
+                Route::get('settlement/filter','filter')->name('settlement.filter');
+                Route::get('settlement/export','export')->name('settlement.export');
+                Route::get('invoice','invoice')->name('invoice.filter');
+                Route::get('booking','booking')->name('booking.index');
+                Route::get('bookings/export','bookingExport')->name('booking.export');
+                Route::get('joins','joins')->name('joins');
+                Route::get('joins/filter','joinFilter')->name('join.filter');
+                Route::get('joins/export','joinExport')->name('join.export');
+                Route::get('coach','coach')->name('coach');
+                Route::get('coach/filter','coachFilter')->name('coach.filter');
+                Route::get('coach/export','coachExport')->name('coach.export');
+            });
     });
+
 });

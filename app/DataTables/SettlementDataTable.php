@@ -14,6 +14,23 @@ use Yajra\DataTables\Services\DataTable;
 
 class SettlementDataTable extends DataTable
 {
+    protected $query;
+
+    /**
+     * Set a custom query.
+     *
+     * @param  array|string  $key
+     * @param  mixed  $value
+     * @return static
+     */
+    public function with(array|string $key, mixed $value = null): static
+    {
+        if (is_string($key) && $key === 'query') {
+            $this->query = $value;
+        }
+
+        return $this;
+    }
     /**
      * Build the DataTable class.
      *
@@ -22,7 +39,10 @@ class SettlementDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->setRowId('id');
+            ->addColumn('partner',function ($q){
+                return $q->partner->name ?? '';
+            })
+            ->rawColumns(['partner']);
     }
 
     /**
@@ -30,6 +50,11 @@ class SettlementDataTable extends DataTable
      */
     public function query(Settlement $model): QueryBuilder
     {
+        if ($this->query) {
+
+            return $this->query;
+        }
+
         return $model->newQuery()->where('partner_id', auth('academy')->id());
     }
 
@@ -62,9 +87,10 @@ class SettlementDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
+            ['name' => 'partner', 'data' => 'partner', 'title' => trans('admin.partner')],
             ['name' => 'total_amount', 'data' => 'total_amount', 'title' => trans('admin.settlement.total_amount')],
             ['name' => 'settlement_date', 'data' => 'settlement_date', 'title' => trans('admin.settlement.settlement_date')],
-            ['name' => 'status', 'data' => 'status', 'title' => trans('admin.settlement.status'), 'searchable' => false],
+            ['name' => 'status', 'data' => 'status', 'title' => trans('admin.settlement.status')],
         ];
     }
 

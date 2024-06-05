@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'publish' => 'publish',
     'dashboard' => 'Dashboard',
     'bokit' => 'Hagzz',
     'partner' => 'Partner',
@@ -65,6 +66,7 @@ return [
     'no' => 'No',
     'print' => 'Print',
     'birth_date' => 'Birth Date',
+    'coach_name' => 'Coach Name',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',
@@ -331,6 +333,34 @@ return [
         'total_amount' => 'Total Settlement Amount',
         'settlement_date' => 'Settlement Date',
         'status' => 'Status',
-    ]
+    ],
+    'bookings' => [
+        'bookings' => 'Bookings',
+        'booking cancelled successfully' => 'Booking cancelled successfully',
+        'training' => 'Training',
+        'user' => 'User',
+        'status' => 'Status',
+        'pending' => 'Pending',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+        'is_canceled' => 'Is Canceled',
+        'amount' => 'Amount',
+        'user_type' => 'User Type',
+    ],
+
+
+    'total_amount'=>'total_amount',
+    'settlement_date'=>'settlement date',
+    'status'=>'status',
+    'report'=>'report',
+    'transaction'=>'transaction',
+    'joins'=>'joins',
+    'Coaches'=>'Coaches',
+    'training_count'=>'training count',
+    'follow_count'=>'follow count',
+    'classes'=>'classes',
+    'count'=>'count',
+    'discount_price'=>'discount_price',
+    'academy'=>'academy',
 
 ];

@@ -7,10 +7,7 @@ use App\Models\Training;
 
 class BookingController extends Controller
 {
-    public function index(BookingDataTable $dataTable)
-    {
-        return $dataTable->render('Academy.pages.booking.index');
-    }
+
 
     public function show($id)
     {

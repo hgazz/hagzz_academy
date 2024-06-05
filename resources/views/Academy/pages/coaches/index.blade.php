@@ -59,28 +59,30 @@
 
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-{{--                <a class="btn btn-success w-25 mt-3 mb-2" href="{{route('academy.coach.export')}}">--}}
-{{--                    Export--}}
-{{--                </a>--}}
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="{{route('academy.coach.create')}}">
-                                <h3>{{ trans('admin.coaches.create') }}</h3>
-                            </a>
-                            <a href="{{route('academy.coach.create')}}" class="btn btn-primary">
-                                {{ trans('admin.coaches.create') }}
-                            </a>
+                        <div class="row">
+                    <form method="GET" action="{{ route('academy.report.coach.filter') }}">
+                        <div class="col-md-5">
+                            <label>Start Date</label>
+                            <input type="date" name="start_date" class="form-control">
                         </div>
-
-                    </div>
-
-                    <div class="card-body">
-                        {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
-                    </div>
+                        <div class="col-md-5">
+                            <label>End Date</label>
+                            <input type="date" name="end_date" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Apply</button>
+                    </form>
                 </div>
             </div>
+
+            <div class="card-body">
+                <a class="btn btn-primary my-3" href="{{route('academy.report.coach.export')}}">Export</a>
+
+                {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
+            </div>
         </div>
+    </div>
     </div>
 @endsection
 

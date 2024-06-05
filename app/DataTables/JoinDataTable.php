@@ -14,6 +14,23 @@ use Yajra\DataTables\Services\DataTable;
 
 class JoinDataTable extends DataTable
 {
+    protected $query;
+
+    /**
+     * Set a custom query.
+     *
+     * @param  array|string  $key
+     * @param  mixed  $value
+     * @return static
+     */
+    public function with(array|string $key, mixed $value = null): static
+    {
+        if (is_string($key) && $key === 'query') {
+            $this->query = $value;
+        }
+
+        return $this;
+    }
     /**
      * Build the DataTable class.
      *
@@ -22,29 +39,35 @@ class JoinDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('username', function ($query) {
-               return $query->user->name ?? '';
-            })
-            ->addColumn('phone', function ($query) {
-                return $query->user->phone ?? '';
-            })
-            ->addColumn('gender', function ($query) {
-                return $query->user->gender ?? '';
-            })
-            ->addColumn('birth_date', function ($query) {
-                return $query->user->birth_date ?? '';
-            })
-            ->addColumn('image', function (Join$join) {
-                return '<img src="' . $join->user->image . '" width="120" height="80" class="img-thumbnail">';
-            })
-            ->addColumn('following', function ($query) {
-                $followingUserIds = $query->user->following->pluck('user_id')->toArray();
-                if (empty($followingUserIds)){
-                    return  '<i class="fa-solid fa-xmark text-danger fs-2"></i>';
-                }
-                return '<i class="fa-solid fa-check fs-2 text-success"></i>';
-            })
-            ->rawColumns(['action', 'username','phone','gender','image','following', 'birth_date']);
+            ->editColumn('name', fn($raw) => $raw->name)
+            ->addColumn('training_name', fn($join) => $join->training->name ?? '')
+            ->addColumn('partner_name', fn($join) => $join->training->academy->commercial_name ?? '')
+            ->addColumn('sport', fn($join) => $join->training->sport->name ?? '')
+            ->addColumn('level', fn($join) => $join->training->level ?? '')
+            ->addColumn('age_group', fn($join) => $join->training->age_group ?? '')
+            ->addColumn('classes', fn($join) => $join->training->classes->count() ?? '')
+            ->addColumn('start_date', fn($join) => $join->training->start_date ?? '')
+            ->addColumn('end_date', fn($join) => $join->training->end_date ?? '')
+            ->addColumn('coach', fn($join) => $join->training->coach->name ?? '')
+            ->addColumn('count', fn($join) => $join->training->joins->count() ?? '')
+            ->addColumn('max_player', fn($join) => $join->training->max_players ?? '')
+            ->addColumn('price', fn($join) => $join->training->price)
+            ->addColumn('discount_price', fn($join) => $join->training->discount_price)
+            ->rawColumns([
+                'training',
+                'partner_name',
+                'level',
+                'sport',
+                'age_group',
+                'classes',
+                'start_date',
+                'end_date',
+                'coach',
+                'count',
+                'max_player',
+                'price',
+                'discount_price'
+            ]);
     }
 
     /**
@@ -52,12 +75,19 @@ class JoinDataTable extends DataTable
      */
     public function query(Join $model): QueryBuilder
     {
+        if ($this->query) {
+            return $this->query;
+        }
+
         return $model->newQuery()->with([
             'training'=>function($model){
                 $model->where('academy_id',auth('academy')->id())->get();
             }
-        ]);
+        ])->whereHas('training', function ($q) {
+            $q->where('academy_id', auth('academy')->id());
+        });
     }
+
 
     /**
      * Optional method if you want to use the html builder.
@@ -102,12 +132,19 @@ class JoinDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
-            ['name' => 'image', 'data' => 'image', 'title' => trans('admin.profile.image')],
-            ['name' => 'username', 'data' => 'username', 'title' => trans('admin.profile.name')],
-            ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.profile.phone')],
-            ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.profile.gender')],
-            ['name' => 'birth_date', 'data' => 'birth_date', 'title' => trans('admin.birth_date')],
-            ['name' => 'following', 'data' => 'following', 'title' => trans('admin.profile.following')],
+            ['name' => 'training_name', 'data' => 'training_name', 'title' => trans('admin.training.name')],
+            ['name' => 'partner_name', 'data' => 'partner_name', 'title' => trans('admin.academy')],
+            ['name' => 'level', 'data' => 'level', 'title' => trans('admin.training.level')],
+            ['name' => 'sport', 'data' => 'sport', 'title' => trans('admin.clasess.sport')],
+            ['name' => 'age_group', 'data' => 'age_group', 'title' => trans('admin.training.age_group')],
+            ['name' => 'classes', 'data' => 'classes', 'title' => trans('admin.classes')],
+            ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
+            ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
+            ['name' => 'coach', 'data' => 'coach', 'title' => trans('admin.training.coach')],
+            ['name' => 'count', 'data' => 'count', 'title' => trans('admin.count')],
+            ['name' => 'max_player', 'data' => 'max_player', 'title' => trans('admin.training.max_players')],
+            ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
+            ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.discount_price')],
         ];
     }
 
