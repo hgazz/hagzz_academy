@@ -79,14 +79,14 @@
 
 
                     <button type="button" class="btn btn-danger w-25 mt-2 d-none dt-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Delete
+                        {{ trans('admin.delete') }}
                     </button>
 
                     <form action="{{route('academy.training.publish')}}" method="post">
                         @csrf
                         <input type="hidden" name="pub_ids" id="pub_ids">
                         <button class="btn btn-primary w-25 mt-2 d-none pub-button">
-                            Publish
+                            {{ trans('admin.publish') }}
                         </button>
                     </form>
 
@@ -107,7 +107,7 @@
                                     <form class=" " action="{{route('academy.training.bulkDelete')}}" method="post">
                                         @csrf @method('DELETE')
                                         <input type="hidden" name="ids" id="ids">
-                                        <button  class="btn btn-danger">Delete</button>
+                                        <button  class="btn btn-danger">{{ trans('admin.delete') }}</button>
                                     </form>
                                 </div>
                             </div>

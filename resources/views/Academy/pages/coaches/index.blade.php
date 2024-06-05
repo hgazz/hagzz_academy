@@ -63,21 +63,13 @@
                     <div class="card-header">
                         <div class="row">
                     <form method="GET" action="{{ route('academy.report.coach.filter') }}">
-                        <div class="col-md-5">
-                            <label>Start Date</label>
-                            <input type="date" name="start_date" class="form-control">
-                        </div>
-                        <div class="col-md-5">
-                            <label>End Date</label>
-                            <input type="date" name="end_date" class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-2">Apply</button>
+                        @include('Academy.pages.filter._form_filter')
                     </form>
                 </div>
             </div>
 
             <div class="card-body">
-                <a class="btn btn-primary my-3" href="{{route('academy.report.coach.export')}}">Export</a>
+                <a class="btn btn-primary my-3" href="{{route('academy.report.coach.export')}}">{{ trans('admin.export') }}</a>
 
                 {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
             </div>
