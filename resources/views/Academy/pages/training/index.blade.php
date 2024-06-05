@@ -75,7 +75,47 @@
 
                     </div>
 
+                    <!-- Button trigger modal -->
+
+
+                    <button type="button" class="btn btn-danger w-25 mt-2 d-none dt-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Delete
+                    </button>
+
+                    <form action="{{route('academy.training.publish')}}" method="post">
+                        @csrf
+                        <input type="hidden" name="pub_ids" id="pub_ids">
+                        <button class="btn btn-primary w-25 mt-2 d-none pub-button">
+                            Publish
+                        </button>
+                    </form>
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this items from Training
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <form class=" " action="{{route('academy.training.bulkDelete')}}" method="post">
+                                        @csrf @method('DELETE')
+                                        <input type="hidden" name="ids" id="ids">
+                                        <button  class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card-body">
+
                         {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
                     </div>
                 </div>
@@ -91,4 +131,5 @@
     <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
     <script src="/vendor/datatables/buttons.server-side.js"></script>
     {!! $dataTable->scripts() !!}
+
 @endpush

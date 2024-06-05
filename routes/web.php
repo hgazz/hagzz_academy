@@ -118,6 +118,8 @@ Route::group(
             Route::post('trainings/areas','getAreaByCity')->name('training.getAreaByCity');
             Route::post('trainings/cities','getCityByCountry')->name('training.getCities');
             Route::post('trainings/booking','storeBooking')->name('training.storeBooking');
+            Route::delete('training/bulk','bulkDelete')->name('training.bulkDelete');
+            Route::post('trainings/publish','publish')->name('training.publish');
         });
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking/show/{id}','show')->name('booking.show');

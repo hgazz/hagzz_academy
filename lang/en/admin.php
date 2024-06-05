@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'publish' => 'publish',
     'dashboard' => 'Dashboard',
     'bokit' => 'Hagzz',
     'partner' => 'Partner',

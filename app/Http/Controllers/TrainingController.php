@@ -274,4 +274,31 @@ class TrainingController extends Controller
             });
         }
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $trainingIds = json_decode($request->ids);
+
+        foreach ($trainingIds as $trainingId) {
+            $training = $this->trainingModel->findOrFail($trainingId);
+            if ($training->joins()->count() > 0) {
+                continue;
+            }
+            $training->delete();
+        }
+        session()->flash('success', 'Training Deleted Successfully');
+        return back();
+    }
+
+    public function publish(Request $request)
+    {
+        $trainingIds = json_decode($request->pub_ids);
+        foreach ($trainingIds as $trainingId) {
+            $training = $this->trainingModel->findOrFail($trainingId);
+            $status = ($training->active)  ? 0 : 1;
+            $training->update(['active'=>$status]);
+        }
+        session()->flash('success', trans('admin.training.status_active_successfully'));
+        return back();
+    }
 }

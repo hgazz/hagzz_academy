@@ -32,7 +32,13 @@ class TrainingDataTable extends DataTable
             ->addColumn('classes', function (Training $training) {
                 return $training->classes->count();
             })
-            ->rawColumns(['action', 'coach_id','image','class', 'active', 'classes']);
+            ->addColumn('delete', function (Training $training) {
+                return view('Academy.pages.training.datatable.checkbox', compact('training'));
+            })
+            ->addColumn('publish', function (Training $training) {
+                return view('Academy.pages.training.datatable.publish', compact('training'));
+            })
+            ->rawColumns(['action', 'coach_id','image','class', 'active', 'classes','delete','publish']);
 
     }
 
@@ -85,6 +91,8 @@ class TrainingDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            ['name' => 'delete', 'data' => 'delete', 'title' => trans('admin.delete')],
+            ['name' => 'publish', 'data' => 'publish', 'title' => trans('admin.publish')],
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.training.name')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
