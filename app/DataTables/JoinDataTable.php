@@ -141,7 +141,7 @@ class JoinDataTable extends DataTable
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
             ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
             ['name' => 'coach', 'data' => 'coach', 'title' => trans('admin.training.coach')],
-            ['name' => 'count', 'data' => 'count', 'title' => trans('admin.count')],
+            ['name' => 'count', 'data' => 'count', 'title' => trans('admin.booking_count')],
             ['name' => 'max_player', 'data' => 'max_player', 'title' => trans('admin.training.max_players')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
             ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.discount_price')],
