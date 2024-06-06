@@ -326,6 +326,7 @@ return [
         'Booking created successfully' => 'تم إنشاء الحجز بنجاح',
         'select_city' => 'اختر المدينة',
         'select_area' => 'اختر المنطقة',
+        'create_booking' => 'اضافة حجز',
     ],
     'notifications' => [
         'notifications' => 'الإشعارات',
@@ -348,7 +349,7 @@ return [
         'cancelled' => 'ملغى',
         'is_canceled' => 'ملغى',
         'amount' => 'المبلغ',
-        'user_type' => 'نوع المستخدم',
+        'user_type' => 'طريقة الدفع',
     ],
     'total_amount' => 'إجمالي المبلغ',
     'settlement_date' => 'تاريخ التسوية',
@@ -363,4 +364,5 @@ return [
     'count' => 'العدد',
     'discount_price' => 'سعر الخصم',
     'academy' => 'الأكاديمية',
+    'order_number' => 'رقم الطلب',
 ];

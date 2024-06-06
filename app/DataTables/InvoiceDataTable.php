@@ -33,21 +33,28 @@ class InvoiceDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->editColumn('created_at', function ($data) {
+                return $data->created_at->format('Y-m-d');
+            })
             ->editColumn('user_id', function ($row) {
                 return $row->user->name;
             })
             ->editColumn('training_id', function ($row) {
-                return $row->training->name ?? '';
+                return $row->training->name;
             })
             ->editColumn('is_canceled', function ($row) {
                 return $row->is_canceled ? trans('admin.bookings.cancelled') : 'N/A';
+            })
+            ->addColumn('partner', function ($row) {
+                return $row->training->academy->commercial_name;
             })
             ->filterColumn('training.name', function ($query, $keyword) {
                 $query->whereHas('training',function ($q) use($keyword){
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->setRowId('id');
+            ->setRowId('id')
+            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner']);
     }
     /**
      * Get the query source of dataTable.
@@ -113,6 +120,8 @@ class InvoiceDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
+            ['name' => 'order_number', 'data' => 'order_number', 'title' => trans('admin.order_number')],
+            ['name' => 'partner', 'data' => 'partner', 'title' => trans('admin.academy')],
             ['name' => 'user.name', 'data' => 'user_id', 'title' => trans('admin.bookings.user')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.bookings.training')],
             ['name' => 'amount', 'data' => 'amount', 'title' => trans('admin.bookings.amount')],
