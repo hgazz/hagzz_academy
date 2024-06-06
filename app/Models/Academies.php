@@ -55,6 +55,7 @@ class Academies extends Authenticatable
         'bank_account_number',
         'settlement_days_count',
         'non_refund_days_count',
+        'contract_link'
     ];
 
     protected $hidden = [

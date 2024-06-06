@@ -166,6 +166,11 @@
                                                placeholder="{{ trans('admin.contract_end_date') }}"
                                                value="{{ old('end_date', auth('academy')->user()->end_date) }}">
                                     </div>
+                                    <div class="col-md-6">
+                                        @if(! is_null(auth('academy')->user()->contract_link))
+                                            <a href="{{  auth('academy')->user()->contract_link }}" target="_blank">{{ trans('admin.download_contract') }}</a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel"

@@ -67,6 +67,7 @@ return [
     'print' => 'طباعة',
     'birth_date' => 'تاريخ الميلاد',
     'coach_name' => 'اسم المدرب',
+    'download_contract' => 'تحميل العقد',
     'auth' => [
         'sign_in' => 'تسجيل الدخول',
         'enter_your_email_and_password' => 'أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول',
