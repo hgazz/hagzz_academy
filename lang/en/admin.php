@@ -68,6 +68,9 @@ return [
     'birth_date' => 'Birth Date',
     'coach_name' => 'Coach Name',
     'download_contract' => 'Download Contract',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'apply' => 'Apply',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',

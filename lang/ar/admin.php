@@ -68,6 +68,9 @@ return [
     'birth_date' => 'تاريخ الميلاد',
     'coach_name' => 'اسم المدرب',
     'download_contract' => 'تحميل العقد',
+    'start_date' => 'تاريخ البدء',
+    'end_date' => 'تاريخ الانتهاء',
+    'apply' => 'تطبيق',
     'auth' => [
         'sign_in' => 'تسجيل الدخول',
         'enter_your_email_and_password' => 'أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول',
