@@ -58,7 +58,7 @@ class CoachDataTable extends DataTable
                 });
             })
             ->addColumn('training_count',function($q){
-                return $q->academy->trainings?->count() ;
+                return $q->academy->trainings->count() ;
             })
             ->addColumn('follow_count',function($q){
                 return Follow::where('followable_id',$q->id)->count();
@@ -75,7 +75,7 @@ class CoachDataTable extends DataTable
             return $this->query;
         }
 
-        return $model->newQuery()->whereBelongsTo(auth('academy')->user() , 'academy');
+        return $model->newQuery()->with(['trainings', 'academy'])->whereBelongsTo(auth('academy')->user() , 'academy');
     }
 
     /**
