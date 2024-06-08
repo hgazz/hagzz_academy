@@ -351,6 +351,7 @@ return [
         'is_canceled' => 'Is Canceled',
         'amount' => 'Amount',
         'user_type' => 'Payment Type',
+        'net_amount' => 'Net Amount',
     ],
     'total_amount'=>'Total Amount',
     'settlement_date'=>'Settlement Date',

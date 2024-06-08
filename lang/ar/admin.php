@@ -350,6 +350,7 @@ return [
         'is_canceled' => 'ملغى',
         'amount' => 'المبلغ',
         'user_type' => 'طريقة الدفع',
+        'net_amount' => 'المبلغ الصافي',
     ],
     'total_amount' => 'إجمالي المبلغ',
     'settlement_date' => 'تاريخ التسوية',
