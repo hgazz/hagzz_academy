@@ -6,6 +6,7 @@ use App\Models\Academies;
 use App\Models\Join;
 use App\Models\Settlement;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 class PartnerSettlements extends Command
 {
@@ -31,15 +32,31 @@ class PartnerSettlements extends Command
         $academies = Academies::get(['id', 'settlement_days_count']);
 
         foreach ($academies as $academy) {
-            $sumPrice = Join::whereHas('training', function ($query) use ($academy) {
-                $query->where('academy_id', $academy->id);
-            })->sum('price');
             $oldSettlement = Settlement::where('partner_id', $academy->id)->latest()->first();
+
+            // Determine the date to start fetching joins from
+            if ($oldSettlement) {
+                $startDate = Carbon::parse($oldSettlement->settlement_date)->addDays($academy->settlement_days_count);;
+            } else {
+                $startDate = Carbon::now()->subDays($academy->settlement_days_count);
+            }
+
+            // Calculate the sum of price and net amount for joins after the start date
+            $sumPrice = Join::whereHas('training', function ($query) use ($academy, $startDate) {
+                $query->where('academy_id', $academy->id)
+                    ->where('created_at', '>', $startDate);
+            })->sum('price');
+
+            $netAmount = Join::whereHas('training', function ($query) use ($academy, $startDate) {
+                $query->where('academy_id', $academy->id)
+                    ->where('created_at', '>', $startDate);
+            })->sum('net_amount');
 
             if ($sumPrice > 0) {
                 Settlement::create([
                     'partner_id' => $academy->id,
                     'total_amount' => $sumPrice,
+                    'net_amount' => $netAmount,
                     'settlement_date' => now(),
                 ]);
 

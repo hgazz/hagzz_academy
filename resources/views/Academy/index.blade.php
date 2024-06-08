@@ -73,7 +73,7 @@
                                     <div
                                         class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
                                         <h5 class="fs-6">{{ trans('admin.latest_settlement_amount') }}</h5>
-                                        <p class="w-value">{{ $settlements ? $settlements->total_amount : 0 }}</p>
+                                        <p class="w-value">{{ $settlements ? $settlements->net_amount : 0 }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@
                             <div
                                 class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
                                 <h5 class="fs-6">{{ trans('admin.training.Total Balance') }}</h5>
-                                <p class="w-value">{{ auth()->user()->settlements->sum('total_amount') ?: 0 }}</p>
+                                <p class="w-value">{{ auth()->user()->settlements->sum('net_amount') ?: 0 }}</p>
                             </div>
                         </div>
                     </div>

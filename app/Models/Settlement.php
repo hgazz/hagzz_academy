@@ -16,6 +16,7 @@ class Settlement extends Model
     protected $fillable = [
         'partner_id',
         'total_amount',
+        'net_amount',
         'settlement_date',
         'status',
     ];
