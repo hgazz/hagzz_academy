@@ -102,7 +102,7 @@ class BookingDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
-            ['name' => 'username', 'data' => 'username', 'title' => trans('admin.profile.name')],
+            ['name' => 'user.name', 'data' => 'username', 'title' => trans('admin.profile.name')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.profile.phone')],
             ['name' => 'training.name', 'data' => 'training', 'title' => trans('admin.training.training'), 'searchable' => false],
             ['name' => 'training.academy.commercial_name', 'data' => 'commercial_name', 'title' => trans('admin.address.academy'), 'searchable' => false],

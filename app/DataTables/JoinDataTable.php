@@ -40,7 +40,7 @@ class JoinDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->editColumn('name', fn($raw) => $raw->name)
-            ->addColumn('training_name', fn($join) => $join->training->name ?? '')
+            ->addColumn('training_id', fn($join) => $join->training->name ?? '')
             ->addColumn('partner_name', fn($join) => $join->training->academy->commercial_name ?? '')
             ->addColumn('sport', fn($join) => $join->training->sport->name ?? '')
             ->addColumn('level', fn($join) => $join->training->level ?? '')
@@ -82,7 +82,7 @@ class JoinDataTable extends DataTable
         return $model->newQuery()->with([
             'training'=>function($model){
                 $model->where('academy_id',auth('academy')->id())->get();
-            }
+            },'user'
         ])->whereHas('training', function ($q) {
             $q->where('academy_id', auth('academy')->id());
         });
@@ -132,9 +132,9 @@ class JoinDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
-            ['name' => 'training_name', 'data' => 'training_name', 'title' => trans('admin.training.name')],
-            ['name' => 'partner_name', 'data' => 'partner_name', 'title' => trans('admin.academy')],
-            ['name' => 'level', 'data' => 'level', 'title' => trans('admin.training.level')],
+            ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.training.name')],
+            ['name' => 'training.academy.commercial_name', 'data' => 'partner_name', 'title' => trans('admin.academy')],
+            ['name' => 'training.level', 'data' => 'level', 'title' => trans('admin.training.level')],
             ['name' => 'sport', 'data' => 'sport', 'title' => trans('admin.clasess.sport')],
             ['name' => 'age_group', 'data' => 'age_group', 'title' => trans('admin.training.age_group')],
             ['name' => 'classes', 'data' => 'classes', 'title' => trans('admin.classes')],
