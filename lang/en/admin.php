@@ -328,6 +328,7 @@ return [
         'select_city'=>'select city',
         'select_area'=>'select area',
         'create_booking'=>'Add New Booking',
+        'country_code' => 'Country Code',
     ],
     'notifications'=> [
         'notifications'=>'Notifications',

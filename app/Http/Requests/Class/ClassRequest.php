@@ -28,8 +28,8 @@ class ClassRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'date' =>['required',new ValidateDate()],
-            'start_time'=>'required',
-            'end_time'=>'required',
+            'start_time'=>'required|timezone',
+            'end_time'=>'required|timezone|after:start_time',
             'training_id'=>'required|exists:trainings,id',
             'outcomes.*' => 'nullable|string',
             'bring_with_me.*' => 'nullable|string',

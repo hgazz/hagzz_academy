@@ -27,10 +27,11 @@ class BookingRequest extends FormRequest
             'name' =>'required|string',
             'phone' =>'required|string',
             'gender' =>'required|in:male,female',
+            'country_code' =>'required',
             'country_id' =>'required|exists:countries,id',
             'city_id' =>'required|exists:cities,id',
             'area_id' =>'required|exists:areas,id',
-            'birth_date' =>'required|date',
+            'birth_date' =>'required|date|before:today',
         ];
     }
 }

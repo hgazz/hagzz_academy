@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.training.create'))
+@section('title', trans('admin.training.training'))
 
 
 @section('content')
@@ -23,7 +23,7 @@
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
                                     <li class="breadcrumb-item"><a href="{{ route('academy.training.index') }}">{{ trans('admin.training.training') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.training.create') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.training.training') }}</li>
                                 </ol>
                             </nav>
 
@@ -41,7 +41,7 @@
                     <input type="hidden" name="training_id" value="{{ $training->id }}">
                     <div class="card">
                         <div class="card-header">
-                            <h3>{{ trans('academy.training.create_booking') }}</h3>
+                            <h3>{{ trans('admin.training.create_booking') }}</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -90,6 +90,15 @@
                                         <option value="female" @selected(old('gender') == 'female' )>{{ trans('admin.training.female') }}</option>
                                     </select>
                                     @error('gender')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="name">{{trans('admin.training.country_code')}}</label>
+                                    <input type="text" name="country_code" class="form-control"
+                                           value="{{ old('country_code') }}" id="phone"
+                                           placeholder="{{trans('admin.training.country_code')}}">
+                                    @error('country_code')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
