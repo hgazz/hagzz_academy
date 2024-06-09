@@ -207,6 +207,7 @@ class TrainingController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'gender' => $request->gender,
+                'country_code' => $request->country_code,
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
                 'area_id' => $request->area_id,
