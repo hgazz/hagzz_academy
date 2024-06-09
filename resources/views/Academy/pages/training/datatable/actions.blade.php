@@ -8,7 +8,7 @@
 
             <a class="dropdown-item" href="{{ route('academy.training.edit', $training) }}">{{ trans('admin.edit') }}</a>
             <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
-            <a class="dropdown-item show_confirm_two" href="javascript:void(0);" data-href="{{ route('academy.training.delete', $training) }}"  data-id="{{ $training->id }}" data-name="Training">{{ trans('admin.delete') }}</a>
+            <a class="dropdown-item show_confirm_two" href="javascript:void(0);" data-href="{{ route('academy.training.delete') }}"  data-id="{{ $training->id }}" data-name="Training">{{ trans('admin.delete') }}</a>
             <div class="dropdown-divider"></div>
             <form action="{{route('academy.training.updateActive',$training)}}" method="post" class="mx-3">
                 @csrf @method('PUT')
