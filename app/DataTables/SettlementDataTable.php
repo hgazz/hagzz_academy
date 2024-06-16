@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Http\Traits\DataTablesTrait;
 use App\Models\Settlement;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -14,6 +15,7 @@ use Yajra\DataTables\Services\DataTable;
 
 class SettlementDataTable extends DataTable
 {
+    use DataTablesTrait;
     protected $query;
 
     /**
@@ -63,20 +65,34 @@ class SettlementDataTable extends DataTable
      */
     public function html(): HtmlBuilder
     {
+        $hideButtonsArray = array_column($this->getColumns(), 'title');
+        $hideButtonsArray = $this->makeHideButtons($hideButtonsArray);
         return $this->builder()
                     ->setTableId('settlement-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
+                    ->dom('Bfltip')
                     ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
+                    ->parameters([
+                        'scrollX' => true,
+                        'scrollY' => true,
+                        'autoWidth' => false,
+                        'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                        'buttons' => [
+                            $hideButtonsArray
+                        ],
+                        'order' => [
+                            0, 'desc'
+                        ],
+                        'language' =>
+                            (app()->getLocale() === 'ar') ?
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/ar.json')
+                                ] :
+                                [
+                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/English.json')
+                                ]
+
                     ]);
     }
 

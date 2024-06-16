@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Http\Traits\DataTablesTrait;
 use App\Models\Join;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -14,6 +15,7 @@ use Yajra\DataTables\Services\DataTable;
 
 class JoinDataTable extends DataTable
 {
+    use DataTablesTrait;
     protected $query;
 
     /**
@@ -94,6 +96,9 @@ class JoinDataTable extends DataTable
      */
     public function html(): HtmlBuilder
     {
+
+        $hideButtonsArray = array_column($this->getColumns(), 'title');
+        $hideButtonsArray = $this->makeHideButtons($hideButtonsArray);
         return $this->builder()
                     ->setTableId('join-table')
                     ->columns($this->getColumns())
@@ -107,8 +112,7 @@ class JoinDataTable extends DataTable
                         'autoWidth'    => false,
                         'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
                         'buttons'      => [
-                            ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
-                            ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
+                            $hideButtonsArray
 
                         ],
                         'order' => [

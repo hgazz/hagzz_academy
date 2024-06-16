@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Http\Traits\DataTablesTrait;
 use App\Models\Booking;
 use App\Models\Join;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -15,6 +16,7 @@ use Yajra\DataTables\Services\DataTable;
 
 class BookingDataTable extends DataTable
 {
+    use DataTablesTrait;
     /**
      * Build the DataTable class.
      *
@@ -64,6 +66,8 @@ class BookingDataTable extends DataTable
      */
     public function html(): HtmlBuilder
     {
+        $hideButtonsArray = array_column($this->getColumns(), 'title');
+        $hideButtonsArray = $this->makeHideButtons($hideButtonsArray);
         return $this->builder()
                     ->setTableId('booking-table')
                     ->columns($this->getColumns())
@@ -72,27 +76,27 @@ class BookingDataTable extends DataTable
                     ->scrollX()
                     ->scrollY()
                     ->dom('Bfltip')
-                    ->parameters([
-                        'responsive'   => true,
-                        'autoWidth'    => false,
-                        'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
-                        'buttons'      => [
-                            ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
-                            ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
+            ->parameters([
+                'scrollX' => true,
+                'scrollY' => true,
+                'autoWidth' => false,
+                'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                'buttons' => [
+                    $hideButtonsArray
+                ],
+                'order' => [
+                    0, 'desc'
+                ],
+                'language' =>
+                    (app()->getLocale() === 'ar') ?
+                        [
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/ar.json')
+                        ] :
+                        [
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/English.json')
+                        ]
 
-                        ],
-                        'order' => [
-                            0, 'desc'
-                        ],
-                        'language' =>
-                            (app()->getLocale() === 'ar') ?
-                                [
-                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
-                                ] :
-                                [
-                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')
-                                ]
-                    ]);
+            ]);
     }
 
     /**

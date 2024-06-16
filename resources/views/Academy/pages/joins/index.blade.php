@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <a class="btn btn-primary" href="{{route('academy.report.join.export')}}">{{ trans('admin.export') }}</a>
+{{--                <a class="btn btn-primary" href="{{route('academy.report.join.export')}}">{{ trans('admin.export') }}</a>--}}
 
                 {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
             </div>
@@ -66,12 +66,11 @@
 
 
 @push('js')
-{{--        <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-1.13.8/datatables.min.js"></script>--}}
     <script src="{{ asset('assetsAdmin/src/plugins/src/table/datatable/datatables.js') }}"></script>
-{{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>--}}
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
     <script src="/vendor/datatables/buttons.server-side.js"></script>
     <script src="{{ asset('assetsAdmin/confirmationDelete.js') }}"></script>
     {!! $dataTable->scripts() !!}

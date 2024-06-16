@@ -11,9 +11,11 @@ use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
+use App\Http\Traits\DataTablesTrait;
 
 class AddressDataTable extends DataTable
 {
+    use DataTablesTrait;
     /**
      * Build the DataTable class.
      *
@@ -113,6 +115,8 @@ class AddressDataTable extends DataTable
      */
     public function html(): HtmlBuilder
     {
+        $hideButtonsArray = array_column($this->getColumns(), 'title');
+        $hideButtonsArray = $this->makeHideButtons($hideButtonsArray);
         return $this->builder()
                     ->setTableId('address-table')
                     ->columns($this->getColumns())
@@ -121,13 +125,12 @@ class AddressDataTable extends DataTable
             ->scrollX()
             ->scrollY()
             ->parameters([
-                'responsive'   => true,
-                'autoWidth'    => false,
-                'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
-                'buttons'      => [
-                    ['extend' => 'print', 'className' => 'btn btn-primary', 'text' => '<i class="fa fa-print"></i>'.trans('admin.print')],
-                    ['extend' => 'excel', 'className' => 'btn btn-success', 'text' => '<i class="fa fa-file"></i>'.trans('admin.export')],
-
+                'scrollX' => true,
+                'scrollY' => true,
+                'autoWidth' => false,
+                'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
+                'buttons' => [
+                    $hideButtonsArray
                 ],
                 'order' => [
                     0, 'desc'
@@ -135,11 +138,12 @@ class AddressDataTable extends DataTable
                 'language' =>
                     (app()->getLocale() === 'ar') ?
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/ar.json')
                         ] :
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')
+                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/English.json')
                         ]
+
             ]);
     }
 
