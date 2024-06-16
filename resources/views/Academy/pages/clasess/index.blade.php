@@ -48,9 +48,9 @@
 
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                <a class="btn btn-success w-25 mt-3 mb-2" href="{{route('academy.class.export')}}">
-                    {{ trans('admin.export') }}
-                </a>
+{{--                <a class="btn btn-success w-25 mt-3 mb-2" href="{{route('academy.class.export')}}">--}}
+{{--                    {{ trans('admin.export') }}--}}
+{{--                </a>--}}
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -63,7 +63,7 @@
                 </div>
 
             </div>
-{{--            <button class="btn btn-danger w-25 " data-toggle="modal" data-target="#confirmDeleteModal">Delete</button>--}}
+            <button class="btn btn-danger w-25 " data-toggle="modal" data-target="#confirmDeleteModal">Delete</button>
 
 
 
