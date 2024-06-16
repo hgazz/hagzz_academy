@@ -18,8 +18,7 @@ class AuthController extends Controller
         if (auth()->guard('academy')->attempt($credentials)) {
             return to_route('academy.index');
         }
-        return redirect()->back()->with(['error' => trans('admin.auth.invalid_email_or_password')])
-            ->withInput($request->only('email', 'remember'));
+        return redirect()->back()->with(['error' => trans('admin.auth.invalid_email_or_password')])->withInput($request->only('email'));
     }
 
     public function logout()
