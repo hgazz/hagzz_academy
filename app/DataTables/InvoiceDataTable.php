@@ -65,12 +65,8 @@ class InvoiceDataTable extends DataTable
             return $this->query;
         }
 
-        return $model->newQuery()->with([
-            'training' => function ($q) {
-                $q->where('academy_id', auth('academy')->id());
-            },
-            'user'
-        ])->whereHas('training', function ($q) {
+        return $model->newQuery()->with(['training' => ['academy'], 'user'])
+            ->whereHas('training', function ($q) {
             $q->where('academy_id', auth('academy')->id());
         });
     }
@@ -102,10 +98,10 @@ class InvoiceDataTable extends DataTable
                 'language' =>
                     (app()->getLocale() === 'ar') ?
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/ar.json')
+                            'url' => asset('datatableAr.json')
                         ] :
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/English.json')
+                            'url' => url('//cdn.datatables.net/plug-ins/2.0.8/i18n/en-GB.json')
                         ]
 
             ]);
@@ -119,7 +115,7 @@ class InvoiceDataTable extends DataTable
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'order_number', 'data' => 'order_number', 'title' => trans('admin.order_number')],
-            ['name' => 'partner', 'data' => 'partner', 'title' => trans('admin.academy')],
+            ['name' => 'training.academy.commercial_name', 'data' => 'partner', 'title' => trans('admin.academy')],
             ['name' => 'user.name', 'data' => 'user_id', 'title' => trans('admin.bookings.user')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.bookings.training')],
             ['name' => 'amount', 'data' => 'amount', 'title' => trans('admin.bookings.amount')],

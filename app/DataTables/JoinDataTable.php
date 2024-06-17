@@ -85,9 +85,7 @@ class JoinDataTable extends DataTable
             'training'=>function($model){
                 $model->where('academy_id',auth('academy')->id())->get();
             },'user'
-        ])->whereHas('training', function ($q) {
-            $q->where('academy_id', auth('academy')->id());
-        });
+        ]);
     }
 
 
@@ -121,7 +119,7 @@ class JoinDataTable extends DataTable
                         'language' =>
                             (app()->getLocale() === 'ar') ?
                                 [
-                                    'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json')
+                                    'url' => asset('datatableAr.json')
                                 ] :
                                 [
                                     'url' => url('//cdn.datatables.net/plug-ins/1.13.4/i18n/English.json')

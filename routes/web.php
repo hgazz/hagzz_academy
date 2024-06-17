@@ -138,7 +138,7 @@ Route::group(
                 Route::get('settlement/filter','filter')->name('settlement.filter');
                 Route::get('settlement/export','export')->name('settlement.export');
                 Route::get('invoice','invoice')->name('invoice.filter');
-                Route::get('booking','booking')->name('booking.index');
+                Route::get('transaction','transaction')->name('transaction.index');
                 Route::get('bookings/export','bookingExport')->name('booking.export');
                 Route::get('joins','joins')->name('joins');
                 Route::get('joins/filter','joinFilter')->name('join.filter');

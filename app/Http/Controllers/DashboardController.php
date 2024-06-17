@@ -8,7 +8,6 @@ use App\Http\Traits\UsersTrait;
 use App\Models\Join;
 use App\Models\Settlement;
 use App\Models\Sport;
-use App\Models\Training;
 use App\Models\User;
 use App\Services\Chart\ChartsService;
 use Illuminate\Http\JsonResponse;
@@ -34,7 +33,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $totalUsers = $this->getAllUsersCount();
+        $totalUsers = $this->getUsersByPartner();
         $maleUsers = $this->getAllMaleUsersCount();
         $femaleUsers = $this->getAllFemaleUsersCount();
         $usersBooking = $this->getUsersBooking();

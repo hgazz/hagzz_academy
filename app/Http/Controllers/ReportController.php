@@ -8,17 +8,13 @@ use App\DataTables\JoinDataTable;
 use App\DataTables\SettlementDataTable;
 use App\Exports\CoachExport;
 use App\Exports\InvoiceExport;
-use App\Exports\JoinEsport;
 use App\Exports\JoinExport;
 use App\Exports\SettlementExport;
-use App\Http\Controllers\Controller;
 use App\Models\Coach;
 use App\Models\Invoice;
 use App\Models\Join;
 use App\Models\Settlement;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -53,7 +49,7 @@ class ReportController extends Controller
         return Excel::download(new SettlementExport(),'settlement.xlsx');
     }
 
-    public function booking(InvoiceDataTable $dataTable)
+    public function transaction(InvoiceDataTable $dataTable)
     {
         return $dataTable->render('Academy.pages.booking.index');
     }

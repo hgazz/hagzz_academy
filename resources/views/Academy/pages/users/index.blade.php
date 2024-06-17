@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.transaction'))
+@section('title', trans('admin.bookings.bookings'))
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css"
           href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/custom_dt_miscellaneous.css') }}">
 @endpush
+
 
 
 
@@ -32,7 +33,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.transaction') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.bookings.bookings') }}</li>
                                 </ol>
                             </nav>
 
@@ -42,12 +43,19 @@
             </div>
         </div>
         <!--  END BREADCRUMBS  -->
+
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="card">
-
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3>{{ trans('admin.user.user') }}</h3>
+                        </div>
+                    </div>
                     <div class="card-body">
-                    {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
+                        {{--                <a class="btn btn-primary" href="{{route('academy.report.join.export')}}">{{ trans('admin.export') }}</a>--}}
+
+                        {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
                     </div>
                 </div>
             </div>
@@ -64,5 +72,6 @@
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
     <script src="/vendor/datatables/buttons.server-side.js"></script>
+    <script src="{{ asset('assetsAdmin/confirmationDelete.js') }}"></script>
     {!! $dataTable->scripts() !!}
 @endpush
