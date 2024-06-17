@@ -57,14 +57,17 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="{{route('academy.coach.create')}}">
-                                <h3>{{ trans('admin.coaches.create') }}</h3>
-                            </a>
-                            <a href="{{route('academy.coach.create')}}" class="btn btn-primary">
-                                {{ trans('admin.coaches.create') }}
-                            </a>
-                        </div>
+                        @if(request()->routeIs('academy.coach.index'))
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{route('academy.coach.create')}}">
+                                    <h3>{{ trans('admin.coaches.create') }}</h3>
+                                </a>
+                                <a href="{{route('academy.coach.create')}}" class="btn btn-primary">
+                                    {{ trans('admin.coaches.create') }}
+                                </a>
+                            </div>
+                        @endif
+
                         <div class="row">
                         <form method="GET" action="{{ route('academy.report.coach.filter') }}">
                             @include('Academy.pages.filter._form_filter')
