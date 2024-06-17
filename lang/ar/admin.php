@@ -247,6 +247,8 @@ return [
         'out_comes' => 'النتائج',
         'bring_with_me' => 'المعدات المطلوبة',
         'add_more' => 'أضف المزيد',
+        'date_outside_range' => ': خارج النطاق. يجب تحديد تاريخ صالح بين :startDate و :endDate.',
+        'training_not_selected' => 'يجب تحديد تدريب',
     ],
     'gallery' => [
         'gallery' => 'المعرض',

@@ -18,14 +18,14 @@ class ValidateDate implements ValidationRule
         $training =  Training::where('id',request('training_id'))->first();
 
         if (is_null($training)){
-            $fail('The :You Must Select Training First');
+            $fail(trans('admin.clasess.training_not_found'));
         }else{
             $startDate = Carbon::parse($training->start_date);
             $endDate = Carbon::parse($training->end_date);
             $checkDate = Carbon::parse(request('date'));
 
             if (!$checkDate->between($startDate, $endDate)) {
-                $fail('The :date is outside the range.');
+                $fail(trans("admin.clasess.date_outside_range", [ 'startDate' => $startDate, 'endDate' => $endDate]));
             }
         }
     }

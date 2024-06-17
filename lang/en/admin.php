@@ -248,6 +248,8 @@ return [
         'out_comes' => 'Outcomes',
         'bring_with_me' => 'Equipment Needed',
         'add_more' => 'Add More',
+        'date_outside_range' => 'The date is outside the range,You must specify a valid date between :startDate and :endDate.',
+        'training_not_selected' => 'You Must Select Training First',
     ],
     'gallery'=>[
         'gallery'=>'Gallery',
