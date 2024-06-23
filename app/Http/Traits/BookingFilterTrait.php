@@ -38,10 +38,10 @@ trait BookingFilterTrait
     {
         $query = Join::query();
         if ($startDate && $endDate) {
-            $query->whereHas('training', function ($q) {
-                $q->where('academy_id', auth('academy')->id());
-            })->whereBetween('created_at', [$startDate, Carbon::create($endDate)->endOfDay()]);
+            $query->whereBetween('created_at', [$startDate, Carbon::create($endDate)->endOfDay()]);
         }
-        return $query;
+        return $query->whereHas('training', function ($q) {
+            $q->where('academy_id', auth('academy')->id());
+        });
     }
 }
