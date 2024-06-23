@@ -8,40 +8,40 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait BookingFilterTrait
 {
-    private function getTotalBookingBalance($startDate, $endDate)
+    private function getTotalBookingBalance($startDate, $endDate, $academyId)
     {
-        return $this->buildDateFilteredQuery($startDate, $endDate)->sum('price');
+        return $this->buildDateFilteredQuery($startDate, $endDate, $academyId)->sum('price');
     }
 
-    private function getTotalBookingRefundCount($startDate, $endDate): int
+    private function getTotalBookingRefundCount($startDate, $endDate, $academyId): int
     {
-        return $this->buildDateFilteredQuery($startDate, $endDate)
+        return $this->buildDateFilteredQuery($startDate, $endDate, $academyId)
             ->whereHas('invoice', function ($query) {
                 $query->where('is_canceled', 1);
             })->count();
     }
 
-    private function getTotalBookingRefundAmount($startDate, $endDate)
+    private function getTotalBookingRefundAmount($startDate, $endDate, $academyId)
     {
-        return $this->buildDateFilteredQuery($startDate, $endDate)
+        return $this->buildDateFilteredQuery($startDate, $endDate, $academyId)
             ->whereHas('invoice', function ($query) {
                 $query->where('is_canceled', 1);
             })->sum('price');
     }
 
-    private function getTotalBookingCount($startDate, $endDate): int
+    private function getTotalBookingCount($startDate, $endDate, $academyId): int
     {
-        return $this->buildDateFilteredQuery($startDate, $endDate)->count();
+        return $this->buildDateFilteredQuery($startDate, $endDate, $academyId)->count();
     }
 
-    private function buildDateFilteredQuery($startDate, $endDate): Builder
+    private function buildDateFilteredQuery($startDate, $endDate, $academyId): Builder
     {
         $query = Join::query();
         if ($startDate && $endDate) {
             $query->whereBetween('created_at', [$startDate, Carbon::create($endDate)->endOfDay()]);
         }
-        return $query->whereHas('training', function ($q) {
-            $q->where('academy_id', auth('academy')->id());
+        return $query->whereHas('training', function ($q) use ($academyId) {
+            $q->where('academy_id', $academyId);
         });
     }
 }

@@ -53,11 +53,12 @@ class DashboardController extends Controller
     {
         $startDate = $request->start_date;
         $endDate = $request->end_date;
+        $academyId = auth('academy')->id();
 
-        $totalBookingBalance = $this->getTotalBookingBalance($startDate, $endDate);
-        $totalBookingRefundCount = $this->getTotalBookingRefundCount($startDate, $endDate);
-        $totalBookingRefundAmount = $this->getTotalBookingRefundAmount($startDate, $endDate);
-        $totalBookingCount = $this->getTotalBookingCount($startDate, $endDate);
+        $totalBookingBalance = $this->getTotalBookingBalance($startDate, $endDate, $academyId);
+        $totalBookingRefundCount = $this->getTotalBookingRefundCount($startDate, $endDate, $academyId);
+        $totalBookingRefundAmount = $this->getTotalBookingRefundAmount($startDate, $endDate, $academyId);
+        $totalBookingCount = $this->getTotalBookingCount($startDate, $endDate, $academyId);
 
         return response()->json([
             'total_booking_balance' => $totalBookingBalance,
