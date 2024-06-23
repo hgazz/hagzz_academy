@@ -57,7 +57,7 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="card">
                     <div class="card-header">
-                        @if(request()->routeIs('academy.coach.index'))
+                        @if(request()->url() === route('academy.coach'))
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{route('academy.coach.create')}}">
                                     <h3>{{ trans('admin.coaches.create') }}</h3>
@@ -66,6 +66,7 @@
                                     {{ trans('admin.coaches.create') }}
                                 </a>
                             </div>
+                            <hr>
                         @endif
 
                         <div class="row">
