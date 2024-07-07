@@ -56,11 +56,13 @@
         <span></span><span></span><span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
         <div class="signin">
             <div class="content">
                 <img src="{{ asset('assetsAdmin/logo/Icon-Black.svg') }}" alt="User Image">
                 <h2>{{ trans('admin.auth.sign_in') }}</h2>
-                <p class="text-light">{{ trans('admin.auth.enter_your_email_and_password') }}</p>
+                {{-- <p class="text-light">{{ trans('admin.auth.enter_your_email_and_password') }}</p> --}}
 
                 @if (session()->has('error'))
                     <div class="alert alert-danger">
