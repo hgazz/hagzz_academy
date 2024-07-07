@@ -1,10 +1,10 @@
 <div class="header-container container-xxl">
-    <header class="header navbar navbar-expand-sm expand-header">
+    <header class="header navbar navbar-expand-sm expand-header justify-content-between">
 
         <ul class="navbar-item theme-brand flex-row  text-center">
             <li class="nav-item theme-logo">
                 <a href="{{ route('academy.index') }}">
-                    <img src="{{ asset('assetsAdmin/logo/Icon-Black.svg') }}"  class="img-thumbnail" alt="hagzz">
+                    <img src="{{ asset('assetsAdmin/logo/Icon-Black.svg') }}"  class="img-thumbnail bg-transparent" alt="hagzz">
                 </a>
             </li>
             <li class="nav-item theme-text">
@@ -13,7 +13,7 @@
         </ul>
 
 
-        <ul class="navbar-item flex-row ms-lg-auto ms-0 action-area">
+        <ul class="navbar-item flex-row ms-lg-auto ms-0 action-area gap-lg-3 gap-md-2 gap-sm-1">
 
             <li class="nav-item dropdown language-dropdown">
                 <a href="javascript:void(0)" class="nav-link dropdown-toggle" id="language-dropdown" data-bs-toggle="dropdown"
