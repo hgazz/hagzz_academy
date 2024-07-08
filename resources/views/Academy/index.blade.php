@@ -19,6 +19,13 @@
     .widget.widget-card-five .account-box .info-box .icon:before {
         background-color: white !important;
     }
+    .widget.widget-card-five .account-box .info-box {
+        min-height: 30px;
+    }
+
+    .row {
+        margin:auto;
+    }
 </style>
 @section('content')
     <div class="middle-content container-xxl p-0">
@@ -57,7 +64,7 @@
         </div>
         <!--  END BREADCRUMBS  -->
 
-        <div class="row layout-top-spacing">
+        <div class="row layout-top-spacing m-auto">
 
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="row widget-statistic">
@@ -105,8 +112,8 @@
                             <div class="widget-heading p-2">
                                 <div class="w-title d-flex align-items-start justify-content-start m-0">
                                     <div class="w-icon bg-transparent p-0">
-                                        <img width="48" height="48" src="https://img.icons8.com/color/48/cash-in-hand.png"
-                                            alt="cash-in-hand" />
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/color/48/cash-in-hand.png" alt="cash-in-hand" />
                                     </div>
                                     <div
                                         class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
@@ -139,7 +146,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="container">
                 <div class="card">
                     <div class="row container mb-1">
@@ -147,8 +154,10 @@
                             <form id="filterForm" action="javascript:void(0)">
                                 <div class="row align-items-center justify-content-between">
                                     <div class="col-xl-5 col-lg-5 col-md-4 col-sm-12">
-                                        <label for="start_date" class="form-label">{{ trans('admin.training.start_date') }}</label>
-                                        <input type="date" class="form-control flatpickr flatpickr-input" name="start_date" id="start_date"
+                                        <label for="start_date"
+                                            class="form-label">{{ trans('admin.training.start_date') }}</label>
+                                        <input type="date" class="form-control flatpickr flatpickr-input"
+                                            name="start_date" id="start_date"
                                             placeholder="{{ trans('admin.select_start_date') }} value="{{ old('start_date') ?? request('start_date') }}">
                                     </div>
                                     <div class="col-xl-5 col-lg-5 col-md-4 col-sm-12">
@@ -156,7 +165,8 @@
                                             class="form-label">{{ trans('admin.training.end_date') }}</label>
                                         <input type="date" class="form-control flatpickr flatpickr-input"
                                             name="end_date" id="end_date"
-                                            placeholder="{{ trans('admin.select_end_date') }}"  value="{{ old('end_date') ?? request('end_date') }}">
+                                            placeholder="{{ trans('admin.select_end_date') }}"
+                                            value="{{ old('end_date') ?? request('end_date') }}">
                                     </div>
                                     <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12">
                                         <label for="filter" class="form-label"></label>
@@ -175,7 +185,9 @@
                                         <div class="widget-heading">
                                             <div class="w-title m-0">
                                                 <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48" src="https://img.icons8.com/color/48/payment-history.png" alt="payment-history"/>
+                                                    <img width="48" height="48"
+                                                        src="https://img.icons8.com/color/48/payment-history.png"
+                                                        alt="payment-history" />
                                                 </div>
                                                 <div class="">
                                                     <p class="w-value" id="total_booking_balance"></p>
@@ -191,7 +203,8 @@
                                         <div class="widget-heading">
                                             <div class="w-title m-0">
                                                 <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48" src="https://img.icons8.com/color/48/refund.png" alt="refund"/>
+                                                    <img width="48" height="48"
+                                                        src="https://img.icons8.com/color/48/refund.png" alt="refund" />
                                                 </div>
                                                 <div class="">
                                                     <p class="w-value" id="total_booking_refund_count"></p>
@@ -207,7 +220,9 @@
                                         <div class="widget-heading">
                                             <div class="w-title m-0">
                                                 <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48" src="https://img.icons8.com/color/48/refund-2--v1.png" alt="refund-2--v1"/>
+                                                    <img width="48" height="48"
+                                                        src="https://img.icons8.com/color/48/refund-2--v1.png"
+                                                        alt="refund-2--v1" />
                                                 </div>
                                                 <div class="">
                                                     <p class="w-value" id="total_booking_refund_amount"></p>
@@ -222,7 +237,9 @@
                                         <div class="widget-heading">
                                             <div class="w-title m-0">
                                                 <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48" src="https://img.icons8.com/color/48/event-accepted.png" alt="event-accepted"/>
+                                                    <img width="48" height="48"
+                                                        src="https://img.icons8.com/color/48/event-accepted.png"
+                                                        alt="event-accepted" />
                                                 </div>
                                                 <div class="">
                                                     <p class="w-value" id="total_booking_count"></p>
@@ -251,82 +268,87 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
-                <div class="widget widget-card-five">
-                    <div class="widget-content">
-                        <div class="account-box">
-                            <div class="info-box mb-4">
-                                <div class="icon">
-                                    <span>
-                                        <img src="{{ asset('assetsAdmin/icons8-users-96.png') }}" alt="Total-Users">
-                                    </span>
-                                </div>
-                                <div class="balance-info d-flex justify-content-center align-items-center">
-                                    <h6 class="text-muted mb-0 mx-2">{{ trans('admin.total_users') }}</h6>
-                                    <p>{{ $totalUsers }}</p>
-                                </div>
-                                <form method="get">
-                                    <div class="dropdown d-inline-block">
-                                        <a class="dropdown-toggle" href="#" role="button" id="elementDrodpown3"
-                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                class="feather feather-more-horizontal">
-                                                <circle cx="12" cy="12" r="1"></circle>
-                                                <circle cx="19" cy="12" r="1"></circle>
-                                                <circle cx="5" cy="12" r="1"></circle>
-                                            </svg>
-                                        </a>
-
-                                        <div class="dropdown-menu left" aria-labelledby="elementDrodpown3"
-                                            style="will-change: transform;">
-
-                                            <a class="dropdown-item" id="userMonthFilter" href="javascript:void(0);"
-                                                data-url="{{ route('academy.getUserDataByMonth') }}">
-                                                {{ trans('admin.this_month') }}
-                                            </a>
-                                            <a class="dropdown-item" id="userYearFilter" href="javascript:void(0);"
-                                                data-url="{{ route('academy.getUserDataByYear') }}">
-                                                {{ trans('admin.this_year') }}
-                                            </a>
-
-                                        </div>
+            <div class="row m-auto">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
+                    <div class="widget widget-card-five">
+                        <div class="widget-content">
+                            <div class="account-box">
+                                <div class="info-box mb-4">
+                                    <div class="icon">
+                                        <span>
+                                            <img src="{{ asset('assetsAdmin/icons8-users-96.png') }}" alt="Total-Users">
+                                        </span>
                                     </div>
-                                </form>
+                                    <div class="balance-info d-flex justify-content-center align-items-center">
+                                        <h6 class="text-muted mb-0 mx-2">{{ trans('admin.total_users') }}</h6>
+                                        <p>{{ $totalUsers }}</p>
+                                    </div>
+                                    <form method="get">
+                                        <div class="dropdown d-inline-block">
+                                            <a class="dropdown-toggle" href="#" role="button"
+                                                id="elementDrodpown3" data-bs-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="feather feather-more-horizontal">
+                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                    <circle cx="19" cy="12" r="1"></circle>
+                                                    <circle cx="5" cy="12" r="1"></circle>
+                                                </svg>
+                                            </a>
+
+                                            <div class="dropdown-menu left" aria-labelledby="elementDrodpown3"
+                                                style="will-change: transform;">
+
+                                                <a class="dropdown-item" id="userMonthFilter" href="javascript:void(0);"
+                                                    data-url="{{ route('academy.getUserDataByMonth') }}">
+                                                    {{ trans('admin.this_month') }}
+                                                </a>
+                                                <a class="dropdown-item" id="userYearFilter" href="javascript:void(0);"
+                                                    data-url="{{ route('academy.getUserDataByYear') }}">
+                                                    {{ trans('admin.this_year') }}
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div id="userChartDiv"></div>
                             </div>
-                            <div id="userChartDiv"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
-                <div class="widget widget-card-five">
-                    <div class="widget-content">
-                        <div class="account-box">
-                            <div class="info-box mb-4">
-                                <div class="icon">
-                                    <span>
-                                        <img src="{{ asset('assetsAdmin/icons8-deadlift.gif') }}" alt="sports-image">
-                                    </span>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
+                    <div class="widget widget-card-five">
+                        <div class="widget-content">
+                            <div class="account-box">
+                                <div class="info-box mb-4">
+                                    <div class="icon">
+                                        <span>
+                                            <img src="{{ asset('assetsAdmin/icons8-deadlift.gif') }}" alt="sports-image">
+                                        </span>
+                                    </div>
+                                    <div class="balance-info d-flex justify-content-center align-items-center mx-auto">
+                                        <h6 class="text-muted mb-0 mx-2">{{ trans('admin.sports_level') }}</h6>
+                                    </div>
                                 </div>
-                                <div class="balance-info d-flex justify-content-center align-items-center mx-auto">
-                                    <h6 class="text-muted mb-0 mx-2">{{ trans('admin.sports_level') }}</h6>
-                                </div>
+                                <div id="sportChartDiv"></div>
                             </div>
-                            <div id="sportChartDiv"></div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="row widget-statistic">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/color/48/conference-background-selected.png" alt="conference-background-selected"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/color/48/conference-background-selected.png"
+                                            alt="conference-background-selected" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ count($usersBooking) }}</p>
@@ -337,12 +359,14 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/color/48/add-user-male--v1.png" alt="add-user-male--v1"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/color/48/add-user-male--v1.png"
+                                            alt="add-user-male--v1" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ count($newCustomers) }}</p>
@@ -353,12 +377,14 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/color/48/collaborating-in-circle.png" alt="collaborating-in-circle"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/color/48/collaborating-in-circle.png"
+                                            alt="collaborating-in-circle" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ auth('academy')->user()->follows->count() }}</p>
@@ -372,12 +398,14 @@
             </div>
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="row widget-statistic">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="conference-background-selected"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
+                                            alt="conference-background-selected" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ $fullTrainings }}</p>
@@ -388,12 +416,14 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="add-user-male--v1"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
+                                            alt="add-user-male--v1" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ $inProgressTrainings }}</p>
@@ -404,12 +434,14 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="collaborating-in-circle"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
+                                            alt="collaborating-in-circle" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ $upcomingTrainings }}</p>
@@ -419,12 +451,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 layout-spacing">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
                         <div class="widget widget-one_hybrid widget-followers">
                             <div class="widget-heading">
                                 <div class="w-title m-0">
                                     <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48" src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000" alt="collaborating-in-circle"/>
+                                        <img width="48" height="48"
+                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
+                                            alt="collaborating-in-circle" />
                                     </div>
                                     <div class="">
                                         <p class="w-value">{{ $cancelledTrainings }}</p>
