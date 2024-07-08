@@ -109,7 +109,7 @@ code {
   flex-grow: 8;
   margin-top: 107px;
   margin-bottom: 0;
-  margin-right: 212px;
+  margin-right: 250px;
   -webkit-transition: 0.3s ease all;
   transition: 0.3s ease all;
 }
@@ -761,7 +761,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
 ===============
 */
 .sidebar-wrapper {
-  width: 212px;
+  width: 250px;
   position: fixed;
   z-index: 1030;
   transition: width 0.1s, right 0.1s;
@@ -798,7 +798,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
 }
 .sidebar-closed .sidebar-wrapper {
   width: 0;
-  right: -212px;
+  right: -250px;
 }
 .sidebar-closed .sidebar-wrapper:hover {
   width: 255px;

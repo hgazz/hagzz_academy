@@ -122,7 +122,7 @@ body.dark #content {
   flex-grow: 8;
   margin-top: 107px;
   margin-bottom: 0;
-  margin-left: 212px;
+  margin-left: 250px;
   -webkit-transition: 0.3s ease all;
   transition: 0.3s ease all;
 }
@@ -737,7 +737,7 @@ body.dark .secondary-nav .breadcrumbs-container .navbar .breadcrumb-action-dropd
   color: #e0e6ed;
 }
 body.dark .sidebar-wrapper {
-  width: 212px;
+  width: 250px;
   position: fixed;
   z-index: 1030;
   transition: width 0.1s, left 0.1s;
@@ -771,7 +771,7 @@ body.dark .sidebar-closed {
 }
 body.dark .sidebar-closed .sidebar-wrapper {
   width: 0;
-  left: -212px;
+  left: -250px;
 }
 body.dark .sidebar-closed .sidebar-wrapper:hover {
   width: 255px;
