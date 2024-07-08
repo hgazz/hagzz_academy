@@ -86,7 +86,7 @@
                         @error('password')
                         <div class="text-light">{{ $message }}</div>
                         @enderror
-                        <div class="form-check form-check-primary form-check-inline">
+                        <div class="form-check form-check-primary form-check-inline align-self-start d-flex align-items-center gap-1 justify-content-start">
                             <input class="form-check-input" type="checkbox" id="form-check-default" name="remember"
                                    value="1" @if (old('remember')) checked @endif>
                             <label class="form-check-label text-light m-0" for="form-check-default">
