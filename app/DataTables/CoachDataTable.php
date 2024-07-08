@@ -6,6 +6,7 @@ use App\Http\Traits\DataTablesTrait;
 use App\Models\Coach;
 use App\Models\Follow;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Illuminate\Support\Str;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Services\DataTable;
@@ -63,7 +64,12 @@ class CoachDataTable extends DataTable
             ->addColumn('follow_count',function($q){
                 return Follow::where('followable_id',$q->id)->count();
             })
-            ->rawColumns(['image', 'academy_id','training_count','follow_count']);
+            ->addColumn('sports',function($q){
+                return $q->sports->map(function($sport) {
+                    return STR::limit($sport->name, 20, '...');
+                })->implode(', ');
+            })
+            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports']);
     }
 
     /**
@@ -75,7 +81,7 @@ class CoachDataTable extends DataTable
             return $this->query;
         }
 
-        return $model->newQuery()->with(['trainings', 'academy'])->whereBelongsTo(auth('academy')->user() , 'academy');
+        return $model->newQuery()->with(['trainings', 'academy', 'sports'])->whereBelongsTo(auth('academy')->user() , 'academy');
     }
 
     /**
@@ -122,12 +128,17 @@ class CoachDataTable extends DataTable
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.coaches.name')],
+            ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.coaches.phone')],
+            ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.training.gender')],
+            ['name' => 'birth_date', 'data' => 'birth_date', 'title' => trans('admin.training.birth_date')],
             ['name' => 'description', 'data' => 'description', 'title' => trans('admin.coaches.description')],
             ['name' => 'image', 'data' => 'image', 'title' => trans('admin.coaches.image')],
             ['name' => 'license', 'data' => 'license', 'title' => trans('admin.coaches.is_licensed'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'license_type', 'data' => 'license_type', 'title' => trans('admin.coaches.license_type'), 'orderable' => false, 'searchable' => false],
             ['name' => 'academy.commercial_name', 'data' => 'academy_id', 'title' => trans('admin.coaches.academy_id')],
             ['name' => 'training_count', 'data' => 'training_count', 'title' => trans('admin.training_count')],
             ['name' => 'follow_count', 'data' => 'follow_count', 'title' => trans('admin.follow_count')],
+            ['name' => 'sports', 'data' => 'sports', 'title' => trans('admin.user.Sports'), 'orderable' => false, 'searchable' => false],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active'), 'orderable' => false, 'searchable' => false],
         ];
     }

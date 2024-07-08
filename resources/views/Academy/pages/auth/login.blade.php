@@ -64,29 +64,28 @@
                 <h2>{{ trans('admin.auth.sign_in') }}</h2>
                 {{-- <p class="text-light">{{ trans('admin.auth.enter_your_email_and_password') }}</p> --}}
 
-                @if (session()->has('error'))
-                    <div class="alert alert-danger">
-                        {{ session()->get('error') }}
-                    </div>
-                @endif
-
                 <form action="{{ route('academy.login') }}" method="post" class="w-100">
                     @csrf
+                    @if (session()->has('error'))
+                        <div class="text-light">
+                            {{ session()->get('error') }}
+                        </div>
+                    @endif
                     <div class="form">
                         <div class="inputBox">
                             <input type="email" id="email" name="email" required>
                             <i>{{ trans('admin.auth.email') }}</i>
-                            @error('email')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
                         </div>
+                        @error('email')
+                        <div class="text-light">{{ $message }}</div>
+                        @enderror
                         <div class="inputBox">
                             <input id="password" type="password" name="password" required>
                             <i>{{ trans('admin.auth.password') }}</i>
-                            @error('password')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
                         </div>
+                        @error('password')
+                        <div class="text-light">{{ $message }}</div>
+                        @enderror
                         <div class="form-check form-check-primary form-check-inline">
                             <input class="form-check-input" type="checkbox" id="form-check-default" name="remember"
                                    value="1" @if (old('remember')) checked @endif>
