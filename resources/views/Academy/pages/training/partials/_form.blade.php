@@ -1,7 +1,6 @@
 @csrf
 <div class="row">
-    <div class="row">
-        @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Training::class) as $name => $data)
+    @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Training::class) as $name => $data)
             @if(!$data['is_textarea'])
                 <div class="col-md-6 mb-3">
                     <label for="{{$name}}" class="form-label">{{trans('admin.training.'.$name)}}</label>
@@ -29,10 +28,7 @@
                 @enderror
             </div>
         @endif
-
         @endforeach
-
-    </div>
     <div class="col-md-6 mb-3">
         <label for="start_date">{{ trans('admin.training.start_date') }}</label>
         <input class="form-control" type="date" value="{{ old('start_date', (isset($training) ? $training->start_date : ''))}}" id="start_date" name="start_date">
