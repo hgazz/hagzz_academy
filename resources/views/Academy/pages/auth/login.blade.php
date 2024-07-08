@@ -87,6 +87,13 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="form-check form-check-primary form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="form-check-default" name="remember"
+                                   value="1" @if (old('remember')) checked @endif>
+                            <label class="form-check-label text-light" for="form-check-default">
+                                {{ trans('admin.auth.remember_me') }}
+                            </label>
+                        </div>
                         <div class="inputBox text-light">
                             <input type="submit" value="{{ trans('admin.auth.sign_in') }}">
                         </div>
