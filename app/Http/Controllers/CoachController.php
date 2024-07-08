@@ -30,7 +30,9 @@ class CoachController extends Controller
 
     public function create()
     {
-        $sports = $this->sportModel::get(['id', 'name']);
+        $sports = $this->sportModel::whereHas('academies', function ($q){
+            $q->where('academy_id', auth('academy')->id());
+        })->get(['id', 'name']);
         return view('Academy.pages.coaches.create', get_defined_vars());
     }
 
@@ -63,7 +65,9 @@ class CoachController extends Controller
 
     public function edit(Coach $coach)
     {
-        $sports = $this->sportModel::get(['id', 'name']);
+        $sports = $this->sportModel::whereHas('academies', function ($q){
+            $q->where('academy_id', auth('academy')->id());
+        })->get(['id', 'name']);
         return view('Academy.pages.coaches.edit', compact('coach', 'sports'));
     }
 
