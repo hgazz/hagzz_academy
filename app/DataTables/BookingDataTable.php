@@ -55,9 +55,15 @@ class BookingDataTable extends DataTable
      */
     public function query(Join $model): QueryBuilder
     {
-        return $model->newQuery()->whereHas('training', function ($query) {
+        return $model->newQuery()->with([
+            'user',
+            'training' => function ($query) {
+                $query->with(['academy', 'coach'])
+                    ->where('academy_id', auth('academy')->id());
+            }
+        ])->whereHas('training', function ($query) {
             $query->where('academy_id', auth('academy')->id());
-        });
+        })->withoutTrashed();
     }
 
     /**
