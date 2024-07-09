@@ -16,7 +16,7 @@ class Join extends Model
         'net_amount'
     ];
 
-    protected $hidden = ['created_at', 'updated_at','training_id'];
+    protected $hidden = ['created_at', 'updated_at'];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
