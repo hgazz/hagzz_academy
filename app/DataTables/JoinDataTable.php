@@ -86,7 +86,7 @@ class JoinDataTable extends DataTable
                 $query->where('academy_id', auth('academy')->id());
             },
             'user'
-        ]);
+        ])->withoutTrashed();
     }
 
 
