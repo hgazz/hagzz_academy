@@ -53,7 +53,7 @@ class JoinDataTable extends DataTable
             ->addColumn('coach', fn($join) => $join?->training?->coach?->name ?? '')
             ->addColumn('count', fn($join) => $join->training?->joins?->count() ?? '')
             ->addColumn('max_player', fn($join) => $join->training->max_players ?? '')
-            ->addColumn('price', fn($join) => $join->training->price)
+            ->addColumn('price', fn($join) => $join?->training?->price)
             ->addColumn('discount_price', fn($join) => $join?->training?->discount_price)
             ->rawColumns([
                 'training',
