@@ -85,11 +85,13 @@ class JoinDataTable extends DataTable
             'user',
             'training' => function ($query) {
                 $query->with(['academy', 'coach'])
-                    ->where('academy_id', auth('academy')->id());
+                    ->where('academy_id', auth('academy')->id())
+                    ->withoutTrashed();
             }
         ])->whereHas('training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        })->withoutTrashed();
+            $query->where('academy_id', auth('academy')->id())
+                ->withoutTrashed();
+        });
     }
 
 
