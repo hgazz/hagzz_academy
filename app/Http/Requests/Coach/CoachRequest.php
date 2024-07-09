@@ -4,6 +4,7 @@ namespace App\Http\Requests\Coach;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 
 class CoachRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class CoachRequest extends FormRequest
             'image' => $this->checkImage(),
             'license' => 'nullable|string',
             'license_type' => 'nullable|string',
-            'birth_date' => 'date|before:today',
+            'birth_date' => 'required|date|before:' . Carbon::now()->subYears(10)->format('Y-m-d'),
             'gender' => 'required|in:male,female',
         ];
     }
