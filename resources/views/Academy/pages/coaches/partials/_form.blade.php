@@ -68,8 +68,7 @@
         <label for="sports">{{trans('admin.coaches.select_sport')}}</label>
         <select class="js-example-basic-multiple form-select" name="sport_id[]" multiple id="sports">
             @foreach($sports as $sport)
-                <option
-                    value="{{$sport->id}}" @selected(old('sport_id[]', isset($coach) ? in_array($sport->id, $coach->sports()->pluck('sport_id')->toArray()) : ''))>{{$sport->name}}</option>
+                <option value="{{$sport->id}}" @selected(in_array($sport->id, old('sport_id', isset($coach) ? $coach->sports()->pluck('sport_id')->toArray() : [])))>{{$sport->name}}</option>
             @endforeach
         </select>
         @error('sport_id')
