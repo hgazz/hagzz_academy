@@ -82,9 +82,10 @@ class JoinDataTable extends DataTable
         }
 
         return $model->newQuery()->with([
-            'training'=>function($model){
-                $model->where('academy_id',auth('academy')->id())->get();
-            },'user'
+            'training' => function ($query) {
+                $query->where('academy_id', auth('academy')->id());
+            },
+            'user'
         ]);
     }
 
