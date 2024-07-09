@@ -82,11 +82,14 @@ class JoinDataTable extends DataTable
 //        }
 
         return $model->newQuery()->with([
+            'user',
             'training' => function ($query) {
-                $query->where('academy_id', auth('academy')->id());
-            },
-            'user'
-        ])->withoutTrashed();
+                $query->with(['academy', 'coach'])
+                    ->where('academy_id', auth('academy')->id());
+            }
+        ])->whereHas('training', function ($query) {
+            $query->where('academy_id', auth('academy')->id());
+        })->withoutTrashed();
     }
 
 
