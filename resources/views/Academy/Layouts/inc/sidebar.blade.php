@@ -153,7 +153,12 @@
                     <li class="menu {{ Request::routeIs('academy.report.settlement.index')  ? 'active' : '' }}">
                         <a href="{{ route('academy.report.settlement.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M246.9 14.1C234 15.2 224 26 224 39c0 13.8 11.2 25 25 25H400c8.8 0 16-7.2 16-16V17.4C416 8 408 .7 398.7 1.4L246.9 14.1zM240 112c0 44.2 35.8 80 80 80s80-35.8 80-80c0-5.5-.6-10.8-1.6-16H241.6c-1 5.2-1.6 10.5-1.6 16zM72 224c-22.1 0-40 17.9-40 40s17.9 40 40 40H224v89.4L386.8 230.5c-13.3-4.3-27.3-6.5-41.6-6.5H240 72zm345.7 20.9L246.6 416H416V369.7l53.6 90.6c11.2 19 35.8 25.3 54.8 14.1s25.3-35.8 14.1-54.8L462.3 290.8c-11.2-18.9-26.6-34.5-44.6-45.9zM224 448v32c0 17.7 14.3 32 32 32H384c17.7 0 32-14.3 32-32V448H224z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="33" height="32" viewBox="0 0 33 32" fill="none">
+                                    <path class="dash-icon" d="M19.1668 17.3333C20.6396 17.3333 21.8335 16.1394 21.8335 14.6667C21.8335 13.1939 20.6396 12 19.1668 12C17.6941 12 16.5002 13.1939 16.5002 14.6667C16.5002 16.1394 17.6941 17.3333 19.1668 17.3333Z" fill="black" fill-opacity="0.75" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
+                                    <path class="dash-icon" d="M24.5001 28.0003C25.9728 28.0003 27.1667 26.8064 27.1667 25.3337C27.1667 23.8609 25.9728 22.667 24.5001 22.667C23.0273 22.667 21.8334 23.8609 21.8334 25.3337C21.8334 26.8064 23.0273 28.0003 24.5001 28.0003Z" fill="black" fill-opacity="0.75" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
+                                    <path d="M7.16675 5.3335V20.0002C7.16675 22.5148 7.16675 23.7708 7.94808 24.5522C8.72941 25.3335 9.98541 25.3335 12.5001 25.3335H21.8334" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
+                                    <path d="M7.16675 9.3335C7.16675 11.8482 7.16675 13.1042 7.94808 13.8855C8.72941 14.6668 9.98541 14.6668 12.5001 14.6668H16.5001" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
+                                </svg>
                                 <span>{{ trans('admin.settlement.Settlements') }}</span>
                             </div>
                         </a>
