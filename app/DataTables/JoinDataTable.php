@@ -47,7 +47,7 @@ class JoinDataTable extends DataTable
             ->addColumn('sport', fn($join) => $join->training->sport->name ?? '')
             ->addColumn('level', fn($join) => $join->training->level ?? '')
             ->addColumn('age_group', fn($join) => $join->training->age_group ?? '')
-            ->addColumn('classes', fn($join) => $join->training->classes->count() ?? '')
+            ->addColumn('classes', fn($join) => $join?->training?->classes?->count() ?? '')
             ->addColumn('start_date', fn($join) => $join->training->start_date ?? '')
             ->addColumn('end_date', fn($join) => $join->training->end_date ?? '')
             ->addColumn('coach', fn($join) => $join->training->coach->name ?? '')
