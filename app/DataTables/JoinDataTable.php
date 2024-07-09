@@ -50,11 +50,11 @@ class JoinDataTable extends DataTable
             ->addColumn('classes', fn($join) => $join?->training?->classes?->count() ?? '')
             ->addColumn('start_date', fn($join) => $join->training->start_date ?? '')
             ->addColumn('end_date', fn($join) => $join->training->end_date ?? '')
-            ->addColumn('coach', fn($join) => $join->training->coach->name ?? '')
-            ->addColumn('count', fn($join) => $join->training->joins->count() ?? '')
+            ->addColumn('coach', fn($join) => $join?->training?->coach?->name ?? '')
+            ->addColumn('count', fn($join) => $join->training?->joins?->count() ?? '')
             ->addColumn('max_player', fn($join) => $join->training->max_players ?? '')
             ->addColumn('price', fn($join) => $join->training->price)
-            ->addColumn('discount_price', fn($join) => $join->training->discount_price)
+            ->addColumn('discount_price', fn($join) => $join?->training?->discount_price)
             ->rawColumns([
                 'training',
                 'partner_name',
