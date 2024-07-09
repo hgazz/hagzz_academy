@@ -16,7 +16,7 @@ use Yajra\DataTables\Services\DataTable;
 class JoinDataTable extends DataTable
 {
     use DataTablesTrait;
-    protected $query;
+//    protected $query;
 
     /**
      * Set a custom query.
@@ -77,9 +77,9 @@ class JoinDataTable extends DataTable
      */
     public function query(Join $model): QueryBuilder
     {
-        if ($this->query) {
-            return $this->query;
-        }
+//        if ($this->query) {
+//            return $this->query;
+//        }
 
         return $model->newQuery()->with([
             'training' => function ($query) {
