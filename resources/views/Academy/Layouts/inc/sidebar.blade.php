@@ -130,10 +130,8 @@
             <li class="menu {{ Request::routeIs('academy.users.*')  ? 'active' : '' }}">
                 <a href="{{ route('academy.users.index') }}" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
-                        <svg fill-opacity=".6" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="#0E1726">
-                            <path d="M11.666 5.8335H8.33268C7.41602 5.8335 6.66602 6.5835 6.66602 7.50016V11.6668C6.66602 12.1252 7.04102 12.5002 7.49935 12.5002H8.33268V17.5002C8.33268 17.9585 8.70768 18.3335 9.16602 18.3335H10.8327C11.291 18.3335 11.666 17.9585 11.666 17.5002V12.5002H12.4993C12.9577 12.5002 13.3327 12.1252 13.3327 11.6668V7.50016C13.3327 6.5835 12.5827 5.8335 11.666 5.8335Z" fill="#0E1726"></path>
-                            <path d="M10.0007 4.99984C10.9211 4.99984 11.6673 4.25365 11.6673 3.33317C11.6673 2.4127 10.9211 1.6665 10.0007 1.6665C9.08018 1.6665 8.33398 2.4127 8.33398 3.33317C8.33398 4.25365 9.08018 4.99984 10.0007 4.99984Z" fill="#0E1726"></path>
-                        </svg>                        <span>{{ trans('admin.profile.user') }}</span>
+                        <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">                    
+                        <span>{{ trans('admin.profile.user') }}</span>
                     </div>
                 </a>
             </li>
@@ -153,12 +151,7 @@
                     <li class="menu {{ Request::routeIs('academy.report.settlement.index')  ? 'active' : '' }}">
                         <a href="{{ route('academy.report.settlement.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="33" height="32" viewBox="0 0 33 32" fill="none">
-                                    <path class="dash-icon" d="M19.1668 17.3333C20.6396 17.3333 21.8335 16.1394 21.8335 14.6667C21.8335 13.1939 20.6396 12 19.1668 12C17.6941 12 16.5002 13.1939 16.5002 14.6667C16.5002 16.1394 17.6941 17.3333 19.1668 17.3333Z" fill="black" fill-opacity="0.75" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
-                                    <path class="dash-icon" d="M24.5001 28.0003C25.9728 28.0003 27.1667 26.8064 27.1667 25.3337C27.1667 23.8609 25.9728 22.667 24.5001 22.667C23.0273 22.667 21.8334 23.8609 21.8334 25.3337C21.8334 26.8064 23.0273 28.0003 24.5001 28.0003Z" fill="black" fill-opacity="0.75" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
-                                    <path d="M7.16675 5.3335V20.0002C7.16675 22.5148 7.16675 23.7708 7.94808 24.5522C8.72941 25.3335 9.98541 25.3335 12.5001 25.3335H21.8334" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
-                                    <path d="M7.16675 9.3335C7.16675 11.8482 7.16675 13.1042 7.94808 13.8855C8.72941 14.6668 9.98541 14.6668 12.5001 14.6668H16.5001" stroke="black" stroke-opacity="0.75" stroke-width="2"></path>
-                                </svg>
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
                                 <span>{{ trans('admin.settlement.Settlements') }}</span>
                             </div>
                         </a>
@@ -175,7 +168,7 @@
                     <li class="menu {{ Request::routeIs('academy.report.joins')  ? 'active' : '' }}">
                         <a href="{{ route('academy.report.joins') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M14 2.2C22.5-1.7 32.5-.3 39.6 5.8L80 40.4 120.4 5.8c9-7.7 22.3-7.7 31.2 0L192 40.4 232.4 5.8c9-7.7 22.3-7.7 31.2 0L304 40.4 344.4 5.8c7.1-6.1 17.1-7.5 25.6-3.6s14 12.4 14 21.8V488c0 9.4-5.5 17.9-14 21.8s-18.5 2.5-25.6-3.6L304 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L192 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L80 471.6 39.6 506.2c-7.1 6.1-17.1 7.5-25.6 3.6S0 497.4 0 488V24C0 14.6 5.5 6.1 14 2.2zM96 144c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zM80 352c0 8.8 7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96c-8.8 0-16 7.2-16 16zM96 240c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96z"/></svg>
+                                <img src="{{ asset('assetsAdmin/person-arms-up.svg') }}" alt="">
                                 <span>{{ trans('admin.bookings.bookings') }}</span>
                             </div>
                         </a>
