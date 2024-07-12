@@ -33,13 +33,13 @@ class TrainingDataTable extends DataTable
             ->addColumn('classes', function (Training $training) {
                 return $training->classes->count();
             })
-            ->addColumn('delete', function (Training $training) {
-                return view('Academy.pages.training.datatable.checkbox', compact('training'));
-            })
+//            ->addColumn('delete', function (Training $training) {
+//                return view('Academy.pages.training.datatable.checkbox', compact('training'));
+//            })
             ->addColumn('publish', function (Training $training) {
                 return view('Academy.pages.training.datatable.publish', compact('training'));
             })
-            ->rawColumns(['action', 'coach_id','image','class', 'active', 'classes','delete','publish']);
+            ->rawColumns(['action', 'coach_id','image','class', 'active', 'classes','publish']);
 
     }
 

@@ -7,10 +7,6 @@ use App\Models\TClass;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class TClassDataTable extends DataTable
@@ -30,15 +26,15 @@ class TClassDataTable extends DataTable
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
             })
-            ->addColumn('checkbox',function (TClass $class){
-                return view('Academy.pages.clasess.datatable.checkbox',compact('class'));
-            })
+//            ->addColumn('checkbox',function (TClass $class){
+//                return view('Academy.pages.clasess.datatable.checkbox',compact('class'));
+//            })
             ->filterColumn('training.name', function ($query, $keyword) {
                 $query->whereHas('training',function ($q) use($keyword){
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action','checkbox']);
+            ->rawColumns(['action',]);
     }
 
     /**

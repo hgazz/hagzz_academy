@@ -16,6 +16,7 @@ class Gallery extends Model
     protected $fillable = [
         'image',
         'academy_id',
+        'active'
     ];
 
     public function academy()

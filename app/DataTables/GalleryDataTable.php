@@ -23,10 +23,13 @@ class GalleryDataTable extends DataTable
             ->addColumn('image', function (Gallery $gallery) {
                 return '<img src="' . $gallery->image . '" width="120" height="80" class="img-thumbnail">';
             })
+            ->editColumn('active', function (Gallery $gallery) {
+                return $gallery->active ? trans('admin.address.active') : trans('admin.banners.inactive');
+            })
             ->addColumn('action', function (Gallery $gallery) {
                 return view('Academy.pages.gallery.datatable.actions', compact('gallery'))->render();
             })
-            ->rawColumns(['action', 'image']);
+            ->rawColumns(['action', 'image', 'active']);
     }
 
     /**
@@ -81,6 +84,7 @@ class GalleryDataTable extends DataTable
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'image', 'data' => 'image', 'title' => trans('admin.gallery.image')],
+            ['name' => 'active', 'data' => 'active', 'title' => trans('admin.address.active'),  'searchable' => false],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }

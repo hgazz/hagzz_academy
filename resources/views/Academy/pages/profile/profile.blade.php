@@ -173,7 +173,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="commission_percentage">{{ trans('admin.commission_percentage') }}</label>
-                                        <input disabled class="form-control" type="date" id="commission_percentage" name="commission_percentage"
+                                        <input disabled class="form-control" type="number" id="commission_percentage" name="commission_percentage"
                                                    placeholder="{{ trans('admin.commission_percentage') }}"
                                                value="{{ old('commission_percentage', auth('academy')->user()->commission_percentage) }}">
                                     </div>
