@@ -102,7 +102,7 @@ class TClassDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            ['name' => 'checkbox', 'data' => 'checkbox', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
+//            ['name' => 'checkbox', 'data' => 'checkbox', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.clasess.training')],
             ['name' => 'title', 'data' => 'title', 'title' => trans('admin.clasess.title')],

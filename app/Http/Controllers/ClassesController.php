@@ -138,4 +138,13 @@ class ClassesController extends Controller
     {
         return Excel::download(new clasessExport() , 'classes.xlsx');
     }
+
+    public function checkTrainingDate(Request $request)
+    {
+        $training = $this->trainingModel->findOrFail($request->training_id);
+        return response()->json([
+            'status' => 'success',
+            'data' =>$training
+        ]);
+    }
 }

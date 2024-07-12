@@ -71,6 +71,9 @@ return [
     'start_date' => 'تاريخ البدء',
     'end_date' => 'تاريخ الانتهاء',
     'apply' => 'تطبيق',
+    'not_published' => 'في انتظار الموافقة من المسؤول',
+    'class_must_be_between' => 'يجب أن يكون الدرجة بين',
+    'and' => 'و',
     'auth' => [
         'sign_in' => 'تسجيل الدخول',
         'enter_your_email_and_password' => 'أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول',

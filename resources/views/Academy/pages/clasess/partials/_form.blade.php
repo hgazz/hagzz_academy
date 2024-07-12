@@ -1,8 +1,8 @@
 @csrf
 <div class="row">
     <div class="col-md-6 mb-3">
-        <label for="classes"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
-        <select id="classes" class="form-select pt-2" name="training_id" >
+        <label for="training_id"><span class="text-danger">*</span> {{trans('admin.training.training')}} </label>
+        <select id="training_id" class="form-select pt-2" name="training_id" >
             <option value=""> {{trans('admin.clasess.select_training')}} </option>
             @foreach($academyTrainings as $training)
                 <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{$training->name}}</option>
@@ -13,7 +13,10 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="date">{{ trans('admin.clasess.date') }}</label>
+        <label for="date">
+            {{ trans('admin.clasess.date') }}
+            <span id="date-hint" class="text-muted"></span>
+        </label>
         <input class="form-control" type="date" value="{{   old('date',( isset($class) ? $class->date : '')) }}" id="date" name="date">
         @error('date')
         <span class="text-danger">*{{$message}}</span>
@@ -255,6 +258,30 @@
                 }
             });
             @endif
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#training_id').change(function() {
+                var trainingId = $(this).val();
+                if (trainingId) {
+                    $.ajax({
+                        url: '{{ route('academy.class.trainingDate') }}',
+                        type: 'GET',
+                        data: { training_id: trainingId },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                var startDate = response.data.start_date;
+                                console.log(startDate);
+                                var endDate = response.data.end_date;
+                                $('#date-hint').text('({{trans("admin.class_must_be_between")}} ' + startDate + ' and ' + endDate + ')');
+                            }
+                        }
+                    });
+                } else {
+                    $('#date-hint').text('');;
+                }
+            });
         });
     </script>
 @endpush

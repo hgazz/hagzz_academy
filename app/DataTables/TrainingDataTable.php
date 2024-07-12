@@ -93,7 +93,7 @@ class TrainingDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            ['name' => 'delete', 'data' => 'delete', 'title' => trans('admin.delete')],
+//            ['name' => 'delete', 'data' => 'delete', 'title' => trans('admin.delete')],
             ['name' => 'publish', 'data' => 'publish', 'title' => trans('admin.publish')],
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.training.name')],

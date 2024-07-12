@@ -24,7 +24,7 @@ class GalleryDataTable extends DataTable
                 return '<img src="' . $gallery->image . '" width="120" height="80" class="img-thumbnail">';
             })
             ->editColumn('active', function (Gallery $gallery) {
-                return $gallery->active ? trans('admin.address.active') : trans('admin.banners.inactive');
+                return $gallery->active ? trans('admin.publish') : trans('admin.not_published');
             })
             ->addColumn('action', function (Gallery $gallery) {
                 return view('Academy.pages.gallery.datatable.actions', compact('gallery'))->render();

@@ -87,6 +87,7 @@ Route::group(
         Route::controller( ClassesController::class)->group(function(){
             Route::get('classes','index')->name('class.index');
             Route::get('class/create','create')->name('class.create');
+            Route::get('training/date','checkTrainingDate')->name('class.trainingDate');
             Route::post('class/store','store')->name('class.store');
             Route::get('class/edit/{class}','edit')->name('class.edit');
             Route::put('class/update/{class}','update')->name('class.update');

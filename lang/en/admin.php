@@ -71,6 +71,9 @@ return [
     'start_date' => 'Start Date',
     'end_date' => 'End Date',
     'apply' => 'Apply',
+    'not_published' => 'Waiting for Approval from Administrator',
+    'class_must_be_between' => 'Class must be between',
+    'and' => 'and',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',
