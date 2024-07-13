@@ -72,7 +72,7 @@ class Academies extends Authenticatable
 
     public function getLogoAttribute($value): string
     {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return $value == config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR ? asset('assetsAdmin/logo/Icon-Primary.svg') : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
 
     public function sports(): BelongsToMany

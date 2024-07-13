@@ -58,7 +58,7 @@
                             <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-secondary">{{ auth('academy')->user()->unreadNotifications->count() }}</span></h6>
                         </div>
                        @foreach(auth()->user()->unreadNotifications as $notification)
-{{--                           @include('Academy.Layouts.inc.notifications.' .  $notification->type, ['notification' => $notification])--}}
+                           @include('Academy.Layouts.inc.notifications.' .  $notification->type, ['notification' => $notification])
                        @endforeach
 {{--                        <div class="drodpown-title notification mt-2">--}}
 {{--                            <a class="d-flex justify-content-between" href="javascript:void(0)">--}}
@@ -74,7 +74,7 @@
                 <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar-container">
                         <div class="avatar avatar-sm avatar-indicators avatar-online">
-                            <img alt="avatar" src="{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}" width="40px" height="40px" class="rounded-circle">
+                            <img alt="avatar" src="{{ auth()->user('academy')->logo }}" width="40px" height="40px" class="rounded-circle">
                         </div>
                     </div>
                 </a>
