@@ -86,7 +86,7 @@
                                 <div class="row">
                                     <h3 class="text-center mt-2">{{ trans('admin.contract_information') }}</h3>
                                     <form action="{{ route('academy.profile.update', auth()->user()) }}" class="text-center"
-                                          method="post">
+                                          method="post" enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
 
