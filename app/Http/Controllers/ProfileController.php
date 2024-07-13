@@ -24,6 +24,7 @@ class ProfileController extends Controller
     public function update(Academies $user , ProfileRequest $request)
     {
         $imageName = $request->hasFile('logo') ? $this->upload($request->file('logo') , $this->academies::PATH,  $user->getRawOriginal('logo')) : $user->getRawOriginal('logo');
+        dd($imageName);
         $user->update([
             'commercial_name'=>$request->name,
             'logo'=> $imageName,
