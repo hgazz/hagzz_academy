@@ -74,7 +74,7 @@ class TrainingDataTable extends DataTable
 
                         ],
                         'order' => [
-                            0, 'desc'
+                            0,
                         ],
                         'language' =>
                             (app()->getLocale() === 'ar') ?
