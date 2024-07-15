@@ -128,7 +128,7 @@
 .post-comments .media .media-heading {
   color: #3b3f5c;
   font-size: 16px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 700;
 }
 .post-comments .media .media-info {

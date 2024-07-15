@@ -396,7 +396,7 @@ body.dark .compose-box .compose-content form .validation-text {
   text-align: left;
   margin-top: 6px;
   font-size: 12px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .compose-box .compose-content form #editor-container h1, body.dark .compose-box .compose-content form #editor-container p {
   color: #3b3f5c;

@@ -31,7 +31,7 @@ body.dark .bs-stepper-circle svg {
 body.dark .bs-stepper .step-trigger {
   color: #bfc9d4;
   font-weight: 200;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .bs-stepper .step-trigger.disabled, body.dark .bs-stepper .step-trigger:disabled {
   opacity: 0.45;

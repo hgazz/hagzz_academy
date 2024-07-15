@@ -18,7 +18,7 @@ body.dark .calendar-container {
 body.dark .fc .fc-button-primary {
   background-color: #1b2e4b;
   border-color: #1b2e4b;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-size: 14px;
   color: #fff;
 }
@@ -95,7 +95,7 @@ body.dark .event-fc-color {
   padding: 4px 10px;
   margin-bottom: 1px;
   font-size: 13px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 300;
   cursor: pointer;
 }

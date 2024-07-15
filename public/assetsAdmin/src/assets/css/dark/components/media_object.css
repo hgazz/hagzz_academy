@@ -33,7 +33,7 @@ body.dark .media .media-body .media-heading {
   font-weight: 700;
   margin-bottom: 10px;
   font-size: 17px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .media .media-body .media-text {
   color: #888ea8;

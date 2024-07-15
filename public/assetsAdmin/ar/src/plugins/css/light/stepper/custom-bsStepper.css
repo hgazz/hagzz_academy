@@ -36,7 +36,7 @@
 .bs-stepper .step-trigger {
   color: #3b3f5c;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .bs-stepper .step-trigger.disabled, .bs-stepper .step-trigger:disabled {
   opacity: 0.55;

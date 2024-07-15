@@ -156,7 +156,7 @@ body.dark .payment-history .list-group-item .title {
 }
 body.dark .payment-history .list-group-item .pay-pricing {
   font-size: 15px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 
 /* 
@@ -256,7 +256,7 @@ body.dark .summary .widget-content .w-summary-info h6 {
   font-weight: 500;
   margin-bottom: 0;
   color: #bfc9d4;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .summary .widget-content .w-summary-info .summary-count {
   display: block;

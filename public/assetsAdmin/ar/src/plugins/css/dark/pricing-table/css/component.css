@@ -236,7 +236,7 @@ body.dark .pricing-table-2 .pricing-plan-features ul li {
   line-height: 24px;
   color: #bfc9d4;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   margin-bottom: 10px;
 }
 body.dark .pricing-table-2 .pricing-plan-features ul li span {
@@ -278,7 +278,7 @@ body.dark .pricing-table-2 .pricing-plans-container.billed-yearly .pricing-plan 
 body.dark .pricing-table-2 .pricing-plan .pricing-header-section .pricing-header-pricing .sub-title {
   margin-bottom: 0;
   font-size: 12px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .pricing-table-2 .pricing-plan .btn-dark.button {
   background: #0e1726;
