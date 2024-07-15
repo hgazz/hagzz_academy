@@ -45,12 +45,18 @@ class PartnerSettlements extends Command
             $sumPrice = Join::whereHas('training', function ($query) use ($academy, $startDate) {
                 $query->where('academy_id', $academy->id)
                     ->where('created_at', '>', $startDate);
-            })->sum('price');
+            })
+                ->whereHas('invoice', function ($query) {
+                    $query->where('user_type', 'online');
+                })
+                ->sum('price');
 
             $netAmount = Join::whereHas('training', function ($query) use ($academy, $startDate) {
                 $query->where('academy_id', $academy->id)
                     ->where('created_at', '>', $startDate);
-            })->sum('net_amount');
+            })->whereHas('invoice', function ($query) {
+                    $query->where('user_type', 'online');
+                })->sum('net_amount');
 
             if ($sumPrice > 0) {
                 Settlement::create([
