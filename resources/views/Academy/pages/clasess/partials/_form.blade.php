@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     @error('bring_with_me.*')
-                    <span class="text-danger">*{{$message}}</span>
+                        <span class="text-danger">*{{$message}}</span>
                     @enderror
                 @endfor
                 <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
@@ -279,7 +279,7 @@
                         }
                     });
                 } else {
-                    $('#date-hint').text('');;
+                    $('#date-hint').text('');
                 }
             });
         });

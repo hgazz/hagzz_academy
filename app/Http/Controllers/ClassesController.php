@@ -5,18 +5,14 @@ namespace App\Http\Controllers;
 use App\DataTables\TClassDataTable;
 use App\Exports\clasessExport;
 use App\Http\Requests\Class\ClassRequest;
-use App\Models\Academies;
 use App\Models\Join;
-use App\Models\Notification;
 use App\Models\Sport;
 use App\Models\TClass;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
-use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ClassesController extends Controller

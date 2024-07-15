@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <title>@yield('title')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('assetsAdmin/logo/Primary.svg') }}"/>
+    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}; url=partner/logout">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <meta name="lang" content="{{ app()->getLocale() }}" />
         @include('Academy.Layouts.inc.head')
