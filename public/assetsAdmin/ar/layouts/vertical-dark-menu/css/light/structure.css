@@ -21,7 +21,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   letter-spacing: 0.0312rem;
-  font-family: "Nunito", sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -176,7 +176,7 @@ code {
   padding: 5px 8px;
   font-size: 15px;
   border-radius: 4px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   display: inline-block;
   background: rgba(0, 150, 136, 0.26);
   color: #009688;
@@ -422,7 +422,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
 .navbar .navbar-item .nav-item.notification-dropdown .dropdown-menu .drodpown-title h6 {
   margin-bottom: 0;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 200;
   color: #0e1726;
 }
@@ -507,7 +507,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
 }
 .navbar form.form-inline input.search-form-control::-webkit-input-placeholder, .navbar form.form-inline input.search-form-control::-ms-input-placeholder, .navbar form.form-inline input.search-form-control::-moz-placeholder {
   color: #888ea8;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .navbar .form-inline.search {
   display: inline-block;
@@ -521,7 +521,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   -moz-border-radius: 6px;
   border-radius: 6px;
   color: #888ea8;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   padding: 0px 40px 0px 4px;
   height: 36px;
   font-weight: 600;
@@ -535,7 +535,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   left: 6px;
   top: 6.5px;
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   transform: none;
   background-color: #bfc9d4;
   color: #000;
@@ -961,7 +961,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   font-weight: 600;
   color: #888ea8;
   padding: 32px 36px 10px 0;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 
 .sidebar-closed > .sidebar-wrapper ul.menu-categories li.menu.menu-heading > .heading span {
@@ -1005,7 +1005,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   color: #191e3a;
   padding: 10.2px 16px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   margin-bottom: 2px;
   border-radius: 8px;
   margin-top: 2px;
@@ -1198,7 +1198,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   margin-right: 56px;
   font-size: 14px;
   color: #515365 !important;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 #sidebar ul.menu-categories ul.submenu > li ul.sub-submenu > li.active a {
   color: #4361ee !important;
@@ -1307,7 +1307,7 @@ body .navbar .dark-mode, body:not(.dark) .navbar .dark-mode {
   margin-bottom: 0;
   color: #888ea8;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .footer-wrapper .footer-section p a {
   color: #888ea8;

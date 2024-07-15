@@ -198,7 +198,7 @@ body.dark #miniFooterWrapper .arrow p {
   color: #009688;
   font-weight: 600;
   font-size: 15px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark #miniFooterWrapper .copyright a {
   color: #009688;

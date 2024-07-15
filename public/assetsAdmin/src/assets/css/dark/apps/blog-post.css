@@ -124,7 +124,7 @@ body.dark .post-comments .media img {
 body.dark .post-comments .media .media-heading {
   color: #fff;
   font-size: 17px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 600;
 }
 body.dark .post-comments .media .media-body .media-text {

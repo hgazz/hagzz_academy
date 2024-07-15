@@ -45,7 +45,7 @@
   color: #1b2e4b;
   background-color: #fff;
   font-size: 15px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .autoComplete_wrapper > ul > li mark {
   color: #00ab55;
@@ -84,7 +84,7 @@
   position: absolute;
   left: 5px;
   top: 5px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   transform: translateY(0);
   box-shadow: none;
 }

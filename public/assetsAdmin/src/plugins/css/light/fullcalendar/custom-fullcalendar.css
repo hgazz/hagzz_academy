@@ -19,7 +19,7 @@
 .fc .fc-button-primary {
   background-color: #eceffe;
   border-color: #e0e6ed;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-size: 14px;
   color: #191e3a;
 }
@@ -93,7 +93,7 @@
   padding: 4px 10px;
   margin-bottom: 1px;
   font-size: 13px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 300;
   cursor: pointer;
 }

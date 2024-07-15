@@ -36,7 +36,7 @@ body:before {
   width: 100%;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .seperator .seperator-text span {
   background-color: #fafafa;

@@ -78,7 +78,7 @@ code {
   font-weight: 700;
   margin-bottom: 0;
   font-size: 15px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .list-group.list-group-icons-meta .list-group-item .media .media-body p {
   color: #888ea8;
@@ -103,7 +103,7 @@ code {
   font-weight: 700;
   margin-bottom: 0;
   font-size: 16px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .list-group.list-group-media .list-group-item .media .media-body p {
   color: #888ea8;

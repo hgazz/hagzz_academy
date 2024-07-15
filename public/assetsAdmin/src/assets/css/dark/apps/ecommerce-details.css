@@ -208,7 +208,7 @@ body.dark .product-details-content .secure-info p {
   font-size: 12px;
   font-weight: 600;
   color: #e0e6ed;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   align-self: center;
 }
 body.dark .product-details-content .size-selector, body.dark .product-details-content .quantity-selector {
@@ -339,7 +339,7 @@ body.dark .production-descriptions .product-reviews .reviews span {
   font-size: 15px;
   font-weight: 200;
   color: #e0e6ed;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .production-descriptions .product-reviews .review-progress p {
   margin-bottom: 2px;

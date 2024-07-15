@@ -191,7 +191,7 @@ body.dark .widget-one .w-numeric-value .w-value {
 body.dark .widget-one .w-numeric-value .w-numeric-title {
   font-size: 13px;
   color: #bfc9d4;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 600;
 }
 body.dark .widget-one .apexcharts-canvas svg {
@@ -459,7 +459,7 @@ body.dark .widget-table-one .transactions-list .t-item .t-icon .avatar {
   display: inline-block;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   width: auto;
   height: auto;
 }
@@ -529,7 +529,7 @@ body.dark .widget-table-one .transactions-list .t-item .t-rate {
 body.dark .widget-table-one .transactions-list .t-item .t-rate p {
   margin-bottom: 0;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 500;
 }
 body.dark .widget-table-one .transactions-list .t-item .t-rate svg {
@@ -697,7 +697,7 @@ body.dark .widget-activity-four .timeline-line .item-timeline .t-text span.badge
   left: -1px;
   padding: 2px 4px;
   font-size: 10px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   opacity: 0;
   font-weight: 600;
   transform: none;
@@ -748,7 +748,7 @@ body.dark .widget-activity-four .timeline-line .item-timeline .t-time {
   font-size: 13px;
   font-weight: 600;
   color: #181e2e;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .widget-activity-four .tm-action-btn {
   text-align: center;
@@ -822,7 +822,7 @@ body.dark .widget-account-invoice-one .invoice-box .acc-total-info {
 body.dark .widget-account-invoice-one .invoice-box h5 {
   text-align: center;
   font-size: 20px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   margin-bottom: 10px;
   color: #4361ee;
 }
@@ -990,7 +990,7 @@ body.dark .widget-table-two .table > thead > tr > th .th-content {
   color: #bfc9d4;
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .widget-table-two .table > thead > tr > th:first-child .th-content {
   margin-right: 10px;
@@ -1015,7 +1015,7 @@ body.dark .widget-table-two .table > tbody > tr > td {
 body.dark .widget-table-two .table > tbody > tr > td .td-content {
   cursor: pointer;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   color: #888ea8;
 }
 body.dark .widget-table-two .table > tbody > tr:hover > td .td-content {
@@ -1137,7 +1137,7 @@ body.dark .widget-table-three .table > thead > tr > th .th-content {
   color: #bfc9d4;
   font-weight: 500;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .widget-table-three .table > tbody > tr {
   background: transparent;
@@ -1154,7 +1154,7 @@ body.dark .widget-table-three .table > tbody > tr > td {
 body.dark .widget-table-three .table > tbody > tr > td .td-content {
   cursor: pointer;
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   color: #888ea8;
 }
 body.dark .widget-table-three .table > tbody > tr:hover > td .td-content {
@@ -1184,7 +1184,7 @@ body.dark .widget-table-three .table .td-content .discount-pricing {
 }
 body.dark .widget-table-three .table .td-content.product-name {
   color: #515365;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   display: flex;
 }
 body.dark .widget-table-three .table .td-content.product-name .prd-name {
@@ -1242,7 +1242,7 @@ body.dark .widget-table-three .table .td-content a {
   font-size: 13px;
   background: transparent;
   transform: none;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .widget-table-three .table .td-content a svg.feather-chevrons-right {
   width: 15px;

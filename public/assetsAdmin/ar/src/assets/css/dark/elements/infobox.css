@@ -48,7 +48,7 @@ body.dark .info-box-1-icon svg {
   color: #060818;
 }
 body.dark .info-box-1-content-wrapper {
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .info-box-1-title {
   font-size: 22px;
@@ -107,7 +107,7 @@ body.dark .info-box-2-bg {
   border-radius: inherit;
 }
 body.dark .info-box-2-content-wrapper {
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   position: relative;
 }
 body.dark h3.info-box-2-title {
@@ -115,7 +115,7 @@ body.dark h3.info-box-2-title {
   color: #fff;
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   line-height: 36.8px;
   margin: 0 0 25px;
   text-align: center;
@@ -125,7 +125,7 @@ body.dark div.info-box-2-content {
   box-sizing: border-box;
   color: #fff;
   font-size: 16px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   line-height: 1.6;
   text-align: center;
 }
@@ -169,7 +169,7 @@ body.dark .info-box-3:hover::before {
   opacity: 1;
 }
 body.dark .info-box-3-content-wrapper {
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   padding: 40px 10px 40px 40px;
   position: relative;
 }
@@ -262,7 +262,7 @@ body.dark .info-box-4-bg {
   border-radius: inherit;
 }
 body.dark .info-box-4-content-wrapper {
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   position: relative;
 }
 body.dark h3.info-box-4-title {
@@ -270,7 +270,7 @@ body.dark h3.info-box-4-title {
   color: #fff;
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   line-height: 36.8px;
   margin: 0 0 25px;
   text-align: center;
@@ -280,7 +280,7 @@ body.dark div.info-box-4-content {
   box-sizing: border-box;
   color: #fff;
   font-size: 16px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   line-height: 1.6;
   text-align: center;
 }

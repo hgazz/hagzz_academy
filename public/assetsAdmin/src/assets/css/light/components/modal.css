@@ -32,7 +32,7 @@
 .modal-content .modal-header h5 {
   font-weight: 600;
   font-size: 20px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .modal-content .modal-header svg {
   width: 17px;
@@ -60,7 +60,7 @@
 }
 .modal-content .modal-body p {
   color: #888ea8;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-size: 14px;
   line-height: 22px;
   text-align: left;
@@ -77,7 +77,7 @@
 .modal-content .modal-footer button.btn {
   font-weight: 600;
   padding: 10px 25px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 .modal-content .modal-footer .btn.btn-primary {
   background-color: #4361ee;

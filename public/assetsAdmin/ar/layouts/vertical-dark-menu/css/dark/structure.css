@@ -21,7 +21,7 @@ body.dark {
   overflow-x: hidden;
   overflow-y: auto;
   letter-spacing: 0.0312rem;
-  font-family: "Nunito", sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 body.dark {
@@ -180,7 +180,7 @@ body.dark .seperator-header h4 {
   padding: 5px 8px;
   font-size: 15px;
   border-radius: 4px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   display: inline-block;
   background: rgba(0, 150, 136, 0.26);
   color: #009688;
@@ -412,7 +412,7 @@ body.dark .navbar .navbar-item .nav-item.notification-dropdown .dropdown-menu .d
 body.dark .navbar .navbar-item .nav-item.notification-dropdown .dropdown-menu .drodpown-title h6 {
   margin-bottom: 0;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-weight: 200;
   color: #fff;
 }
@@ -497,7 +497,7 @@ body.dark .navbar .navbar-item .nav-item.notification-dropdown .dropdown-menu .i
 }
 body.dark .navbar form.form-inline input.search-form-control::-webkit-input-placeholder, body.dark .navbar form.form-inline input.search-form-control::-ms-input-placeholder, body.dark .navbar form.form-inline input.search-form-control::-moz-placeholder {
   color: #888ea8;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .navbar .form-inline.search {
   display: inline-block;
@@ -509,7 +509,7 @@ body.dark .navbar .form-inline.search .search-form-control {
   -moz-border-radius: 6px;
   border-radius: 6px;
   color: #888ea8;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   padding: 0px 40px 0px 4px;
   height: 36px;
   font-weight: 600;
@@ -524,7 +524,7 @@ body.dark .navbar .search-animated .badge {
   left: 6px;
   top: 6.5px;
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   transform: none;
   background-color: #bfc9d4;
   color: #000;
@@ -923,7 +923,7 @@ body.dark .sidebar-wrapper ul.menu-categories li.menu.menu-heading > .heading {
   font-weight: 600;
   color: #888ea8;
   padding: 32px 36px 10px 0;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .sidebar-closed > .sidebar-wrapper ul.menu-categories li.menu.menu-heading > .heading span {
   display: none;
@@ -965,7 +965,7 @@ body.dark #sidebar ul.menu-categories li.menu > .dropdown-toggle {
   color: #506690;
   padding: 10.2px 16px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   margin-bottom: 2px;
   border-radius: 8px;
   margin-top: 2px;
@@ -1162,7 +1162,7 @@ body.dark #sidebar ul.menu-categories ul.submenu > li ul.sub-submenu > li a {
   margin-right: 56px;
   font-size: 14px;
   color: #888ea8 !important;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark #sidebar ul.menu-categories ul.submenu > li ul.sub-submenu > li.active a {
   color: #61b6cd !important;
@@ -1259,7 +1259,7 @@ body.dark .footer-wrapper .footer-section p {
   margin-bottom: 0;
   color: #888ea8;
   font-size: 14px;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
 }
 body.dark .footer-wrapper .footer-section p a {
   color: #888ea8;
