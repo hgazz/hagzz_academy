@@ -19,7 +19,7 @@
                 <a href="javascript:void(0)" class="nav-link dropdown-toggle" id="language-dropdown" data-bs-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     <img
-                        src="{{ app()->getLocale() === 'en' ? asset('assetsAdmin/src/assets/img/1x1/us.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
+                        src="{{ app()->getLocale() === 'en' ? asset('assetsAdmin/translate.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
                         class="flag-width" alt="flag">
                     {{ LaravelLocalization::getCurrentLocaleNative() }}
                 </a>
