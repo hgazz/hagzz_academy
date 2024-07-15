@@ -112,7 +112,7 @@ class JoinDataTable extends DataTable
                     ->selectStyleSingle()
                     ->dom('Bfltip')
                     ->parameters([
-                        'responsive'   => true,
+                        'responsive'   => false,
                         'autoWidth'    => false,
                         'lengthMenu'   => [[10, 25, 50, -1], [10, 25, 50, 'All records']],
                         'buttons'      => [
