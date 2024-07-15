@@ -28,7 +28,7 @@
                         @if($properties['native']==="English")
                             <a class="dropdown-item d-flex"
                                href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-                                <img src="{{ asset('assetsAdmin/src/assets/img/1x1/us.svg') }}" class="flag-width" alt="flag">
+                                <img src="{{ asset('assetsAdmin/translate.svg') }}" class="flag-width" alt="flag">
                                 <span class="align-self-center">{{ $properties['native'] }}</span></a>
                         @elseif($properties['native']==="العربية")
                             <a class="dropdown-item d-flex"
