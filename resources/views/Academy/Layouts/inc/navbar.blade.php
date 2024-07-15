@@ -19,7 +19,7 @@
                 <a href="javascript:void(0)" class="nav-link dropdown-toggle" id="language-dropdown" data-bs-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     <img
-                        src="{{ app()->getLocale() === 'en' ? asset('assetsAdmin/translate.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
+                        src="{{ app()->getLocale() === 'en' ? asset('assetsAdmin/language-translation-icon.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
                         class="flag-width" alt="flag">
                     {{ LaravelLocalization::getCurrentLocaleNative() }}
                 </a>
@@ -28,7 +28,7 @@
                         @if($properties['native']==="English")
                             <a class="dropdown-item d-flex"
                                href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-                                <img src="{{ asset('assetsAdmin/translate.svg') }}" class="flag-width" alt="flag">
+                                <img src="{{ asset('assetsAdmin/language-translation-icon.svg') }}" class="flag-width" alt="flag">
                                 <span class="align-self-center">{{ $properties['native'] }}</span></a>
                         @elseif($properties['native']==="العربية")
                             <a class="dropdown-item d-flex"
