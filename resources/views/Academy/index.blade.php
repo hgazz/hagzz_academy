@@ -126,7 +126,7 @@
                         {{-- <div class="widget widget-card-five">
                             <div class="widget-content">
                                 <div class="account-box">
-        
+
                                     <div class="info-box">
                                         <div class="icon">
                                             <span>
@@ -134,7 +134,7 @@
                                                     alt="money-bag">
                                             </span>
                                         </div>
-        
+
                                         <div class="balance-info d-flex flex-column align-items-center justify-content-center">
                                             <h6>{{ trans('admin.training.Total Balance') }}</h6>
                                             <p>{{ auth()->user()->settlements->sum('total_amount') ?: 0 }}</p>
@@ -558,7 +558,7 @@
                         data: data.ordersData
                     }],
                     title: {
-                        text: 'Revenue by Month',
+                        text: '', //Revenue by Month
                         align: 'left'
                     },
                     grid: {
