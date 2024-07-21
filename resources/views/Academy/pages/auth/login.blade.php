@@ -73,14 +73,14 @@
                     @endif
                     <div class="form">
                         <div class="inputBox">
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="email" name="email" @if(isset($_COOKIE['email'])) value="{{ $_COOKIE['email'] }}" @endif required>
                             <i>{{ trans('admin.auth.email') }}</i>
                         </div>
                         @error('email')
                         <div class="text-light">{{ $message }}</div>
                         @enderror
                         <div class="inputBox">
-                            <input id="password" type="password" name="password" required>
+                            <input id="password" type="password" name="password" @if(isset($_COOKIE['password'])) value="{{ $_COOKIE['password'] }}" @endif required>
                             <i>{{ trans('admin.auth.password') }}</i>
                         </div>
                         @error('password')

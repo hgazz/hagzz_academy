@@ -23,15 +23,15 @@
                 href="{{ route('academy.training.edit', $training) }}">{{ trans('admin.edit') }}</a>
             {{--            <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}"> --}}
             {{--            <a class="dropdown-item show_confirm_two" href="javascript:void(0);" data-href="{{ route('academy.training.delete') }}"  data-id="{{ $training->id }}" data-name="Training">{{ trans('admin.delete') }}</a> --}}
-            <div class="dropdown-divider"></div>
-            <form action="{{ route('academy.training.updateActive', $training) }}" method="post" class="mx-3">
-                @csrf @method('PUT')
-                @if ($training->active)
-                    <button class="btn btn-sm btn-danger">{{ trans('admin.training.deactivated') }}</button>
-                @else
-                    <button class="btn btn-sm btn-success">{{ trans('admin.training.Active') }}</button>
-                @endif
-            </form>
+{{--            <div class="dropdown-divider"></div>--}}
+{{--            <form action="{{ route('academy.training.updateActive', $training) }}" method="post" class="mx-3">--}}
+{{--                @csrf @method('PUT')--}}
+{{--                @if ($training->active)--}}
+{{--                    <button class="btn btn-sm btn-danger">{{ trans('admin.training.deactivated') }}</button>--}}
+{{--                @else--}}
+{{--                    <button class="btn btn-sm btn-success">{{ trans('admin.training.Active') }}</button>--}}
+{{--                @endif--}}
+{{--            </form>--}}
         </div>
     </div>
 </td>

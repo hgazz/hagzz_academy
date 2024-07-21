@@ -3,7 +3,7 @@
     <div class="row">
         @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Address::class) as $name => $data)
             <div class="col-md-6 mb-3">
-                <label for="{{$name}}" class="form-label">{{trans('admin.address.'.$name)}}</label>
+                <label for="{{$name}}" class="form-label">{{trans('admin.address.'.$name)}}    <span class="text-danger">*</span></label>
                 <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
                        @php
                            $language = $name == 'address_en' ? 'en' : 'ar';
@@ -21,7 +21,7 @@
 
     <div class="row">
         <div class="form-group mb-4">
-            <label for="exampleFormControlSelect1">{{ trans('admin.address.country') }}</label>
+            <label for="exampleFormControlSelect1">{{ trans('admin.address.country') }}   <span class="text-danger">*</span></label>
             <select class="form-select" id="country"  name="country_id" >
                 <option value="0">{{ trans('admin.address.country') }}</option>
                 @foreach($countries as $country)
@@ -36,7 +36,7 @@
 
     <div class="row">
         <div class="form-group mb-4">
-            <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}</label>
+            <label for="exampleFormControlSelect1">{{ trans('admin.address.city') }}   <span class="text-danger">*</span></label>
             <select class="form-select citySelected" id="city"  name="city_id" >
                 <input type="hidden" value="{{old('city_id', isset($address) ? $address->city_id : '')}}" id="select_city_id">
 {{--                <option disabled>{{ trans('admin.area.select_city') }}</option>--}}
@@ -54,7 +54,7 @@
 
     <div class="row">
         <div class="form-group mb-4">
-            <label for="areaSelect">{{ trans('admin.address.area') }}</label>
+            <label for="areaSelect">{{ trans('admin.address.area') }}   <span class="text-danger">*</span></label>
             <select class="form-select" id="areaSelect" name="area_id">
                 <input type="hidden" value="{{old('city_id', isset($address) ? $address->area_id : '')}}" id="select_area_id">
 {{--                @foreach($areas as $area)--}}
@@ -94,7 +94,7 @@
         @enderror
     </div>
     <div class="col-md-6">
-        <label for="location_owned">{{ trans('admin.location_owned') }}</label>
+        <label for="location_owned">{{ trans('admin.location_owned') }}   <span class="text-danger">*</span></label>
         <input class="form-check" id="location_owned" name="location_owned" @checked(old('location_owned', isset($address) ? $address->location_owned : ''))  value="1" type="checkbox">
         @error('location_owned')
         <span class="text-danger">{{ $message }}</span>

@@ -3,7 +3,7 @@
     @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Training::class) as $name => $data)
             @if(!$data['is_textarea'])
                 <div class="col-md-6 mb-3">
-                    <label for="{{$name}}" class="form-label">{{trans('admin.training.'.$name)}}</label>
+                    <label for="{{$name}}" class="form-label">{{trans('admin.training.'.$name)}} <span class="text-danger">*</span></label>
                     <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
                            @php
                                $language = $name == 'name_en' ? 'en' : 'ar';
@@ -30,7 +30,7 @@
         @endif
         @endforeach
     <div class="col-md-6 mb-3">
-        <label for="start_date">{{ trans('admin.training.start_date') }}</label>
+        <label for="start_date">{{ trans('admin.training.start_date') }}  <span class="text-danger">*</span></label>
         <input class="form-control" type="date" value="{{ old('start_date', (isset($training) ? $training->start_date : ''))}}" id="start_date" name="start_date">
         @error('start_date')
         <span class="text-danger">*{{$message}}</span>
@@ -38,14 +38,14 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label for="end_date">{{ trans('admin.training.end_date') }}</label>
+        <label for="end_date">{{ trans('admin.training.end_date') }}    <span class="text-danger">*</span></label>
         <input class="form-control" type="date" value="{{ old('end_date', (isset($training) ? $training->end_date : ''))}}" id="end_date" name="end_date">
         @error('end_date')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="sport_id">{{ trans('admin.clasess.sport') }}</label>
+        <label for="sport_id">{{ trans('admin.clasess.sport') }}    <span class="text-danger">*</span></label>
         <select class="form-select" name="sport_id" id="sport_id">
             <option value="">{{ trans('admin.clasess.select_sport') }}</option>
             @foreach($sports as $sport)
@@ -66,7 +66,7 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="max_players">{{ trans('admin.training.max_players') }}</label>
+        <label for="max_players">{{ trans('admin.training.max_players') }}    <span class="text-danger">*</span></label>
         <input class="form-control" type="number" value="{{ old('max_players', (isset($training) ? $training->max_players : ''))}}" id="max_players" name="max_players">
         @error('max_players')
         <span class="text-danger">*{{$message}}</span>
@@ -85,7 +85,7 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="price">{{ trans('admin.training.price') }}</label>
+        <label for="price">{{ trans('admin.training.price') }}   <span class="text-danger">*</span></label>
         <input class="form-control" type="number" value="{{ old('price', (isset($training) ? $training->price : ''))}}" id="price" name="price">
         @error('price')
         <span class="text-danger">*{{$message}}</span>
