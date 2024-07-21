@@ -1383,7 +1383,7 @@ window.addEventListener("load", function(){
         */
         var options1 = {
           chart: {
-            fontFamily: 'Nunito, sans-serif',
+            fontFamily: 'Cairo, sans-serif',
             height: 365,
             type: 'area',
             zoom: {
@@ -1472,7 +1472,7 @@ window.addEventListener("load", function(){
               offsetY: 5,
               style: {
                   fontSize: '12px',
-                  fontFamily: 'Nunito, sans-serif',
+                  fontFamily: 'Cairo, sans-serif',
                   cssClass: 'apexcharts-xaxis-title',
               },
             }
@@ -1486,7 +1486,7 @@ window.addEventListener("load", function(){
               offsetY: 0,
               style: {
                   fontSize: '12px',
-                  fontFamily: 'Nunito, sans-serif',
+                  fontFamily: 'Cairo, sans-serif',
                   cssClass: 'apexcharts-yaxis-title',
               },
             }
@@ -1604,14 +1604,14 @@ window.addEventListener("load", function(){
                     name: {
                       show: true,
                       fontSize: '29px',
-                      fontFamily: 'Nunito, sans-serif',
+                      fontFamily: 'Cairo, sans-serif',
                       color: undefined,
                       offsetY: -10
                     },
                     value: {
                       show: true,
                       fontSize: '26px',
-                      fontFamily: 'Nunito, sans-serif',
+                      fontFamily: 'Cairo, sans-serif',
                       color: '#bfc9d4',
                       offsetY: 16,
                       formatter: function (val) {
@@ -1820,7 +1820,7 @@ window.addEventListener("load", function(){
         */
         var options1 = {
           chart: {
-            fontFamily: 'Nunito, sans-serif',
+            fontFamily: 'Cairo, sans-serif',
             height: 365,
             type: 'area',
             zoom: {
@@ -1909,7 +1909,7 @@ window.addEventListener("load", function(){
               offsetY: 5,
               style: {
                   fontSize: '12px',
-                  fontFamily: 'Nunito, sans-serif',
+                  fontFamily: 'Cairo, sans-serif',
                   cssClass: 'apexcharts-xaxis-title',
               },
             }
@@ -1923,7 +1923,7 @@ window.addEventListener("load", function(){
               offsetY: 0,
               style: {
                   fontSize: '12px',
-                  fontFamily: 'Nunito, sans-serif',
+                  fontFamily: 'Cairo, sans-serif',
                   cssClass: 'apexcharts-yaxis-title',
               },
             }
@@ -2041,14 +2041,14 @@ window.addEventListener("load", function(){
                     name: {
                       show: true,
                       fontSize: '29px',
-                      fontFamily: 'Nunito, sans-serif',
+                      fontFamily: 'Cairo, sans-serif',
                       color: undefined,
                       offsetY: -10
                     },
                     value: {
                       show: true,
                       fontSize: '26px',
-                      fontFamily: 'Nunito, sans-serif',
+                      fontFamily: 'Cairo, sans-serif',
                       color: '#0e1726',
                       offsetY: 16,
                       formatter: function (val) {
