@@ -21,7 +21,7 @@ body.dark {
   overflow-x: hidden;
   overflow-y: auto;
   letter-spacing: 0.0312rem;
-  font-family: "Cairo", sans-serif;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
 }
 
 body.dark {
@@ -893,7 +893,7 @@ body.dark #sidebar ul.menu-categories {
   overflow: auto;
 }
 body.dark #sidebar ul.menu-categories.ps {
-  height: calc(100vh - 71px) !important;
+  height: calc(100vh - 100px) !important;
   padding-left: 16px;
 }
 body.dark #sidebar ul.menu-categories li > .dropdown-toggle[aria-expanded=true] svg.feather-chevron-right {

@@ -22,7 +22,7 @@
         </div>
         <div class="shadow-bottom"></div>
         <ul class="list-unstyled menu-categories" id="accordionExample">
-            <li class="menu {{ Request::routeIs('academy.index') ? 'active' : '' }}">
+            {{-- <li class="menu {{ Request::routeIs('academy.index') ? 'active' : '' }}">
                 <a href="#dashboard" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.index') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.index') ? '' : 'collapsed' }}">
                     <div class="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 33 32"
@@ -41,8 +41,23 @@
                         <a href="{{ route('academy.index') }}"> {{ trans('admin.dashboard') }} </a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
 
+            <li class="menu {{ Request::routeIs('admin.index') ? 'active' : '' }}">
+                <a href="{{ route('academy.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    
+                    <div class="">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 33 32"
+                            fill="#0E1726" fill-opacity=".6">
+                            <path class="dash-icon"
+                                d="M4.5 16C4.5 16.3536 4.64048 16.6928 4.89052 16.9428C5.14057 17.1929 5.47971 17.3333 5.83333 17.3333H13.8333C14.187 17.3333 14.5261 17.1929 14.7761 16.9428C15.0262 16.6928 15.1667 16.3536 15.1667 16V5.33333C15.1667 4.97971 15.0262 4.64057 14.7761 4.39052C14.5261 4.14048 14.187 4 13.8333 4H5.83333C5.47971 4 5.14057 4.14048 4.89052 4.39052C4.64048 4.64057 4.5 4.97971 4.5 5.33333V16ZM4.5 26.6667C4.5 27.0203 4.64048 27.3594 4.89052 27.6095C5.14057 27.8595 5.47971 28 5.83333 28H13.8333C14.187 28 14.5261 27.8595 14.7761 27.6095C15.0262 27.3594 15.1667 27.0203 15.1667 26.6667V21.3333C15.1667 20.9797 15.0262 20.6406 14.7761 20.3905C14.5261 20.1405 14.187 20 13.8333 20H5.83333C5.47971 20 5.14057 20.1405 4.89052 20.3905C4.64048 20.6406 4.5 20.9797 4.5 21.3333V26.6667ZM17.8333 26.6667C17.8333 27.0203 17.9738 27.3594 18.2239 27.6095C18.4739 27.8595 18.813 28 19.1667 28H27.1667C27.5203 28 27.8594 27.8595 28.1095 27.6095C28.3595 27.3594 28.5 27.0203 28.5 26.6667V16C28.5 15.6464 28.3595 15.3072 28.1095 15.0572C27.8594 14.8071 27.5203 14.6667 27.1667 14.6667H19.1667C18.813 14.6667 18.4739 14.8071 18.2239 15.0572C17.9738 15.3072 17.8333 15.6464 17.8333 16V26.6667ZM19.1667 4C18.813 4 18.4739 4.14048 18.2239 4.39052C17.9738 4.64057 17.8333 4.97971 17.8333 5.33333V10.6667C17.8333 11.0203 17.9738 11.3594 18.2239 11.6095C18.4739 11.8595 18.813 12 19.1667 12H27.1667C27.5203 12 27.8594 11.8595 28.1095 11.6095C28.3595 11.3594 28.5 11.0203 28.5 10.6667V5.33333C28.5 4.97971 28.3595 4.64057 28.1095 4.39052C27.8594 4.14048 27.5203 4 27.1667 4H19.1667Z"
+                                fill="#0E1726" fill-opacity="0.6"></path>
+                        </svg> 
+                        <span>{{ trans('admin.dashboard') }}</span>
+                    </div>
+                </a>
+            </li>
             <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}">
                 <a href="#apps" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.address.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.address.*') ? '' : 'collapsed' }}">
                     <div class="">
