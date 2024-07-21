@@ -300,7 +300,7 @@ return [
         'beginner' => 'Beginner',
         'intermediate' => 'Intermediate',
         'advanced' => 'Advanced',
-        'all' => 'All',
+        'all' => 'Both',
         'men' => 'Men',
         'women' => 'Women',
         'kids' => 'Kids',

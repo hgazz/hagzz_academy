@@ -4,14 +4,14 @@
 @csrf
 <div class="row">
     <div class="col-md-6 mb-3">
-        <label for="name">{{ trans('admin.coaches.name') }}</label>
+        <label for="name">{{ trans('admin.coaches.name') }}   <span class="text-danger">*</span></label>
         <input class="form-control" type="text" value="{{old('name', (isset($coach) ? $coach->name : ''))}}" id="name" name="name">
         @error('name')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="description">{{ trans('admin.coaches.description') }}</label>
+        <label for="description">{{ trans('admin.coaches.description') }}   <span class="text-danger">*</span></label>
         <input class="form-control" type="text" value="{{ old('description',(isset($coach) ? $coach->description :''))}}" id="description" name="description">
         @error('description')
         <span class="text-danger">*{{$message}}</span>
@@ -32,21 +32,21 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="phone">{{ trans('admin.coaches.phone') }}</label>
+        <label for="phone">{{ trans('admin.coaches.phone') }}    <span class="text-danger">*</span></label>
         <input class="form-control" type="text" value="{{ old('phone',(isset($coach) ? $coach->phone : '')) }}" id="phone" name="phone">
         @error('phone')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="birth_date">{{ trans('admin.coaches.birth_date') }}</label>
+        <label for="birth_date">{{ trans('admin.coaches.birth_date') }}    <span class="text-danger">*</span></label>
         <input class="form-control" type="date" value="{{old('birth_date', (isset($coach) ?  $coach->birth_date : ''))}}" id="birth_date" name="birth_date">
         @error('birth_date')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="gender">{{trans('admin.coaches.select_gender')}}</label>
+        <label for="gender">{{trans('admin.coaches.select_gender')}}   <span class="text-danger">*</span></label>
         <select class="form-select" name="gender" id="gender">
             <option value="">{{ trans('admin.coaches.select_gender') }}</option>
             <option value="male" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'male')>{{ trans('admin.coaches.male') }}</option>
@@ -65,7 +65,7 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="sports">{{trans('admin.coaches.select_sport')}}</label>
+        <label for="sports">{{trans('admin.coaches.select_sport')}}   <span class="text-danger">*</span></label>
         <select class="js-example-basic-multiple form-select" name="sport_id[]" multiple id="sports">
             @foreach($sports as $sport)
                 <option value="{{$sport->id}}" @selected(in_array($sport->id, old('sport_id', isset($coach) ? $coach->sports()->pluck('sport_id')->toArray() : [])))>{{$sport->name}}</option>
