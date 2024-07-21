@@ -1393,7 +1393,7 @@ body.alt-menu #content {
     padding: 0;
   }
   #sidebar ul.menu-categories.ps {
-    height: calc(100vh - 1px) !important;
+    height: calc(100vh - 100px) !important;
     padding-right: 16px;
   }
   .sidebar-wrapper {

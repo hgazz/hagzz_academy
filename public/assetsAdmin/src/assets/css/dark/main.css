@@ -21,7 +21,7 @@ body.dark {
   overflow-x: hidden;
   overflow-y: auto;
   letter-spacing: 0.0312rem;
-  font-family: "Nunito", sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
   color: #e0e6ed;

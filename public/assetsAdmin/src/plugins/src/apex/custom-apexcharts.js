@@ -20,7 +20,7 @@ window.addEventListener("load", function(){
 
         // var sline = {
         // chart: {
-        //     fontFamily: 'Nunito, Arial, sans-serif',
+        //     fontFamily: 'Cairo, Arial, sans-serif',
         //     height: 350,
         //     type: 'line',
         //     zoom: {
@@ -60,7 +60,7 @@ window.addEventListener("load", function(){
 
         // var sLineArea = {
         //     chart: {
-        //         fontFamily: 'Nunito, Arial, sans-serif',
+        //         fontFamily: 'Cairo, Arial, sans-serif',
         //         height: 350,
         //         type: 'area',
         //         toolbar: {
@@ -107,7 +107,7 @@ window.addEventListener("load", function(){
 
         var sCol = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 toolbar: {
@@ -174,7 +174,7 @@ window.addEventListener("load", function(){
 
         var sColStacked = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 stacked: true,
@@ -237,7 +237,7 @@ window.addEventListener("load", function(){
 
         var sBar = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 toolbar: {
@@ -265,7 +265,7 @@ window.addEventListener("load", function(){
 
         var options = {
         chart: {
-            fontFamily: 'Nunito, Arial, sans-serif',
+            fontFamily: 'Cairo, Arial, sans-serif',
             height: 350,
             type: 'line',
             toolbar: {
@@ -323,7 +323,7 @@ window.addEventListener("load", function(){
 
         var donutChart = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'donut',
                 toolbar: {
@@ -364,7 +364,7 @@ window.addEventListener("load", function(){
 
         var radialChart = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'radialBar',
                 toolbar: {
@@ -411,7 +411,7 @@ window.addEventListener("load", function(){
 
         // var sline = {
         // chart: {
-        //     fontFamily: 'Nunito, Arial, sans-serif',
+        //     fontFamily: 'Cairo, Arial, sans-serif',
         //     height: 350,
         //     type: 'line',
         //     zoom: {
@@ -451,7 +451,7 @@ window.addEventListener("load", function(){
 
         var sLineArea = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'area',
                 toolbar: {
@@ -498,7 +498,7 @@ window.addEventListener("load", function(){
 
         var sCol = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 toolbar: {
@@ -565,7 +565,7 @@ window.addEventListener("load", function(){
 
         var sColStacked = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 stacked: true,
@@ -628,7 +628,7 @@ window.addEventListener("load", function(){
 
         var sBar = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'bar',
                 toolbar: {
@@ -656,7 +656,7 @@ window.addEventListener("load", function(){
 
         var options = {
         chart: {
-            fontFamily: 'Nunito, Arial, sans-serif',
+            fontFamily: 'Cairo, Arial, sans-serif',
             height: 350,
             type: 'line',
             toolbar: {
@@ -714,7 +714,7 @@ window.addEventListener("load", function(){
 
         var donutChart = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'donut',
                 toolbar: {
@@ -755,7 +755,7 @@ window.addEventListener("load", function(){
 
         var radialChart = {
             chart: {
-                fontFamily: 'Nunito, Arial, sans-serif',
+                fontFamily: 'Cairo, Arial, sans-serif',
                 height: 350,
                 type: 'radialBar',
                 toolbar: {

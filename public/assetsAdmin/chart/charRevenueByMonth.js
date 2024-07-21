@@ -23,7 +23,7 @@ getDataFunction().then(function(value){
     if (Cookies.getCookie('dark_mode') != "") {
         var options1 = {
             chart: {
-                fontFamily: 'Nunito, sans-serif',
+                fontFamily: 'Cairo, sans-serif',
                 height: 365,
                 type: 'area',
                 zoom: {
@@ -150,7 +150,7 @@ getDataFunction().then(function(value){
                     offsetY: 5,
                     style: {
                         fontSize: '12px',
-                        fontFamily: 'Nunito, sans-serif',
+                        fontFamily: 'Cairo, sans-serif',
                         cssClass: 'apexcharts-xaxis-title',
                     },
                 }
@@ -164,7 +164,7 @@ getDataFunction().then(function(value){
                     offsetY: 0,
                     style: {
                         fontSize: '12px',
-                        fontFamily: 'Nunito, sans-serif',
+                        fontFamily: 'Cairo, sans-serif',
                         cssClass: 'apexcharts-yaxis-title',
                     },
                 }
@@ -243,7 +243,7 @@ getDataFunction().then(function(value){
     } else {
         var options1 = {
             chart: {
-                fontFamily: 'Nunito, sans-serif',
+                fontFamily: 'Cairo, sans-serif',
                 height: 365,
                 type: 'area',
                 zoom: {
@@ -391,7 +391,7 @@ getDataFunction().then(function(value){
                     offsetY: 5,
                     style: {
                         fontSize: '12px',
-                        fontFamily: 'Nunito, sans-serif',
+                        fontFamily: 'Cairo, sans-serif',
                         cssClass: 'apexcharts-xaxis-title',
                     },
                 }
@@ -405,7 +405,7 @@ getDataFunction().then(function(value){
                     offsetY: 0,
                     style: {
                         fontSize: '12px',
-                        fontFamily: 'Nunito, sans-serif',
+                        fontFamily: 'Cairo, sans-serif',
                         cssClass: 'apexcharts-yaxis-title',
                     },
                 }
@@ -435,7 +435,7 @@ getDataFunction().then(function(value){
                 horizontalAlign: 'right',
                 offsetY: -50,
                 fontSize: '16px',
-                fontFamily: 'Nunito, sans-serif',
+                fontFamily: 'Cairo, sans-serif',
                 markers: {
                     width: 10,
                     height: 10,
