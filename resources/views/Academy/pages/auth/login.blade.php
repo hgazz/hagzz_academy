@@ -101,14 +101,13 @@
                     </h2>
                     <div class="form">
                         <div class="inputBox">
-                            <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
-                                required>
+                            <input type="email" name="email"  placeholder="Email" @if($_COOKIE['email']) value="{{ $_COOKIE['email'] }}" @endif required>
                             @error('email')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="inputBox">
-                            <input type="password" name="password" required placeholder="Password">
+                            <input type="password" name="password" @if($_COOKIE['password']) value="{{ $_COOKIE['password'] }}" @endif required placeholder="Password">
                             @error('password')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
