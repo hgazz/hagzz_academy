@@ -893,7 +893,7 @@ body.dark #sidebar ul.menu-categories {
   overflow: auto;
 }
 body.dark #sidebar ul.menu-categories.ps {
-  height: calc(100vh - 71px) !important;
+  height: calc(100vh - 100px) !important;
   padding-right: 16px;
 }
 body.dark #sidebar ul.menu-categories li > .dropdown-toggle[aria-expanded=true] svg.feather-chevron-right {
