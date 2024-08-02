@@ -61,9 +61,9 @@
                            @include('Academy.Layouts.inc.notifications')
                        @endforeach
                         <div class="drodpown-title notification mt-2">
-                            <a class="d-flex justify-content-between" href="javascript:void(0)">
-                                <h6 class="d-flex justify-content-between">{{ trans('admin.notifications.view_all') }}</h6>
-                            </a>
+{{--                            <a class="d-flex justify-content-between" href="javascript:void(0)">--}}
+{{--                                <h6 class="d-flex justify-content-between">{{ trans('admin.notifications.view_all') }}</h6>--}}
+{{--                            </a>--}}
                         </div>
                     </div>
                 </div>
