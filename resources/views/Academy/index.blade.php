@@ -675,4 +675,27 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            let previousCount = {{ auth('academy')->user()->unreadNotifications->count() }};
+
+            function checkNotifications() {
+                $.ajax({
+                    url: '{{ route('academy.check-notifications') }}',
+                    method: 'GET',
+                    success: function (data) {
+                        let newCount = data.unread_count;
+
+                        if (newCount > previousCount) {
+                            alert('You have new unread notifications!');
+                            previousCount = newCount; // Update the previous count to the new count
+                        }
+                    }
+                });
+            }
+
+            // Check every minute (60000 milliseconds)
+            setInterval(checkNotifications, 60000);
+        });
+    </script>
 @endpush

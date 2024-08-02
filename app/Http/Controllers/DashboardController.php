@@ -180,4 +180,11 @@ class DashboardController extends Controller
             ->unique('user_id');
     }
 
+    public function getUnreadNotificationCount()
+    {
+        return response()->json([
+            'unread_count' => auth('academy')->user()->unreadNotifications->count()
+        ]);
+    }
+
 }

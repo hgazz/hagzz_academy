@@ -52,6 +52,8 @@ Route::group(
         Route::get('/beginner/sports', [DashboardController::class, 'getBeginnerSportsCount'])->name('beginner.sports');
         Route::get('/intermediate/sports', [DashboardController::class, 'getIntermediateSportsCount'])->name('intermediate.sports');
         Route::get('/advanced/sports', [DashboardController::class, 'getAdvancedSportsCount'])->name('advanced.sports');
+        Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadNotificationCount'])->name('check-notifications');
+
 
         Route::controller(ProfileController::class)->group(function (){
             Route::get('profile','index')->name('profile.index');
