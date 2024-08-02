@@ -58,7 +58,7 @@
                             <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-secondary">{{ auth('academy')->user()->unreadNotifications->count() }}</span></h6>
                         </div>
                        @foreach(auth()->user()->unreadNotifications as $notification)
-                           @include('Academy.Layouts.inc.notifications.' .  $notification->type, ['notification' => $notification])
+                           @include('Academy.Layouts.inc.notifications')
                        @endforeach
                         <div class="drodpown-title notification mt-2">
                             <a class="d-flex justify-content-between" href="javascript:void(0)">
