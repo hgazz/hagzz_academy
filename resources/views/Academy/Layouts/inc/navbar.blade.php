@@ -60,11 +60,11 @@
                        @foreach(auth()->user()->unreadNotifications as $notification)
                            @include('Academy.Layouts.inc.notifications.' .  $notification->type, ['notification' => $notification])
                        @endforeach
-{{--                        <div class="drodpown-title notification mt-2">--}}
-{{--                            <a class="d-flex justify-content-between" href="javascript:void(0)">--}}
-{{--                                <h6 class="d-flex justify-content-between">{{ trans('admin.notifications.view_all') }}</h6>--}}
-{{--                            </a>--}}
-{{--                        </div>--}}
+                        <div class="drodpown-title notification mt-2">
+                            <a class="d-flex justify-content-between" href="javascript:void(0)">
+                                <h6 class="d-flex justify-content-between">{{ trans('admin.notifications.view_all') }}</h6>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
