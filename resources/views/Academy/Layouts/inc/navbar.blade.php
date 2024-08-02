@@ -55,7 +55,7 @@
                 <div class="dropdown-menu position-absolute" aria-labelledby="notificationDropdown">
                     <div class="notification-scroll">
                         <div class="drodpown-title notification mt-2">
-                            <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-secondary">{{ auth('academy')->user()->unreadNotifications->count() }}</span></h6>
+                            <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-{{ auth()->user('academy')->unreadNotifications->count() > 0 ? 'secondary' : 'warning' }}">{{ auth('academy')->user()->unreadNotifications->count() }}</span></h6>
                         </div>
                        @foreach(auth()->user()->unreadNotifications as $notification)
                            @include('Academy.Layouts.inc.notifications')
