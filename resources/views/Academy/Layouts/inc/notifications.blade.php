@@ -4,6 +4,7 @@
         <div class="media-body">
             <div class="data-info">
                 <h6 class="">{{ $notification->title}}</h6>
+                <p class="text-truncate">{{ $notification->description}}</p>
                 <p class="">{{ $notification->created_at->diffForHumans() }}</p>
             </div>
 
