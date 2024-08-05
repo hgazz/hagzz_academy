@@ -11,6 +11,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
+use App\Http\Controllers\TermsController;
 use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -129,6 +130,9 @@ Route::group(
         });
         Route::controller(CustomerController::class)->group(function (){
             Route::get('users','index')->name('users.index');
+        });
+        Route::controller(TermsController::class)->group(function (){
+            Route::get('terms','index')->name('terms.index');
         });
 
         Route::controller(SettlementController::class)->group(function (){

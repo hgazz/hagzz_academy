@@ -157,6 +157,9 @@ return [
         'status_active_successfully'=>'Status Active Successfully',
         'status inactive successfully'=>'Status Inactive successfully'
     ],
+      'terms'=>[
+          'terms'=>'Terms',
+      ],
     'setting'=>[
         'setting'=>'Settings',
         'key'=>'Key',
