@@ -156,6 +156,9 @@ return [
         'status_active_successfully' => 'تم تغيير الحالة إلى نشط بنجاح',
         'status_inactive_successfully' => 'تم تغيير الحالة إلى غير نشط بنجاح',
     ],
+        'terms'=>[
+            'terms'=>'الشروط',
+        ],
     'setting' => [
         'setting' => 'الإعدادات',
         'key' => 'المفتاح',
