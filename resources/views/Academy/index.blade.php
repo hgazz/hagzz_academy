@@ -483,7 +483,7 @@
     <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
     <script src="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('assetsAdmin/src/plugins/src/flatpickr/custom-flatpickr.js') }}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         var f1 = flatpickr(document.getElementById('start_date'));
         var f2 = flatpickr(document.getElementById('end_date'));
@@ -687,7 +687,12 @@
                         let newCount = data.unread_count;
 
                         if (newCount > previousCount) {
-                            alert('You have new unread notifications!');
+                            Swal.fire({
+                                title: '{{ trans('admin.new_notifications') }}',
+                                text: "{{ trans('admin.you_have_new_notifications') }}",
+                                icon: 'info',
+                                confirmButtonText: '{{ trans('admin.ok') }}'
+                            });
                             previousCount = newCount; // Update the previous count to the new count
                         }
                     }

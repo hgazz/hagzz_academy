@@ -74,6 +74,9 @@ return [
     'not_published' => 'Waiting for Approval from Administrator',
     'class_must_be_between' => 'Class must be between',
     'and' => 'and',
+    'new_notifications' => 'New Notifications!',
+    'you_have_new_notifications' => 'You have new notifications.',
+    'ok' => 'OK',
     'auth' => [
         'sign_in' => 'Sign In',
         'enter_your_email_and_password' => 'Enter your email and password to login',
