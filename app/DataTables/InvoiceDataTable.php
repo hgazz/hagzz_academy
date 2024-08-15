@@ -119,7 +119,7 @@ class InvoiceDataTable extends DataTable
             ['name' => 'user.name', 'data' => 'user_id', 'title' => trans('admin.bookings.user')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.bookings.training')],
             ['name' => 'amount', 'data' => 'amount', 'title' => trans('admin.bookings.amount')],
-            ['name' => 'net_amount', 'data' => 'net_amount', 'title' => trans('admin.bookings.amount')],
+            ['name' => 'net_amount', 'data' => 'net_amount', 'title' => trans('admin.bookings.net_amount')],
             ['name' => 'status', 'data' => 'status', 'title' => trans('admin.bookings.status')],
             ['name' => 'user_type', 'data' => 'user_type', 'title' => trans('admin.bookings.user_type')],
             ['name' => 'is_canceled', 'data' => 'is_canceled', 'title' => trans('admin.bookings.is_canceled')],
