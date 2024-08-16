@@ -91,6 +91,7 @@ class TrainingController extends Controller
                'address_id' => $request->address_id,
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
+               'discount_price' => $request->discount_price                                           
            ]));
            $this->sendNotification($training);
 
