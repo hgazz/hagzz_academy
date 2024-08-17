@@ -6,5 +6,6 @@
 <script src="{{ asset('assetsAdmin/layouts/vertical-light-menu/app.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="{{ asset('assetsAdmin/confirmationDelete.js') }}"></script>
+<script src="{{ asset('assetsAdmin/yajaraLog.js') }}"></script>
 
 @stack('js')
