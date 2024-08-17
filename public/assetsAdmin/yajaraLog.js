@@ -7,7 +7,7 @@ $(document).ajaxError(function(event, jqxhr, settings, exception) {
         // Prompt user if they'd like to be redirected to the login page
         bootbox.confirm("Your session has expired. Would you like to be redirected to the login page?", function(result) {
             if (result) {
-                window.location = '/partner/login';
+                window.location = '/login';
             }
         });
 
