@@ -1,3 +1,5 @@
+// disable datatables error prompt
+$.fn.dataTable.ext.errMode = 'none';
 $(document).ajaxError(function(event, jqxhr, settings, exception) {
 
     if (exception == 'Unauthorized') {
@@ -12,5 +14,4 @@ $(document).ajaxError(function(event, jqxhr, settings, exception) {
     }
 });
 
-// disable datatables error prompt
-$.fn.dataTable.ext.errMode = 'none';
+
