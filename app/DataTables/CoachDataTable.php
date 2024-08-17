@@ -69,7 +69,10 @@ class CoachDataTable extends DataTable
                     return STR::limit($sport->name, 20, '...');
                 })->implode(', ');
             })
-            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports']);
+            ->addColumn('actions', function (Coach $coach) {
+                return view('Academy.pages.coaches.datatable.actions', compact('coach'));
+            })
+            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports', 'actions']);
     }
 
     /**
@@ -140,6 +143,7 @@ class CoachDataTable extends DataTable
             ['name' => 'follow_count', 'data' => 'follow_count', 'title' => trans('admin.follow_count')],
             ['name' => 'sports', 'data' => 'sports', 'title' => trans('admin.user.Sports'), 'orderable' => false, 'searchable' => false],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'orderable' => false, 'searchable' => false],
         ];
     }
 

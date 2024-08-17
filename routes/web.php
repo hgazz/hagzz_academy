@@ -41,7 +41,7 @@ Route::group(
             Route::get('/login', 'loginPage')->name('loginPage');
             Route::post('/login', 'login')->name('login');
         });
-        Route::post('/logout', 'logout')->name('logout')->middleware('auth:academy');
+        Route::get('/logout', 'logout')->name('logout')->middleware('auth:academy');
     });
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
