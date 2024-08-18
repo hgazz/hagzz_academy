@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTables\GalleryDataTable;
 use App\Http\Requests\Gallery\GalleryRequest;
 use App\Http\Traits\FileUpload;
+use App\Models\Academies;
 use App\Models\Gallery;
+use App\Services\Firebase\NotificationService;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
@@ -35,6 +37,7 @@ class GalleryController extends Controller
             'image' => $image,
             'academy_id' => auth()->id()
         ]);
+        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name);
         session()->flash('success', trans('admin.gallery.created_successfully'));
         return to_route('academy.gallery.index');
     }
