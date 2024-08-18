@@ -91,10 +91,9 @@ class TrainingController extends Controller
                'address_id' => $request->address_id,
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
-               'discount_price' => $request->discount_price                                           
+               'discount_price' => $request->discount_price
            ]));
-           $this->sendNotification($training);
-
+           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
        });
        session()->flash('success',trans('admin.training.created_successfully'));
        return to_route('academy.training.index');
@@ -203,16 +202,16 @@ class TrainingController extends Controller
     public function storeBooking(BookingRequest $request)
     {
         try {
-            $trainging = $this->trainingModel->findOrFail($request->training_id);
+            $training = $this->trainingModel->findOrFail($request->training_id);
             DB::beginTransaction();
             $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'gender' => $request->gender,
                 'country_code' => $request->country_code,
-                'country_id' => $trainging->address->country_id,
-                'city_id' => $trainging->address->city_id,
-                'area_id' => $trainging->address->area_id,
+                'country_id' => $training->address->country_id,
+                'city_id' => $training->address->city_id,
+                'area_id' => $training->address->area_id,
                 'user_type'=> 'system',
                 'birth_date'=>$request->birth_date,
             ]);

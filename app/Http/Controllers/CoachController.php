@@ -145,6 +145,6 @@ class CoachController extends Controller
 
     public function export()
     {
-        return Excel::download(new Coaches() , 'coaches.xlsx');
+        return Excel::download(new Coach() , 'coaches.xlsx');
     }
 }
