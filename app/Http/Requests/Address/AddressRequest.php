@@ -30,7 +30,7 @@ class AddressRequest extends FormRequest
             'longitude'=>'required|string',
             'latitude'=>'required|string',
             'address_en' => 'required|string|regex:/^[a-zA-Z\s]*$/',
-            'address_ar' => 'required|string|regex:/^[\p{Arabic} ]+$/u',
+            'address_ar' => 'required|string',
             'country_id'=>'required|exists:countries,id',
         ];
     }

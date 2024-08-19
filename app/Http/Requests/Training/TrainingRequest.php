@@ -27,7 +27,7 @@ class TrainingRequest extends FormRequest
     {
         return[
             'name_en' => 'required|string|max:255|regex:/^[a-zA-Z\s 0-9]*$/',
-            'name_ar' => 'required|string|max:255|regex:/^[\p{Arabic} 0-9\s]+$/u',
+            'name_ar' => 'required|string|max:255',
             'description_en' => 'required|string|max:255',
             'description_ar' => 'required|string|max:255',
             'start_date'=>'required|date|after_or_equal:'. now()->toDateString(),
