@@ -35,7 +35,7 @@ class TrainingRequest extends FormRequest
             'coach_id'=>'required|integer|exists:coaches,id',
             'price'=> 'required|integer|min:1',
             'gender' => 'required|in:All,Men,Women',
-            'level' => 'required|in:Beginner,Intermediate,Advanced',
+            'level' => 'required|in:Beginner,Intermediate,Advanced,Any_Level',
             'age_group' => 'required|in:All,Kids,Juniors,Adults',
             'address_id' => 'required|exists:addresses,id',
             'max_players' => 'required|integer',

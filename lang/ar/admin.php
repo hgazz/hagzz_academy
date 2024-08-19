@@ -305,6 +305,7 @@ return [
         'beginner' => 'مبتدئ',
         'intermediate' => 'متوسط',
         'advanced' => 'متقدم',
+        'Any_Level' => 'بدون المستوي',
         'all' => 'الكل',
         'men' => 'الرجال',
         'women' => 'النساء',

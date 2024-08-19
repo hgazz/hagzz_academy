@@ -105,6 +105,7 @@
             <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Beginner') value="Beginner">{{trans('admin.training.beginner')}}</option>
             <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Intermediate') value="Intermediate">{{trans('admin.training.intermediate')}}</option>
             <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Advanced') value="Advanced">{{trans('admin.training.advanced')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Any_Level') value="Any_Level">{{trans('admin.training.Any_Level')}}</option>
 
         </select>
         @error('level')

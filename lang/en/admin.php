@@ -306,6 +306,7 @@ return [
         'beginner' => 'Beginner',
         'intermediate' => 'Intermediate',
         'advanced' => 'Advanced',
+        'Any_Level' => 'Any_Level',
         'all' => 'Both',
         'men' => 'Men',
         'women' => 'Women',
