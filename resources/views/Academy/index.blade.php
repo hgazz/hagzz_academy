@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@stack('title', trans('admin.bokit'))
+@section('title', trans('admin.bokit'))
 @push('css')
     <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     <link href="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.css') }}" rel="stylesheet" type="text/css">
