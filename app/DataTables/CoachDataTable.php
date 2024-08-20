@@ -40,6 +40,9 @@ class CoachDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->editColumn('name', fn($raw) => $raw->name)
+            ->editColumn('description', fn($raw) => $raw->description)
+            ->editColumn('license_type', fn($raw) => $raw->license_type)
             ->editColumn('academy_id', function ($raw){
                 return $raw->academy->commercial_name;
             })

@@ -10,7 +10,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Training extends Model
 {
-    use HasFactory,HasTranslations,SoftDeletes;
+    use HasTranslations,SoftDeletes;
 
     protected $fillable = [
         'name',

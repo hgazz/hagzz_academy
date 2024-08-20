@@ -339,6 +339,10 @@ return [
         'select_city' => 'اختر المدينة',
         'select_area' => 'اختر المنطقة',
         'create_booking' => 'اضافة حجز',
+        'license_en' => ' الرخصة (بالإنجليزية)',
+        'license_ar' => 'الرخصة (بالعربية)',
+        'license_type_en' => ' نوع الرخصة (بالإنجليزية)',
+        'license_type_ar' => 'نوع الرخصة (بالعربية)',
     ],
     'notifications' => [
         'notifications' => 'الإشعارات',

@@ -341,6 +341,10 @@ return [
         'select_area'=>'select area',
         'create_booking'=>'Add New Booking',
         'country_code' => 'Country Code',
+        'license_en' => 'License (English)',
+        'license_ar' => 'License (Arabic)',
+        'license_type_en' => 'License Type (English)',
+        'license_type_ar' => 'License Type (Arabic)',
     ],
     'notifications'=> [
         'notifications'=>'Notifications',
