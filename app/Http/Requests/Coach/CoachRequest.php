@@ -24,12 +24,16 @@ class CoachRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]*$/',
+            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required|string|max:255',
+            'description_en' => 'required|string|max:255',
+            'description_ar' => 'required|string|max:255',
+            'license_en' => 'string|nullable',
+            'license_ar' => 'string|nullable',
+            'license_type_en' => 'string|nullable',
+            'license_type_ar' => 'string|nullable',
             'phone' => 'required|string|max:20',
-            'description' => 'required|string',
             'image' => $this->checkImage(),
-            'license' => 'nullable|string',
-            'license_type' => 'nullable|string',
             'birth_date' => 'required|date|before:' . Carbon::now()->subYears(10)->format('Y-m-d'),
             'gender' => 'required|in:male,female',
         ];

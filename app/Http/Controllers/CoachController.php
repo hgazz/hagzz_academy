@@ -8,6 +8,7 @@ use App\Http\Requests\Coach\CoachRequest;
 use App\Http\Traits\FileUpload;
 use App\Models\Coach;
 use App\Models\Sport;
+use App\Services\TranslatableService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,14 +41,15 @@ class CoachController extends Controller
     {
         try {
             DB::beginTransaction();
+
+            $translatable = TranslatableService::generateTranslatableFields($this->coachModel::getTranslatableFields() , $request->validated());
             $imageName =  $this->upload($request->file('image') , $this->coachModel::PATH);
-            $coach = $this->coachModel->create(array_merge($request->validated() , [
+
+            $coach = $this->coachModel->create(array_merge($translatable, [
                 'image'=>$imageName,
                 'phone'=> $request->phone,
                 'active'=> $request->has('active') ? 1 : 0,
                 'academy_id'=> auth()->id(),
-                'license' => $request->license,
-                'license_type' => $request->license_type,
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
             ]));
@@ -76,13 +78,12 @@ class CoachController extends Controller
         try {
             DB::beginTransaction();
             $imageName = $request->hasFile('image') ? $this->upload($request->file('image') , $this->coachModel::PATH,  $coach->getRawOriginal('image')) : $coach->getRawOriginal('image');
-            $coach->update(array_merge($request->validated(),[
+            $translatable = TranslatableService::generateTranslatableFields($this->coachModel::getTranslatableFields() , $request->validated());
+            $coach->update(array_merge($translatable,[
                 'image'=> $imageName,
                 'phone'=> $request->phone,
                 'active'=> $request->has('active') ? 1 : 0,
                 'academy_id'=> auth()->id(),
-                'license' => $request->license,
-                'license_type' => $request->license_type,
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
             ]));

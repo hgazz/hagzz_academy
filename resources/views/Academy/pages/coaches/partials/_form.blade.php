@@ -3,34 +3,37 @@
 @endpush
 @csrf
 <div class="row">
-    <div class="col-md-6 mb-3">
-        <label for="name">{{ trans('admin.coaches.name') }}   <span class="text-danger">*</span></label>
-        <input class="form-control" type="text" value="{{old('name', (isset($coach) ? $coach->name : ''))}}" id="name" name="name">
-        @error('name')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-    <div class="col-md-6 mb-3">
-        <label for="description">{{ trans('admin.coaches.description') }}   <span class="text-danger">*</span></label>
-        <input class="form-control" type="text" value="{{ old('description',(isset($coach) ? $coach->description :''))}}" id="description" name="description">
-        @error('description')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-    <div class="col-md-6 mb-3">
-        <label for="license">{{ trans('admin.coaches.license') }}</label>
-        <input class="form-control" type="text" value="{{old('license', (isset($coach) ? $coach->license: ''))}}" id="license" name="license">
-        @error('license')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-    <div class="col-md-6 mb-3">
-        <label for="license_type">{{ trans('admin.coaches.license_type') }}</label>
-        <input class="form-control" type="text" value="{{ old('license_type',(isset($coach) ? $coach->license_type : ''))}}" id="license_type" name="license_type">
-        @error('license_type')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
+    @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Coach::class) as $name => $data)
+        @if(!$data['is_textarea'])
+            <div class="col-md-6 mb-3">
+                <label for="{{$name}}" class="form-label">{{trans('admin.training.'.$name)}} <span class="text-danger">*</span></label>
+                <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
+                       @php
+                           $language = $name == 'name_en' ? 'en' : 'ar';
+                           $defaultValue = isset($training) ? $training->getTranslation('name', $language) : '';
+                       @endphp
+                       value="{{ old($name, $defaultValue) }}"
+                       placeholder="{{trans('admin.training.'.$name)}}" data-parsley-required-message="Please enter {{$name}}">
+                @error($name)
+                <span class="text-danger">*{{$message}}</span>
+                @enderror
+            </div>
+        @else
+            <div class="col-md-6 mb-3">
+                <label for="{{$name}}">
+                    <span class="text-danger">*</span>
+                    {{ $name === 'description_en' ? trans('admin.training.description_en') : trans('admin.training.description_ar') }}
+                </label>
+
+                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">@if($name == 'description_en'){{old($name , isset($training) ? $training->getTranslation('description','en') : '')}}@else{{old($name , isset($training) ? $training->getTranslation('description','ar') : '')}}@endif</textarea>
+                @error($name)
+                <span class="text-danger">*{{$message}}</span>
+                @enderror
+            </div>
+        @endif
+    @endforeach
+
+
     <div class="col-md-6 mb-3">
         <label for="phone">{{ trans('admin.coaches.phone') }}    <span class="text-danger">*</span></label>
         <input class="form-control" type="text" value="{{ old('phone',(isset($coach) ? $coach->phone : '')) }}" id="phone" name="phone">
@@ -59,7 +62,9 @@
     <div class="col-md-6 mb-3">
         <label for="image">{{ trans('admin.coaches.image') }}</label>
         <input class="form-control" type="file"  id="image" name="image" onchange="previewImage(event)">
+        @if(isset($coach))
         <img id="imagePreview" src="{{(isset($coach) ? $coach->image : '#')}}" alt="Image Preview" width="400px" height="400px" class="mt-3 ">
+        @endif
         @error('image')
         <span class="text-danger">*{{$message}}</span>
         @enderror

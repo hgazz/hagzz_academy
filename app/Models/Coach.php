@@ -6,11 +6,40 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Coach extends Model
 {
-    use HasFactory;
+    use HasTranslations;
+    public $translatable = ['name','description','license','license_type'];
 
+    public static $translatableColumns = [
+        'name'=>[
+            'type'=>'text',
+            'validations'=>'required|string|max:255',
+            'is_textarea'=>false
+        ],
+        'description'=>[
+            'type'=>'text',
+            'validations'=>'required|string|min:5',
+            'is_textarea'=>true
+        ],
+        'license'=>[
+            'type'=>'text',
+            'validations'=>'required|string|max:255',
+            'is_textarea'=>false
+        ],
+        'license_type'=>[
+            'type'=>'text',
+            'validations'=>'required|string|max:255',
+            'is_textarea'=>false
+        ],
+    ];
+
+    public static function getTranslatableFields()
+    {
+        return array_keys(self::$translatableColumns);
+    }
     const PATH = 'images/coaches';
     protected $fillable = [
         'name',
