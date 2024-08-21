@@ -117,8 +117,8 @@
         <select id="gender" class="form-select" name="gender">
             <option> {{trans('admin.training.select_gender')}} </option>
             <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
-            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Men') value="Men">{{trans('admin.training.men')}}</option>
-            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Women') value="Women">{{trans('admin.training.women')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Men') value="Men">{{trans('admin.coaches.male')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Women') value="Women">{{trans('admin.coaches.female')}}</option>
 
         </select>
         @error('gender')
@@ -145,6 +145,7 @@
 <script>
         let sports  = document.getElementById('sport_id');
         let coachesSelect = document.getElementById('coaches');
+        const lang = "{{app()->getLocale()}}";
 
         document.addEventListener('DOMContentLoaded', function(){
             let selectedValue = sports.value;
@@ -154,7 +155,7 @@
                     .then(data =>{
                         coachesSelect.innerHTML = '';
                         data.coaches.forEach(coach=>{
-                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name}</option>`;
+                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
                         })
                     })
 
@@ -169,7 +170,7 @@
                     .then(data =>{
                         coachesSelect.innerHTML = '';
                         data.coaches.forEach(coach=>{
-                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name}</option>`;
+                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
                         })
                     })
 

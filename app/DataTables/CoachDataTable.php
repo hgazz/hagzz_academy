@@ -40,8 +40,10 @@ class CoachDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('name', fn($raw) => $raw->name)
-            ->editColumn('description', fn($raw) => $raw->description)
+            ->addColumn('name_en', fn($raw) => $raw->getTranslation('name', 'en'))
+            ->addColumn('name_ar', fn($raw) => $raw->getTranslation('name', 'ar'))
+            ->editColumn('description_en', fn($raw) => $raw->getTranslation('description', 'en'))
+            ->editColumn('description_ar', fn($raw) => $raw->getTranslation('description', 'ar'))
             ->editColumn('license_type', fn($raw) => $raw->license_type)
             ->editColumn('academy_id', function ($raw){
                 return $raw->academy->commercial_name;
@@ -75,7 +77,7 @@ class CoachDataTable extends DataTable
             ->addColumn('actions', function (Coach $coach) {
                 return view('Academy.pages.coaches.datatable.actions', compact('coach'));
             })
-            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports', 'actions']);
+            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports', 'actions', 'name_en', 'name_ar']);
     }
 
     /**
@@ -133,11 +135,13 @@ class CoachDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
-            ['name' => 'name', 'data' => 'name', 'title' => trans('admin.coaches.name')],
+            ['name' => 'name->en', 'data' => 'name_en', 'title' => trans('admin.area.name_en')],
+            ['name' => 'name->ar', 'data' => 'name_ar', 'title' => trans('admin.area.name_ar')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.coaches.phone')],
             ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.training.gender')],
             ['name' => 'birth_date', 'data' => 'birth_date', 'title' => trans('admin.training.birth_date')],
-            ['name' => 'description', 'data' => 'description', 'title' => trans('admin.coaches.description')],
+            ['name' => 'description->en', 'data' => 'description_en', 'title' => trans('admin.training.description_en')],
+            ['name' => 'description->ar', 'data' => 'description_ar', 'title' => trans('admin.training.description_ar')],
             ['name' => 'image', 'data' => 'image', 'title' => trans('admin.coaches.image')],
             ['name' => 'license', 'data' => 'license', 'title' => trans('admin.coaches.is_licensed'), 'orderable' => false, 'searchable' => false],
             ['name' => 'license_type', 'data' => 'license_type', 'title' => trans('admin.coaches.license_type'), 'orderable' => false, 'searchable' => false],
