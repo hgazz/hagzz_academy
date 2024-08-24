@@ -8,6 +8,7 @@ use App\Http\Controllers\CoachController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
@@ -86,7 +87,9 @@ Route::group(
             Route::delete('coach/delete','delete')->name('coach.delete');
             Route::get('coach/export','export')->name('coach.export');
         });
-
+        Route::controller(NotificationController::class)->group(function () {
+            Route::get('notification', 'index')->name('notification.index');
+        });
         Route::controller( ClassesController::class)->group(function(){
             Route::get('classes','index')->name('class.index');
             Route::get('class/create','create')->name('class.create');

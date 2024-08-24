@@ -347,6 +347,13 @@ return [
     'notifications' => [
         'notifications' => 'الإشعارات',
         'view_all' => 'عرض الكل',
+        'title' => 'العنوان',
+        'description' => 'الوصف',
+        'details' => 'التفاصيل',
+        'type' => 'النوع',
+        'user'=>'(المستخدم)',
+        'partner'=>'(الاكاديمية)',
+        'created_at'=>'تاريخ الإنشاء'
     ],
     'settlement' => [
         'Settlements' => 'التسويات',

@@ -349,6 +349,13 @@ return [
     'notifications'=> [
         'notifications'=>'Notifications',
         'view_all'=>'View All',
+        'title'=>'Title',
+        'description'=>'Description',
+        'details'=>'Details',
+        'type'=>'Type',
+        'user'=>'(User)',
+        'partner'=>'(Partner)',
+        'created_at'=>'Created At',
     ],
     'settlement' => [
         'Settlements' => 'Settlements',
