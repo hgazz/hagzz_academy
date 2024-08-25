@@ -36,7 +36,7 @@ class NotificationDataTable extends DataTable
             ->addColumn('training', function ($notification) {
                return Notification::whereJsonContains('details->training_id', $notification->details['training_id'])
                     ->join('trainings', 'trainings.id', '=', Notification::raw('json_unquote(details->"$.training_id")'))
-                    ->first(['trainings.name'])[app()->getLocale()];
+                    ->first(['trainings.name'])->name ?? null;
             })
             ->editColumn('created_at', function ($notification) {
                 $date = Carbon::parse($notification->created_at);
