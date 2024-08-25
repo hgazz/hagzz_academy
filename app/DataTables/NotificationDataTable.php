@@ -26,7 +26,7 @@ class NotificationDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('notifiable', function ($notification) {
-                return $notification?->notifiable?->name ;
+                return $notification?->notifiable?->commercial_name ;
             })
             ->editColumn('notifiable_type', function ($notification) {
                 return  $notification->notifiable_type == "App\\Models\\User" ? trans("admin.notifications.user") : trans("admin.notifications.partner")  ;
