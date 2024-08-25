@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Academies;
 use App\Models\Notification;
+use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
