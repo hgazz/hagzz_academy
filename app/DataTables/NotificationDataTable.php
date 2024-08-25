@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Models\Academies;
 use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -47,8 +48,8 @@ class NotificationDataTable extends DataTable
     public function query(Notification $model): QueryBuilder
     {
         return $model->newQuery()
-            ->orderBy('created_at', 'desc')
-            ->where(['notifiable_type' => get_class($model), 'notifiable_id' => auth('academy')->id()]);
+            ->where(['notifiable_type' => Academies::class, 'notifiable_id' => auth('academy')->id()])
+            ->orderBy('created_at', 'desc');
     }
 
     /**
