@@ -33,13 +33,18 @@ class NotificationDataTable extends DataTable
             ->editColumn('description', function ($notification) {
                 return $notification->description ?? null;
             })
+            ->addColumn('training', function ($notification) {
+               return Notification::whereJsonContains('details->training_id', $notification->details['training_id'])
+                    ->join('trainings', 'trainings.id', '=', Notification::raw('json_unquote(details->"$.training_id")'))
+                    ->first(['trainings.name']);
+            })
             ->editColumn('created_at', function ($notification) {
                 $date = Carbon::parse($notification->created_at);
                 return $date->format('F j, Y');
             })
             ->addColumn('action', 'notification.action')
             ->setRowId('id')
-            ->rawColumns(['notifiable']);
+            ->rawColumns(['notifiable', 'training']);
     }
 
     /**
@@ -93,7 +98,7 @@ class NotificationDataTable extends DataTable
             ['data' => 'notifiable_type', 'name' => 'notifiable_type', 'title' =>trans("admin.notifications.type")],
             ['data' => 'title', 'name' => 'title', 'title' =>trans("admin.notifications.title")],
             ['data' => 'description', 'name' => 'description', 'title' =>trans("admin.notifications.description")],
-//            ['data' => 'details', 'name' => 'details', 'title' =>trans("admin.notifications.details")],
+            ['data' => 'training', 'name' => 'training', 'title' =>trans("admin.training.training"), 'searchable' => false, 'orderable' => false],
             ['data' => 'created_at', 'name' => 'created_at', 'title' =>trans("admin.notifications.created_at")],
         ];
     }
