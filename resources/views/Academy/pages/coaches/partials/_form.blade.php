@@ -10,7 +10,7 @@
                 <input type="text" id="{{$name}}" name="{{$name}}" maxlength="50" class="form-control"
                        @php
                            $language = $name == 'name_en' ? 'en' : 'ar';
-                           $defaultValue = isset($training) ? $training->getTranslation('name', $language) : '';
+                           $defaultValue = isset($coach) ? $coach->getTranslation('name', $language) : '';
                        @endphp
                        value="{{ old($name, $defaultValue) }}"
                        placeholder="{{trans('admin.training.'.$name)}}" data-parsley-required-message="Please enter {{$name}}">
@@ -25,7 +25,7 @@
                     {{ $name === 'description_en' ? trans('admin.training.description_en') : trans('admin.training.description_ar') }}
                 </label>
 
-                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">@if($name == 'description_en'){{old($name , isset($training) ? $training->getTranslation('description','en') : '')}}@else{{old($name , isset($training) ? $training->getTranslation('description','ar') : '')}}@endif</textarea>
+                <textarea class="form-control" name="{{$name}}" id="{{$name}}" placeholder="Enter">@if($name == 'description_en'){{old($name , isset($coach) ? $coach->getTranslation('description','en') : '')}}@else{{old($name , isset($coach) ? $coach->getTranslation('description','ar') : '')}}@endif</textarea>
                 @error($name)
                 <span class="text-danger">*{{$message}}</span>
                 @enderror
