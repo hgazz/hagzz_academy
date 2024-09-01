@@ -37,7 +37,7 @@ class GalleryController extends Controller
             'image' => $image,
             'academy_id' => auth()->id()
         ]);
-        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name);
+//        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name, 'Image Added', '', []);
         session()->flash('success', trans('admin.gallery.created_successfully'));
         return to_route('academy.gallery.index');
     }
