@@ -33,7 +33,10 @@ class ChartsService
         }
 
         // Add condition to include only records where is_canceled is 1
-        $query->where('is_canceled', 1);
+        $query->where('is_canceled', 1)
+        ->whereHas('training',function ($q){
+            $q->where('academy_id', auth('academy')->id());
+        });
 
         $orderReturns = $this->getGroupedByMonth(
             Invoice::class,
