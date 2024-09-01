@@ -114,12 +114,15 @@ class DashboardController extends Controller
     public function getBeginnerSportsCount()
     {
         $academyId = Auth::id(); // Assuming the authenticated user is an academy
-
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level')
+        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
             ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
             ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
+            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
             ->where('user_sport.level', 'Beginner')
             ->where('academy_sport.academy_id', $academyId)
+            ->where('trainings.academy_id', $academyId)
+            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
             ->count();
     }
 
@@ -127,11 +130,15 @@ class DashboardController extends Controller
     {
         $academyId = Auth::id(); // Assuming the authenticated user is an academy
 
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level')
+        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
             ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
             ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
+            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
             ->where('user_sport.level', 'Intermediate')
             ->where('academy_sport.academy_id', $academyId)
+            ->where('trainings.academy_id', $academyId)
+            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
             ->count();
     }
 
@@ -139,11 +146,15 @@ class DashboardController extends Controller
     {
         $academyId = Auth::id(); // Assuming the authenticated user is an academy
 
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level')
+        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
             ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
             ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
+            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
             ->where('user_sport.level', 'Advanced')
             ->where('academy_sport.academy_id', $academyId)
+            ->where('trainings.academy_id', $academyId)
+            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
             ->count();
     }
     private function getAllMaleUsersCount()
