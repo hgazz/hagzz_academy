@@ -33,11 +33,11 @@ class GalleryController extends Controller
     public function store(GalleryRequest $request)
     {
         $image = $this->upload($request->file('image'), $this->galleryModel::PATH);
-        $this->galleryModel->create([
+       $gallery =  $this->galleryModel->create([
             'image' => $image,
             'academy_id' => auth()->id()
         ]);
-//        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name, 'Image Added', '', []);
+        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name, 'Image Added', auth('academy')->user()->image, ['gallery' => $gallery->image]);
         session()->flash('success', trans('admin.gallery.created_successfully'));
         return to_route('academy.gallery.index');
     }
