@@ -35,9 +35,12 @@ class NotificationDataTable extends DataTable
                 return $notification->description ?? null;
             })
             ->addColumn('training', function ($notification) {
-                $trainingId = $notification?->details['training_id'];
+                if (is_array($notification?->details) && isset($notification->details['training_id'])) {
+                    $trainingId = $notification->details['training_id'];
+                    return Training::find($trainingId, ['name'])->name ?? null;
+                }
 
-                return $trainingId ? Training::where('id', $trainingId)->first(['name'])->name : null;
+                return null;
             })
             ->editColumn('created_at', function ($notification) {
                 $date = Carbon::parse($notification->created_at);
