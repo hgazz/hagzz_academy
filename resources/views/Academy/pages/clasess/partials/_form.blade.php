@@ -59,40 +59,31 @@
     </div>
 </div>
 @if(request()->url() === route('academy.class.create'))
-
-<div class="row">
-    <div class="col-md-6 mb-3" id="outcomes-container">
-        <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
-        <!-- Initial input field -->
-        <div class="input-group mb-2">
-            <input class="form-control outcome-input" type="text" name="outcomes[]" value="" id="outcomes">
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+    <div class="row">
+        <div class="col-md-6 mb-3" id="outcomes-container">
+            <label>{{ trans('admin.clasess.out_comes') }}</label>
+            <!-- Initial input field for English -->
+            <div class="input-group mb-2">
+                <input class="form-control outcome-input" type="text" name="outcomes[en][]" placeholder="{{ trans('admin.clasess.out_comes_en') }}">
+                <input class="form-control outcome-input" type="text" name="outcomes[ar][]" placeholder="{{ trans('admin.clasess.out_comes_ar') }}">
+                <div class="input-group-append">
+                    <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
+            <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+            @error('outcomes.*')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
         </div>
-        <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
-        @error('outcomes.*')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
+        <!-- Repeat similar structure for bring_with_me -->
     </div>
-    <div class="col-md-6 mb-3" id="bring-with-me-container">
-        <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
-        <!-- Initial input field -->
-        <div class="input-group mb-2">
-            <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="" id="outcomes">
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-            </div>
-        </div>
-        <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
-        @error('bring_with_me.*')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-
-</div>
 @else
     @isset($class)
         <div class="row">
