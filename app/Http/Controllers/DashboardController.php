@@ -72,7 +72,6 @@ class DashboardController extends Controller
     {
         $ordersData = $this->chartsService->getBookingsDataByMonth();
 
-
         return response()->json([
             'ordersData' => $ordersData['joinsData'],
             'totalProfit' => $ordersData['total']

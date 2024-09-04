@@ -72,7 +72,7 @@ return [
     'end_date' => 'تاريخ الانتهاء',
     'apply' => 'تطبيق',
     'not_published' => 'في انتظار الموافقة من المسؤول',
-    'class_must_be_between' => 'يجب أن يكون الدرجة بين',
+    'class_must_be_between' => 'يجب أن يكون التاريخ بين',
     'and' => 'و',
     'new_notifications' => 'الاشعارات الجديدة',
     'you_have_new_notifications' => 'لديك اشعارات جديدة',

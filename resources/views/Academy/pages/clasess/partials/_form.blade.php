@@ -274,7 +274,7 @@
                                 var startDate = response.data.start_date;
                                 console.log(startDate);
                                 var endDate = response.data.end_date;
-                                $('#date-hint').text('({{trans("admin.class_must_be_between")}} ' + startDate + ' and ' + endDate + ')');
+                                $('#date-hint').text('({{trans("admin.class_must_be_between")}} ' + startDate + ' & ' + endDate + ')');
                             }
                         }
                     });
