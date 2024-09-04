@@ -60,151 +60,129 @@
 </div>
 @if(request()->url() === route('academy.class.create'))
 
-<div class="row">
-    <div class="col-md-6 mb-3" id="outcomes-container">
-        <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
-        <!-- Initial input field -->
-        <div class="input-group mb-2">
-            <input class="form-control outcome-input" type="text" name="outcomes[]" value="" id="outcomes">
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-            </div>
-        </div>
-        <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
-        @error('outcomes.*')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-    <div class="col-md-6 mb-3" id="bring-with-me-container">
-        <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
-        <!-- Initial input field -->
-        <div class="input-group mb-2">
-            <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="" id="outcomes">
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-            </div>
-        </div>
-        <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
-        @error('bring_with_me.*')
-        <span class="text-danger">*{{$message}}</span>
-        @enderror
-    </div>
-
-</div>
-@else
-    @isset($class)
+    <div class="row">
         <div class="row">
-            <div class="col-md-6 mb-3" id="outcomes-container">
-                @php
-                    $numberOfOutcomes = count($class->out_comes);
-                @endphp
-                @for($i = 0; $i < $numberOfOutcomes; $i++)
-                    <label for="outcomes">{{ trans('admin.clasess.out_comes') }}</label>
-                    <!-- Initial input field -->
+            <div class="col-6">
+                <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+                <div class="col-md-12 mb-3" id="outcomes-container">
+                    <label>{{ trans('admin.clasess.out_comes') }}</label>
+                    <!-- Initial input fields for English and Arabic -->
                     <div class="input-group mb-2">
-                        <input class="form-control outcome-input" type="text" name="outcomes[]" value="{{ $class->out_comes[$i] }}" id="outcomes">
-                        <div class="input-group-append">
-                            <button class="btn btn-danger m-2 remove-outcome" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-                        </div>
+                        <input class="form-control outcome-input-en" type="text" name="outcomes[en][]" placeholder="Outcome in English">
+                        <input class="form-control outcome-input-ar" type="text" name="outcomes[ar][]" placeholder="Outcome in Arabic">
                     </div>
                     @error('outcomes.*')
                     <span class="text-danger">*{{$message}}</span>
                     @enderror
-                @endfor
-                <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+                </div>
             </div>
-            <div class="col-md-6 mb-3" id="bring-with-me-container">
-                @php
-                    $numberBringsWithMe = count($class->bring_with_me);
-                @endphp
-                @for($i = 0; $i < $numberBringsWithMe; $i++)
-                    <label for="bring_with_me">{{ trans('admin.clasess.bring_with_me') }}</label>
-                    <!-- Initial input field -->
+
+            <div class="col-6">
+                <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+                <div class="col-md-12 mb-3" id="bring-with-me-container">
+                    <label>{{ trans('admin.clasess.bring_with_me') }}</label>
                     <div class="input-group mb-2">
-                        <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="{{ $class->bring_with_me[$i] }}" id="bring_with_me">
-                        <div class="input-group-append">
-                            <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-                        </div>
+                        <input class="form-control bring-with-me-input-en" type="text" name="bring_with_me[en][]" placeholder="Bring with me in English">
+                        <input class="form-control bring-with-me-input-ar" type="text" name="bring_with_me[ar][]" placeholder="Bring with me in Arabic">
                     </div>
                     @error('bring_with_me.*')
-                        <span class="text-danger">*{{$message}}</span>
+                    <span class="text-danger">*{{$message}}</span>
                     @enderror
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+@else
+    @isset($class)
+        <div class="row">
+            <div class="col-md-6 mb-3" id="outcomes-container">
+                <label>{{ trans('admin.clasess.out_comes') }}</label>
+                @php
+                    // Assuming $class->out_comes is an associative array with 'en' and 'ar' keys
+                    $outcomesEn = $class->out_comes['en'] ?? [];
+                    $outcomesAr = $class->out_comes['ar'] ?? [];
+                    $maxOutcomes = max(count($outcomesEn), count($outcomesAr));
+                @endphp
+                @for ($i = 0; $i < $maxOutcomes; $i++)
+                    <div class="input-group mb-2">
+                        <input class="form-control outcome-input-en" type="text" name="outcomes[en][]" value="{{ $outcomesEn[$i] ?? '' }}" placeholder="Outcome in English">
+                        <input class="form-control outcome-input-ar" type="text" name="outcomes[ar][]" value="{{ $outcomesAr[$i] ?? '' }}" placeholder="Outcome in Arabic">
+                        <div class="input-group-append">
+                            <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endfor
+                <button id="add-outcome" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+                @error('outcomes.*')
+                <span class="text-danger">*{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="col-md-6 mb-3" id="bring-with-me-container">
+                <label>{{ trans('admin.clasess.bring_with_me') }}</label>
+                @php
+                    // Assuming $class->bring_with_me is an associative array with 'en' and 'ar' keys
+                    $bringWithMeEn = $class->bring_with_me['en'] ?? [];
+                    $bringWithMeAr = $class->bring_with_me['ar'] ?? [];
+                    $maxBringWithMe = max(count($bringWithMeEn), count($bringWithMeAr));
+                @endphp
+                @for ($i = 0; $i < $maxBringWithMe; $i++)
+                    <div class="input-group mb-2">
+                        <input class="form-control bring-with-me-input-en" type="text" name="bring_with_me[en][]" value="{{ $bringWithMeEn[$i] ?? '' }}" placeholder="Bring with me in English">
+                        <input class="form-control bring-with-me-input-ar" type="text" name="bring_with_me[ar][]" value="{{ $bringWithMeAr[$i] ?? '' }}" placeholder="Bring with me in Arabic">
+                        <div class="input-group-append">
+                            <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 @endfor
                 <button id="add-bring-with-me" type="button" class="btn btn-primary">{{ trans('admin.clasess.add_more') }}</button>
+                @error('bring_with_me.*')
+                <span class="text-danger">*{{ $message }}</span>
+                @enderror
             </div>
         </div>
+
     @endisset
 
 @endif
 
 
 @push('js')
-    <script>
-            // Assuming you have old inputs for 'outcomes' and 'bring_with_me'
-            var oldOutcomes = @json(old('outcomes', []));
-            var oldBringWithMe = @json(old('bring_with_me', []));
-
-            // Function to repopulate outcomes
-            function repopulateOutcomes() {
-                if (oldOutcomes.length > 0) {
-                    // Clear initial input if old data exists
-                    document.querySelector('#outcomes-container .input-group').remove();
-                    oldOutcomes.forEach(function(value) {
-                        addOutcomeInput(value); // Use the existing function to add inputs, passing the old value
-                    });
-                }
-            }
-
-            // Function to repopulate bring with me inputs, similar to repopulateOutcomes
-
-            document.addEventListener('DOMContentLoaded', function () {
-                // Call repopulate functions on page load
-                repopulateOutcomes();
-                // repopulateBringWithMe(); // Implement a similar function for bring_with_me
-
-                document.querySelector('#add-outcome').addEventListener('click', function() {
-                    var container = document.querySelector('#outcomes-container');
-                    var newInput = document.createElement('div');
-                    newInput.classList.add('input-group', 'mb-2');
-                    newInput.innerHTML = `
-            <input class="form-control outcome-input" type="text" name="outcomes[]" value="">
-
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-            </div>
-        `;
-                    // Add event listener for the remove button in the new input group
-                    newInput.querySelector('.remove-outcome').addEventListener('click', function() {
-                        this.closest('.input-group').remove();
-                    });
-                    container.insertBefore(newInput, this);
-                });
-
-                // Initial removal button event listener
-                document.querySelectorAll('.remove-outcome').forEach(button => {
-                    button.addEventListener('click', function() {
-                        this.closest('.input-group').remove();
-                    });
-                });
-
-            });
-
-            // Adjust the 'addOutcomeInput' function to accept a value parameter and set it to the input
-            function addOutcomeInput(value = '') {
+    <script !src="">
+        document.addEventListener('DOMContentLoaded', function () {
+            function addOutcomeInput(valueEn = '', valueAr = '') {
                 var container = document.querySelector('#outcomes-container');
                 var newInput = document.createElement('div');
                 newInput.classList.add('input-group', 'mb-2');
                 newInput.innerHTML = `
-            <input class="form-control outcome-input" type="text" name="outcomes[]" value="${value}">
-
+            <input class="form-control outcome-input-en" type="text" name="outcomes[en][]" value="${valueEn}" placeholder="Outcome in English">
+            <input class="form-control outcome-input-ar" type="text" name="outcomes[ar][]" value="${valueAr}" placeholder="Outcome in Arabic">
             <div class="input-group-append">
                 <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             </div>
         `;
                 newInput.querySelector('.remove-outcome').addEventListener('click', function() {
@@ -213,16 +191,13 @@
                 container.appendChild(newInput);
             }
 
-            // You'll need to adjust your existing '#add-outcome' click event listener to use 'addOutcomeInput'
-        </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            function addBringWithMeInput(value = '') {
+            function addBringWithMeInput(valueEn = '', valueAr = '') {
                 var container = document.querySelector('#bring-with-me-container');
                 var newInput = document.createElement('div');
                 newInput.classList.add('input-group', 'mb-2');
                 newInput.innerHTML = `
-            <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="${value}">
+            <input class="form-control bring-with-me-input-en" type="text" name="bring_with_me[en][]" value="${valueEn}" placeholder="Bring with me in English">
+            <input class="form-control bring-with-me-input-ar" type="text" name="bring_with_me[ar][]" value="${valueAr}" placeholder="Bring with me in Arabic">
             <div class="input-group-append">
                 <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
@@ -234,40 +209,219 @@
                 </button>
             </div>
         `;
-                container.insertBefore(newInput, document.querySelector('#add-bring-with-me'));
+                newInput.querySelector('.remove-bring-with-me').addEventListener('click', function() {
+                    this.closest('.input-group').remove();
+                });
+                container.appendChild(newInput);
             }
 
-            // Event delegation for dynamically added remove buttons
-            document.querySelector('#bring-with-me-container').addEventListener('click', function(event) {
-                if (event.target.closest('.remove-bring-with-me')) {
-                    event.target.closest('.input-group').remove();
-                }
+            document.querySelector('#add-outcome').addEventListener('click', function() {
+                addOutcomeInput();
             });
 
             document.querySelector('#add-bring-with-me').addEventListener('click', function() {
                 addBringWithMeInput();
             });
 
-            // Repopulate bring_with_me inputs from old input on validation error
-            @if(old('bring_with_me'))
-            const oldBringWithMe = @json(old('bring_with_me'));
-            // Clear initial input before repopulating
-            document.querySelectorAll('#bring-with-me-container .input-group').forEach(function(inputGroup, index) {
-                if (index > 0) { // Skip the first input group, it's already in the DOM
-                    inputGroup.remove();
-                }
+            // Adding event listeners for existing data
+            document.querySelectorAll('.remove-outcome').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.input-group').remove();
+                });
             });
-            // Add inputs for each old value
-            oldBringWithMe.forEach(function(value, index) {
-                if (index === 0) {
-                    document.querySelector('#bring-with-me-container .bring-with-me-input').value = value;
-                } else {
-                    addBringWithMeInput(value);
-                }
+
+            document.querySelectorAll('.remove-bring-with-me').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.input-group').remove();
+                });
             });
-            @endif
         });
+
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     function addOutcomeInput(valueEn = '', valueAr = '') {
+        //         var container = document.querySelector('#outcomes-container');
+        //         var newInput = document.createElement('div');
+        //         newInput.classList.add('input-group', 'mb-2');
+        //         newInput.innerHTML = `
+        //     <input class="form-control outcome-input-en" type="text" name="outcomes[en][]" value="${valueEn}" placeholder="Outcome in English">
+        //     <input class="form-control outcome-input-ar" type="text" name="outcomes[ar][]" value="${valueAr}" placeholder="Outcome in Arabic">
+        //     <div class="input-group-append">
+        //         <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">
+        //             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+        //                 <polyline points="3 6 5 6 21 6"></polyline>
+        //                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        //                 <line x1="10" y1="11" x2="10" y2="17"></line>
+        //                 <line x1="14" y1="11" x2="14" y2="17"></line>
+        //             </svg>
+        //         </button>
+        //     </div>
+        // `;
+        //         newInput.querySelector('.remove-outcome').addEventListener('click', function() {
+        //             this.closest('.input-group').remove();
+        //         });
+        //         container.appendChild(newInput);
+        //     }
+        //
+        //     function addBringWithMeInput(valueEn = '', valueAr = '') {
+        //         var container = document.querySelector('#bring-with-me-container');
+        //         var newInput = document.createElement('div');
+        //         newInput.classList.add('input-group', 'mb-2');
+        //         newInput.innerHTML = `
+        //     <input class="form-control bring-with-me-input-en" type="text" name="bring_with_me[en][]" value="${valueEn}" placeholder="Bring with me in English">
+        //     <input class="form-control bring-with-me-input-ar" type="text" name="bring_with_me[ar][]" value="${valueAr}" placeholder="Bring with me in Arabic">
+        //     <div class="input-group-append">
+        //         <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">
+        //             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+        //                 <polyline points="3 6 5 6 21 6"></polyline>
+        //                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        //                 <line x1="10" y1="11" x2="10" y2="17"></line>
+        //                 <line x1="14" y1="11" x2="14" y2="17"></line>
+        //             </svg>
+        //         </button>
+        //     </div>
+        // `;
+        //         newInput.querySelector('.remove-bring-with-me').addEventListener('click', function() {
+        //             this.closest('.input-group').remove();
+        //         });
+        //         container.appendChild(newInput);
+        //     }
+        //
+        //     document.querySelector('#add-outcome').addEventListener('click', function() {
+        //         addOutcomeInput();
+        //     });
+        //
+        //     document.querySelector('#add-bring-with-me').addEventListener('click', function() {
+        //         addBringWithMeInput();
+        //     });
+        //
+        //     // Initial input rows do not have delete buttons, so no need for event listeners there
+        // });
     </script>
+{{--    <script>--}}
+{{--            // Assuming you have old inputs for 'outcomes' and 'bring_with_me'--}}
+{{--            var oldOutcomes = @json(old('outcomes', []));--}}
+{{--            var oldBringWithMe = @json(old('bring_with_me', []));--}}
+
+{{--            // Function to repopulate outcomes--}}
+{{--            function repopulateOutcomes() {--}}
+{{--                if (oldOutcomes.length > 0) {--}}
+{{--                    // Clear initial input if old data exists--}}
+{{--                    document.querySelector('#outcomes-container .input-group').remove();--}}
+{{--                    oldOutcomes.forEach(function(value) {--}}
+{{--                        addOutcomeInput(value); // Use the existing function to add inputs, passing the old value--}}
+{{--                    });--}}
+{{--                }--}}
+{{--            }--}}
+
+{{--            // Function to repopulate bring with me inputs, similar to repopulateOutcomes--}}
+
+{{--            document.addEventListener('DOMContentLoaded', function () {--}}
+{{--                // Call repopulate functions on page load--}}
+{{--                repopulateOutcomes();--}}
+{{--                // repopulateBringWithMe(); // Implement a similar function for bring_with_me--}}
+
+{{--                document.querySelector('#add-outcome').addEventListener('click', function() {--}}
+{{--                    var container = document.querySelector('#outcomes-container');--}}
+{{--                    var newInput = document.createElement('div');--}}
+{{--                    newInput.classList.add('input-group', 'mb-2');--}}
+{{--                    newInput.innerHTML = `--}}
+{{--            <input class="form-control outcome-input" type="text" name="outcomes[]" value="">--}}
+
+{{--            <div class="input-group-append">--}}
+{{--                <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">--}}
+{{--                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>--}}
+{{--            </div>--}}
+{{--        `;--}}
+{{--                    // Add event listener for the remove button in the new input group--}}
+{{--                    newInput.querySelector('.remove-outcome').addEventListener('click', function() {--}}
+{{--                        this.closest('.input-group').remove();--}}
+{{--                    });--}}
+{{--                    container.insertBefore(newInput, this);--}}
+{{--                });--}}
+
+{{--                // Initial removal button event listener--}}
+{{--                document.querySelectorAll('.remove-outcome').forEach(button => {--}}
+{{--                    button.addEventListener('click', function() {--}}
+{{--                        this.closest('.input-group').remove();--}}
+{{--                    });--}}
+{{--                });--}}
+
+{{--            });--}}
+
+{{--            // Adjust the 'addOutcomeInput' function to accept a value parameter and set it to the input--}}
+{{--            function addOutcomeInput(value = '') {--}}
+{{--                var container = document.querySelector('#outcomes-container');--}}
+{{--                var newInput = document.createElement('div');--}}
+{{--                newInput.classList.add('input-group', 'mb-2');--}}
+{{--                newInput.innerHTML = `--}}
+{{--            <input class="form-control outcome-input" type="text" name="outcomes[]" value="${value}">--}}
+
+{{--            <div class="input-group-append">--}}
+{{--                <button class="btn btn-danger btn-sm m-2 remove-outcome" type="button">--}}
+{{--                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>--}}
+{{--            </div>--}}
+{{--        `;--}}
+{{--                newInput.querySelector('.remove-outcome').addEventListener('click', function() {--}}
+{{--                    this.closest('.input-group').remove();--}}
+{{--                });--}}
+{{--                container.appendChild(newInput);--}}
+{{--            }--}}
+
+{{--            // You'll need to adjust your existing '#add-outcome' click event listener to use 'addOutcomeInput'--}}
+{{--        </script>--}}
+{{--    <script>--}}
+{{--        document.addEventListener('DOMContentLoaded', function () {--}}
+{{--            function addBringWithMeInput(value = '') {--}}
+{{--                var container = document.querySelector('#bring-with-me-container');--}}
+{{--                var newInput = document.createElement('div');--}}
+{{--                newInput.classList.add('input-group', 'mb-2');--}}
+{{--                newInput.innerHTML = `--}}
+{{--            <input class="form-control bring-with-me-input" type="text" name="bring_with_me[]" value="${value}">--}}
+{{--            <div class="input-group-append">--}}
+{{--                <button class="btn btn-danger btn-sm m-2 remove-bring-with-me" type="button">--}}
+{{--                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">--}}
+{{--                        <polyline points="3 6 5 6 21 6"></polyline>--}}
+{{--                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>--}}
+{{--                        <line x1="10" y1="11" x2="10" y2="17"></line>--}}
+{{--                        <line x1="14" y1="11" x2="14" y2="17"></line>--}}
+{{--                    </svg>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        `;--}}
+{{--                container.insertBefore(newInput, document.querySelector('#add-bring-with-me'));--}}
+{{--            }--}}
+
+{{--            // Event delegation for dynamically added remove buttons--}}
+{{--            document.querySelector('#bring-with-me-container').addEventListener('click', function(event) {--}}
+{{--                if (event.target.closest('.remove-bring-with-me')) {--}}
+{{--                    event.target.closest('.input-group').remove();--}}
+{{--                }--}}
+{{--            });--}}
+
+{{--            document.querySelector('#add-bring-with-me').addEventListener('click', function() {--}}
+{{--                addBringWithMeInput();--}}
+{{--            });--}}
+
+{{--            // Repopulate bring_with_me inputs from old input on validation error--}}
+{{--            @if(old('bring_with_me'))--}}
+{{--            const oldBringWithMe = @json(old('bring_with_me'));--}}
+{{--            // Clear initial input before repopulating--}}
+{{--            document.querySelectorAll('#bring-with-me-container .input-group').forEach(function(inputGroup, index) {--}}
+{{--                if (index > 0) { // Skip the first input group, it's already in the DOM--}}
+{{--                    inputGroup.remove();--}}
+{{--                }--}}
+{{--            });--}}
+{{--            // Add inputs for each old value--}}
+{{--            oldBringWithMe.forEach(function(value, index) {--}}
+{{--                if (index === 0) {--}}
+{{--                    document.querySelector('#bring-with-me-container .bring-with-me-input').value = value;--}}
+{{--                } else {--}}
+{{--                    addBringWithMeInput(value);--}}
+{{--                }--}}
+{{--            });--}}
+{{--            @endif--}}
+{{--        });--}}
+{{--    </script>--}}
     <script>
         $(document).ready(function() {
             $('#training_id').change(function() {

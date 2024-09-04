@@ -40,16 +40,29 @@ class ClassesController extends Controller
     public function store(ClassRequest $request)
     {
         $translatable =  TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(),$request->validated());
-             $this->classModel->create(array_merge($translatable,[
-                 'date'=> $request->date,
-                 'training_id' => $request->training_id,
-                 'start_time' => $request->start_time,
-                 'end_time' => $request->end_time,
-                 'out_comes' => $request->input('outcomes'),
-                 'bring_with_me' => $request->input('bring_with_me')
-             ]));
-            session()->flash('success',trans('admin.clasess.created_successfully'));
-            return redirect(route('academy.class.index'))->withErrors("error");
+        // Prepare bilingual fields for outcomes and bring_with_me
+        $outcomes = [
+            'en' => $request->input('outcomes.en', []),
+            'ar' => $request->input('outcomes.ar', [])
+        ];
+
+        $bringWithMe = [
+            'en' => $request->input('bring_with_me.en', []),
+            'ar' => $request->input('bring_with_me.ar', [])
+        ];
+
+        // Create the class with merged data
+        $this->classModel->create(array_merge($translatable, [
+            'date' => $request->date,
+            'training_id' => $request->training_id,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'out_comes' => $outcomes,
+            'bring_with_me' => $bringWithMe
+        ]));
+
+        session()->flash('success',trans('admin.clasess.created_successfully'));
+        return redirect(route('academy.class.index'))->withErrors("error");
     }
 
     public function edit(TClass $class)
@@ -63,13 +76,25 @@ class ClassesController extends Controller
         $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields() , $request->validated());
         try {
             DB::beginTransaction();
-            $class->update(array_merge($translation,[
-                'date'=> $request->date,
+            // Prepare bilingual fields for outcomes and bring_with_me
+            $outcomes = [
+                'en' => $request->input('outcomes.en', []),
+                'ar' => $request->input('outcomes.ar', [])
+            ];
+
+            $bringWithMe = [
+                'en' => $request->input('bring_with_me.en', []),
+                'ar' => $request->input('bring_with_me.ar', [])
+            ];
+
+            // Update the class with merged data
+            $class->update(array_merge($translation, [
+                'date' => $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'out_comes' => $request->input('outcomes'),
-                'bring_with_me' => $request->input('bring_with_me'),
+                'out_comes' => $outcomes,
+                'bring_with_me' => $bringWithMe,
             ]));
             $details = [
                 'training_id' => $class->training_id,

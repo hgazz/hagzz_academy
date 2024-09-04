@@ -32,8 +32,10 @@ class ClassRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'training_id'=>'required|exists:trainings,id',
-            'outcomes.*' => 'nullable|string',
-            'bring_with_me.*' => 'nullable|string',
+            'outcomes.en.*' => 'nullable|string',
+            'outcomes.ar.*' => 'nullable|string',
+            'bring_with_me.en.*' => 'nullable|string',
+            'bring_with_me.ar.*' => 'nullable|string',
         ];
     }
 }
