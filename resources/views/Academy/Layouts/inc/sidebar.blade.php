@@ -150,6 +150,14 @@
                     </div>
                 </a>
             </li>
+            <li class="menu {{ Request::routeIs('academy.notification.*') ? 'active' : '' }}">
+                <a href="{{ route('academy.notification.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    <div class="">
+                        <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                        <span>{{trans("admin.notifications.notifications")}}</span>
+                    </div>
+                </a>
+            </li>
             <li class="menu {{ Request::routeIs('academy.report.*') ? 'active' : '' }}">
                 <a href="#report" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.report.*')  ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.report.*')  ? '' : 'collapsed' }}">
                     <div class="">
