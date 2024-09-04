@@ -9,7 +9,7 @@ use Spatie\Translatable\HasTranslations;
 
 class TClass extends Model
 {
-    use HasFactory , HasTranslations;
+    use HasFactory , HasTranslations , HasTranslations;
 
     protected $fillable = [
         'title',
@@ -22,11 +22,20 @@ class TClass extends Model
         'bring_with_me',
         'sport_id'
     ];
-    public $translatable = [];
+    public $translatable = ['title'];
 
     public static $translatableColumns = [
-
+        'title'=>[
+            'type'=>'text',
+            'validations'=>'required|string|max:255',
+            'is_textarea'=>false
+        ],
     ];
+    public static function getTranslatableFields()
+    {
+        return array_keys(self::$translatableColumns);
+    }
+
 
     protected $casts = [
         'out_comes' => 'array',
@@ -36,10 +45,7 @@ class TClass extends Model
     {
         return $this->belongsTo(Training::class,'training_id');
     }
-    public static function getTranslatableFields()
-    {
-        return array_keys(self::$translatableColumns);
-    }
+
 
     public function academy()
     {

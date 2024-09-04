@@ -11,6 +11,7 @@ use App\Models\TClass;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
+use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -38,24 +39,17 @@ class ClassesController extends Controller
 
     public function store(ClassRequest $request)
     {
-
-        try {
-             $this->classModel->create([
-                 'title' => $request->title,
+        $translatable =  TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(),$request->validated());
+             $this->classModel->create(array_merge($translatable,[
                  'date'=> $request->date,
                  'training_id' => $request->training_id,
                  'start_time' => $request->start_time,
                  'end_time' => $request->end_time,
                  'out_comes' => $request->input('outcomes'),
-                 'bring_with_me' => $request->input('bring_with_me'),
-            ]);
+                 'bring_with_me' => $request->input('bring_with_me')
+             ]));
             session()->flash('success',trans('admin.clasess.created_successfully'));
-            return redirect(route('academy.class.index'));
-        }catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
-            return back();
-        }
-
+            return redirect(route('academy.class.index'))->withErrors("error");
     }
 
     public function edit(TClass $class)
@@ -66,17 +60,17 @@ class ClassesController extends Controller
 
     public function update(TClass $class , ClassRequest $request)
     {
+        $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields() , $request->validated());
         try {
             DB::beginTransaction();
-            $class->update([
-                'title' => $request->title,
+            $class->update(array_merge($translation,[
                 'date'=> $request->date,
                 'training_id' => $request->training_id,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'out_comes' => $request->input('outcomes'),
                 'bring_with_me' => $request->input('bring_with_me'),
-            ]);
+            ]));
             $details = [
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->longitude,
