@@ -102,6 +102,39 @@
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="country">{{ trans('admin.training.country') }}</label>
+                                    <select class="form-select" id="country" name="country_id">
+                                        <option value="0">{{ trans('admin.training.Select County') }}</option>
+                                        @foreach($countries as $country)
+                                            <option
+                                                value="{{ $country->id }}" @selected(old('country_id'))>{{ $country->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('country_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="city">{{ trans('admin.city.city') }}</label>
+                                    <select class="form-select citySelected" id="city" name="city_id">
+
+                                    </select>
+                                    @error('city_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="area">{{ trans('admin.area.area') }}</label>
+                                    <select class="form-select" id="area" name="area_id">
+
+                                    </select>
+                                    @error('area_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="phone">{{trans('admin.training.birth_date')}}</label>
                                     <input type="date" name="birth_date" class="form-control"
@@ -121,6 +154,7 @@
             </div>
         </div>
     </div>
+    <input type="text" hidden="hidden" value="{{ app()->getLocale() }}" id="lang">
 @endsection
 
 @push('js')
@@ -132,6 +166,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            const lang = $('#lang').val();
             $('#country').change(function() {
                 var countryID = $(this).val();
                 if (countryID) {
@@ -146,7 +181,7 @@
                             $('#city').empty();
                             $('#city').append('<option value="">{{ trans('admin.training.select_city')}}</option>');
                             $.each(data, function(key, value) {
-                                $('#city').append('<option value="'+ value.id +'">'+ value.name.en +'</option>');
+                                $('#city').append('<option value="'+ value.id +'">'+ value.name[lang] +'</option>');
                             });
                         }
                     });
@@ -169,7 +204,7 @@
                             $('#area').empty();
                             $('#area').append('<option value="">{{ trans('admin.training.select_area') }}</option>');
                             $.each(data, function(key, value) {
-                                $('#area').append('<option value="'+ value.id +'">'+ value.name.en +'</option>');
+                                $('#area').append('<option value="'+ value.id +'">'+ value.name[lang] +'</option>');
                             });
                         }
                     });
