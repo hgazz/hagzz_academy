@@ -30,7 +30,8 @@ class User extends Authenticatable
         'country_id',
         'city_id',
         'area_id',
-        'language'
+        'language',
+        'user_type'
     ];
 
     /**
