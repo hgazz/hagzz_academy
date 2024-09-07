@@ -25,13 +25,13 @@ class BookingRequest extends FormRequest
             'training_id' => 'required|exists:trainings,id',
             'price' =>'required|numeric',
             'name' =>'required|string',
-            'phone' =>'required|string',
+            'phone' =>'required|string|unique:users,phone',
             'gender' =>'required|in:male,female',
             'country_code' =>'required',
             'birth_date' =>'required|date|before:today',
-            'country_id' =>'required|string|unique:countries,id',
-            'city_id' =>'required|string|unique:cities,id',
-            'area_id' =>'required|string|unique:areas,id',
+            'country_id' =>'required|string|exists:countries,id',
+            'city_id' =>'required|string|exists:cities,id',
+            'area_id' =>'required|string|exists:areas,id',
         ];
     }
 }
