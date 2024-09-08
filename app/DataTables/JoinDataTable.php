@@ -54,7 +54,7 @@ class JoinDataTable extends DataTable
             ->addColumn('count', fn($join) => $join->training?->joins?->count() ?? '')
             ->addColumn('max_player', fn($join) => $join->training->max_players ?? '')
             ->addColumn('price', fn($join) => $join?->training?->price)
-            ->addColumn('training.created_at', fn($join) => $join?->training?->created_at)
+            ->addColumn('training.created_at', fn($join) => Carbon::parse($join->training->created_at)->format('Y-m-d H:i:s'))
             ->addColumn('discount_price', fn($join) => $join?->training?->discount_price)
             ->rawColumns([
                 'training',
