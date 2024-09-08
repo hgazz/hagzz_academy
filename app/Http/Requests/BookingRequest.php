@@ -27,7 +27,7 @@ class BookingRequest extends FormRequest
             'name' =>'required|string',
             'phone' =>'required|string|unique:users,phone',
             'gender' =>'required|in:male,female',
-            'country_code' =>'required',
+            'country_code' =>'required|regex:/^\+?[0-9]+$/',
             'birth_date' =>'required|date|before:today',
             'country_id' =>'required|string|exists:countries,id',
             'city_id' =>'required|string|exists:cities,id',
