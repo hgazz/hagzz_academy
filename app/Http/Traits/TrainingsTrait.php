@@ -2,6 +2,8 @@
 
 namespace App\Http\Traits;
 
+use App\Models\Invoice;
+use App\Models\Join;
 use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +23,10 @@ trait TrainingsTrait
 
     private function getCancelledTrainings(): int
     {
-        return \DB::table('trainings')
-            ->select('trainings.id')
-            ->where('trainings.academy_id', Auth::id())
-            ->where('trainings.active', 0)
-            ->count();
+        return Invoice::where('is_refunded', 1)
+            ->whereHas('training', function ($query) {
+                $query->where('academy_id', Auth::id());
+            })->count();
     }
 
     private function getInProgressTrainings(): int
