@@ -53,6 +53,13 @@ class InvoiceDataTable extends DataTable
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
+            ->filterColumn('partner', function ($query, $keyword) {
+                $query->whereHas('training',function ($q) use($keyword){
+                    $q->whereHas('academy',function ($q) use($keyword){
+                        $q->whereRaw("JSON_SEARCH(lower(commercial_name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
+                    });
+                });
+            })
             ->setRowId('id')
             ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner']);
     }
