@@ -65,8 +65,8 @@
                     <label>{{ trans('admin.clasess.out_comes') }}</label>
                     <!-- Initial input fields for English and Arabic -->
                     <div class="input-group mb-2">
-                        <input class="form-control outcome-input-en" type="text" name="outcomes[en][]" placeholder="Outcome in English">
-                        <input class="form-control outcome-input-ar" type="text" name="outcomes[ar][]" placeholder="Outcome in Arabic">
+                        <textarea class="form-control outcomes-ar" name="outcomes[ar][]" placeholder="Outcome in Arabic"></textarea>
+                        <textarea class="form-control outcomes-en" name="outcomes[en][]" placeholder="Outcome in English"></textarea>
                     </div>
                     @error('outcomes.*')
                     <span class="text-danger">*{{$message}}</span>
@@ -79,8 +79,8 @@
                 <div class="col-md-12 mb-3" id="bring-with-me-container">
                     <label>{{ trans('admin.clasess.bring_with_me') }}</label>
                     <div class="input-group mb-2">
-                        <input class="form-control bring-with-me-input-en" type="text" name="bring_with_me[en][]" placeholder="Bring with me in English">
-                        <input class="form-control bring-with-me-input-ar" type="text" name="bring_with_me[ar][]" placeholder="Bring with me in Arabic">
+                        <textarea class="form-control bring-with-me-input-ar" name="bring_with_me[ar][]" placeholder="Bring with me in Arabic"></textarea>
+                        <textarea class="form-control bring-with-me-input-en" name="bring_with_me[en][]" placeholder="Bring with me in English"></textarea>
                     </div>
                     @error('bring_with_me.*')
                     <span class="text-danger">*{{$message}}</span>
