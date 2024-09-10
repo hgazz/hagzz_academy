@@ -26,7 +26,7 @@ class ClassRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title_en' => 'required|string|max:255',
+            'title_en' => 'required|string|regex:/^[a-zA-Z\s 0-9]*$/',
             'title_ar' => 'required|string',
             'date' =>['required',new ValidateDate()],
             'start_time' => $this->checkStartTime(),
@@ -41,11 +41,11 @@ class ClassRequest extends FormRequest
 
     public function checkStartTime()
     {
-        return $this->request->isMethod('post') ? 'required|date_format:H:i' : 'required';
+        return request()->isMethod('post') ? 'required|date_format:H:i' : 'required';
     }
 
     public function checkEndTime()
     {
-        return $this->request->isMethod('post') ? 'required|date_format:H:i|after:start_time' : 'required';
+        return request()->isMethod('post') ? 'required|date_format:H:i|after:start_time' : 'required';
     }
 }
