@@ -32,7 +32,7 @@
                        $defaultValue = isset($class) ? $class->getTranslation('title', $language) : '';
                    @endphp
                    value="{{ old($name, $defaultValue) }}"
-                   placeholder="Enter {{$name}}">
+                   placeholder="Enter {{trans('admin.clasess.'.$name)}}">
             @error($name)
             <span class="text-danger">*{{$message}}</span>
             @enderror
