@@ -44,7 +44,7 @@
             </li> -->
 
             <li class="menu {{ Request::routeIs('academy.index') ? 'active' : '' }}">
-                <a href="#dashboard" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.index') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.index') ? '' : 'collapsed' }}">
+                <a href="{{ route('academy.index') }}" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.index') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.index') ? '' : 'collapsed' }}">
                     <div class="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 33 32"
                         fill="#0E1726" fill-opacity=".6">
