@@ -75,4 +75,37 @@ class Training extends Model
     {
         return $this->belongsTo(Sport::class,'sport_id');
     }
+
+    public function getLevelAttribute($value)
+    {
+        return match ($value) {
+            'Any_Level' => trans('admin.training.Any_Level'),
+            'Beginner' => trans('admin.training.beginner'),
+            'Intermediate' => trans('admin.training.intermediate'),
+            'Advanced' => trans('admin.training.advanced'),
+            default => 'Unknown',
+        };
+    }
+
+    public function getGenderAttribute($value)
+    {
+        return match ($value) {
+            'All' => trans('admin.training.all'),
+            'Men' => trans('admin.training.men'),
+            'Women' => trans('admin.training.women'),
+            default => 'Unknown',
+        };
+    }
+
+    public function getAgeGroupAttribute($value)
+    {
+        return match ($value) {
+            'All' => trans('admin.training.all'),
+            'Kids' => trans('admin.training.kids'),
+            'Juniors' => trans('admin.training.juniors'),
+            'Adults' => trans('admin.training.adults'),
+            default => 'Unknown',
+        };
+    }
+
 }
