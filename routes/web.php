@@ -89,6 +89,7 @@ Route::group(
         });
         Route::controller(NotificationController::class)->group(function () {
             Route::get('notification', 'index')->name('notification.index');
+            Route::get('notification/markAsRead/{notification}', 'markAsRead')->name('notification.markAsRead');
         });
         Route::controller( ClassesController::class)->group(function(){
             Route::get('classes','index')->name('class.index');
