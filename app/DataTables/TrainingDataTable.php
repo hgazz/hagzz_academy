@@ -27,6 +27,9 @@ class TrainingDataTable extends DataTable
             ->editColumn('coach_id', function (Training $training) {
                 return $training->coach->name;
             })
+            ->editColumn('sport_id', function (Training $training) {
+                return $training->sport->name;
+            })
             ->addColumn('action', function (Training $training) {
                 return view('Academy.pages.training.datatable.actions', compact('training'))->render();
             })
@@ -39,7 +42,7 @@ class TrainingDataTable extends DataTable
 //            ->addColumn('publish', function (Training $training) {
 //                return view('Academy.pages.training.datatable.publish', compact('training'));
 //            })
-            ->rawColumns(['action', 'coach_id','image','class', 'active', 'classes',]);
+            ->rawColumns(['action', 'coach_id', 'sport_id','image','class', 'active', 'classes',]);
 
     }
 
@@ -48,7 +51,7 @@ class TrainingDataTable extends DataTable
      */
     public function query(Training $model): QueryBuilder
     {
-        return $model->newQuery()->with('coach', 'classes')->whereBelongsTo(auth('academy')->user(), 'academy');
+        return $model->newQuery()->with(['coach', 'classes', 'sport'])->whereBelongsTo(auth('academy')->user(), 'academy');
     }
 
     /**
@@ -101,7 +104,7 @@ class TrainingDataTable extends DataTable
             ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.training.discount')],
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
             ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
-//            ['name' => 'description', 'data' => 'description', 'title' => trans('admin.training.description')],
+            ['name' => 'sport.name', 'data' => 'sport_id', 'title' => trans('admin.sport.sport')],
             ['name' => 'coach.name', 'data' => 'coach_id', 'title' => trans('admin.training.coach')],
             ['name' => 'level', 'data' => 'level', 'title' => trans('admin.training.level')],
             ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.training.gender')],
