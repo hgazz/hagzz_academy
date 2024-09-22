@@ -111,6 +111,7 @@ class TrainingController extends Controller
     {
         try {
             DB::transaction(function () use ($request, $training) {
+                $originalStartDate = $training->start_date;
                 $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
                 $training->update(array_merge($translatable, [
                     'start_date' => $request->start_date,
@@ -134,7 +135,7 @@ class TrainingController extends Controller
                     'academy_name' => auth('academy')->user()->commercial_name
                 ];
                 //notifications to users
-//                if ($training->wasChanged(['start_date', 'end_date'])) {
+                if ($originalStartDate != $training->start_date) {
                     $title = 'Booking Rescheduled';
                     $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
                     $joins = Join::where('training_id', $training->id)->get();
@@ -142,7 +143,7 @@ class TrainingController extends Controller
                         NotificationService::dbNotification($join->user_id,User::class, 1, $title, $body, auth('academy')->user()->image, $details);
                     });
 
-//                }
+                }
             });
             session()->flash('success',trans('admin.training.updated_successfully'));
             return to_route('academy.training.index');
