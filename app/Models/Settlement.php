@@ -30,7 +30,6 @@ class Settlement extends Model
     {
         return match ($value){
             self::STATUS_SETTLED => trans('admin.settled'),
-            self::STATUS_PENDING => trans('admin.academies.pending'),
             default => trans('admin.academies.pending'),
         };
     }
