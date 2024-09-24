@@ -90,4 +90,8 @@ class Academies extends Authenticatable
         return $this->hasMany(Settlement::class, 'partner_id');
     }
 
+    public function trainings()
+    {
+        return $this->hasMany(Training::class, 'academy_id');
+    }
 }
