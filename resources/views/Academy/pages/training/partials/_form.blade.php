@@ -102,10 +102,10 @@
         <label for="level"><span class="text-danger">*</span> {{trans('admin.training.levels')}} </label>
         <select id="level" class="form-select" name="level">
             <option> {{trans('admin.training.select_level')}} </option>
-            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Beginner') value="Beginner">{{trans('admin.training.beginner')}}</option>
-            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Intermediate') value="Intermediate">{{trans('admin.training.intermediate')}}</option>
-            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Advanced') value="Advanced">{{trans('admin.training.advanced')}}</option>
-            <option  @selected(old('level', isset($training) ?  $training->level : '') == 'Any_Level') value="Any_Level">{{trans('admin.training.Any_Level')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->getRawOriginal('level') : '') == 'Beginner') value="Beginner">{{trans('admin.training.beginner')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->getRawOriginal('level') : '') == 'Intermediate') value="Intermediate">{{trans('admin.training.intermediate')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->getRawOriginal('level') : '') == 'Advanced') value="Advanced">{{trans('admin.training.advanced')}}</option>
+            <option  @selected(old('level', isset($training) ?  $training->getRawOriginal('level') : '') == 'Any_Level') value="Any_Level">{{trans('admin.training.Any_Level')}}</option>
 
         </select>
         @error('level')
@@ -116,9 +116,9 @@
         <label for="gender"><span class="text-danger">*</span> {{trans('admin.training.gender')}} </label>
         <select id="gender" class="form-select" name="gender">
             <option> {{trans('admin.training.select_gender')}} </option>
-            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
-            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Men') value="Men">{{trans('admin.coaches.male')}}</option>
-            <option  @selected(old('gender', isset($training) ?  $training->gender : '') == 'Women') value="Women">{{trans('admin.coaches.female')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->getRawOriginal('gender') : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->getRawOriginal('gender') : '') == 'Men') value="Men">{{trans('admin.coaches.male')}}</option>
+            <option  @selected(old('gender', isset($training) ?  $training->getRawOriginal('gender') : '') == 'Women') value="Women">{{trans('admin.coaches.female')}}</option>
 
         </select>
         @error('gender')
@@ -129,10 +129,10 @@
         <label for="age_group"><span class="text-danger">*</span> {{trans('admin.training.age_group')}} </label>
         <select id="age_group" class="form-select" name="age_group">
             <option> {{trans('admin.training.select_gender')}} </option>
-            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
-            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Kids') value="Kids">{{trans('admin.training.kids')}}</option>
-            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Juniors') value="Juniors">{{trans('admin.training.juniors')}}</option>
-            <option  @selected(old('age_group', isset($training) ?  $training->age_group : '') == 'Adults') value="Adults">{{trans('admin.training.adults')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->getRawOriginal('age_group') : '') == 'All') value="All">{{trans('admin.training.all')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->getRawOriginal('age_group') : '') == 'Kids') value="Kids">{{trans('admin.training.kids')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->getRawOriginal('age_group') : '') == 'Juniors') value="Juniors">{{trans('admin.training.juniors')}}</option>
+            <option  @selected(old('age_group', isset($training) ?  $training->getRawOriginal('age_group') : '') == 'Adults') value="Adults">{{trans('admin.training.adults')}}</option>
 
         </select>
         @error('age_group')

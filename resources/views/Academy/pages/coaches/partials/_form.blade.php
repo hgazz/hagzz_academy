@@ -52,8 +52,8 @@
         <label for="gender">{{trans('admin.coaches.select_gender')}}   <span class="text-danger">*</span></label>
         <select class="form-select" name="gender" id="gender">
             <option value="">{{ trans('admin.coaches.select_gender') }}</option>
-            <option value="male" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'male')>{{ trans('admin.coaches.male') }}</option>
-            <option value="female" @selected(old('gender', isset($coach) ? $coach->gender : '') == 'female')>{{ trans('admin.coaches.female') }}</option>
+            <option value="male" @selected(old('gender', isset($coach) ? $coach->getRawOriginal('gender') : '') == 'male')>{{ trans('admin.coaches.male') }}</option>
+            <option value="female" @selected(old('gender', isset($coach) ? $coach->getRawOriginal('gender')  : '') == 'female')>{{ trans('admin.coaches.female') }}</option>
         </select>
         @error('gender')
         <span class="text-danger">{{$message}}</span>

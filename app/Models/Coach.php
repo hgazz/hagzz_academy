@@ -79,4 +79,9 @@ class Coach extends Model
     {
         return $this->belongsToMany(Sport::class, 'coach_sports');
     }
+
+    public function getGenderAttribute($value)
+    {
+        return $value ? trans('admin.coaches.male') : trans('admin.coaches.female');
+    }
 }
