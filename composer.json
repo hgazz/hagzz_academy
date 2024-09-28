@@ -18,6 +18,7 @@
         "php-flasher/flasher-pnotify-laravel": "^1.15",
         "spatie/laravel-translatable": "^6.5",
         "yajra/laravel-datatables": "^10.0",
+        "google/apiclient": "^2.17",
         "yajra/laravel-datatables-buttons": "^10.0",
         "yajra/laravel-datatables-oracle": "^10.3.1"
     },
@@ -60,7 +61,7 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        } 
+        }
     },
     "config": {
         "optimize-autoloader": true,

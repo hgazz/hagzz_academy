@@ -105,10 +105,16 @@ class ClassesController extends Controller
             //notifications to users
             if ($class->wasChanged('date')) {
                 $title = 'Session Rescheduled';
-                $body = 'The next session at ' . auth('academy')->user()->commercial_name. ' is rescheduled, please check the new dates';
+                $body = 'Your Next Session at' . auth('academy')->user()->commercial_name. ' is rescheduled, at ' . $class->date . ' please check the new timings.Apologies for the inconvenience';
                 $joins = Join::where('training_id', $class->training_id)->get();
-                $joins->map(function ($join) use ($title, $body, $details) {
-                    NotificationService::dbNotification($join->user_id,User::class, 1, $title, $body, auth('academy')->user()->image, $details);
+                $data = [
+                    'title' => $title,
+                    'body' => $body,
+                    'image' => auth('academy')->user()->image,
+                    'details' => $details
+                ];
+                $joins->map(function ($join) use ($data) {
+                    NotificationService::firebaseNotification($data, $join->user->fcm_token);
                 });
             }
 

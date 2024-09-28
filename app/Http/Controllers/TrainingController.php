@@ -93,7 +93,7 @@ class TrainingController extends Controller
                'sport_id' => $request->sport_id,
                'discount_price' => $request->discount_price
            ]));
-           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
+//           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
        });
        session()->flash('success',trans('admin.training.created_successfully'));
        return to_route('academy.training.index');
