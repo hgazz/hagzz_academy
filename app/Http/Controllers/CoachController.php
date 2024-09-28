@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\CoachDataTable;
-use App\Exports\Coaches;
+use App\Exports\CoachExport;
 use App\Http\Requests\Coach\CoachRequest;
 use App\Http\Traits\FileUpload;
 use App\Models\Coach;
@@ -146,6 +146,6 @@ class CoachController extends Controller
 
     public function export()
     {
-        return Excel::download(new Coach() , 'coaches.xlsx');
+        return Excel::download(new CoachExport() , 'coaches.xlsx');
     }
 }
