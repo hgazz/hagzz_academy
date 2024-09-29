@@ -137,7 +137,7 @@ class TrainingController extends Controller
                 //notifications to users
                 if ($originalStartDate != $training->start_date) {
                     $title = 'Booking Rescheduled';
-                    $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
+                    $body = 'Your booked with ' . $training->academy->getTranslation('commercial_name', 'en') . ' is rescheduled.please check the new dates';
                     $joins = Join::where('training_id', $training->id)->get();
                     $data = [
                         'title' => $title,
