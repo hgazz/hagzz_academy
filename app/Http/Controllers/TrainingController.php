@@ -139,8 +139,14 @@ class TrainingController extends Controller
                     $title = 'Booking Rescheduled';
                     $body = 'The Training you booked with ' . $training->academy->commercial_name . ' is rescheduled, please check the new dates';
                     $joins = Join::where('training_id', $training->id)->get();
-                    $joins->map(function ($join) use ($title, $body, $details) {
-                        NotificationService::dbNotification($join->user_id,User::class, 1, $title, $body, auth('academy')->user()->image, $details);
+                    $data = [
+                        'title' => $title,
+                        'body' => $body,
+                        'image' => auth('academy')->user()->image,
+                        'details' => $details
+                    ];
+                    $joins->map(function ($join) use ($data) {
+                        NotificationService::firebaseNotification($data,$join->user->fcm_token,);
                     });
 
                 }
