@@ -21,6 +21,7 @@ use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
+use Illuminate\Support\Facades\DB;
 
 class TrainingController extends Controller
 {
