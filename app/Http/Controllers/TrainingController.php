@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TrainingDataTable;
-use App\Exports\TrainingExport;
 use App\Exports\TrainingsExport;
 use App\Http\Requests\BookingRequest;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
-use App\Http\Traits\FileUpload;
 use App\Models\Academies;
 use App\Models\Address;
 use App\Models\Area;
@@ -19,16 +17,10 @@ use App\Models\Country;
 use App\Models\Follow;
 use App\Models\Invoice;
 use App\Models\Join;
-use App\Models\Notification;
-use App\Models\Sport;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 
 class TrainingController extends Controller
 {
@@ -75,7 +67,7 @@ class TrainingController extends Controller
     }
    public function store(TrainingRequest $request)
    {
-       DB::transaction(function() use ($request){
+       \DB::transaction(function() use ($request){
            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
           $training = $this->trainingModel->create(array_merge($translatable,[
                'start_date'=> $request->start_date,
@@ -143,7 +135,9 @@ class TrainingController extends Controller
                         'title' => $title,
                         'body' => $body,
                         'image' => auth('academy')->user()->image,
-                        'details' => $details
+                        'details' => $details,
+                        "id" => $training->id,
+                        'page' => 'details'
                     ];
                     $joins->map(function ($join) use ($data) {
                         NotificationService::firebaseNotification($data,$join->user->fcm_token,);
