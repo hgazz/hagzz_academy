@@ -37,6 +37,7 @@ class NotificationService
                 "data" => [
                     "id" => (string)$notificationData['id'], // Custom data
                     "page" => (string)$notificationData['page'], // Custom data
+                    "class" => (string)$notificationData['class_id'], // Custom data
                 ],
             ]
         ];
