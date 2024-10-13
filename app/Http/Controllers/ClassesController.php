@@ -113,7 +113,8 @@ class ClassesController extends Controller
                     'image' => auth('academy')->user()->image,
                     'details' => $details,
                     "id" => $class->training_id,
-                    'page' => 'details'
+                    'page' => 'class',
+                    'class_id' => $class->id
                 ];
                 $joins->map(function ($join) use ($data) {
                     NotificationService::firebaseNotification($data, $join->user->fcm_token);
