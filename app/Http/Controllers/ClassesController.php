@@ -113,7 +113,7 @@ class ClassesController extends Controller
                     'image' => auth('academy')->user()->image,
                     'details' => $details,
                     "id" => $class->training_id,
-                    'page' => 'class',
+                    'page' => 'details',
                     'class_id' => $class->id
                 ];
                 $joins->map(function ($join) use ($data) {
