@@ -1,3 +1,17 @@
+@push('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
+    </script>
+    <script src=https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
+    </script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet" type="text/css" />
+    <script src="colorpicker-master/jquery.colorpicker.js">
+    </script>
+    <link href="colorpicker-master/jquery.colorpicker.css"
+          rel="stylesheet" type="text/css" />
+@endpush
+
 @csrf
 <div class="row">
     @foreach (\App\Services\TranslatableService::getTranslatableInputs(App\Models\Training::class) as $name => $data)
@@ -30,17 +44,17 @@
         @endif
         @endforeach
     <div class="col-md-6 mb-3">
-        <label for="start_date">{{ trans('admin.training.start_date') }}  <span class="text-danger">*</span></label>
-        <input class="form-control" type="date" value="{{ old('start_date', (isset($training) ? $training->start_date : ''))}}" id="start_date" name="start_date">
-        @error('start_date')
+        <label for="start_date">{{ trans('admin.training.classes_start_time') }}  <span class="text-danger">*</span></label>
+        <input class="form-control" type="time" value="{{ old('start_time', (isset($training) ? $training->start_time : ''))}}" id="start_time" name="start_time">
+        @error('start_time')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
 
     <div class="col-md-6 mb-3">
-        <label for="end_date">{{ trans('admin.training.end_date') }}    <span class="text-danger">*</span></label>
-        <input class="form-control" type="date" value="{{ old('end_date', (isset($training) ? $training->end_date : ''))}}" id="end_date" name="end_date">
-        @error('end_date')
+        <label for="end_date">{{ trans('admin.training.classes_end_time') }}    <span class="text-danger">*</span></label>
+        <input class="form-control" type="time" value="{{ old('end_time', (isset($training) ? $training->end_time : ''))}}" id="end_time" name="end_time">
+        @error('end_time')
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
@@ -139,42 +153,81 @@
         <span class="text-danger">*{{$message}}</span>
         @enderror
     </div>
+        <div class="col-md-6 mb-3">
+            <label for="color">{{ trans('admin.training.color') }}</label>
+            <input class="form-control" type="color" value="{{ old('color', (isset($training) ? $training->color : '#fff'))}}" id="color" name="color">
+            @error('color')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="classes_number">{{ trans('admin.training.classes_number') }}</label>
+            <input class="form-control" type="number" value="{{ old('classes_number', (isset($training) ? $training->classes_number : ''))}}" id="classes_number" name="classes_number" min="1">
+            @error('classes_number')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
 
+        <div class="col-md-6 mb-3">
+            <label for="classes_days"><span class="text-danger">*</span> {{trans('admin.training.classes_days')}} </label>
+            <select id="classes_days" class="js-example-basic-multiple js-example-responsive form-select" name="classes_days[]" multiple data-selectable="" style="width: 100%">
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('saturday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'saturday') value="saturday">{{trans('admin.training.saturday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('sunday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'sunday') value="sunday">{{trans('admin.training.sunday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('monday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'monday') value="monday">{{trans('admin.training.monday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('tuesday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'tuesday') value="tuesday">{{trans('admin.training.tuesday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('wednesday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'wednesday') value="wednesday">{{trans('admin.training.wednesday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('thursday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'thursday') value="thursday">{{trans('admin.training.thursday')}}</option>
+                <option  @selected(old('classes_days[]', isset($training) && $training->getRawOriginal('classes_days') != null ?  in_array('friday',json_decode($training->getRawOriginal('classes_days'))) : '') == 'friday') value="friday">{{trans('admin.training.friday')}}</option>
+            </select>
+            @error('classes_days')
+            <span class="text-danger">*{{$message}}</span>
+            @enderror
+        </div>
 </div>
-
 <script>
-        let sports  = document.getElementById('sport_id');
-        let coachesSelect = document.getElementById('coaches');
-        const lang = "{{app()->getLocale()}}";
+    let sports  = document.getElementById('sport_id');
+    let coachesSelect = document.getElementById('coaches');
+    const lang = "{{app()->getLocale()}}";
 
-        document.addEventListener('DOMContentLoaded', function(){
-            let selectedValue = sports.value;
-            if (selectedValue !== ''){
-                fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
-                    .then(response => response.json())
-                    .then(data =>{
-                        coachesSelect.innerHTML = '';
-                        data.coaches.forEach(coach=>{
-                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
-                        })
+    document.addEventListener('DOMContentLoaded', function(){
+        let selectedValue = sports.value;
+        if (selectedValue !== ''){
+            fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
+                .then(response => response.json())
+                .then(data =>{
+                    coachesSelect.innerHTML = '';
+                    data.coaches.forEach(coach=>{
+                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
                     })
+                })
 
-            }
-        })
+        }
+    })
 
-        sports.addEventListener('change', function() {
-            let selectedValue = sports.value;
-            if (selectedValue !== ''){
-                fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
-                    .then(response => response.json())
-                    .then(data =>{
-                        coachesSelect.innerHTML = '';
-                        data.coaches.forEach(coach=>{
-                            coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
-                        })
+    sports.addEventListener('change', function() {
+        let selectedValue = sports.value;
+        if (selectedValue !== ''){
+            fetch(`/partner/training/getCoachesBySports/${selectedValue}`)
+                .then(response => response.json())
+                .then(data =>{
+                    coachesSelect.innerHTML = '';
+                    data.coaches.forEach(coach=>{
+                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
                     })
+                })
 
-            }
+        }
+    });
+</script>
+
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2({
+            placeholder: "{{trans('admin.training.select_days')}}",
+            width: 'resolve'
         });
-    </script>
-
+    });
+</script>
+@endpush

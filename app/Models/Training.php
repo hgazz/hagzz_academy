@@ -15,8 +15,6 @@ class Training extends Model
     protected $fillable = [
         'name',
         'price',
-        'start_date',
-        'end_date',
         'description',
         'max_players',
         'level',
@@ -27,7 +25,16 @@ class Training extends Model
         'academy_id',
         'active',
         'sport_id',
-        'discount_price'
+        'discount_price',
+        'start_time',
+        'end_time',
+        'classes_days',
+        'color',
+        'classes_number'
+    ];
+
+    protected $casts = [
+        'classes_days' => 'array',
     ];
 
     public $translatable = ['name','description'];
