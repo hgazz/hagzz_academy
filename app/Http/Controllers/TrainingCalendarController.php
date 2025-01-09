@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Training;
 use App\Services\Training\TrainingCalendar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class TrainingCalendarController extends Controller
     {
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
-        $events = array();
+        $events = [];
         $trainings = $this->calendarService->getMonthEvents($month, $year);
         foreach ($trainings as $training) {
             $events[] = [
@@ -31,6 +32,7 @@ class TrainingCalendarController extends Controller
                 'days' => $training['classes_days']
             ];
         }
+
         return view('Academy.pages.calander.index', compact('events'));
 
     }

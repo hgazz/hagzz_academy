@@ -4,7 +4,9 @@
 
 @push('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+{{--    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>--}}
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 @endpush
 
 
@@ -60,7 +62,28 @@
 
 
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.15/index.global.min.js"></script>
+{{--    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.15/index.global.min.js"></script>--}}
+{{--    <script>--}}
+{{--        document.addEventListener('DOMContentLoaded', function() {--}}
+{{--            var calendarEl = document.getElementById('calendar');--}}
+{{--            var events = @json($events); // Pass the events data to JavaScript--}}
+
+{{--            var calendar = new FullCalendar.Calendar(calendarEl, {--}}
+{{--                initialView: 'timeGridWeek',--}}
+{{--                headerToolbar: {--}}
+{{--                    left: 'prev,next today',--}}
+{{--                    center: 'title',--}}
+{{--                    right: 'dayGridMonth,timeGridWeek,timeGridDay'--}}
+{{--                },--}}
+{{--                events: events,--}}
+{{--                eventContent: function(arg) {--}}
+{{--                    return { html: arg.event.title };--}}
+{{--                }--}}
+{{--            });--}}
+
+{{--            calendar.render();--}}
+{{--        });--}}
+{{--    </script>--}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
