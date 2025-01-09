@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\TermsController;
+use App\Http\Controllers\TrainingCalendarController;
 use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -158,6 +159,8 @@ Route::group(
                 Route::get('coach/filter','coachFilter')->name('coach.filter');
                 Route::get('coach/export','coachExport')->name('coach.export');
             });
+
+        Route::get('/calendar', [TrainingCalendarController::class, 'index'])->name('calendar.index');
     });
 
 });

@@ -318,6 +318,7 @@ return [
         'kids' => 'الأطفال',
         'juniors' => 'الصغار',
         'adults' => 'الكبار',
+        'calendar' => 'اجنده',
         'status_inactive_successfully' => 'تم تغيير الحالة إلى غير نشط بنجاح',
         'status_active_successfully' => 'تم تغيير الحالة إلى نشط بنجاح',
         'InActive' => 'غير نشط',

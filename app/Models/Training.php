@@ -35,6 +35,10 @@ class Training extends Model
 
     protected $casts = [
         'classes_days' => 'array',
+        'start_time' => 'datetime:H:i:s',
+        'end_time' => 'datetime:H:i:s',
+        'created_at' => 'datetime',
+        'active' => 'boolean',
     ];
 
     public $translatable = ['name','description'];
