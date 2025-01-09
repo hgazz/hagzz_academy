@@ -33,16 +33,22 @@ class TrainingDataTable extends DataTable
             ->addColumn('action', function (Training $training) {
                 return view('Academy.pages.training.datatable.actions', compact('training'))->render();
             })
-            ->addColumn('classes', function (Training $training) {
-                return $training->classes->count();
+            ->editColumn('classes_days', function (Training $training) {
+                return ! is_null($training->classes_days ) ? $training->classes_days : null;
             })
+            ->editColumn('color', function (Training $training) {
+                return "<div style='background-color: $training->color; width: 20px; height: 20px; border-radius: 2px'></div>";
+            })
+//            ->addColumn('classes', function (Training $training) {
+//                return $training->classes->count();
+//            })
 //            ->addColumn('delete', function (Training $training) {
 //                return view('Academy.pages.training.datatable.checkbox', compact('training'));
 //            })
 //            ->addColumn('publish', function (Training $training) {
 //                return view('Academy.pages.training.datatable.publish', compact('training'));
 //            })
-            ->rawColumns(['action', 'coach_id', 'sport_id','image','class', 'active', 'classes',]);
+            ->rawColumns(['action', 'coach_id', 'sport_id','image','class', 'active', 'classes_days', 'color']);
 
     }
 
@@ -51,7 +57,7 @@ class TrainingDataTable extends DataTable
      */
     public function query(Training $model): QueryBuilder
     {
-        return $model->newQuery()->with(['coach', 'classes', 'sport'])->whereBelongsTo(auth('academy')->user(), 'academy');
+        return $model->newQuery()->with(['coach', 'sport'])->whereBelongsTo(auth('academy')->user(), 'academy');
     }
 
     /**
@@ -102,16 +108,19 @@ class TrainingDataTable extends DataTable
             ['name' => 'name', 'data' => 'name', 'title' => trans('admin.training.name')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
             ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.training.discount')],
-            ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
-            ['name' => 'end_date', 'data' => 'end_date', 'title' => trans('admin.training.end_date')],
+            ['name' => 'start_time', 'data' => 'start_time', 'title' => trans('admin.training.start_time')],
+            ['name' => 'end_time', 'data' => 'end_time', 'title' => trans('admin.training.end_time')],
             ['name' => 'sport.name', 'data' => 'sport_id', 'title' => trans('admin.sport.sport')],
             ['name' => 'coach.name', 'data' => 'coach_id', 'title' => trans('admin.training.coach')],
             ['name' => 'level', 'data' => 'level', 'title' => trans('admin.training.level')],
             ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.training.gender')],
             ['name' => 'age_group', 'data' => 'age_group', 'title' => trans('admin.training.age_group')],
+            ['name' => 'classes_number', 'data' => 'classes_number', 'title' => trans('admin.training.classes_number')],
+            ['name' => 'classes_days', 'data' => 'classes_days', 'title' => trans('admin.training.classes_days')],
+            ['name' => 'color', 'data' => 'color', 'title' => trans('admin.training.color')],
             ['name' => 'max_players', 'data' => 'max_players', 'title' => trans('admin.training.max_players')],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.training.Active')],
-            ['name' => 'classes', 'data' => 'classes', 'title' => trans('admin.training.class'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
+//            ['name' => 'classes', 'data' => 'classes', 'title' => trans('admin.training.class'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
             ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }

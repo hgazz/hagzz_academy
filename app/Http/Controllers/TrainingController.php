@@ -84,7 +84,10 @@ class TrainingController extends Controller
                'address_id' => $request->address_id,
                'academy_id' => auth()->id(),
                'sport_id' => $request->sport_id,
-               'discount_price' => $request->discount_price
+               'discount_price' => $request->discount_price,
+               'classes_days' => $request->classes_days,
+               'color' => $request->color,
+              'classes_number' => $request->classes_number
            ]));
 //           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
        });
@@ -120,6 +123,9 @@ class TrainingController extends Controller
                     'address_id' => $request->address_id,
                     'sport_id' => $request->sport_id,
                     'discount_price' => $request->discount_price,
+                    'classes_days' => $request->classes_days,
+               'color' => $request->color,
+              'classes_number' => $request->classes_number
                 ]));
                 $details = [
                     'training_id' => $training->id,

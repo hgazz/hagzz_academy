@@ -30,8 +30,8 @@ class TrainingRequest extends FormRequest
             'name_ar' => 'required|string|max:255',
             'description_en' => 'required|string|max:255',
             'description_ar' => 'required|string|max:255',
-            'start_date'=>'required|date|after_or_equal:'. now()->toDateString(),
-            'end_date'=>'required|date|after_or_equal:'. now()->toDateString(),
+            'start_time' => $this->checkStartTime(),
+            'end_time' => $this->checkEndTime(),
             'coach_id'=>'required|integer|exists:coaches,id',
             'price'=> 'required|integer|min:1',
             'gender' => 'required|in:All,Men,Women',
@@ -41,7 +41,18 @@ class TrainingRequest extends FormRequest
             'max_players' => 'required|integer',
             'sport_id' => 'required|exists:sports,id',
             'discount_price' => ['required','integer','min:0', new checkDiscountValue()],
+            'classes_days' => 'required|array',
         ];
 
+    }
+
+    public function checkStartTime()
+    {
+        return request()->isMethod('post') ? 'required|date_format:H:i' : 'required';
+    }
+
+    public function checkEndTime()
+    {
+        return request()->isMethod('post') ? 'required|date_format:H:i|after:start_time' : 'required';
     }
 }

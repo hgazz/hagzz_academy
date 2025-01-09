@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::table('classes', function (Blueprint $table) {
-//            $table->longText('title')->change();
-//        });
+        Schema::table('trainings', function (Blueprint $table) {
+            $table->dropColumn(['start_date', 'end_date']);
+        });
     }
 
     /**
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('classes', function (Blueprint $table) {
+        Schema::table('trainings', function (Blueprint $table) {
             //
         });
     }
