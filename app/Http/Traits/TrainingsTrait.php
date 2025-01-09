@@ -35,8 +35,8 @@ trait TrainingsTrait
             ->select('trainings.id')
             ->join('joins', 'trainings.id', '=', 'joins.training_id')
             ->where('trainings.academy_id', Auth::id())
-            ->where('trainings.start_date', '<=', now())
-            ->where('trainings.end_date', '>=', now())
+//            ->where('trainings.start_date', '<=', now())
+//            ->where('trainings.end_date', '>=', now())
             ->groupBy('trainings.id', 'trainings.max_players')
             ->havingRaw('COUNT(joins.id) = trainings.max_players')
             ->count();
@@ -46,7 +46,7 @@ trait TrainingsTrait
         return \DB::table('trainings')
             ->select('trainings.id')
             ->where('trainings.academy_id', Auth::id())
-            ->where('trainings.start_date', '>', Carbon::today())
+//            ->where('trainings.start_date', '>', Carbon::today())
             ->count();
     }
 }
