@@ -4,6 +4,9 @@
 
 
 @section('content')
+    @if($errors->any())
+        @dd($errors->all())
+    @endif
     <div class="middle-content container-xxl p-0">
 
         <!--  BEGIN BREADCRUMBS  -->
