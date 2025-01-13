@@ -70,7 +70,7 @@ class TrainingController extends Controller
    {
        \DB::transaction(function() use ($request){
            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
-          $training = $this->trainingModel->create(array_merge($translatable,[
+           $this->trainingModel->create(array_merge($translatable,[
                'start_date'=> $request->start_date,
                'end_date'=> $request->end_date,
                'start_time' => $request->start_time,
