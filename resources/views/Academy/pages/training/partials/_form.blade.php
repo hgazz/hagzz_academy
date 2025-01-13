@@ -44,6 +44,7 @@
         @endif
         @endforeach
     <div class="col-md-6 mb-3">
+        @dd($training)
         <label for="start_date">{{ trans('admin.training.classes_start_time') }}  <span class="text-danger">*</span></label>
         <input class="form-control" type="time" value="{{ old('start_time', (isset($training) ? $training->start_time : ''))}}" id="start_time" name="start_time">
         @error('start_time')
