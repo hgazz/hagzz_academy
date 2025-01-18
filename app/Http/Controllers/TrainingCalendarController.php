@@ -18,18 +18,25 @@ class TrainingCalendarController extends Controller
 
     public function index(Request $request)
     {
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
         $events = [];
-        $trainings = $this->calendarService->getMonthEvents($month, $year);
+        $trainings = Training::query()
+            ->whereNotNull('start_time')
+            ->whereNotNull('end_time')
+            ->whereNotNull('classes_days')
+            ->whereNull('deleted_at')
+            ->where([
+                ['active', 1],
+                ['academy_id', auth('academy')->id()]
+            ])
+            ->get();
         foreach ($trainings as $training) {
             $events[] = [
                 'id' => $training['id'],
                 'title' => $training['name'],
-                 'start' => $training['start_time'],
+                'start' => $training['start_time'],
                 'end' => $training['end_time'],
                 'color' => $training['color'],
-                'days' => $training['classes_days']
+                'days' => $training['classes_days'],
             ];
         }
 
