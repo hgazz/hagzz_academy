@@ -82,6 +82,6 @@ class Coach extends Model
 
     public function getGenderAttribute($value)
     {
-        return $value ? trans('admin.coaches.male') : trans('admin.coaches.female');
+        return $value == 'male' ? trans('admin.coaches.male') : trans('admin.coaches.female');
     }
 }
