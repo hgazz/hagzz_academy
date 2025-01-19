@@ -442,6 +442,8 @@ return [
         'female' => 'Female',
         'select_gender' => 'Select Gender',
         'show_details' => 'Show Details',
+        'main_details' => 'Main Details',
+        'user_details' => 'User Details'
     ],
     'total_amount'=>'Total Amount',
     'settlement_date'=>'Settlement Date',

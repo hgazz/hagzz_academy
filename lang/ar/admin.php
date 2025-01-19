@@ -440,6 +440,8 @@ return [
         'female' => 'أنثى',
         'select_gender' => 'اختر الجنس',
         'show_details' => 'عرض التفاصيل',
+        'main_details' => 'تفاصيل التدريب',
+        'user_details' => 'تفاصيل المدرس',
     ],
     'total_amount' => 'إجمالي المبلغ',
     'settlement_date' => 'تاريخ التسوية',
