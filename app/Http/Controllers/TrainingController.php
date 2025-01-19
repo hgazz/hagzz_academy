@@ -21,6 +21,7 @@ use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TrainingController extends Controller
@@ -41,7 +42,7 @@ class TrainingController extends Controller
    public function create()
    {
        $sports = auth('academy')->user()->sports;
-       $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get(['id','name']);
+       $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get();
        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
         return view('Academy.pages.training.create',compact('academyCoaches', 'addresses', 'sports'));
    }
@@ -192,10 +193,11 @@ class TrainingController extends Controller
        ]]);
     }
 
-    public function createBooking(Training $training)
+    public function createBooking()
     {
         $countries = Country::get(['id','name']);
-        return view('Academy.pages.training.create_booking', get_defined_vars());
+        $data = $this->trainingModel::where('academy_id', auth('academy')->id())->get();
+        return view('Academy.pages.training.create_booking', compact('countries', 'data'));
     }
     public function getAreaByCity(Request $request)
     {
@@ -221,8 +223,20 @@ class TrainingController extends Controller
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
                 'area_id' => $request->area_id,
-                'user_type'=> 'partner',
-                'birth_date'=>$request->birth_date,
+                'user_type'=> 'system',
+                'birth_date'=> $request->birth_date,
+                'email' => $request->email,
+                'child_type' => $request->child_type,
+                'school_name' => $request->school_name,
+                'parent_name' => $request->parent_name,
+                'parent_phone' => $request->parent_phone,
+                'coach_preference' =>  $request->coach_preference,
+                'frequent_attendance' => $request->frequent_attendance,
+                'relation_with_child' => $request->relation_with_child,
+                'referral_source' => $request->referral_source,
+                'medical_condition' => $request->medical_condition,
+                'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
+                'additional_information' => $request->has('additional_information') ? $request->additional_information : null
             ]);
             $booking = Invoice::create([
                 'user_id' => $user->id,
@@ -240,7 +254,7 @@ class TrainingController extends Controller
             ]);
             DB::commit();
             session()->flash('success', __('admin.training.Booking created successfully'));
-            return to_route('academy.training.index');
+            return back();
         }catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }

@@ -123,13 +123,14 @@ Route::group(
             Route::put('active/{training}','updateActive')->name('training.updateActive');
             Route::get('training/export','export')->name('training.export');
             Route::get('training/getCoachesBySports/{id}','getCoachesBySports');
-            Route::get('training/createBooking/{training}','createBooking')->name('training.createBooking');
             Route::post('trainings/areas','getAreaByCity')->name('training.getAreaByCity');
             Route::post('trainings/cities','getCityByCountry')->name('training.getCities');
-            Route::post('trainings/booking','storeBooking')->name('training.storeBooking');
             Route::delete('training/bulk','bulkDelete')->name('training.bulkDelete');
             Route::post('trainings/publish','publish')->name('training.publish');
         });
+
+        Route::get('training/createBooking',[TrainingController::class, 'createBooking'])->name('createBooking');
+        Route::post('trainings/booking',[TrainingController::class, 'storeBooking'])->name('storeBooking');
         Route::controller(BookingController::class)->group(function (){
             Route::get('booking/show/{id}','show')->name('booking.show');
         });

@@ -41,7 +41,7 @@ class Training extends Model
         'active' => 'boolean',
     ];
 
-    public $translatable = ['name','description'];
+    public array $translatable = ['name','description'];
 
     public static $translatableColumns = [
         'name'=>[
