@@ -215,29 +215,33 @@ class TrainingController extends Controller
         try {
             $training = $this->trainingModel->findOrFail($request->training_id);
             DB::beginTransaction();
-            $user = User::create([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'gender' => $request->gender,
-                'country_code' => $request->country_code,
-                'country_id' => $request->country_id,
-                'city_id' => $request->city_id,
-                'area_id' => $request->area_id,
-                'user_type'=> 'system',
-                'birth_date'=> $request->birth_date,
-                'email' => $request->email,
-                'child_type' => $request->child_type,
-                'school_name' => $request->school_name,
-                'parent_name' => $request->parent_name,
-                'parent_phone' => $request->parent_phone,
-                'coach_preference' =>  $request->coach_preference,
-                'frequent_attendance' => $request->frequent_attendance,
-                'relation_with_child' => $request->relation_with_child,
-                'referral_source' => $request->referral_source,
-                'medical_condition' => $request->medical_condition,
-                'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
-                'additional_information' => $request->has('additional_information') ? $request->additional_information : null
-            ]);
+            $user = User::updateOrCreate(
+                // Attributes to search for an existing user
+                ['phone' => $request->phone],
+                // Data to update or create
+                [
+                    'name' => $request->name,
+                    'gender' => $request->gender,
+                    'country_code' => $request->country_code,
+                    'country_id' => $request->country_id,
+                    'city_id' => $request->city_id,
+                    'area_id' => $request->area_id,
+                    'user_type'=> 'system',
+                    'birth_date'=> $request->birth_date,
+                    'email' => $request->email,
+                    'child_type' => $request->child_type,
+                    'school_name' => $request->school_name,
+                    'parent_name' => $request->parent_name,
+                    'parent_phone' => $request->parent_phone,
+                    'coach_preference' =>  $request->coach_preference,
+                    'frequent_attendance' => $request->frequent_attendance,
+                    'relation_with_child' => $request->relation_with_child,
+                    'referral_source' => $request->referral_source,
+                    'medical_condition' => $request->medical_condition,
+                    'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
+                    'additional_information' => $request->has('additional_information') ? $request->additional_information : null
+                ]
+            );
             $booking = Invoice::create([
                 'user_id' => $user->id,
                 'training_id' => $request->training_id,
