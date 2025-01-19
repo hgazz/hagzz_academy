@@ -84,59 +84,128 @@
 {{--            calendar.render();--}}
 {{--        });--}}
 {{--    </script>--}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var allEvents = @json($events);
+{{--    <script>--}}
+{{--        document.addEventListener('DOMContentLoaded', function () {--}}
+{{--            var calendarEl = document.getElementById('calendar');--}}
+{{--            var allEvents = @json($events);--}}
 
-            // تحويل أسماء الأيام إلى أرقام الأيام في الأسبوع
-            function getDayIndex(dayName) {
-                var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                return days.indexOf(dayName.toLowerCase());
-            }
+{{--            // تحويل أسماء الأيام إلى أرقام الأيام في الأسبوع--}}
+{{--            function getDayIndex(dayName) {--}}
+{{--                var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];--}}
+{{--                return days.indexOf(dayName.toLowerCase());--}}
+{{--            }--}}
 
-            // إنشاء أحداث لكل يوم في classes_days
-            function createEventsForDays(events) {
-                var eventSources = [];
-                events.forEach(function (event) {
-                    event.days.forEach(function (day) {
-                        var dayIndex = getDayIndex(day);
-                        if (dayIndex !== -1) {
-                            var newEvent = Object.assign({}, event);
-                            newEvent.daysOfWeek = [dayIndex]; // تعيين يوم الأسبوع لتكرار الحدث
-                            newEvent.startTime = event.start.split('T')[1]; // تعيين وقت البداية
-                            newEvent.endTime = event.end.split('T')[1]; // تعيين وقت النهاية
-                            newEvent.background= event.color;
-                            eventSources.push(newEvent);
-                        }
-                    });
+{{--            // إنشاء أحداث لكل يوم في classes_days--}}
+{{--            function createEventsForDays(events) {--}}
+{{--                var eventSources = [];--}}
+{{--                events.forEach(function (event) {--}}
+{{--                    event.days.forEach(function (day) {--}}
+{{--                        var dayIndex = getDayIndex(day);--}}
+{{--                        if (dayIndex !== -1) {--}}
+{{--                            var newEvent = Object.assign({}, event);--}}
+{{--                            newEvent.daysOfWeek = [dayIndex]; // تعيين يوم الأسبوع لتكرار الحدث--}}
+{{--                            newEvent.startTime = event.start.split('T')[1]; // تعيين وقت البداية--}}
+{{--                            newEvent.endTime = event.end.split('T')[1]; // تعيين وقت النهاية--}}
+{{--                            newEvent.background= event.color;--}}
+{{--                            eventSources.push(newEvent);--}}
+{{--                        }--}}
+{{--                    });--}}
+{{--                });--}}
+{{--                return eventSources;--}}
+{{--            }--}}
+
+{{--            // إنشاء أحداث لكل يوم في classes_days--}}
+{{--            var eventSources = createEventsForDays(allEvents);--}}
+
+{{--            // تهيئة FullCalendar باستخدام مصادر الأحداث--}}
+{{--            var calendar = new FullCalendar.Calendar(calendarEl, {--}}
+{{--                initialView: 'dayGridMonth',--}}
+{{--                events: eventSources,--}}
+{{--                eventTimeFormat: { // تنسيق الوقت لعرض وقت البداية والنهاية--}}
+{{--                    hour: '2-digit',--}}
+{{--                    minute: '2-digit',--}}
+{{--                    meridiem: true--}}
+{{--                },--}}
+{{--                eventBackgroundColor: function(info) {--}}
+{{--                    return info.event.extendedProps.color;--}}
+{{--                },--}}
+{{--                eventColor: function(info) {--}}
+{{--                    return info.event.extendedProps.color;--}}
+{{--                }--}}
+{{--            });--}}
+
+{{--            // عرض التقويم--}}
+{{--            calendar.render();--}}
+{{--        });--}}
+{{--    </script>--}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var allEvents = @json($events);
+
+        // تحويل أسماء الأيام إلى أرقام الأيام في الأسبوع
+        function getDayIndex(dayName) {
+            var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            return days.indexOf(dayName.toLowerCase());
+        }
+
+        // إنشاء أحداث لكل يوم في classes_days
+        function createEventsForDays(events) {
+            var eventSources = [];
+            events.forEach(function (event) {
+                event.days.forEach(function (day) {
+                    var dayIndex = getDayIndex(day);
+                    if (dayIndex !== -1) {
+                        var newEvent = Object.assign({}, event);
+                        newEvent.daysOfWeek = [dayIndex]; // تعيين يوم الأسبوع لتكرار الحدث
+                        newEvent.startTime = event.start.split('T')[1]; // تعيين وقت البداية
+                        newEvent.endTime = event.end.split('T')[1]; // تعيين وقت النهاية
+                        newEvent.background = event.color; // تعيين اللون الخلفي
+                        eventSources.push(newEvent);
+                    }
                 });
-                return eventSources;
-            }
-
-            // إنشاء أحداث لكل يوم في classes_days
-            var eventSources = createEventsForDays(allEvents);
-
-            // تهيئة FullCalendar باستخدام مصادر الأحداث
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: eventSources,
-                eventTimeFormat: { // تنسيق الوقت لعرض وقت البداية والنهاية
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    meridiem: true
-                },
-                eventBackgroundColor: function(info) {
-                    return info.event.extendedProps.color;
-                },
-                eventColor: function(info) {
-                    return info.event.extendedProps.color;
-                }
             });
+            return eventSources;
+        }
 
-            // عرض التقويم
-            calendar.render();
+        // إنشاء أحداث لكل يوم في classes_days
+        var eventSources = createEventsForDays(allEvents);
+
+        // تهيئة FullCalendar باستخدام مصادر الأحداث
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: eventSources,
+            eventTimeFormat: { // تنسيق الوقت لعرض وقت البداية والنهاية
+                hour: '2-digit',
+                minute: '2-digit',
+                meridiem: true
+            },
+            eventBackgroundColor: function(info) {
+                return info.event.extendedProps.color;
+            },
+            eventColor: function(info) {
+                return info.event.extendedProps.color;
+            },
+            eventContent: function(arg) {
+                // Customizing the event title with background color
+                var title = arg.event.title;
+                var startTime = arg.event.start;
+                var backgroundColor = arg.event.extendedProps.background || '#ffffff'; // Set default background color if not provided
+
+                // Format the start time to only show hours and minutes in 2-digit format
+                var hours = startTime.getHours().toString().padStart(2, '0');  // Ensure 2-digit hours
+                var minutes = startTime.getMinutes().toString().padStart(2, '0');  // Ensure 2-digit minutes
+                var formattedTime = hours + ':' + minutes;  // Combine hours and minutes
+
+                return {
+                    html: '<div style="background-color: ' + backgroundColor + '; padding: 5px; border-radius: 5px; color: white;">' + title + ' ' + formattedTime + '</div>'
+                };
+            }
         });
-    </script>
+
+        // عرض التقويم
+        calendar.render();
+    });
+</script>
 @endpush
 
