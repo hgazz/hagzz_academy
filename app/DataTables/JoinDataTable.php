@@ -57,6 +57,7 @@ class JoinDataTable extends DataTable
             ->addColumn('price', fn($join) => $join?->training?->price)
             ->addColumn('training.created_at', fn($join) => Carbon::parse($join->training->created_at)->format('Y-m-d H:i:s'))
             ->addColumn('discount_price', fn($join) => $join?->training?->discount_price)
+            ->addColumn('actions', fn($join)=> view('Academy.pages.joins.datatables.action', compact('join')))
             ->rawColumns([
                 'training',
                 'partner_name',
@@ -71,7 +72,8 @@ class JoinDataTable extends DataTable
                 'max_player',
                 'price',
                 'discount_price',
-                'training.created_at'
+                'training.created_at',
+                'actions'
             ]);
     }
 
@@ -156,7 +158,8 @@ class JoinDataTable extends DataTable
             ['name' => 'max_player', 'data' => 'max_player', 'title' => trans('admin.training.max_players')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
             ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.discount_price')],
-            ['name' => 'training.created_at', 'data' => 'training.created_at', 'title' => trans('admin.notifications.created_at'), 'searchable' => false]
+            ['name' => 'training.created_at', 'data' => 'training.created_at', 'title' => trans('admin.notifications.created_at'), 'searchable' => false],
+            ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'searchable' => false]
         ];
     }
 
