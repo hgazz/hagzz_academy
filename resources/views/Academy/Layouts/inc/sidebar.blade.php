@@ -112,18 +112,6 @@
                             </div>
                         </a>
                     </li>
-                    <li class="menu {{ Request::routeIs('academy.createBooking')  ? 'active' : '' }}">
-                        <a href="{{ route('academy.createBooking') }}" aria-expanded="false" class="dropdown-toggle">
-                            <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                                    <path
-                                        d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z" />
-                                </svg>
-                                <span>{{ trans('admin.add_booking') }}</span>
-                            </div>
-                        </a>
-                    </li>
 
 {{--                    <li class="menu {{ Request::routeIs('academy.class.*') ? 'active' : '' }}">--}}
 {{--                        <a href="{{ route('academy.class.index') }}" aria-expanded="false" class="dropdown-toggle">--}}
@@ -145,7 +133,18 @@
 
                 </ul>
             </li>
-
+            <li class="menu {{ Request::routeIs('academy.createBooking')  ? 'active' : '' }}">
+                <a href="{{ route('academy.createBooking') }}" aria-expanded="false" class="dropdown-toggle">
+                    <div class="">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z" />
+                        </svg>
+                        <span>{{ trans('admin.add_booking') }}</span>
+                    </div>
+                </a>
+            </li>
 
             <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}">
                 <a href="{{ route('academy.coach') }}" aria-expanded="{{ Request::routeIs('academy.coach.*')  ? 'true' : 'false' }}" class="dropdown-toggle">
