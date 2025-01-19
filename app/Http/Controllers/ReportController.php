@@ -142,4 +142,9 @@ class ReportController extends Controller
         return Excel::download(new CoachExport(), 'coaches.xlsx');
     }
 
+    public function viewBookingDetails(Join $join)
+    {
+        return view('Academy.pages.joins.details', compact('join'));
+    }
+
 }

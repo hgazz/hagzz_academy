@@ -154,6 +154,7 @@ Route::group(
                 Route::get('transaction','transaction')->name('transaction.index');
                 Route::get('bookings/export','bookingExport')->name('booking.export');
                 Route::get('joins','joins')->name('joins');
+                Route::get('joins/{join}','viewBookingDetails')->name('view-booking-details');
                 Route::get('joins/filter','joinFilter')->name('join.filter');
                 Route::get('joins/export','joinExport')->name('join.export');
                 Route::get('coach','coach')->name('coach');
