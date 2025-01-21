@@ -22,7 +22,7 @@ class BookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'training_id' => 'required|exists:trainings,id',
+           'training_id' => 'required|exists:trainings,id',
             'price' =>'required|numeric|min:1',
             'name' =>'required|string',
             'country_code' =>'required|regex:/^\+?[0-9]+$/',
@@ -44,7 +44,9 @@ class BookingRequest extends FormRequest
             'medical_condition' => 'required|in:yes,no',
             'medical_condition_details' => 'required_if:medical_condition,yes',
             'additional_information' => 'nullable',
-            'delivery_service' => 'required|in:yes,no'
+            'delivery_service' => 'required|in:yes,no',
+            'club_member' => 'required|in:yes,no',
+
         ];
     }
 }
