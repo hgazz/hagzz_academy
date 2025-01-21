@@ -43,7 +43,8 @@ class BookingRequest extends FormRequest
             'referral_source' => 'required|in:friends,facebook,hagzz_app',
             'medical_condition' => 'required|in:yes,no',
             'medical_condition_details' => 'required_if:medical_condition,yes',
-            'additional_information' => 'nullable'
+            'additional_information' => 'nullable',
+            'delivery_service' => 'required|in:yes,no'
         ];
     }
 }

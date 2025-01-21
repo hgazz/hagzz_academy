@@ -237,6 +237,7 @@ class TrainingController extends Controller
                     'frequent_attendance' => $request->frequent_attendance,
                     'relation_with_child' => $request->relation_with_child,
                     'referral_source' => $request->referral_source,
+                    'delivery_service' => $request->delivery_service,
                     'medical_condition' => $request->medical_condition,
                     'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
                     'additional_information' => $request->has('additional_information') ? $request->additional_information : null

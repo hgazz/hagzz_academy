@@ -44,7 +44,8 @@ class User extends Authenticatable
         'referral_source',
         'medical_condition',
         'medical_condition_details',
-        'additional_information'
+        'additional_information',
+        'delivery_service'
     ];
 
     /**

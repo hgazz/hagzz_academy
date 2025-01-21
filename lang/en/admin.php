@@ -443,7 +443,8 @@ return [
         'select_gender' => 'Select Gender',
         'show_details' => 'Show Details',
         'main_details' => 'Main Details',
-        'user_details' => 'User Details'
+        'user_details' => 'User Details',
+        'delivery_service' => 'Delivery Service',
     ],
     'total_amount'=>'Total Amount',
     'settlement_date'=>'Settlement Date',

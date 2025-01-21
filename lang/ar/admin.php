@@ -167,7 +167,8 @@ return [
         'no' => 'لا',
         'medical_condition' => 'برجاء اضافه التفاصيل',
         'additional_information' => 'معلومات إضافية',
-        'select_training' => 'حدد التدريب'
+        'select_training' => 'حدد التدريب',
+        'delivery_service' => 'هل  تحتاج الي خدمه توصيل'
     ],
     'banners' => [
         'banners' => 'اللافتات',

@@ -248,6 +248,17 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-12 mb-3">
+                                    <label for="delivery_service">{{trans('admin.academies.delivery_service')}}<code>*</code></label>
+                                    <select class="form-select" id="delivery_service" name="delivery_service" required>
+                                        <option value="">{{ trans('admin.academies.delivery_service') }}</option>
+                                        <option value="yes" @selected(old('delivery_service') == 'yes')>{{ trans('admin.academies.yes') }}</option>
+                                        <option value="no" @selected(old('delivery_service') == 'no')>{{ trans('admin.academies.no') }}</option>
+                                    </select>
+                                    @error('delivery_service')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-12 mb-3">
                                     <label for="how_did_you_hear_about_us">{{trans('admin.academies.how_did_you_hear_about_us')}}<code>*</code></label>
                                     <select class="form-select" id="how_did_you_hear_about_us" name="referral_source" required>
                                         <option value="">{{ trans('admin.academies.how_did_you_hear_about_us') }}</option>
