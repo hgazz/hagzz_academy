@@ -168,7 +168,8 @@ return [
         'medical_condition' => 'برجاء اضافه التفاصيل',
         'additional_information' => 'معلومات إضافية',
         'select_training' => 'حدد التدريب',
-        'delivery_service' => 'هل  تحتاج الي خدمه توصيل'
+        'delivery_service' => 'هل  تحتاج الي خدمه توصيل',
+        'facebook' => 'فيسبوك'
     ],
     'banners' => [
         'banners' => 'اللافتات',

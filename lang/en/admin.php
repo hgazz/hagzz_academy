@@ -445,6 +445,7 @@ return [
         'main_details' => 'Main Details',
         'user_details' => 'User Details',
         'delivery_service' => 'Delivery Service',
+        'facebook' => 'Facebook'
     ],
     'total_amount'=>'Total Amount',
     'settlement_date'=>'Settlement Date',
