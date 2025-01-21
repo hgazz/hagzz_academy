@@ -217,9 +217,7 @@ class TrainingController extends Controller
             $training = $this->trainingModel->findOrFail($request->training_id);
             DB::beginTransaction();
             $user = User::updateOrCreate(
-                // Attributes to search for an existing user
                 ['phone' => $request->phone],
-                // Data to update or create
                 [
                     'name' => $request->name,
                     'gender' => $request->gender,
@@ -243,8 +241,7 @@ class TrainingController extends Controller
                     'medical_condition' => $request->medical_condition,
                     'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
                     'additional_information' => $request->has('additional_information') ? $request->additional_information : null
-                ]
-            );
+                ]);
             $booking = Invoice::create([
                 'user_id' => $user->id,
                 'training_id' => $request->training_id,

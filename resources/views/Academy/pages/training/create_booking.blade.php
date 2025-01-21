@@ -201,7 +201,7 @@
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-                                <div class="col-md-12 mb-4">
+                                <div class="col-md-6 mb-4">
                                     <label for="club_member" class="form-label">
                                         {{ trans('admin.academies.club_member') }} <code>*</code>
                                     </label>
@@ -260,7 +260,7 @@
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="delivery_service">{{trans('admin.academies.delivery_service')}}<code>*</code></label>
                                     <select class="form-select" id="delivery_service" name="delivery_service" required>
                                         <option value="">{{ trans('admin.academies.delivery_service') }}</option>
@@ -271,7 +271,7 @@
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="how_did_you_hear_about_us">{{trans('admin.academies.how_did_you_hear_about_us')}}<code>*</code></label>
                                     <select class="form-select" id="how_did_you_hear_about_us" name="referral_source" required>
                                         <option value="">{{ trans('admin.academies.how_did_you_hear_about_us') }}</option>
@@ -283,7 +283,7 @@
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-                                <div class="col-md-12 mb-4">
+                                <div class="col-md-6 mb-4">
                                     <label for="medical_condition" class="form-label">
                                         {{ trans('admin.academies.did_you_have_medical_conditions') }} <code>*</code>
                                     </label>
@@ -295,21 +295,19 @@
                                     @error('medical_condition')
                                     <span class="text-danger d-block mt-2">{{ $message }}</span>
                                     @enderror
-                                    <div class="col-md-6 mb-2">
+                                    <div class="col-md-6 mb-2 mt-2">
                                         <input type="text" id="medical_condition_txt" class="form-control ms-2 d-none"
                                                value="{{ old('medical_condition_details') }}"
                                                name="medical_condition_details"
                                                placeholder="{{ trans('admin.academies.medical_condition') }}">
                                         @error('medical_condition_details')
-                                        <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                            <span class="text-danger d-block mt-1">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="additional_information">{{trans('admin.academies.additional_information')}} <code>*</code></label>
-                                    <textarea name="additional_information" class="form-control" id="additional_information" cols="20" rows="5">
-            {{ old('additional_information') }}
-        </textarea>
+                                    <textarea name="additional_information" class="form-control" id="additional_information" cols="20" rows="5">{{ old('additional_information') }}</textarea>
                                     @error('additional_information')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
