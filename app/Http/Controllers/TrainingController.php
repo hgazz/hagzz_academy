@@ -69,6 +69,7 @@ class TrainingController extends Controller
     }
    public function store(TrainingRequest $request)
    {
+
        \DB::transaction(function() use ($request){
            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
            $this->trainingModel->create(array_merge($translatable,[
@@ -228,6 +229,7 @@ class TrainingController extends Controller
                     'area_id' => $request->area_id,
                     'user_type'=> 'system',
                     'birth_date'=> $request->birth_date,
+                    'club_member' => $request->club_member,
                     'email' => $request->email,
                     'child_type' => $request->child_type,
                     'school_name' => $request->school_name,
