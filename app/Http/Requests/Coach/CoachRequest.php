@@ -36,6 +36,7 @@ class CoachRequest extends FormRequest
             'image' => $this->checkImage(),
             'birth_date' => 'required|date|before:' . Carbon::now()->subYears(10)->format('Y-m-d'),
             'gender' => 'required|in:male,female',
+            'sport_id' => 'required|exists:sports,id'
         ];
     }
 

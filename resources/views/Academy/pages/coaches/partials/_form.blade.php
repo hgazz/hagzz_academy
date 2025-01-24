@@ -71,7 +71,7 @@
     </div>
     <div class="col-md-6 mb-3">
         <label for="sports">{{trans('admin.coaches.select_sport')}}   <span class="text-danger">*</span></label>
-        <select class="js-example-basic-multiple form-select" name="sport_id[]" multiple id="sports">
+        <select class="js-example-basic-multiple form-select" name="sport_id[]" multiple id="sports" required>
             @foreach($sports as $sport)
                 <option value="{{$sport->id}}" @selected(in_array($sport->id, old('sport_id', isset($coach) ? $coach->sports()->pluck('sport_id')->toArray() : [])))>{{$sport->name}}</option>
             @endforeach
