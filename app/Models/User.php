@@ -45,7 +45,9 @@ class User extends Authenticatable
         'medical_condition',
         'medical_condition_details',
         'additional_information',
-        'delivery_service'
+        'delivery_service',
+        'club_member',
+        'start_date'
     ];
 
     /**

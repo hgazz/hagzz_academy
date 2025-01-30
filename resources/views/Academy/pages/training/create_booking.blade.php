@@ -306,6 +306,17 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3">
+                                    <label for="start_date">{{ trans('admin.academies.Start Date') }} <code>*</code></label>
+                                    <input type="date" name="start_date" class="form-control"
+                                           value="{{ old('start_date') }}"
+                                           id="start_date"
+                                           min="{{ now()->toDateString() }}"
+                                           placeholder="{{ trans('admin.academies.Start Date') }}" required>
+                                    @error('start_date')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-12 mb-3">
                                     <label for="additional_information">{{trans('admin.academies.additional_information')}} <code>*</code></label>
                                     <textarea name="additional_information" class="form-control" id="additional_information" cols="20" rows="5">{{ old('additional_information') }}</textarea>
                                     @error('additional_information')

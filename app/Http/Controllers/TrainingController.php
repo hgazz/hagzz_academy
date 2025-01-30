@@ -239,6 +239,7 @@ class TrainingController extends Controller
                     'referral_source' => $request->referral_source,
                     'delivery_service' => $request->delivery_service,
                     'medical_condition' => $request->medical_condition,
+                    'start_date' => $request->start_date,
                     'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
                     'additional_information' => $request->has('additional_information') ? $request->additional_information : null
                 ]);
