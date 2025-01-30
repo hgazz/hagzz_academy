@@ -6,6 +6,7 @@ use App\DataTables\CoachDataTable;
 use App\DataTables\InvoiceDataTable;
 use App\DataTables\JoinDataTable;
 use App\DataTables\SettlementDataTable;
+use App\Exports\BookingOfflineExport;
 use App\Exports\CoachExport;
 use App\Exports\InvoiceExport;
 use App\Exports\JoinExport;
@@ -145,6 +146,11 @@ class ReportController extends Controller
     public function viewBookingDetails(Join $join)
     {
         return view('Academy.pages.joins.details', compact('join'));
+    }
+
+    public function exportBookingFile($join)
+    {
+        return  Excel::download(new BookingOfflineExport($join), 'booking.xlsx');
     }
 
 }

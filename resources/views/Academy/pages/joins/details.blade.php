@@ -41,7 +41,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="simple-tab">
-
+                                    <a href="{{ route('academy.report.export-booking-file', $join) }}" class="btn btn-success mt-1 mb-1">{{ trans('admin.export') }}</a>
                                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <button class="nav-link active" id="home-tab-icon" data-bs-toggle="tab" data-bs-target="#home-tab-icon-pane" type="button" role="tab" aria-controls="home-tab-icon-pane" aria-selected="true">
@@ -317,6 +317,26 @@
                                                                 @if($join->user->getRawOriginal('medical_condition') == 'yes')
                                                                     <p class="card-text text-dark fw-bold">{{$join->user->medical_condition_details}}</p>
                                                                 @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt-2">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <h5 class="card-title">{{ trans('admin.academies.delivery_service') }}</h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="card-text text-dark fw-bold">{{$join->user->delivery_service ?? 'N/A'}}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt-2">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <h5 class="card-title">{{ trans('admin.academies.Start Date') }}</h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="card-text text-dark fw-bold">{{$join->user->start_date ?? 'N/A'}}</p>
                                                             </div>
                                                         </div>
                                                     </div>
