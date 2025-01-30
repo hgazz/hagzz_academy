@@ -27,8 +27,8 @@ class AddressRequest extends FormRequest
         return [
             'city_id'=>'required|exists:cities,id',
             'area_id'=>'required|exists:areas,id',
-            'longitude'=>'required|string',
-            'latitude'=>'required|string',
+            'longitude'=>'nullable|string',
+            'latitude'=>'nullable|string',
             'address_en' => 'required|string|regex:/^[a-zA-Z\s 0-9 ]*$/',
             'address_ar' => 'required|string',
             'country_id'=>'required|exists:countries,id',
