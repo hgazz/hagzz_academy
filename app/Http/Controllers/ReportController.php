@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\CoachDataTable;
 use App\DataTables\InvoiceDataTable;
 use App\DataTables\JoinDataTable;
+use App\DataTables\OfflineJoinDataTable;
 use App\DataTables\SettlementDataTable;
 use App\Exports\BookingOfflineExport;
 use App\Exports\CoachExport;
@@ -86,6 +87,11 @@ class ReportController extends Controller
         return $dataTable->render('Academy.pages.joins.index');
     }
 
+    public function offlineJoins(OfflineJoinDataTable $dataTable)
+    {
+        return $dataTable->render('Academy.pages.joinsOffline.index');
+    }
+
     public function joinFilter(Request $request , JoinDataTable $dataTable)
     {
         if ($request->has('start_date') && $request->has('end_date')) {
@@ -108,12 +114,30 @@ class ReportController extends Controller
         return $dataTable->render('Academy.pages.joins.index');
     }
 
+    public function offlineJoinFilter(Request $request , OfflineJoinDataTable $dataTable)
+    {
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+
+            $joins = Join::whereBetween('created_at', [$startDate, $endDate]);
+
+            $joinsData = $joins->get();
+
+            session(['joinsData' => $joinsData]);
+            return $dataTable->with('query', $joins)->render('Academy.pages.joinsOffline.index');
+        }
+
+        return $dataTable->render('Academy.pages.joinsOffline.index');
+    }
+
     public function joinExport()
     {
 
 
         return Excel::download(new JoinExport(), 'booking.xlsx');
     }
+
 
     public function coach(CoachDataTable $dataTable)
     {

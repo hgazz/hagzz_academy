@@ -226,6 +226,7 @@ return [
         'sister' => 'Sister',
         'guardian' => 'Guardian',
         'how_did_you_hear_about_us' => 'How did you hear about us?',
+        "referral_source" => "Referral Source",
         'friends' => 'Friends',
         'hagzz_app' => 'Hagzz App',
         'did_you_have_medical_conditions' => 'Did you have medical conditions',
@@ -481,6 +482,7 @@ return [
     ],
     'bookings' => [
         'bookings' => 'Bookings',
+        'offline_bookings' => 'Offline Bookings',
         'booking cancelled successfully' => 'Booking cancelled successfully',
         'training' => 'Training',
         'user' => 'User',

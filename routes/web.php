@@ -154,6 +154,8 @@ Route::group(
                 Route::get('transaction','transaction')->name('transaction.index');
                 Route::get('bookings/export','bookingExport')->name('booking.export');
                 Route::get('joins','joins')->name('joins');
+                Route::get('joins/offline', 'offlineJoins')->name('offline-joins');
+                Route::get('joins/offline/filter', 'offlineJoinFilter')->name('joins-offline-filter');
                 Route::get('joins/{join}','viewBookingDetails')->name('view-booking-details');
                 Route::get('joins/export/{join}', 'exportBookingFile')->name('export-booking-file');
                 Route::get('joins/filter','joinFilter')->name('join.filter');
