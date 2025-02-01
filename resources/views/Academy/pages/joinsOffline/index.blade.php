@@ -49,7 +49,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
+                            <form method="GET" action="{{ route('academy.report.joins-offline-filter') }}">
                             @include('Academy.pages.filter._form_filter')
+                            </form>
                         </div>
                     </div>
                     <div class="card-body">
