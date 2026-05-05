@@ -26,14 +26,25 @@ class AppServiceProvider extends ServiceProvider
     {
         $views = ['*'];
         View::composer($views,function (\Illuminate\View\View $view){
-            $follows = Follow::where('followable_id',auth('academy')->id())->count();
-            $coaches = Coach::where('academy_id',auth('academy')->id())->count();
-            $trainings = Training::where('academy_id', auth('academy')->id())->count();
+            if (! auth('academy')->check()) {
+                return $view->with([
+                    'follows' => 0,
+                    'totalPriceValue' => 0,
+                    'coaches' => 0,
+                    'trainings' => 0,
+                ]);
+            }
+
+            $academyId = auth('academy')->id();
+
+            $follows = Follow::where('followable_id', $academyId)->count();
+            $coaches = Coach::where('academy_id', $academyId)->count();
+            $trainings = Training::where('academy_id', $academyId)->count();
             $totalPrice = Training::with(['joins' => function ($query) {
                 $query->select('training_id', DB::raw('sum(price) as total_price'))
                     ->groupBy('training_id');
             }])
-                ->where('academy_id', auth('academy')->id())
+                ->where('academy_id', $academyId)
                 ->get(['id', 'name']);
             $totalPriceValue = $totalPrice->sum('joins.total_price');
             return $view->with(['follows' => $follows,'totalPriceValue'=>$totalPriceValue, 'coaches' => $coaches, 'trainings' => $trainings]);
