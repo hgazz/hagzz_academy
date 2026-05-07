@@ -6,6 +6,7 @@ use App\Models\Coach;
 use App\Models\Follow;
 use App\Models\Training;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         $views = ['*'];
         View::composer($views,function (\Illuminate\View\View $view){
             if (! auth('academy')->check()) {
