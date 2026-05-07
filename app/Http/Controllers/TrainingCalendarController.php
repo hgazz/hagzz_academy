@@ -23,7 +23,6 @@ class TrainingCalendarController extends Controller
             ->whereNotNull('start_time')
             ->whereNotNull('end_time')
             ->whereNotNull('classes_days')
-            ->whereNull('deleted_at')
             ->where([
                 ['active', 1],
                 ['academy_id', auth('academy')->id()]

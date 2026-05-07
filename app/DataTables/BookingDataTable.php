@@ -58,7 +58,7 @@ class BookingDataTable extends DataTable
             }
         ])->whereHas('training', function ($query) {
             $query->where('academy_id', auth('academy')->id());
-        })->withoutTrashed();
+        });
     }
 
     /**

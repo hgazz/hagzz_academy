@@ -74,12 +74,10 @@ class OfflineJoinDataTable extends DataTable
             'user',
             'training' => function ($query) {
                 $query->with(['academy', 'coach'])
-                    ->where('academy_id', auth('academy')->id())
-                    ->withoutTrashed();
+                    ->where('academy_id', auth('academy')->id());
             }
         ])->whereHas('training', function ($query) {
-            $query->where('academy_id', auth('academy')->id())
-                ->withoutTrashed();
+            $query->where('academy_id', auth('academy')->id());
         })->whereHas('invoice', function ($query) {
             $query->where('user_type', 'offline');
         });
