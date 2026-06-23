@@ -40,6 +40,15 @@ class CoachController extends Controller
 
     public function store(CoachRequest $request)
     {
+        $requestId = (string) \Illuminate\Support\Str::uuid();
+
+        Log::info('Coach creation started', [
+            'request_id' => $requestId,
+            'academy_id' => auth('academy')->id(),
+            'sports' => $request->input('sport_id', []),
+            'has_image' => $request->hasFile('image'),
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -56,11 +65,19 @@ class CoachController extends Controller
             ]));
             $coach->sports()->attach($request->sport_id);
             DB::commit();
+
+            Log::info('Coach creation completed', [
+                'request_id' => $requestId,
+                'academy_id' => auth('academy')->id(),
+                'coach_id' => $coach->id,
+            ]);
+
             session()->flash('success',trans('admin.coaches.created_successfully'));
             return to_route('academy.coach');
         }catch (Throwable $exception) {
             DB::rollBack();
             Log::error('Coach creation failed', [
+                'request_id' => $requestId,
                 'academy_id' => auth('academy')->id(),
                 'message' => $exception->getMessage(),
                 'exception' => get_class($exception),

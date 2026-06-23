@@ -5,6 +5,9 @@ namespace App\Http\Requests\Coach;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CoachRequest extends FormRequest
 {
@@ -44,5 +47,19 @@ class CoachRequest extends FormRequest
     protected function checkImage()
     {
         return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,jpg,svg|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        Log::warning('Coach form validation failed', [
+            'academy_id' => auth('academy')->id(),
+            'errors' => $validator->errors()->toArray(),
+            'has_image' => $this->hasFile('image'),
+            'image_size' => $this->file('image')?->getSize(),
+        ]);
+
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 }

@@ -45,9 +45,12 @@
                     @include('Academy.pages.coaches.partials._form')
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success mt-3" id="coach-submit-button">
+                    <button type="submit" class="btn btn-success mt-3" id="coach-submit-button"
+                            onclick="document.getElementById('coach-submit-status').textContent = 'تم الضغط على الحفظ'; console.info('[Coach Form] Save button clicked');">
                         {{ trans('admin.submit') }}
                     </button>
+                    <span id="coach-submit-status" class="ms-3 text-muted" aria-live="polite"></span>
+                    <small class="d-block mt-2 text-muted">coach-form-20260623-3</small>
                 </div>
             </div>
         </form>
@@ -60,10 +63,20 @@
     <script>
         document.getElementById('coach-create-form')?.addEventListener('submit', function () {
             const button = document.getElementById('coach-submit-button');
+            const status = document.getElementById('coach-submit-status');
 
             if (!button) {
                 return;
             }
+
+            if (status) {
+                status.textContent = 'جارٍ إرسال البيانات...';
+            }
+
+            console.info('[Coach Form] Native form submission started', {
+                action: this.action,
+                method: this.method
+            });
 
             button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
                 button.textContent.trim();
