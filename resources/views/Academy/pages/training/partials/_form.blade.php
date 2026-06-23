@@ -1,15 +1,5 @@
 @push('css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
-    </script>
-    <script src=https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
-    </script>
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
-          rel="stylesheet" type="text/css" />
-    <script src="colorpicker-master/jquery.colorpicker.js">
-    </script>
-    <link href="colorpicker-master/jquery.colorpicker.css"
-          rel="stylesheet" type="text/css" />
 @endpush
 
 @csrf
@@ -155,7 +145,7 @@
     </div>
         <div class="col-md-6 mb-3">
             <label for="color">{{ trans('admin.training.color') }}</label>
-            <input class="form-control" type="color" value="{{ old('color', (isset($training) ? $training->color : '#fff'))}}" id="color" name="color">
+            <input class="form-control" type="color" value="{{ old('color', (isset($training) ? $training->color : '#ffffff'))}}" id="color" name="color">
             @error('color')
             <span class="text-danger">*{{$message}}</span>
             @enderror
@@ -187,7 +177,7 @@
 <script>
     let sports  = document.getElementById('sport_id');
     let coachesSelect = document.getElementById('coaches');
-    const lang = "{{app()->getLocale()}}";
+    const trainingLocale = "{{ app()->getLocale() }}";
 
     document.addEventListener('DOMContentLoaded', function(){
         let selectedValue = sports.value;
@@ -197,7 +187,7 @@
                 .then(data =>{
                     coachesSelect.innerHTML = '';
                     data.coaches.forEach(coach=>{
-                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
+                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[trainingLocale]}</option>`;
                     })
                 })
 
@@ -212,7 +202,7 @@
                 .then(data =>{
                     coachesSelect.innerHTML = '';
                     data.coaches.forEach(coach=>{
-                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[lang]}</option>`;
+                        coachesSelect.innerHTML += `<option value="${coach.id}">${coach.name[trainingLocale]}</option>`;
                     })
                 })
 

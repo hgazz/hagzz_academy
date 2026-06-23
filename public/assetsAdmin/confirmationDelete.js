@@ -1,5 +1,6 @@
-let lang = $('meta[name="lang"]').attr('content');
-translate  ={
+(function () {
+const deleteLocale = $('meta[name="lang"]').attr('content') || 'en';
+const deleteTranslations = {
     "title_del" : {
         'en': 'Are you sure ?',
         'ar': "هل أنت متأكد ؟",
@@ -62,15 +63,15 @@ $(document).ready(function () {
 
 
             Swal.fire({
-                title: translate.title_del2[lang],
-                text: translate.text_del2[lang],
+                title: deleteTranslations.title_del2[deleteLocale],
+                text: deleteTranslations.text_del2[deleteLocale],
                 icon: 'warning',
                 padding: '3em',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: translate.confirm_del[lang],
-                cancelButtonText: translate.cancel_btn[lang],
+                confirmButtonText: deleteTranslations.confirm_del[deleteLocale],
+                cancelButtonText: deleteTranslations.cancel_btn[deleteLocale],
             }).then((result) => {
                 if (result.isConfirmed) {
                     let temp = `#${name}-${id}`;
@@ -102,8 +103,8 @@ $(document).ready(function () {
 
                         }, error: function (resp) {
                             Swal.fire(
-                                translate.removed[lang],
-                                translate.messageError[lang],
+                                deleteTranslations.removed[deleteLocale],
+                                deleteTranslations.messageError[deleteLocale],
                                 `error`,
                             )
                         }
@@ -114,3 +115,4 @@ $(document).ready(function () {
 
     })
 });
+})();
