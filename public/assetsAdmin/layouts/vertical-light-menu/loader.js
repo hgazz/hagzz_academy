@@ -15,8 +15,8 @@ window.addEventListener("load", function(){
                 darkMode: false,
                 boxed: false,
                 logo: {
-                    darkLogo: '../src/assets/img/logo.svg',
-                    lightLogo: '../src/assets/img/logo.svg'
+                    darkLogo: '/assetsAdmin/src/assets/img/logo.svg',
+                    lightLogo: '/assetsAdmin/src/assets/img/logo.svg'
                 }
             }
         },
@@ -58,6 +58,9 @@ window.addEventListener("load", function(){
         }
     }
 
+    if (corkThemeObject && corkThemeObject.settings && corkThemeObject.settings.layout) {
+        corkThemeObject.settings.layout.logo = settingsObject.settings.layout.logo;
+    }
     // Get Dark Mode Information i.e darkMode: true or false
     
     if (corkThemeObject.settings.layout.darkMode) {
@@ -70,7 +73,7 @@ window.addEventListener("load", function(){
             document.body.classList.add('dark');
             if (ifStarterKit) {
                 if (document.querySelector('.navbar-logo')) {
-                    document.querySelector('.navbar-logo').setAttribute('src', '../../src/assets/img/logo.svg')
+                    document.querySelector('.navbar-logo').setAttribute('src', '/assetsAdmin/src/assets/img/logo.svg')
                 }
             } else {
                 if (document.querySelector('.navbar-logo')) {
@@ -88,7 +91,7 @@ window.addEventListener("load", function(){
             document.body.classList.remove('dark');
             if (ifStarterKit) {
                 if (document.querySelector('.navbar-logo')) {
-                    document.querySelector('.navbar-logo').setAttribute('src', '../../src/assets/img/logo2.svg')
+                    document.querySelector('.navbar-logo').setAttribute('src', '/assetsAdmin/src/assets/img/logo2.svg')
                 }
             } else {
                 if (document.querySelector('.navbar-logo')) {
