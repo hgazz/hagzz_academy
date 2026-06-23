@@ -320,7 +320,11 @@ var App = function() {
         },
         onCheckandChangeSidebarActiveClass: function() {
             if (document.body.classList.contains('alt-menu')) {
-                document.querySelector('.sidebar-wrapper li.menu.active [aria-expanded="true"]').setAttribute('aria-expanded', 'false');
+                var activeExpandedMenu = document.querySelector('.sidebar-wrapper li.menu.active [aria-expanded="true"]');
+
+                if (activeExpandedMenu) {
+                    activeExpandedMenu.setAttribute('aria-expanded', 'false');
+                }
             }
         },
         MaterialRippleEffect: function() {
@@ -426,7 +430,14 @@ var App = function() {
                     Dom.class.navbar.classList.add("expand-header");
                     Dom.class.overlay.classList.add('show');
                     Dom.id.container.classList.add('sbar-open');
-                    document.querySelector('.sidebar-wrapper [aria-expanded="true"]').parentNode.querySelector('.collapse').classList.remove('show');
+                    var expandedSidebarMenu = document.querySelector('.sidebar-wrapper [aria-expanded="true"]');
+                    var expandedSidebarCollapse = expandedSidebarMenu
+                        ? expandedSidebarMenu.parentNode.querySelector('.collapse')
+                        : null;
+
+                    if (expandedSidebarCollapse) {
+                        expandedSidebarCollapse.classList.remove('show');
+                    }
                 }
             }
         }

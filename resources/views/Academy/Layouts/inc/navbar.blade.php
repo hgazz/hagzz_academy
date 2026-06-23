@@ -1,6 +1,18 @@
 <div class="header-container container-xxl">
     <header class="header navbar navbar-expand-sm expand-header justify-content-between">
 
+        <button type="button"
+                class="btn btn-icon btn-outline-secondary sidebarCollapse me-2"
+                aria-label="{{ app()->getLocale() === 'ar' ? 'فتح القائمة الجانبية' : 'Open sidebar' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
         <ul class="navbar-item theme-brand flex-row  text-center">
             <li class="nav-item theme-logo">
                 <a href="{{ route('academy.index') }}">
