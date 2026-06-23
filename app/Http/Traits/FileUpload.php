@@ -12,19 +12,30 @@ trait FileUpload
     public function upload($file, $fileUrl, $oldImag = null)
     {
         try{
-            $path = $file->store($fileUrl, 's3');
+            $disk = Storage::build(array_merge(config('filesystems.disks.s3'), [
+                'throw' => true,
+            ]));
 
-            if (!$path) {
-                throw new RuntimeException('Storage disk returned an empty path.');
+            $fileName = uniqid('', true) . '.' . $file->getClientOriginalExtension();
+            $path = trim($fileUrl, '/') . '/' . $fileName;
+            $stream = fopen($file->getRealPath(), 'r');
+
+            try {
+                $uploaded = $disk->put($path, $stream);
+            } finally {
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
             }
 
-            $file = explode('/', $path);
-            $fileName = $file[array_key_last($file)];
+            if (!$uploaded) {
+                throw new RuntimeException('Storage disk returned false while writing the file.');
+            }
 
             if(!is_null($oldImag)) {
 
-                if (Storage::disk('s3')->exists($fileUrl . DIRECTORY_SEPARATOR . $oldImag)) {
-                    Storage::disk('s3')->delete($fileUrl . DIRECTORY_SEPARATOR . $oldImag);
+                if ($disk->exists(trim($fileUrl, '/') . '/' . $oldImag)) {
+                    $disk->delete(trim($fileUrl, '/') . '/' . $oldImag);
                 }
             }
             return $fileName;
