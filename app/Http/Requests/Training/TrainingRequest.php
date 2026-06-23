@@ -5,6 +5,7 @@ namespace App\Http\Requests\Training;
 use App\Models\Training;
 use App\Rules\checkDiscountValue;
 use App\Services\TranslatableService;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,7 +32,19 @@ class TrainingRequest extends FormRequest
             'description_en' => 'required|string|max:255',
             'description_ar' => 'required|string|max:255',
             'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if (!$this->start_time || $value !== $this->start_time) {
+                        return;
+                    }
+
+                    $fail(app()->getLocale() === 'ar'
+                        ? 'يجب أن يختلف وقت نهاية الحصة عن وقت البداية.'
+                        : 'The class end time must be different from the start time.');
+                },
+            ],
             'coach_id'=>'required|integer|exists:coaches,id',
             'price'=> 'required|integer|min:1',
             'gender' => 'required|in:All,Men,Women',
