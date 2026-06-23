@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', 'Add Group')
+@section('title', trans('admin.student_management.add_group'))
 
 @section('content')
     <div class="middle-content container-xxl p-0">

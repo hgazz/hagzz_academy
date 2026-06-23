@@ -35,7 +35,7 @@ class AcademyGroupController extends Controller
         $group = AcademyGroup::create($data);
         $group->students()->sync($this->studentSyncPayload($request));
 
-        session()->flash('success', 'Group created successfully');
+        session()->flash('success', trans('admin.student_management.group_created'));
         return to_route('academy.groups.index');
     }
 
@@ -52,7 +52,7 @@ class AcademyGroupController extends Controller
         $group->update($this->validated($request));
         $group->students()->sync($this->studentSyncPayload($request));
 
-        session()->flash('success', 'Group updated successfully');
+        session()->flash('success', trans('admin.student_management.group_updated'));
         return to_route('academy.groups.index');
     }
 
@@ -61,7 +61,7 @@ class AcademyGroupController extends Controller
         $this->authorizeGroup($group);
         $group->delete();
 
-        session()->flash('success', 'Group deleted successfully');
+        session()->flash('success', trans('admin.student_management.group_deleted'));
         return to_route('academy.groups.index');
     }
 

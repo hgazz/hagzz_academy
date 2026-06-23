@@ -33,7 +33,7 @@ class AcademyStudentSubscriptionController extends Controller
 
         AcademyStudentSubscription::create($data);
 
-        session()->flash('success', 'Subscription created successfully');
+        session()->flash('success', trans('admin.student_management.subscription_created'));
         return to_route('academy.subscriptions.index');
     }
 
@@ -52,7 +52,7 @@ class AcademyStudentSubscriptionController extends Controller
         $this->authorizeGroup($data['academy_group_id'] ?? null);
         $subscription->update($data);
 
-        session()->flash('success', 'Subscription updated successfully');
+        session()->flash('success', trans('admin.student_management.subscription_updated'));
         return to_route('academy.subscriptions.index');
     }
 
@@ -61,7 +61,7 @@ class AcademyStudentSubscriptionController extends Controller
         $this->authorizeSubscription($subscription);
         $subscription->delete();
 
-        session()->flash('success', 'Subscription deleted successfully');
+        session()->flash('success', trans('admin.student_management.subscription_deleted'));
         return to_route('academy.subscriptions.index');
     }
 
@@ -86,7 +86,7 @@ class AcademyStudentSubscriptionController extends Controller
             ]);
         });
 
-        session()->flash('success', 'Payment recorded successfully');
+        session()->flash('success', trans('admin.student_management.payment_recorded'));
         return back();
     }
 

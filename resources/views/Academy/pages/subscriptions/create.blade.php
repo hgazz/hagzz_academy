@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', 'Add Subscription')
+@section('title', trans('admin.student_management.add_subscription'))
 
 @section('content')
     <div class="middle-content container-xxl p-0">

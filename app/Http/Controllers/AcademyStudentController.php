@@ -28,7 +28,7 @@ class AcademyStudentController extends Controller
 
         AcademyStudent::create($data);
 
-        session()->flash('success', 'Student created successfully');
+        session()->flash('success', trans('admin.student_management.student_created'));
         return to_route('academy.students.index');
     }
 
@@ -44,7 +44,7 @@ class AcademyStudentController extends Controller
         $this->authorizeStudent($student);
         $student->update($this->validated($request));
 
-        session()->flash('success', 'Student updated successfully');
+        session()->flash('success', trans('admin.student_management.student_updated'));
         return to_route('academy.students.index');
     }
 
@@ -53,7 +53,7 @@ class AcademyStudentController extends Controller
         $this->authorizeStudent($student);
         $student->delete();
 
-        session()->flash('success', 'Student deleted successfully');
+        session()->flash('success', trans('admin.student_management.student_deleted'));
         return to_route('academy.students.index');
     }
 

@@ -60,7 +60,7 @@ class AcademyAttendanceController extends Controller
             return $session;
         });
 
-        session()->flash('success', 'Attendance session created successfully');
+        session()->flash('success', trans('admin.student_management.attendance_session_created'));
         return to_route('academy.attendance.show', $session);
     }
 
@@ -91,7 +91,7 @@ class AcademyAttendanceController extends Controller
             }
         }
 
-        session()->flash('success', 'Attendance updated successfully');
+        session()->flash('success', trans('admin.student_management.attendance_updated'));
         return back();
     }
 }

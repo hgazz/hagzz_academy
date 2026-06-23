@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', 'Edit Student')
+@section('title', trans('admin.student_management.edit_student'))
 
 @section('content')
     <div class="middle-content container-xxl p-0">

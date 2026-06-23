@@ -1,6 +1,6 @@
 @extends('Academy.Layouts.master')
 
-@section('title', 'Attendance Records')
+@section('title', trans('admin.student_management.attendance_records'))
 
 @section('content')
     <div class="middle-content container-xxl p-0">
@@ -12,18 +12,18 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="mb-0">{{ $session->group?->name }} - {{ $session->session_date?->format('Y-m-d') }}</h3>
-                            <a href="{{ route('academy.attendance.index') }}" class="btn btn-light">Back</a>
+                            <a href="{{ route('academy.attendance.index') }}" class="btn btn-light">{{ trans('admin.student_management.back') }}</a>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
-                                        <th>Student</th>
-                                        <th>Status</th>
-                                        <th>Check In</th>
-                                        <th>Check Out</th>
-                                        <th>Notes</th>
+                                        <th>{{ trans('admin.student_management.student') }}</th>
+                                        <th>{{ trans('admin.student_management.status') }}</th>
+                                        <th>{{ trans('admin.student_management.check_in') }}</th>
+                                        <th>{{ trans('admin.student_management.check_out') }}</th>
+                                        <th>{{ trans('admin.student_management.notes') }}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -33,7 +33,7 @@
                                             <td>
                                                 <select name="records[{{ $record->id }}][status]" class="form-select">
                                                     @foreach(['present', 'absent', 'late', 'excused'] as $status)
-                                                        <option value="{{ $status }}" @selected($record->status === $status)>{{ ucfirst($status) }}</option>
+                                                        <option value="{{ $status }}" @selected($record->status === $status)>{{ trans('admin.student_management.' . $status) }}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button class="btn btn-success">Save Attendance</button>
+                            <button class="btn btn-success">{{ trans('admin.student_management.save_attendance') }}</button>
                         </div>
                     </div>
                 </form>

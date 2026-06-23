@@ -150,7 +150,7 @@
                 <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? '' : 'collapsed' }}">
                     <div class="">
                         <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">
-                        <span>إدارة الطلاب</span>
+                        <span>{{ trans('admin.student_management.menu') }}</span>
                     </div>
                     <div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -161,7 +161,7 @@
                         <a href="{{ route('academy.students.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">
-                                <span>الطلاب</span>
+                                <span>{{ trans('admin.student_management.students') }}</span>
                             </div>
                         </a>
                     </li>
@@ -169,7 +169,7 @@
                         <a href="{{ route('academy.groups.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
-                                <span>المجموعات والجداول</span>
+                                <span>{{ trans('admin.student_management.groups') }}</span>
                             </div>
                         </a>
                     </li>
@@ -177,7 +177,7 @@
                         <a href="{{ route('academy.attendance.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
-                                <span>الحضور والغياب</span>
+                                <span>{{ trans('admin.student_management.attendance') }}</span>
                             </div>
                         </a>
                     </li>
@@ -185,7 +185,7 @@
                         <a href="{{ route('academy.subscriptions.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
-                                <span>اشتراكات الطلاب</span>
+                                <span>{{ trans('admin.student_management.subscriptions') }}</span>
                             </div>
                         </a>
                     </li>
@@ -193,7 +193,7 @@
                         <a href="{{ route('academy.student-reports.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
-                                <span>تقارير الطلاب</span>
+                                <span>{{ trans('admin.student_management.reports') }}</span>
                             </div>
                         </a>
                     </li>

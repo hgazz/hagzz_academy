@@ -1,15 +1,15 @@
 @extends('Academy.Layouts.master')
 
-@section('title', 'Student Reports')
+@section('title', trans('admin.student_management.reports'))
 
 @section('content')
     <div class="middle-content container-xxl p-0">
         <div class="row layout-top-spacing">
             @foreach([
-                ['label' => 'Active Students', 'value' => $activeStudentsCount],
-                ['label' => 'Active Groups', 'value' => $activeGroupsCount],
-                ['label' => 'Active Subscriptions', 'value' => $activeSubscriptionsCount],
-                ['label' => 'Paid Amount', 'value' => number_format($paidAmount, 2)],
+                ['label' => trans('admin.student_management.active_students'), 'value' => $activeStudentsCount],
+                ['label' => trans('admin.student_management.active_groups'), 'value' => $activeGroupsCount],
+                ['label' => trans('admin.student_management.active_subscriptions'), 'value' => $activeSubscriptionsCount],
+                ['label' => trans('admin.student_management.paid_amount'), 'value' => number_format($paidAmount, 2)],
             ] as $card)
                 <div class="col-md-3 layout-spacing">
                     <div class="card">
@@ -25,13 +25,13 @@
         <div class="row">
             <div class="col-lg-5 layout-spacing">
                 <div class="card">
-                    <div class="card-header"><h4 class="mb-0">Attendance Summary</h4></div>
+                    <div class="card-header"><h4 class="mb-0">{{ trans('admin.student_management.attendance_summary') }}</h4></div>
                     <div class="card-body">
                         <table class="table table-striped">
                             <tbody>
                             @foreach(['present', 'absent', 'late', 'excused'] as $status)
                                 <tr>
-                                    <td>{{ ucfirst($status) }}</td>
+                                    <td>{{ trans('admin.student_management.' . $status) }}</td>
                                     <td class="text-end">{{ $attendanceByStatus[$status] ?? 0 }}</td>
                                 </tr>
                             @endforeach
@@ -43,15 +43,15 @@
 
             <div class="col-lg-7 layout-spacing">
                 <div class="card">
-                    <div class="card-header"><h4 class="mb-0">Subscriptions Ending Soon</h4></div>
+                    <div class="card-header"><h4 class="mb-0">{{ trans('admin.student_management.subscriptions_ending_soon') }}</h4></div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Group</th>
-                                    <th>Ends On</th>
+                                    <th>{{ trans('admin.student_management.student') }}</th>
+                                    <th>{{ trans('admin.student_management.group') }}</th>
+                                    <th>{{ trans('admin.student_management.ends_on') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -62,7 +62,7 @@
                                         <td>{{ $subscription->ends_on?->format('Y-m-d') }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="3" class="text-center">No subscriptions ending soon.</td></tr>
+                                    <tr><td colspan="3" class="text-center">{{ trans('admin.student_management.no_subscriptions_ending_soon') }}</td></tr>
                                 @endforelse
                                 </tbody>
                             </table>
@@ -75,16 +75,16 @@
         <div class="row">
             <div class="col-12 layout-spacing">
                 <div class="card">
-                    <div class="card-header"><h4 class="mb-0">Latest Payments</h4></div>
+                    <div class="card-header"><h4 class="mb-0">{{ trans('admin.student_management.latest_payments') }}</h4></div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Date</th>
-                                    <th>Method</th>
-                                    <th>Amount</th>
+                                    <th>{{ trans('admin.student_management.student') }}</th>
+                                    <th>{{ trans('admin.student_management.date') }}</th>
+                                    <th>{{ trans('admin.student_management.method') }}</th>
+                                    <th>{{ trans('admin.student_management.amount') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -92,11 +92,11 @@
                                     <tr>
                                         <td>{{ $payment->subscription?->student?->name }}</td>
                                         <td>{{ $payment->paid_at?->format('Y-m-d') }}</td>
-                                        <td>{{ str_replace('_', ' ', ucfirst($payment->method)) }}</td>
+                                        <td>{{ trans('admin.student_management.' . $payment->method) }}</td>
                                         <td>{{ number_format($payment->amount, 2) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="4" class="text-center">No payments yet.</td></tr>
+                                    <tr><td colspan="4" class="text-center">{{ trans('admin.student_management.no_payments_yet') }}</td></tr>
                                 @endforelse
                                 </tbody>
                             </table>
