@@ -24,9 +24,14 @@ var App = function() {
     var categoryScroll = {
         scrollCat: function() {
             var sidebarWrapper = document.querySelectorAll('.sidebar-wrapper li.active')[0];
+            var scroll = document.querySelector('.menu-categories');
+
+            if (!sidebarWrapper || !scroll) {
+                return;
+            }
+
             var sidebarWrapperTop = sidebarWrapper.offsetTop - 50;
             setTimeout(() => {
-                const scroll = document.querySelector('.menu-categories');
                 scroll.scrollTop = sidebarWrapperTop;
             }, 50);
         }
