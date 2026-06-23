@@ -21,8 +21,12 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const imagePreview = document.getElementById('imagePreview');
+                    if (!imagePreview) {
+                        return;
+                    }
                     imagePreview.src = e.target.result;
-                    imagePreview.classList.replace('d-none','d-block');
+                    imagePreview.classList.remove('d-none');
+                    imagePreview.classList.add('d-block');
                 };
                 reader.readAsDataURL(input.files[0]);
             }

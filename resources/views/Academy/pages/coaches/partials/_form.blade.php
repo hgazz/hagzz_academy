@@ -62,9 +62,7 @@
     <div class="col-md-6 mb-3">
         <label for="image">{{ trans('admin.coaches.image') }}</label>
         <input class="form-control" type="file"  id="image" name="image" onchange="previewImage(event)">
-        @if(isset($coach))
-        <img id="imagePreview" src="{{(isset($coach) ? $coach->image : '#')}}" alt="Image Preview" width="400px" height="400px" class="mt-3 ">
-        @endif
+        <img id="imagePreview" src="{{ isset($coach) ? $coach->image : '#' }}" alt="Image Preview" width="400px" height="400px" class="mt-3 {{ isset($coach) ? 'd-block' : 'd-none' }}">
         @error('image')
         <span class="text-danger">*{{$message}}</span>
         @enderror
@@ -105,8 +103,12 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const imagePreview = document.getElementById('imagePreview');
+                    if (!imagePreview) {
+                        return;
+                    }
                     imagePreview.src = e.target.result;
-                    imagePreview.classList.replace('d-none','d-block');
+                    imagePreview.classList.remove('d-none');
+                    imagePreview.classList.add('d-block');
                 };
                 reader.readAsDataURL(input.files[0]);
             }
