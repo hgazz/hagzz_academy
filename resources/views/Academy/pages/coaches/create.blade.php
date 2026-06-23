@@ -36,7 +36,7 @@
 
         <div class="row layout-top-spacing">
              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-        <form method="POST" action="{{ route('academy.coach.store') }}" enctype="multipart/form-data">
+        <form id="coach-create-form" method="POST" action="{{ route('academy.coach.store') }}" enctype="multipart/form-data" novalidate>
             <div class="card">
                 <div class="card-header">
                     <h3>{{ trans('admin.coaches.create') }}</h3>
@@ -45,7 +45,9 @@
                     @include('Academy.pages.coaches.partials._form')
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success mt-3">{{ trans('admin.submit') }}</button>
+                    <button type="submit" class="btn btn-success mt-3" id="coach-submit-button">
+                        {{ trans('admin.submit') }}
+                    </button>
                 </div>
             </div>
         </form>
@@ -53,3 +55,18 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script>
+        document.getElementById('coach-create-form')?.addEventListener('submit', function () {
+            const button = document.getElementById('coach-submit-button');
+
+            if (!button) {
+                return;
+            }
+
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
+                button.textContent.trim();
+        });
+    </script>
+@endpush
