@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\StorageUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -21,7 +22,7 @@ class Sport extends Model
 
     public function getIconAttribute($value)
     {
-        return  config('services.s3.url'). DIRECTORY_SEPARATOR . self::PATH . $value;
+        return StorageUrl::asset($value, self::PATH);
     }
 
     public function academies()

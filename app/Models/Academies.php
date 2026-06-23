@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Support\StorageUrl;
 use Spatie\Translatable\HasTranslations;
 
 class Academies extends Authenticatable
@@ -72,7 +73,7 @@ class Academies extends Authenticatable
 
     public function getLogoAttribute($value): string
     {
-        return $value == config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR ? asset('assetsAdmin/logo/Icon-Primary.svg') : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return StorageUrl::asset($value, self::PATH, asset('assetsAdmin/logo/Icon-Primary.svg'));
     }
 
     public function sports(): BelongsToMany

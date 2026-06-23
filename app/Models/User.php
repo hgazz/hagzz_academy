@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\StorageUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -91,7 +92,7 @@ class User extends Authenticatable
 
     public function getImageAttribute($value): string
     {
-        return is_null($value) ? asset('assetsAdmin/people-fill.svg') : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return StorageUrl::asset($value, self::PATH, asset('assetsAdmin/people-fill.svg'));
     }
 
     public function joins(): HasMany

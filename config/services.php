@@ -34,6 +34,11 @@ return [
         'url' => env('AWS_S3_URL','https://bokit-app.s3.eu-north-1.amazonaws.com'),
         'bucket' => env('AWS_BUCKET','bokit-app'),
     ],
+    'storage' => [
+        'disk' => env('FILESYSTEM_DISK', 'local'),
+        'url' => env('ASSET_STORAGE_URL', env('AWS_S3_URL', 'https://bokit-app.s3.eu-north-1.amazonaws.com')),
+        'gcs_bucket' => env('GCS_BUCKET'),
+    ],
 
 
 ];
