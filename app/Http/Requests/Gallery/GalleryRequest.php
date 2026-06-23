@@ -23,7 +23,9 @@ class GalleryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => $this->isMethod('put')
+                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+                : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

@@ -35,7 +35,7 @@ class GalleryController extends Controller
         $image = $this->upload($request->file('image'), $this->galleryModel::PATH);
        $gallery =  $this->galleryModel->create([
             'image' => $image,
-            'academy_id' => auth()->id()
+            'academy_id' => auth('academy')->id()
         ]);
         NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name, 'Image Added', auth('academy')->user()->image, ['gallery' => $gallery->image]);
         session()->flash('success', trans('admin.gallery.created_successfully'));
@@ -61,7 +61,7 @@ class GalleryController extends Controller
     {
         $gallery = $this->galleryModel->findOrFail($request->id);
         $gallery->delete();
-        $this->deleteFile($this->galleryModel::PATH . $gallery->getRawOriginal('image'));
+        $this->deleteFile($this->galleryModel::PATH . '/' . $gallery->getRawOriginal('image'));
         return response()->json(['data' => [
             'status' => 'success',
             'model'   => trans('admin.gallery.gallery'),
