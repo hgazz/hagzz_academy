@@ -93,7 +93,7 @@ trait FileUpload
         $stream = fopen($file->getRealPath(), 'r');
 
         try {
-            $response = $client->put("https://storage.googleapis.com/upload/storage/v1/b/{$bucket}/o", [
+            $response = $client->post("https://storage.googleapis.com/upload/storage/v1/b/{$bucket}/o", [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $token,
                     'Content-Type' => $file->getMimeType() ?: 'application/octet-stream',
