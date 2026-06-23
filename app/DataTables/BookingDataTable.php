@@ -93,7 +93,7 @@ class BookingDataTable extends DataTable
                             'url' => asset('datatableAr.json')
                         ] :
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/1.13.8/i18n/English.json')
+                            'url' => asset('datatableEn.json')
                         ]
 
             ]);

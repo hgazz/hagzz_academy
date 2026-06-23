@@ -108,7 +108,7 @@ class InvoiceDataTable extends DataTable
                             'url' => asset('datatableAr.json')
                         ] :
                         [
-                            'url' => url('//cdn.datatables.net/plug-ins/2.0.8/i18n/en-GB.json')
+                            'url' => asset('datatableEn.json')
                         ]
 
             ]);
