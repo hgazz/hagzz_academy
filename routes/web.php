@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AcademyAttendanceController;
+use App\Http\Controllers\AcademyGroupController;
+use App\Http\Controllers\AcademyStudentReportController;
+use App\Http\Controllers\AcademyStudentController;
+use App\Http\Controllers\AcademyStudentSubscriptionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClassesController;
@@ -137,6 +142,19 @@ Route::group(
         Route::controller(CustomerController::class)->group(function (){
             Route::get('users','index')->name('users.index');
         });
+
+        Route::resource('students', AcademyStudentController::class)->except(['show']);
+        Route::resource('groups', AcademyGroupController::class)->except(['show']);
+        Route::resource('subscriptions', AcademyStudentSubscriptionController::class)->except(['show']);
+        Route::post('subscriptions/{subscription}/payments', [AcademyStudentSubscriptionController::class, 'storePayment'])
+            ->name('subscriptions.payments.store');
+        Route::get('attendance', [AcademyAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('attendance/create', [AcademyAttendanceController::class, 'create'])->name('attendance.create');
+        Route::post('attendance', [AcademyAttendanceController::class, 'store'])->name('attendance.store');
+        Route::get('attendance/{attendance}', [AcademyAttendanceController::class, 'show'])->name('attendance.show');
+        Route::put('attendance/{attendance}', [AcademyAttendanceController::class, 'update'])->name('attendance.update');
+        Route::get('student-reports', [AcademyStudentReportController::class, 'index'])->name('student-reports.index');
+
         Route::controller(TermsController::class)->group(function (){
             Route::get('terms','index')->name('terms.index');
         });

@@ -146,6 +146,60 @@
                 </a>
             </li>
 
+            <li class="menu {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'active' : '' }}">
+                <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? '' : 'collapsed' }}">
+                    <div class="">
+                        <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">
+                        <span>إدارة الطلاب</span>
+                    </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </a>
+                <ul class="collapse submenu list-unstyled {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
+                    <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.students.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">
+                                <span>الطلاب</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu {{ Request::routeIs('academy.groups.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.groups.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                                <span>المجموعات والجداول</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu {{ Request::routeIs('academy.attendance.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.attendance.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                                <span>الحضور والغياب</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.subscriptions.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                                <span>اشتراكات الطلاب</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.student-reports.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                                <span>تقارير الطلاب</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}">
                 <a href="{{ route('academy.coach') }}" aria-expanded="{{ Request::routeIs('academy.coach.*')  ? 'true' : 'false' }}" class="dropdown-toggle">
                     <div class="">
