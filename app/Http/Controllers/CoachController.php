@@ -9,10 +9,11 @@ use App\Http\Traits\FileUpload;
 use App\Models\Coach;
 use App\Models\Sport;
 use App\Services\TranslatableService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class CoachController extends Controller
 {
@@ -49,7 +50,7 @@ class CoachController extends Controller
                 'image'=>$imageName,
                 'phone'=> $request->phone,
                 'active'=> $request->has('active') ? 1 : 0,
-                'academy_id'=> auth()->id(),
+                'academy_id'=> auth('academy')->id(),
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
             ]));
@@ -57,8 +58,13 @@ class CoachController extends Controller
             DB::commit();
             session()->flash('success',trans('admin.coaches.created_successfully'));
             return to_route('academy.coach');
-        }catch (Exception $exception) {
+        }catch (Throwable $exception) {
             DB::rollBack();
+            Log::error('Coach creation failed', [
+                'academy_id' => auth('academy')->id(),
+                'message' => $exception->getMessage(),
+                'exception' => get_class($exception),
+            ]);
             session()->flash('error', $exception->getMessage());
             return back()->withInput($request->all());
         }
@@ -83,7 +89,7 @@ class CoachController extends Controller
                 'image'=> $imageName,
                 'phone'=> $request->phone,
                 'active'=> $request->has('active') ? 1 : 0,
-                'academy_id'=> auth()->id(),
+                'academy_id'=> auth('academy')->id(),
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
             ]));
@@ -91,8 +97,14 @@ class CoachController extends Controller
             DB::commit();
             session()->flash('success',trans('admin.coaches.updated_successfully'));
             return to_route('academy.coach');
-        }catch (Exception $exception){
+        }catch (Throwable $exception){
             DB::rollBack();
+            Log::error('Coach update failed', [
+                'coach_id' => $coach->id,
+                'academy_id' => auth('academy')->id(),
+                'message' => $exception->getMessage(),
+                'exception' => get_class($exception),
+            ]);
             session()->flash('error', $exception->getMessage());
             return back()->withInput($request->all());
         }

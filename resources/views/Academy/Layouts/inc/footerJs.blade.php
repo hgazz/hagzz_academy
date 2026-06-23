@@ -9,4 +9,37 @@
 <script src="{{ asset('assetsAdmin/yajaraLog.js') }}"></script>
 <script src="{{ asset('assetsAdmin/uploadDebug.js') }}"></script>
 
+@if (session()->has('success'))
+    <script>
+        console.info('[Hagzz] Operation completed', @json(session('success')));
+        Swal.fire({
+            icon: 'success',
+            text: @json(session('success')),
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
+
+@if (session()->has('error'))
+    <script>
+        console.error('[Hagzz] Operation failed', @json(session('error')));
+        Swal.fire({
+            icon: 'error',
+            text: @json(session('error')),
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
+
+@if ($errors->any())
+    <script>
+        console.error('[Hagzz] Validation failed', @json($errors->toArray()));
+        Swal.fire({
+            icon: 'error',
+            text: @json($errors->first()),
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
+
 @stack('js')

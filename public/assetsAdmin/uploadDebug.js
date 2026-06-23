@@ -31,8 +31,6 @@
             return;
         }
 
-        event.preventDefault();
-
         var formData = new FormData(form);
         var submitButton = form.querySelector('[type="submit"]');
 
@@ -44,55 +42,6 @@
             action: form.action,
             method: form.method || 'POST',
             fields: describeFormData(formData)
-        });
-
-        fetch(form.action, {
-            method: form.method || 'POST',
-            body: formData,
-            credentials: 'same-origin',
-            headers: {
-                'Accept': 'text/html,application/xhtml+xml,application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).then(function (response) {
-            return response.text().then(function (body) {
-                if (!response.ok) {
-                    console.error('[Upload Debug] Upload failed', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        url: response.url,
-                        responseBody: body
-                    });
-
-                    if (window.Swal) {
-                        Swal.fire('Upload failed', 'Open the browser console to see the server response.', 'error');
-                    } else {
-                        alert('Upload failed. Open the browser console to see the server response.');
-                    }
-
-                    return;
-                }
-
-                console.info('[Upload Debug] Upload request completed', {
-                    status: response.status,
-                    redirected: response.redirected,
-                    url: response.url
-                });
-
-                window.location.href = response.redirected ? response.url : window.location.href;
-            });
-        }).catch(function (error) {
-            console.error('[Upload Debug] Upload request crashed before receiving a response', error);
-
-            if (window.Swal) {
-                Swal.fire('Upload failed', error.message || 'Network error', 'error');
-            } else {
-                alert(error.message || 'Network error');
-            }
-        }).finally(function () {
-            if (submitButton) {
-                submitButton.disabled = false;
-            }
         });
     }, true);
 })();
