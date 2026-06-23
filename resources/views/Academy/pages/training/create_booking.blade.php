@@ -458,6 +458,10 @@
             const medicalConditionSelect = document.getElementById('medical_condition');
             const medicalConditionTxt = document.getElementById('medical_condition_txt');
 
+            if (!medicalConditionSelect || !medicalConditionTxt) {
+                return;
+            }
+
             function toggleMedicalConditionInput() {
                 if (medicalConditionSelect.value === 'yes') {
                     medicalConditionTxt.classList.remove('d-none');
@@ -555,31 +559,6 @@
             }
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const yesRadio = document.getElementById('medical_condition_yes');
-            const noRadio = document.getElementById('medical_condition_no');
-            const medicalConditionTxt = document.getElementById('medical_condition_txt');
-
-            // Function to toggle visibility of the text input based on the selected radio button
-            function toggleMedicalConditionInput() {
-                if (yesRadio.checked) {
-                    medicalConditionTxt.classList.remove('d-none'); // Show the input field
-                } else {
-                    medicalConditionTxt.classList.add('d-none'); // Hide the input field
-                    medicalConditionTxt.value = ''; // Clear the value if hidden
-                }
-            }
-
-            // Add event listeners for radio button changes
-            yesRadio.addEventListener('click', toggleMedicalConditionInput);
-            noRadio.addEventListener('click', toggleMedicalConditionInput);
-
-            // Check the initial state of the radio buttons (e.g., after validation errors)
-            toggleMedicalConditionInput();
-        });
-    </script>
 @endpush
-
 
 
