@@ -2,6 +2,25 @@
 
 @section('title', trans('admin.student_management.students'))
 
+@push('css')
+    <style>
+        .student-table td {
+            vertical-align: middle;
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+            background: #e8eef0;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="middle-content container-xxl p-0">
         <div class="row layout-top-spacing">
@@ -13,10 +32,11 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped student-table">
                                 <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>{{ trans('admin.banners.image') }}</th>
                                     <th>{{ trans('admin.student_management.name') }}</th>
                                     <th>{{ trans('admin.student_management.phone') }}</th>
                                     <th>{{ trans('admin.student_management.guardian') }}</th>
@@ -28,6 +48,15 @@
                                 @forelse($students as $student)
                                     <tr>
                                         <td>{{ $student->id }}</td>
+                                        <td>
+                                            <img
+                                                src="{{ $student->avatarUrl() }}"
+                                                alt="{{ $student->name }}"
+                                                class="student-avatar"
+                                                loading="lazy"
+                                                onerror="this.onerror=null;this.src='{{ $student->defaultImageUrl() }}';"
+                                            >
+                                        </td>
                                         <td>{{ $student->name }}</td>
                                         <td>{{ $student->phone ?? '-' }}</td>
                                         <td>{{ $student->guardian_name ?? '-' }}<br><small>{{ $student->guardian_phone }}</small></td>
@@ -43,7 +72,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">{{ trans('admin.student_management.no_students_yet') }}</td>
+                                        <td colspan="7" class="text-center">{{ trans('admin.student_management.no_students_yet') }}</td>
                                     </tr>
                                 @endforelse
                                 </tbody>

@@ -30,7 +30,12 @@ class UserDataTable extends DataTable
                 return $user?->area?->name;
             })
             ->addColumn('image', function (User $user) {
-                return '<img src="'. $user->image . '" width="100" height="100">';
+                return sprintf(
+                    '<img src="%s" alt="%s" class="user-avatar" loading="lazy" onerror="this.onerror=null;this.src=\'%s\';">',
+                    e($user->image),
+                    e($user->name ?? trans('admin.user.user')),
+                    e($user->defaultImageUrl())
+                );
             })
             ->rawColumns(['image']);
     }

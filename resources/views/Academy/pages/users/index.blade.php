@@ -9,6 +9,29 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/dt-global_style.css') }}">
     <link rel="stylesheet" type="text/css"
           href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/custom_dt_miscellaneous.css') }}">
+    <style>
+        #user-table td {
+            vertical-align: middle;
+        }
+
+        #user-table .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+            background: #e8eef0;
+        }
+
+        #user-table th:nth-child(2),
+        #user-table td:nth-child(2) {
+            width: 72px !important;
+            min-width: 72px;
+            text-align: center;
+        }
+    </style>
 @endpush
 
 

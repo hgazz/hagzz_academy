@@ -92,7 +92,16 @@ class User extends Authenticatable
 
     public function getImageAttribute($value): string
     {
-        return StorageUrl::asset($value, self::PATH, asset('assetsAdmin/people-fill.svg'));
+        return StorageUrl::asset($value, self::PATH, $this->defaultImageUrl());
+    }
+
+    public function defaultImageUrl(): string
+    {
+        $fileName = $this->getRawOriginal('gender') === 'female'
+            ? 'default-user-female.webp'
+            : 'default-user-male.webp';
+
+        return asset('assetsAdmin/img/' . $fileName);
     }
 
     public function joins(): HasMany

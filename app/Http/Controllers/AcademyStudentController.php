@@ -9,7 +9,8 @@ class AcademyStudentController extends Controller
 {
     public function index()
     {
-        $students = AcademyStudent::where('academy_id', auth('academy')->id())
+        $students = AcademyStudent::with('user')
+            ->where('academy_id', auth('academy')->id())
             ->latest()
             ->paginate(20);
 

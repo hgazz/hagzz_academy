@@ -57,4 +57,18 @@ class AcademyStudent extends Model
     {
         return $this->hasMany(AcademyAttendanceRecord::class);
     }
+
+    public function defaultImageUrl(): string
+    {
+        $fileName = $this->gender === 'female'
+            ? 'default-user-female.webp'
+            : 'default-user-male.webp';
+
+        return asset('assetsAdmin/img/' . $fileName);
+    }
+
+    public function avatarUrl(): string
+    {
+        return $this->user?->image ?? $this->defaultImageUrl();
+    }
 }
