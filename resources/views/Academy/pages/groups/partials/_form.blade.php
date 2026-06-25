@@ -17,7 +17,7 @@
                 <label class="form-label">{{ trans('admin.student_management.linked_training') }}</label>
                 <select name="training_id" class="form-select">
                     <option value="">{{ trans('admin.student_management.no_training') }}</option>
-                    @foreach($trainings as $training)
+                    @foreach($groupTrainings as $training)
                         <option value="{{ $training->id }}" @selected(old('training_id', $group->training_id ?? '') == $training->id)>{{ $training->name }}</option>
                     @endforeach
                 </select>
@@ -26,7 +26,7 @@
                 <label class="form-label">{{ trans('admin.student_management.coach') }}</label>
                 <select name="coach_id" class="form-select">
                     <option value="">{{ trans('admin.student_management.no_coach') }}</option>
-                    @foreach($coaches as $coach)
+                    @foreach($groupCoaches as $coach)
                         <option value="{{ $coach->id }}" @selected(old('coach_id', $group->coach_id ?? '') == $coach->id)>{{ $coach->name }}</option>
                     @endforeach
                 </select>
@@ -35,7 +35,7 @@
                 <label class="form-label">{{ trans('admin.student_management.sport') }}</label>
                 <select name="sport_id" class="form-select">
                     <option value="">{{ trans('admin.student_management.no_sport') }}</option>
-                    @foreach($sports as $sport)
+                    @foreach($groupSports as $sport)
                         <option value="{{ $sport->id }}" @selected(old('sport_id', $group->sport_id ?? '') == $sport->id)>{{ $sport->name }}</option>
                     @endforeach
                 </select>
@@ -61,7 +61,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label d-block">{{ trans('admin.student_management.days') }}</label>
-                @foreach($days as $day)
+                @foreach($groupDays as $day)
                     <label class="me-3">
                         <input type="checkbox" name="days[]" value="{{ $day }}" @checked(in_array($day, $selectedDays ?? []))>
                         {{ trans('admin.training.' . $day) }}
@@ -71,7 +71,7 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">{{ trans('admin.student_management.students') }}</label>
                 <select name="student_ids[]" class="form-select" multiple size="8">
-                    @foreach($students as $student)
+                    @foreach($groupStudents as $student)
                         <option value="{{ $student->id }}" @selected(in_array($student->id, $selectedStudents))>{{ $student->name }} - {{ $student->phone }}</option>
                     @endforeach
                 </select>

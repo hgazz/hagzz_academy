@@ -70,11 +70,11 @@ class AcademyGroupController extends Controller
         $academyId = auth('academy')->id();
 
         return [
-            'trainings' => Training::where('academy_id', $academyId)->orderBy('name')->get(),
-            'coaches' => Coach::where('academy_id', $academyId)->orderBy('name')->get(),
-            'sports' => Sport::whereHas('academies', fn($query) => $query->where('academy_id', $academyId))->orderBy('name')->get(),
-            'students' => AcademyStudent::where('academy_id', $academyId)->where('status', 'active')->orderBy('name')->get(),
-            'days' => ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+            'groupTrainings' => Training::where('academy_id', $academyId)->orderBy('name')->get(),
+            'groupCoaches' => Coach::where('academy_id', $academyId)->orderBy('name')->get(),
+            'groupSports' => Sport::whereHas('academies', fn($query) => $query->where('academy_id', $academyId))->orderBy('name')->get(),
+            'groupStudents' => AcademyStudent::where('academy_id', $academyId)->where('status', 'active')->orderBy('name')->get(),
+            'groupDays' => ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
         ];
     }
 
