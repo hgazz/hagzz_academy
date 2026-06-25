@@ -1,719 +1,295 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.bokit'))
+@section('title', trans('admin.dashboard'))
+
 @push('css')
-    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     <link href="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assetsAdmin/src/assets/css/light/dashboard/dash_1.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assetsAdmin/src/assets/css/dark/dashboard/dash_1.css') }}" rel="stylesheet" type="text/css" />
-    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     <link href="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assetsAdmin/src/plugins/css/light/apex/custom-apexcharts.css') }}" rel="stylesheet"
-        type="text/css">
-
-    <link href="{{ asset('assetsAdmin/src/plugins/css/dark/apex/custom-apexcharts.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assetsAdmin/src/assets/css/academy-dashboard-modern.css') }}" rel="stylesheet" type="text/css">
 @endpush
-<style>
-    .widget.widget-card-five .account-box .info-box .icon:before {
-        background-color: white !important;
-    }
-    .widget.widget-card-five .account-box .info-box {
-        min-height: 30px;
-    }
 
-    .row {
-        margin:auto;
-    }
-</style>
+@php
+    $isArabic = app()->getLocale() === 'ar';
+    $copy = [
+        'welcome' => $isArabic ? 'مرحباً بعودتك' : 'Welcome back',
+        'overview' => $isArabic ? 'إليك ملخص أداء أكاديميتك وأهم ما يحتاج إلى متابعتك اليوم.' : 'Here is your academy performance and what needs attention today.',
+        'today' => $isArabic ? 'اليوم' : 'Today',
+        'students' => $isArabic ? 'الطلاب النشطون' : 'Active students',
+        'customers' => $isArabic ? 'عملاء التطبيق' : 'App customers',
+        'trainings' => $isArabic ? 'التدريبات' : 'Trainings',
+        'activeTrainings' => $isArabic ? 'تدريب نشط' : 'active trainings',
+        'bookings' => $isArabic ? 'الحجوزات' : 'Bookings',
+        'bookingRevenue' => $isArabic ? 'إيرادات الحجوزات' : 'Booking revenue',
+        'subscriptions' => $isArabic ? 'الاشتراكات النشطة' : 'Active subscriptions',
+        'subscriptionRevenue' => $isArabic ? 'تحصيل الاشتراكات' : 'Subscription collections',
+        'outstanding' => $isArabic ? 'مبالغ متبقية' : 'Outstanding',
+        'attendance' => $isArabic ? 'معدل الحضور' : 'Attendance rate',
+        'sessionsToday' => $isArabic ? 'جلسات اليوم' : 'Today sessions',
+        'coaches' => $isArabic ? 'المدربون' : 'Coaches',
+        'groups' => $isArabic ? 'المجموعات' : 'Groups',
+        'followers' => $isArabic ? 'المتابعون' : 'Followers',
+        'last30' => $isArabic ? 'مقارنةً بالـ 30 يوم السابقة' : 'vs previous 30 days',
+        'financialPerformance' => $isArabic ? 'الأداء المالي والحجوزات' : 'Revenue and bookings',
+        'financialHint' => $isArabic ? 'أداء الأكاديمية خلال آخر 12 شهراً' : 'Academy performance over the last 12 months',
+        'attendanceBreakdown' => $isArabic ? 'تفاصيل الحضور' : 'Attendance breakdown',
+        'present' => $isArabic ? 'حاضر' : 'Present',
+        'late' => $isArabic ? 'متأخر' : 'Late',
+        'absent' => $isArabic ? 'غائب' : 'Absent',
+        'excused' => $isArabic ? 'بعذر' : 'Excused',
+        'topTrainings' => $isArabic ? 'التدريبات الأكثر حجزاً' : 'Top booked trainings',
+        'expiring' => $isArabic ? 'اشتراكات تنتهي قريباً' : 'Expiring subscriptions',
+        'expiringHint' => $isArabic ? 'خلال الأربعة عشر يوماً القادمة' : 'Within the next 14 days',
+        'recent' => $isArabic ? 'أحدث الحجوزات' : 'Recent bookings',
+        'recentHint' => $isArabic ? 'آخر عمليات الحجز في أكاديميتك' : 'Latest bookings for your academy',
+        'filter' => $isArabic ? 'تصفية نتائج الحجوزات' : 'Filter booking results',
+        'from' => $isArabic ? 'من تاريخ' : 'From',
+        'to' => $isArabic ? 'إلى تاريخ' : 'To',
+        'apply' => $isArabic ? 'تطبيق' : 'Apply',
+        'balance' => $isArabic ? 'قيمة الحجوزات' : 'Booking value',
+        'refunds' => $isArabic ? 'الحجوزات المستردة' : 'Refunded bookings',
+        'refundAmount' => $isArabic ? 'قيمة المستردات' : 'Refund amount',
+        'bookingCount' => $isArabic ? 'عدد الحجوزات' : 'Booking count',
+        'paid' => $isArabic ? 'مدفوع' : 'Paid',
+        'pending' => $isArabic ? 'معلق' : 'Pending',
+        'canceled' => $isArabic ? 'ملغى' : 'Canceled',
+        'viewAll' => $isArabic ? 'عرض الكل' : 'View all',
+        'noData' => $isArabic ? 'لا توجد بيانات بعد' : 'No data yet',
+        'currency' => $isArabic ? 'ج.م' : 'EGP',
+        'endsOn' => $isArabic ? 'ينتهي في' : 'Ends',
+        'quickActions' => $isArabic ? 'إجراءات سريعة' : 'Quick actions',
+    ];
+@endphp
+
 @section('content')
-    <div class="middle-content container-xxl p-0">
+    <div class="middle-content container-xxl p-0 academy-dashboard" dir="{{ $isArabic ? 'rtl' : 'ltr' }}">
+        <div class="dashboard-topbar">
+            <button type="button" class="dashboard-menu-toggle btn-toggle sidebarCollapse" aria-label="Toggle menu">
+                <i data-feather="menu"></i>
+            </button>
+            <div>
+                <h1>{{ trans('admin.dashboard') }}</h1>
+                <p>{{ $copy['today'] }}، {{ now()->locale(app()->getLocale())->translatedFormat('d F Y') }}</p>
+            </div>
+        </div>
 
-        <!--  BEGIN BREADCRUMBS  -->
-        <div class="secondary-nav">
-            <div class="breadcrumbs-container" data-page-heading="Analytics">
-                <header class="header navbar navbar-expand-sm">
-                    <a href="javascript:void(0);" class="btn-toggle sidebarCollapse" data-placement="bottom">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="feather feather-menu">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </a>
-                    <div class="d-flex breadcrumb-content">
-                        <div class="page-header">
+        <section class="welcome-strip">
+            <div class="welcome-copy">
+                <span>{{ $copy['welcome'] }}</span>
+                <h2>{{ $dashboard['ownerName'] ?: $dashboard['academyName'] }}</h2>
+                <p><b>{{ $dashboard['academyName'] }}</b> · {{ $copy['overview'] }}</p>
+            </div>
+            <div class="welcome-actions">
+                <a href="{{ route('academy.students.create') }}" class="dashboard-action dashboard-action-secondary">
+                    <i data-feather="user-plus"></i><span>{{ $isArabic ? 'إضافة طالب' : 'Add student' }}</span>
+                </a>
+                <a href="{{ route('academy.training.create') }}" class="dashboard-action dashboard-action-primary">
+                    <i data-feather="plus-circle"></i><span>{{ $isArabic ? 'إضافة تدريب' : 'Add training' }}</span>
+                </a>
+            </div>
+        </section>
 
-                            <div class="page-title">
-                            </div>
+        <section class="metric-grid">
+            <article class="metric-card metric-students">
+                <div class="metric-icon"><i data-feather="users"></i></div>
+                <div><span>{{ $copy['students'] }}</span><strong>{{ number_format($dashboard['activeStudents']) }}</strong><small>{{ $dashboard['activeGroups'] }} {{ $copy['groups'] }}</small></div>
+            </article>
+            <article class="metric-card metric-bookings">
+                <div class="metric-icon"><i data-feather="calendar"></i></div>
+                <div><span>{{ $copy['bookings'] }}</span><strong>{{ number_format($dashboard['totalBookings']) }}</strong><small class="{{ $dashboard['bookingTrend'] >= 0 ? 'trend-up' : 'trend-down' }}"><i data-feather="{{ $dashboard['bookingTrend'] >= 0 ? 'trending-up' : 'trending-down' }}"></i> {{ abs($dashboard['bookingTrend']) }}% {{ $copy['last30'] }}</small></div>
+            </article>
+            <article class="metric-card metric-revenue">
+                <div class="metric-icon"><i data-feather="credit-card"></i></div>
+                <div><span>{{ $copy['bookingRevenue'] }}</span><strong>{{ number_format($dashboard['totalRevenue'], 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
+            </article>
+            <article class="metric-card metric-subscriptions">
+                <div class="metric-icon"><i data-feather="repeat"></i></div>
+                <div><span>{{ $copy['subscriptions'] }}</span><strong>{{ number_format($dashboard['activeSubscriptions']) }}</strong><small>{{ number_format($dashboard['subscriptionRevenue'], 0) }} {{ $copy['currency'] }} {{ $copy['paid'] }}</small></div>
+            </article>
+            <article class="metric-card metric-outstanding">
+                <div class="metric-icon"><i data-feather="alert-circle"></i></div>
+                <div><span>{{ $copy['outstanding'] }}</span><strong>{{ number_format($dashboard['outstandingSubscriptions'], 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
+            </article>
+            <article class="metric-card metric-attendance">
+                <div class="metric-icon"><i data-feather="check-circle"></i></div>
+                <div><span>{{ $copy['attendance'] }}</span><strong>{{ $dashboard['attendanceRate'] }}%</strong><small>{{ $dashboard['todaySessions'] }} {{ $copy['sessionsToday'] }}</small></div>
+            </article>
+        </section>
 
-                            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a
-                                            href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.home') }}</li>
-                                </ol>
-                            </nav>
+        <section class="operational-strip">
+            <a href="{{ route('academy.training.index') }}"><i data-feather="activity"></i><span>{{ $copy['trainings'] }}</span><strong>{{ $dashboard['activeTrainings'] }}/{{ $dashboard['totalTrainings'] }}</strong></a>
+            <a href="{{ route('academy.coach') }}"><i data-feather="award"></i><span>{{ $copy['coaches'] }}</span><strong>{{ $dashboard['totalCoaches'] }}</strong></a>
+            <a href="{{ route('academy.users.index') }}"><i data-feather="smartphone"></i><span>{{ $copy['customers'] }}</span><strong>{{ $dashboard['uniqueCustomers'] }}</strong></a>
+            <a href="{{ route('academy.profile.index') }}"><i data-feather="heart"></i><span>{{ $copy['followers'] }}</span><strong>{{ $dashboard['followers'] }}</strong></a>
+        </section>
 
-                        </div>
-                    </div>
+        <section class="dashboard-grid dashboard-grid-main">
+            <article class="dashboard-panel dashboard-panel-wide">
+                <header class="panel-header">
+                    <div><h3>{{ $copy['financialPerformance'] }}</h3><p>{{ $copy['financialHint'] }}</p></div>
+                    <span class="panel-badge">{{ $dashboard['activeTrainings'] }} {{ $copy['activeTrainings'] }}</span>
                 </header>
-            </div>
-        </div>
-        <!--  END BREADCRUMBS  -->
+                <div id="financialChart" class="chart-slot chart-slot-large"></div>
+            </article>
+            <article class="dashboard-panel">
+                <header class="panel-header">
+                    <div><h3>{{ $copy['attendanceBreakdown'] }}</h3><p>{{ $copy['last30'] }}</p></div>
+                </header>
+                <div id="attendanceChart" class="chart-slot chart-slot-large"></div>
+            </article>
+        </section>
 
-        <div class="row layout-top-spacing m-auto">
-
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="row widget-statistic">
-                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading p-2">
-                                <div class="w-title d-flex align-items-start justify-content-start m-0">
-                                    <div
-                                        class="w-icon bg-transparent p-0 d-flex align-items-start justify-content-start vertical-">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/color/48/money-bag.png" alt="money-bag" />
-                                    </div>
-                                    <div
-                                        class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
-                                        <h5 class="fs-6">{{ trans('admin.latest_settlement_amount') }}</h5>
-                                        <p class="w-value">{{ $settlements ? $settlements->net_amount : 0 }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading p-2">
-                                <div class="w-title d-flex align-items-start justify-content-start m-0">
-                                    <div class="w-icon bg-transparent p-0">
-                                        <img width="48" height="48" src="https://img.icons8.com/color/48/today.png"
-                                            alt="today" />
-                                    </div>
-                                    <div
-                                        class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
-                                        <h5 class="fs-6">{{ trans('admin.next_settlement_date') }}</h5>
-                                        <p class="w-value">
-                                            @php
-                                                $result = '-';
-                                                if ($settlements && $settlements->settlement_date) {
-                                                    try {
-                                                        $date = \Carbon\Carbon::parse($settlements->settlement_date);
-                                                        $daysToAdd = auth()->user()->settlement_days_count ?? 0;
-                                                        $result = $date->addDays($daysToAdd)->format('Y-m-d');
-                                                    } catch (\Exception $e) {
-                                                        $result = 'Invalid date';
-                                                    }
-                                                }
-                                            @endphp
-
-                                        {{ $result }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading p-2">
-                                <div class="w-title d-flex align-items-start justify-content-start m-0">
-                                    <div class="w-icon bg-transparent p-0">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/color/48/cash-in-hand.png" alt="cash-in-hand" />
-                                    </div>
-                                    <div
-                                        class="d-flex flex-column align-items-center justify-content-between gap-1 flex-shrink-1 flex-grow-1">
-                                        <h5 class="fs-6">{{ trans('admin.training.Total Balance') }}</h5>
-                                        <p class="w-value">{{ auth()->user()->settlements->sum('net_amount') ?: 0 }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- <div class="widget widget-card-five">
-                            <div class="widget-content">
-                                <div class="account-box">
-
-                                    <div class="info-box">
-                                        <div class="icon">
-                                            <span>
-                                                <img src="{{ asset('assetsAdmin/src/assets/img/money-bag.png') }}"
-                                                    alt="money-bag">
-                                            </span>
-                                        </div>
-
-                                        <div class="balance-info d-flex flex-column align-items-center justify-content-center">
-                                            <h6>{{ trans('admin.training.Total Balance') }}</h6>
-                                            <p>{{ auth()->user()->settlements->sum('total_amount') ?: 0 }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-                    </div>
+        <section class="dashboard-grid dashboard-grid-secondary">
+            <article class="dashboard-panel">
+                <header class="panel-header">
+                    <div><h3>{{ $copy['topTrainings'] }}</h3><p>{{ $isArabic ? 'مرتبة حسب عدد الحجوزات' : 'Ranked by bookings' }}</p></div>
+                    <a href="{{ route('academy.training.index') }}" class="panel-link">{{ $copy['viewAll'] }}</a>
+                </header>
+                <div id="trainingsChart" class="chart-slot"></div>
+            </article>
+            <article class="dashboard-panel quick-panel">
+                <header class="panel-header"><div><h3>{{ $copy['quickActions'] }}</h3><p>{{ $isArabic ? 'الوصول السريع إلى مهام الأكاديمية اليومية' : 'Shortcuts to daily academy work' }}</p></div></header>
+                <div class="quick-grid">
+                    <a href="{{ route('academy.attendance.create') }}"><i data-feather="user-check"></i><span>{{ $isArabic ? 'تسجيل الحضور' : 'Take attendance' }}</span></a>
+                    <a href="{{ route('academy.subscriptions.create') }}"><i data-feather="file-plus"></i><span>{{ $isArabic ? 'اشتراك جديد' : 'New subscription' }}</span></a>
+                    <a href="{{ route('academy.groups.create') }}"><i data-feather="grid"></i><span>{{ $isArabic ? 'إنشاء مجموعة' : 'Create group' }}</span></a>
+                    <a href="{{ route('academy.createBooking') }}"><i data-feather="calendar"></i><span>{{ $isArabic ? 'حجز مباشر' : 'Direct booking' }}</span></a>
+                    <a href="{{ route('academy.student-reports.index') }}"><i data-feather="bar-chart-2"></i><span>{{ $isArabic ? 'تقارير الطلاب' : 'Student reports' }}</span></a>
+                    <a href="{{ route('academy.calendar.index') }}"><i data-feather="clock"></i><span>{{ $isArabic ? 'جدول الأكاديمية' : 'Academy calendar' }}</span></a>
                 </div>
+            </article>
+        </section>
+
+        <section class="filter-panel">
+            <div class="filter-heading"><div class="filter-icon"><i data-feather="sliders"></i></div><div><h3>{{ $copy['filter'] }}</h3><p>{{ $isArabic ? 'راجع نتائج الحجوزات لفترة زمنية محددة.' : 'Review booking results for a selected period.' }}</p></div></div>
+            <form id="filterForm" class="filter-form">
+                <label><span>{{ $copy['from'] }}</span><input type="date" class="form-control" id="start_date"></label>
+                <label><span>{{ $copy['to'] }}</span><input type="date" class="form-control" id="end_date"></label>
+                <button type="button" id="filter" class="dashboard-action dashboard-action-primary"><i data-feather="filter"></i><span>{{ $copy['apply'] }}</span></button>
+            </form>
+            <div class="filtered-metrics">
+                <div><span>{{ $copy['balance'] }}</span><strong id="total_booking_balance">0</strong></div>
+                <div><span>{{ $copy['refunds'] }}</span><strong id="total_booking_refund_count">0</strong></div>
+                <div><span>{{ $copy['refundAmount'] }}</span><strong id="total_booking_refund_amount">0</strong></div>
+                <div><span>{{ $copy['bookingCount'] }}</span><strong id="total_booking_count">0</strong></div>
             </div>
+        </section>
 
-            <div class="container">
-                <div class="card">
-                    <div class="row container mb-1">
-                        <div class="form-group mb-0 mt-2 container">
-                            <form id="filterForm" action="javascript:void(0)">
-                                <div class="row align-items-center justify-content-between">
-                                    <div class="col-xl-5 col-lg-5 col-md-4 col-sm-12">
-                                        <label for="start_date"
-                                            class="form-label">{{ trans('admin.training.start_date') }}</label>
-                                        <input type="date" class="form-control flatpickr flatpickr-input"
-                                            name="start_date" id="start_date"
-                                            placeholder="{{ trans('admin.select_start_date') }}" value="{{ old('start_date') ?? request('start_date') }}">
-                                    </div>
-                                    <div class="col-xl-5 col-lg-5 col-md-4 col-sm-12">
-                                        <label for="end_date"
-                                            class="form-label">{{ trans('admin.training.end_date') }}</label>
-                                        <input type="date" class="form-control flatpickr flatpickr-input"
-                                            name="end_date" id="end_date"
-                                            placeholder="{{ trans('admin.select_end_date') }}"
-                                            value="{{ old('end_date') ?? request('end_date') }}">
-                                    </div>
-                                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12">
-                                        <label for="filter" class="form-label"></label>
-                                        <button type="button" class="btn btn-primary mt-4 w-100"
-                                            id="filter">{{ trans('admin.apply_filter') }}</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 layout-spacing">
-                            <div class="row widget-statistic mt-2 container">
-                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 layout-spacing">
-                                    <div class="widget widget-one_hybrid widget-followers">
-                                        <div class="widget-heading">
-                                            <div class="w-title m-0">
-                                                <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48"
-                                                        src="https://img.icons8.com/color/48/payment-history.png"
-                                                        alt="payment-history" />
-                                                </div>
-                                                <div class="">
-                                                    <p class="w-value" id="total_booking_balance"></p>
-                                                    <h5 class="">{{ trans('admin.balance') }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 layout-spacing">
-                                    <div class="widget widget-one_hybrid widget-followers">
-                                        <div class="widget-heading">
-                                            <div class="w-title m-0">
-                                                <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48"
-                                                        src="https://img.icons8.com/color/48/refund.png" alt="refund" />
-                                                </div>
-                                                <div class="">
-                                                    <p class="w-value" id="total_booking_refund_count"></p>
-                                                    <h5 class="">{{ trans('admin.refunds') }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 layout-spacing">
-                                    <div class="widget widget-one_hybrid widget-followers">
-                                        <div class="widget-heading">
-                                            <div class="w-title m-0">
-                                                <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48"
-                                                        src="https://img.icons8.com/color/48/refund-2--v1.png"
-                                                        alt="refund-2--v1" />
-                                                </div>
-                                                <div class="">
-                                                    <p class="w-value" id="total_booking_refund_amount"></p>
-                                                    <h5 class="">{{ trans('admin.refund_amount') }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 layout-spacing">
-                                    <div class="widget widget-one_hybrid widget-followers">
-                                        <div class="widget-heading">
-                                            <div class="w-title m-0">
-                                                <div class="w-icon p-0 bg-transparent">
-                                                    <img width="48" height="48"
-                                                        src="https://img.icons8.com/color/48/event-accepted.png"
-                                                        alt="event-accepted" />
-                                                </div>
-                                                <div class="">
-                                                    <p class="w-value" id="total_booking_count"></p>
-                                                    <h5 class="">{{ trans('admin.booking_count') }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+        <section class="dashboard-grid dashboard-grid-tables">
+            <article class="dashboard-panel data-panel">
+                <header class="panel-header"><div><h3>{{ $copy['recent'] }}</h3><p>{{ $copy['recentHint'] }}</p></div><a href="{{ route('academy.report.joins') }}" class="panel-link">{{ $copy['viewAll'] }}</a></header>
+                <div class="recent-list">
+                    @forelse($dashboard['recentBookings'] as $booking)
+                        @php
+                            $invoiceStatus = $booking->invoice?->getRawOriginal('status');
+                            $isCanceled = (bool) ($booking->invoice?->is_canceled ?? false);
+                        @endphp
+                        <div class="recent-item">
+                            <div class="recent-avatar">{{ mb_substr($booking->user?->name ?: '?', 0, 1) }}</div>
+                            <div class="recent-content">
+                                <div class="recent-title"><strong>{{ $booking->user?->name ?: $copy['noData'] }}</strong><span>{{ number_format($booking->price, 0) }} {{ $copy['currency'] }}</span></div>
+                                <p>{{ $booking->training?->name ?: $copy['trainings'] }}</p>
+                                <div class="recent-meta"><span>{{ $booking->created_at?->locale(app()->getLocale())->diffForHumans() }}</span><span class="booking-status {{ $isCanceled ? 'is-canceled' : ($invoiceStatus === 'paid' ? 'is-paid' : 'is-pending') }}">{{ $isCanceled ? $copy['canceled'] : ($invoiceStatus === 'paid' ? $copy['paid'] : $copy['pending']) }}</span></div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="empty-state">{{ $copy['noData'] }}</div>
+                    @endforelse
                 </div>
-            </div>
-            <div id="chartLine" class="col-xl-12 layout-spacing mt-2">
-                <div class="statbox widget box box-shadow">
-                    <div class="widget-header">
-                        <div class="row">
-                            <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                                <h4>{{ trans('admin.revenue') }}</h4>
-                            </div>
+            </article>
+
+            <article class="dashboard-panel data-panel">
+                <header class="panel-header"><div><h3>{{ $copy['expiring'] }}</h3><p>{{ $copy['expiringHint'] }}</p></div><a href="{{ route('academy.subscriptions.index') }}" class="panel-link">{{ $copy['viewAll'] }}</a></header>
+                <div class="subscription-list">
+                    @forelse($dashboard['expiringSubscriptions'] as $subscription)
+                        <div class="subscription-item">
+                            <div class="subscription-icon"><i data-feather="clock"></i></div>
+                            <div><strong>{{ $subscription->student?->name ?: $copy['noData'] }}</strong><p>{{ $subscription->group?->name ?: $copy['groups'] }}</p></div>
+                            <span><small>{{ $copy['endsOn'] }}</small>{{ $subscription->ends_on?->locale(app()->getLocale())->translatedFormat('d M') }}</span>
                         </div>
-                    </div>
-                    <div class="widget-content widget-content-area">
-                        <div id="s-line" class=""></div>
-                    </div>
+                    @empty
+                        <div class="empty-state">{{ $copy['noData'] }}</div>
+                    @endforelse
                 </div>
-            </div>
-            <div class="row m-auto">
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
-                    <div class="widget widget-card-five">
-                        <div class="widget-content">
-                            <div class="account-box">
-                                <div class="info-box mb-4">
-                                    <div class="icon">
-                                        <span>
-                                            <img src="{{ asset('assetsAdmin/icons8-users-96.png') }}" alt="Total-Users">
-                                        </span>
-                                    </div>
-                                    <div class="balance-info d-flex justify-content-center align-items-center">
-                                        <h6 class="text-muted mb-0 mx-2">{{ trans('admin.total_users') }}</h6>
-                                        <p>{{ $totalUsers }}</p>
-                                    </div>
-                                    <form method="get">
-                                        <div class="dropdown d-inline-block">
-                                            <a class="dropdown-toggle" href="#" role="button"
-                                                id="elementDrodpown3" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="feather feather-more-horizontal">
-                                                    <circle cx="12" cy="12" r="1"></circle>
-                                                    <circle cx="19" cy="12" r="1"></circle>
-                                                    <circle cx="5" cy="12" r="1"></circle>
-                                                </svg>
-                                            </a>
-
-                                            <div class="dropdown-menu left" aria-labelledby="elementDrodpown3"
-                                                style="will-change: transform;">
-
-                                                <a class="dropdown-item" id="userMonthFilter" href="javascript:void(0);"
-                                                    data-url="{{ route('academy.getUserDataByMonth') }}">
-                                                    {{ trans('admin.this_month') }}
-                                                </a>
-                                                <a class="dropdown-item" id="userYearFilter" href="javascript:void(0);"
-                                                    data-url="{{ route('academy.getUserDataByYear') }}">
-                                                    {{ trans('admin.this_year') }}
-                                                </a>
-
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div id="userChartDiv"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing mt-2">
-                    <div class="widget widget-card-five">
-                        <div class="widget-content">
-                            <div class="account-box">
-                                <div class="info-box mb-4">
-                                    <div class="icon">
-                                        <span>
-                                            <img src="{{ asset('assetsAdmin/icons8-deadlift.gif') }}" alt="sports-image">
-                                        </span>
-                                    </div>
-                                    <div class="balance-info d-flex justify-content-center align-items-center mx-auto">
-                                        <h6 class="text-muted mb-0 mx-2">{{ trans('admin.sports_level') }}</h6>
-                                    </div>
-                                </div>
-                                <div id="sportChartDiv"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="row widget-statistic">
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/color/48/conference-background-selected.png"
-                                            alt="conference-background-selected" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ count($usersBooking) }}</p>
-                                        <h5 class="">{{ trans('admin.customers_count') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/color/48/add-user-male--v1.png"
-                                            alt="add-user-male--v1" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ count($newCustomers) }}</p>
-                                        <h5 class="">{{ trans('admin.new_customers_count') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/color/48/collaborating-in-circle.png"
-                                            alt="collaborating-in-circle" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ auth('academy')->user()->follows->count() }}</p>
-                                        <h5 class="">{{ trans('admin.training.Followers') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="row widget-statistic">
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
-                                            alt="conference-background-selected" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ $fullTrainings }}</p>
-                                        <h5 class="">{{ trans('admin.training_completed') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
-                                            alt="add-user-male--v1" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ $inProgressTrainings }}</p>
-                                        <h5 class="">{{ trans('admin.inprogress_training') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
-                                            alt="collaborating-in-circle" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ $upcomingTrainings }}</p>
-                                        <h5 class="">{{ trans('admin.upcoming_training') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12 layout-spacing">
-                        <div class="widget widget-one_hybrid widget-followers">
-                            <div class="widget-heading">
-                                <div class="w-title m-0">
-                                    <div class="w-icon p-0 bg-transparent">
-                                        <img width="48" height="48"
-                                            src="https://img.icons8.com/?size=100&id=8TTVbW2U2ofn&format=png&color=000000"
-                                            alt="collaborating-in-circle" />
-                                    </div>
-                                    <div class="">
-                                        <p class="w-value">{{ $cancelledTrainings }}</p>
-                                        <h5 class="">{{ trans('admin.training_cancelled') }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+            </article>
+        </section>
     </div>
 @endsection
 
 @push('js')
-    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
     <script src="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.min.js') }}"></script>
-    {{--    <script src="{{ asset('assetsAdmin/src/plugins/src/apex/custom-apexcharts.js') }}"></script> --}}
-    <script src="{{ asset('assetsAdmin/src/assets/js/dashboard/dash_1.js') }}"></script>
-    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
     <script src="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.js') }}"></script>
-    <script src="{{ asset('assetsAdmin/src/plugins/src/flatpickr/custom-flatpickr.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        var f1 = flatpickr(document.getElementById('start_date'));
-        var f2 = flatpickr(document.getElementById('end_date'));
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#filter').click(function() {
-                var startDate = $('#start_date').val();
-                var endDate = $('#end_date').val();
-                $.ajax({
-                    url: '{{ route('academy.filter-bookings') }}', // Your route to handle the AJAX request
-                    type: 'GET',
-                    data: {
-                        start_date: startDate,
-                        end_date: endDate,
-                    },
-                    success: function(response) {
-                        $('#total_booking_balance').text(response.total_booking_balance) +
-                            '{{ trans('admin.egp') }}';
-                        $('#total_booking_refund_count').text(response
-                            .total_booking_refund_count);
-                        $('#total_booking_refund_amount').text(response
-                            .total_booking_refund_amount);
-                        $('#total_booking_count').text(response.total_booking_count);
-                    },
-                    error: function(xhr) {
-                        console.log(xhr.responseText);
-                    }
-                });
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = {
+                labels: @json($dashboard['monthLabels']),
+                bookings: @json($dashboard['monthlyBookings']),
+                bookingRevenue: @json($dashboard['monthlyBookingRevenue']),
+                subscriptionRevenue: @json($dashboard['monthlySubscriptionRevenue']),
+                attendance: @json($dashboard['attendanceStatuses']),
+                trainingLabels: @json($dashboard['topTrainings']->pluck('name')),
+                trainingBookings: @json($dashboard['topTrainings']->pluck('bookings'))
+            };
+            const labels = {
+                bookings: @json($copy['bookings']), bookingRevenue: @json($copy['bookingRevenue']),
+                subscriptionRevenue: @json($copy['subscriptionRevenue']), present: @json($copy['present']),
+                late: @json($copy['late']), absent: @json($copy['absent']), excused: @json($copy['excused']),
+                attendance: @json($copy['attendance']), currency: @json($copy['currency'])
+            };
+            const dark = document.body.classList.contains('dark');
+            const text = dark ? '#cbd5e1' : '#64748b';
+            const grid = dark ? '#293446' : '#e8edf4';
+            const common = { fontFamily: 'Cairo, Nunito, sans-serif', foreColor: text, toolbar: { show: false }, animations: { enabled: true, easing: 'easeinout', speed: 550 } };
+            const noData = { text: @json($copy['noData']), align: 'center', verticalAlign: 'middle', style: { color: text } };
+
+            new ApexCharts(document.querySelector('#financialChart'), {
+                chart: { ...common, type: 'line', height: 360 },
+                series: [
+                    { name: labels.bookings, type: 'column', data: data.bookings },
+                    { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
+                    { name: labels.subscriptionRevenue, type: 'line', data: data.subscriptionRevenue }
+                ],
+                colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
+                fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } }, dataLabels: { enabled: false },
+                grid: { borderColor: grid, strokeDashArray: 4 }, xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: [{ min: 0, forceNiceScale: true }, { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }],
+                legend: { position: 'top', horizontalAlign: '{{ $isArabic ? 'right' : 'left' }}' }, tooltip: { shared: true, intersect: false }, noData
+            }).render();
+
+            new ApexCharts(document.querySelector('#attendanceChart'), {
+                chart: { ...common, type: 'donut', height: 360 }, series: data.attendance,
+                labels: [labels.present, labels.late, labels.absent, labels.excused],
+                colors: ['#14b8a6', '#f59e0b', '#ef4444', '#64748b'], stroke: { width: 0 }, dataLabels: { enabled: false },
+                legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '72%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
+            }).render();
+
+            new ApexCharts(document.querySelector('#trainingsChart'), {
+                chart: { ...common, type: 'bar', height: 300 }, series: [{ name: labels.bookings, data: data.trainingBookings }],
+                colors: ['#f97316'], plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '48%' } },
+                dataLabels: { enabled: false }, grid: { borderColor: grid, strokeDashArray: 4 },
+                xaxis: { categories: data.trainingLabels, min: 0, forceNiceScale: true }, noData
+            }).render();
+
+            flatpickr('#start_date', { dateFormat: 'Y-m-d' });
+            flatpickr('#end_date', { dateFormat: 'Y-m-d' });
+            const button = document.getElementById('filter');
+            button.addEventListener('click', async function () {
+                button.disabled = true;
+                const params = new URLSearchParams({ start_date: document.getElementById('start_date').value, end_date: document.getElementById('end_date').value });
+                try {
+                    const response = await fetch(`{{ route('academy.filter-bookings') }}?${params}`, { headers: { Accept: 'application/json' } });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const result = await response.json();
+                    document.getElementById('total_booking_balance').textContent = `${Number(result.total_booking_balance || 0).toLocaleString()} ${labels.currency}`;
+                    document.getElementById('total_booking_refund_count').textContent = Number(result.total_booking_refund_count || 0).toLocaleString();
+                    document.getElementById('total_booking_refund_amount').textContent = `${Number(result.total_booking_refund_amount || 0).toLocaleString()} ${labels.currency}`;
+                    document.getElementById('total_booking_count').textContent = Number(result.total_booking_count || 0).toLocaleString();
+                } catch (error) {
+                    console.error('[Hagzz Academy Dashboard] Booking filter failed', error);
+                } finally { button.disabled = false; }
             });
-
-            // Load default data
-            $('#filter').click();
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function fetchChartData(callback) {
-                // Replace with the actual URL to fetch data
-                const url = '{{ route('academy.revenue-data') }}';
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        callback(data);
-                    })
-                    .catch(error => console.error('Error fetching data:', error));
-            }
-
-            function renderJoinsChart(data, isDarkMode) {
-                const rowColors = isDarkMode ? ['#3b3f5c', 'transparent'] : ['#f1f2f3', 'transparent'];
-
-                var sline = {
-                    chart: {
-                        height: 350,
-                        type: 'area',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    dataLabels: {
-                        enabled: false
-                    },
-                    stroke: {
-                        curve: 'smooth'
-                    },
-                    series: [{
-                        name: "Revenue",
-                        data: data.ordersData
-                    }],
-                    title: {
-                        text: '', //Revenue by Month
-                        align: 'left'
-                    },
-                    grid: {
-                        row: {
-                            colors: rowColors, // takes an array which will be repeated on columns
-                            opacity: 0.5
-                        },
-                    },
-                    xaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
-                            'Nov', 'Dec'
-                        ],
-                    }
-                };
-
-                var chart = new ApexCharts(document.querySelector("#s-line"), sline);
-                chart.render();
-            }
-
-            function initializeJoinsChart() {
-                const getCorkThemeObject = localStorage.getItem("theme");
-                const getParsedObject = JSON.parse(getCorkThemeObject);
-                const isDarkMode = getParsedObject?.settings?.layout?.darkMode ?? false;
-
-                fetchChartData(data => {
-                    renderJoinsChart(data, isDarkMode);
-                });
-            }
-
-            initializeJoinsChart();
-
-            // Theme toggle handler
-            document.querySelector('.theme-toggle').addEventListener('click', function() {
-                const getCorkThemeObject = localStorage.getItem("theme");
-                const getParsedObject = JSON.parse(getCorkThemeObject);
-                const isDarkMode = getParsedObject?.settings?.layout?.darkMode ?? false;
-
-                // Re-fetch data and re-render charts on theme change
-                fetchChartData(data => {
-                    renderJoinsChart(data, isDarkMode);
-                });
-            });
-        });
-    </script>
-    <script>
-        var userChartOptions = {
-            chart: {
-                height: 350,
-                type: 'donut',
-                toolbar: {
-                    show: false,
-                }
-            },
-            series: [{{ $maleUsers }}, {{ $femaleUsers }}],
-            labels: ['male Users', 'Female Users'],
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
-                    },
-                }
-            }]
-        }
-        var userChart = new ApexCharts(document.querySelector("#userChartDiv"), userChartOptions);
-        userChart.render();
-
-        var sportChartOptions = {
-            chart: {
-                height: 350,
-                type: 'donut',
-                toolbar: {
-                    show: false,
-                }
-            },
-            series: [{{ $beginnerLevels }}, {{ $intermediateLevels }}, {{ $advancedLevels }}],
-            labels: ['Beginner', 'Intermediate', 'Advanced'],
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
-                    },
-                }
-            }]
-        }
-        var sportChart = new ApexCharts(document.querySelector("#sportChartDiv"), sportChartOptions);
-        sportChart.render();
-    </script>
-    <script>
-        $('#userMonthFilter').on('click', function() {
-            $.ajax({
-                type: 'get',
-                url: $(this).data('url'),
-                success: function(response) {
-                    userChart.updateSeries([response.maleUsersByMonth, response.femaleUsersByMonth]);
-                }
-            });
-        });
-
-        $('#userYearFilter').on('click', function() {
-            $.ajax({
-                type: 'get',
-                url: $(this).data('url'),
-                success: function(response) {
-                    userChart.updateSeries([response.maleUsersByYear, response.femaleUsersByYear]);
-                }
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
-            let previousCount = {{ auth('academy')->user()->unreadNotifications->count() }};
-
-            function checkNotifications() {
-                $.ajax({
-                    url: '{{ route('academy.check-notifications') }}',
-                    method: 'GET',
-                    success: function (data) {
-                        let newCount = data.unread_count;
-
-                        if (newCount > previousCount) {
-                            Swal.fire({
-                                title: '{{ trans('admin.new_notifications') }}',
-                                text: "{{ trans('admin.you_have_new_notifications') }}",
-                                icon: 'info',
-                                confirmButtonText: '{{ trans('admin.ok') }}'
-                            });
-                            previousCount = newCount; // Update the previous count to the new count
-                        }
-                    }
-                });
-            }
-
-            // Check every minute (60000 milliseconds)
-            setInterval(checkNotifications, 60000);
+            button.click();
+            if (window.feather) feather.replace();
         });
     </script>
 @endpush
