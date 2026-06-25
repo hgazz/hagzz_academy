@@ -77,10 +77,22 @@
         </header>
 
         <section class="calendar-metrics">
-            <article><div class="metric-icon is-blue"><i data-feather="activity"></i></div><div><span>{{ $copy['trainings'] }}</span><strong>{{ number_format($calendarSummary['trainings']) }}</strong></div></article>
-            <article><div class="metric-icon is-purple"><i data-feather="repeat"></i></div><div><span>{{ $copy['weeklySessions'] }}</span><strong>{{ number_format($calendarSummary['weeklySessions']) }}</strong></div></article>
-            <article><div class="metric-icon is-teal"><i data-feather="sun"></i></div><div><span>{{ $copy['todaySessions'] }}</span><strong>{{ number_format($calendarSummary['todaySessions']) }}</strong></div></article>
-            <article><div class="metric-icon is-orange"><i data-feather="users"></i></div><div><span>{{ $copy['bookings'] }}</span><strong>{{ number_format($calendarSummary['bookings']) }}</strong></div></article>
+            <article>
+                <span class="metric-label is-blue"><i data-feather="activity"></i>{{ $copy['trainings'] }}</span>
+                <strong>{{ number_format($calendarSummary['trainings']) }}</strong>
+            </article>
+            <article>
+                <span class="metric-label is-purple"><i data-feather="repeat"></i>{{ $copy['weeklySessions'] }}</span>
+                <strong>{{ number_format($calendarSummary['weeklySessions']) }}</strong>
+            </article>
+            <article>
+                <span class="metric-label is-teal"><i data-feather="calendar"></i>{{ $copy['todaySessions'] }}</span>
+                <strong>{{ number_format($calendarSummary['todaySessions']) }}</strong>
+            </article>
+            <article>
+                <span class="metric-label is-orange"><i data-feather="users"></i>{{ $copy['bookings'] }}</span>
+                <strong>{{ number_format($calendarSummary['bookings']) }}</strong>
+            </article>
         </section>
 
         <section class="calendar-workspace">
