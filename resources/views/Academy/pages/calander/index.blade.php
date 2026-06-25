@@ -141,7 +141,7 @@
                         <button type="button" data-calendar-view="timeGridWeek" title="{{ $copy['week'] }}"><i data-feather="columns"></i><span>{{ $copy['week'] }}</span></button>
                         <button type="button" data-calendar-view="timeGridDay" title="{{ $copy['day'] }}"><i data-feather="clock"></i><span>{{ $copy['day'] }}</span></button>
                         <button type="button" data-calendar-view="listWeek" title="{{ $copy['list'] }}"><i data-feather="list"></i><span>{{ $copy['list'] }}</span></button>
-                        <button type="button" id="goToCurrentTime" class="go-now-button" title="{{ $copy['goNow'] }}"><i data-feather="crosshair"></i></button>
+                        <button type="button" id="goToCurrentTime" class="go-now-button" title="{{ $copy['goNow'] }}" aria-label="{{ $copy['goNow'] }}"><i data-feather="crosshair"></i></button>
                     </div>
                 </div>
                 <div id="academyCalendar"></div>
@@ -210,6 +210,18 @@
                 now.setMinutes(now.getMinutes() - 60);
                 const hours = String(Math.max(0, now.getHours())).padStart(2, '0');
                 return `${hours}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+            }
+
+            function scrollToCurrentTime() {
+                window.setTimeout(function () {
+                    calendar.scrollToTime(currentScrollTime());
+                    window.requestAnimationFrame(function () {
+                        const nowLine = document.querySelector('.fc-timegrid-now-indicator-line');
+                        if (nowLine) {
+                            nowLine.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                        }
+                    });
+                }, 180);
             }
 
             function formatTime(value) {
@@ -317,11 +329,9 @@
                 button.addEventListener('click', () => calendar.changeView(button.dataset.calendarView));
             });
             document.getElementById('goToCurrentTime').addEventListener('click', function () {
-                calendar.today();
-                if (window.innerWidth >= 768 && !calendar.view.type.startsWith('timeGrid')) {
-                    calendar.changeView('timeGridDay');
-                }
-                calendar.scrollToTime(currentScrollTime());
+                const today = new Date();
+                calendar.changeView('timeGridDay', today);
+                scrollToCurrentTime();
             });
 
             updateLiveClock();
