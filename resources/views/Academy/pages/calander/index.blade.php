@@ -171,6 +171,7 @@
 @endsection
 
 @push('js')
+    <script src="{{ asset('assetsAdmin/src/plugins/src/font-icons/feather/feather.min.js') }}"></script>
     <script src="{{ asset('assetsAdmin/src/plugins/src/fullcalendar/fullcalendar.min.js') }}"></script>
     <script src="{{ asset('assetsAdmin/src/plugins/src/fullcalendar/locales-all.min.js') }}"></script>
     <script>
