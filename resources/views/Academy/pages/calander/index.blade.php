@@ -37,6 +37,11 @@
         'attendance' => $isArabic ? 'تسجيل الحضور' : 'Take attendance',
         'calendar' => $isArabic ? 'التقويم' : 'Calendar',
         'notSpecified' => $isArabic ? 'غير محدد' : 'Not specified',
+        'now' => $isArabic ? 'الوقت الآن' : 'Current time',
+        'live' => $isArabic ? 'مباشر' : 'Live',
+        'previous' => $isArabic ? 'السابق' : 'Previous',
+        'next' => $isArabic ? 'التالي' : 'Next',
+        'goNow' => $isArabic ? 'الانتقال إلى الساعة الحالية' : 'Go to current time',
     ];
 @endphp
 
@@ -54,6 +59,14 @@
                 </div>
             </div>
             <div class="calendar-header-actions">
+                <div class="calendar-live-clock">
+                    <div class="live-clock-icon"><i data-feather="clock"></i></div>
+                    <div>
+                        <span id="liveDate">{{ now()->locale(app()->getLocale())->translatedFormat('l، d F') }}</span>
+                        <strong id="liveClock">{{ now()->format('h:i:s A') }}</strong>
+                    </div>
+                    <small><i></i>{{ $copy['live'] }}</small>
+                </div>
                 <a href="{{ route('academy.attendance.create') }}" class="calendar-action calendar-action-secondary">
                     <i data-feather="user-check"></i><span>{{ $copy['attendance'] }}</span>
                 </a>
@@ -98,6 +111,27 @@
             </aside>
 
             <div class="calendar-surface">
+                <div class="calendar-controlbar">
+                    <div class="calendar-navigation" aria-label="{{ $copy['calendar'] }}">
+                        <button type="button" data-calendar-action="prev" title="{{ $copy['previous'] }}" aria-label="{{ $copy['previous'] }}">
+                            <i data-feather="{{ $isArabic ? 'chevron-right' : 'chevron-left' }}"></i>
+                        </button>
+                        <button type="button" data-calendar-action="today" class="calendar-today-button">
+                            <i data-feather="calendar"></i><span>{{ $copy['today'] }}</span>
+                        </button>
+                        <button type="button" data-calendar-action="next" title="{{ $copy['next'] }}" aria-label="{{ $copy['next'] }}">
+                            <i data-feather="{{ $isArabic ? 'chevron-left' : 'chevron-right' }}"></i>
+                        </button>
+                    </div>
+                    <h2 id="calendarRangeTitle"></h2>
+                    <div class="calendar-view-actions">
+                        <button type="button" data-calendar-view="dayGridMonth" title="{{ $copy['month'] }}"><i data-feather="calendar"></i><span>{{ $copy['month'] }}</span></button>
+                        <button type="button" data-calendar-view="timeGridWeek" title="{{ $copy['week'] }}"><i data-feather="columns"></i><span>{{ $copy['week'] }}</span></button>
+                        <button type="button" data-calendar-view="timeGridDay" title="{{ $copy['day'] }}"><i data-feather="clock"></i><span>{{ $copy['day'] }}</span></button>
+                        <button type="button" data-calendar-view="listWeek" title="{{ $copy['list'] }}"><i data-feather="list"></i><span>{{ $copy['list'] }}</span></button>
+                        <button type="button" id="goToCurrentTime" class="go-now-button" title="{{ $copy['goNow'] }}"><i data-feather="crosshair"></i></button>
+                    </div>
+                </div>
                 <div id="academyCalendar"></div>
             </div>
         </section>
@@ -149,6 +183,21 @@
             const drawer = document.getElementById('trainingDrawer');
             const backdrop = document.getElementById('trainingDrawerBackdrop');
             const timeFormatter = new Intl.DateTimeFormat(@json($isArabic ? 'ar-EG' : 'en-US'), { hour: '2-digit', minute: '2-digit' });
+            const clockFormatter = new Intl.DateTimeFormat(@json($isArabic ? 'ar-EG' : 'en-US'), { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateFormatter = new Intl.DateTimeFormat(@json($isArabic ? 'ar-EG' : 'en-US'), { weekday: 'long', day: '2-digit', month: 'long' });
+
+            function updateLiveClock() {
+                const now = new Date();
+                document.getElementById('liveClock').textContent = clockFormatter.format(now);
+                document.getElementById('liveDate').textContent = dateFormatter.format(now);
+            }
+
+            function currentScrollTime() {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - 60);
+                const hours = String(Math.max(0, now.getHours())).padStart(2, '0');
+                return `${hours}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+            }
 
             function formatTime(value) {
                 if (!value) return @json($copy['notSpecified']);
@@ -189,6 +238,8 @@
                 initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
                 firstDay: 6,
                 nowIndicator: true,
+                scrollTime: currentScrollTime(),
+                scrollTimeReset: false,
                 allDaySlot: false,
                 slotMinTime: '06:00:00',
                 slotMaxTime: '24:00:00',
@@ -199,11 +250,7 @@
                 dayMaxEvents: 3,
                 eventDisplay: 'block',
                 events: recurringEvents,
-                headerToolbar: {
-                    start: 'prev,next today',
-                    center: 'title',
-                    end: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-                },
+                headerToolbar: false,
                 buttonText: {
                     today: @json($copy['today']),
                     month: @json($copy['month']),
@@ -218,24 +265,54 @@
                     const wrapper = document.createElement('div');
                     wrapper.className = 'calendar-event-content';
                     const time = document.createElement('span');
-                    time.className = 'calendar-event-time';
-                    time.textContent = arg.timeText;
+                    time.className = 'calendar-event-time calendar-event-meta';
+                    if (window.feather?.icons?.clock) time.innerHTML = window.feather.icons.clock.toSvg();
+                    time.append(document.createTextNode(arg.timeText));
                     const title = document.createElement('strong');
                     title.textContent = arg.event.title;
                     const meta = document.createElement('small');
-                    meta.textContent = props.coach || '';
-                    wrapper.append(time, title, meta);
+                    meta.className = 'calendar-event-meta';
+                    if (window.feather?.icons?.user) meta.innerHTML = window.feather.icons.user.toSvg();
+                    meta.append(document.createTextNode(props.coach || ''));
+                    const location = document.createElement('small');
+                    location.className = 'calendar-event-meta';
+                    if (window.feather?.icons?.['map-pin']) location.innerHTML = window.feather.icons['map-pin'].toSvg();
+                    location.append(document.createTextNode(props.location || ''));
+                    wrapper.append(time, title, meta, location);
                     return { domNodes: [wrapper] };
                 },
                 eventClick: function (info) {
                     info.jsEvent.preventDefault();
                     openDrawer(eventMap.get(String(info.event.id)));
                 },
+                datesSet: function (info) {
+                    document.getElementById('calendarRangeTitle').textContent = info.view.title;
+                    document.querySelectorAll('[data-calendar-view]').forEach(button => {
+                        button.classList.toggle('is-active', button.dataset.calendarView === info.view.type);
+                    });
+                },
                 windowResize: function (info) {
                     if (window.innerWidth < 768 && info.view.type !== 'listWeek') calendar.changeView('listWeek');
                 }
             });
             calendar.render();
+
+            document.querySelectorAll('[data-calendar-action]').forEach(button => {
+                button.addEventListener('click', () => calendar[button.dataset.calendarAction]());
+            });
+            document.querySelectorAll('[data-calendar-view]').forEach(button => {
+                button.addEventListener('click', () => calendar.changeView(button.dataset.calendarView));
+            });
+            document.getElementById('goToCurrentTime').addEventListener('click', function () {
+                calendar.today();
+                if (window.innerWidth >= 768 && !calendar.view.type.startsWith('timeGrid')) {
+                    calendar.changeView('timeGridDay');
+                }
+                calendar.scrollToTime(currentScrollTime());
+            });
+
+            updateLiveClock();
+            window.setInterval(updateLiveClock, 1000);
             if (window.feather) feather.replace();
         });
     </script>
