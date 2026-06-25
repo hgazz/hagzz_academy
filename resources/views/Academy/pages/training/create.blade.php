@@ -2,54 +2,142 @@
 
 @section('title', trans('admin.training.create'))
 
+@push('css')
+    <link href="{{ asset('assetsAdmin/src/assets/css/training-form-modern.css') }}" rel="stylesheet">
+@endpush
+
+@php
+    $isArabic = app()->getLocale() === 'ar';
+@endphp
 
 @section('content')
-    <div class="middle-content container-xxl p-0">
+    <div class="middle-content container-xxl p-0 training-create-page" dir="{{ $isArabic ? 'rtl' : 'ltr' }}">
+        <header class="training-page-header">
+            <div class="training-title-group">
+                <button type="button" class="training-menu-toggle btn-toggle sidebarCollapse" aria-label="Toggle menu">
+                    <i data-feather="menu"></i>
+                </button>
+                <div>
+                    <span>{{ $isArabic ? 'إدارة التدريبات' : 'Training management' }}</span>
+                    <h1>{{ trans('admin.training.create') }}</h1>
+                    <p>{{ $isArabic ? 'أدخل تفاصيل التدريب، الجدول، الجمهور والسعر ثم راجع الملخص قبل الحفظ.' : 'Add training details, schedule, audience and pricing, then review before saving.' }}</p>
+                </div>
+            </div>
+            <a href="{{ route('academy.training.index') }}" class="training-back-link">
+                <i data-feather="{{ $isArabic ? 'arrow-right' : 'arrow-left' }}"></i>
+                <span>{{ $isArabic ? 'العودة إلى التدريبات' : 'Back to trainings' }}</span>
+            </a>
+        </header>
 
-        <!--  BEGIN BREADCRUMBS  -->
-        <div class="secondary-nav">
-            <div class="breadcrumbs-container" data-page-heading="Analytics">
-                <header class="header navbar navbar-expand-sm">
-                    <a href="javascript:void(0);" class="btn-toggle sidebarCollapse" data-placement="bottom">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                    </a>
-                    <div class="d-flex breadcrumb-content">
-                        <div class="page-header">
+        @if ($errors->any())
+            <div class="training-error-summary" role="alert">
+                <i data-feather="alert-triangle"></i>
+                <div>
+                    <strong>{{ $isArabic ? 'يرجى مراجعة البيانات التالية' : 'Please review the following fields' }}</strong>
+                    <p>{{ $isArabic ? 'توجد بعض الحقول التي تحتاج إلى تصحيح قبل حفظ التدريب.' : 'Some fields need correction before the training can be saved.' }}</p>
+                </div>
+            </div>
+        @endif
 
-                            <div class="page-title">
-                            </div>
+        <form method="POST" action="{{ route('academy.training.store') }}" id="trainingForm" novalidate>
+            <div class="training-form-layout">
+                <main class="training-form-main">
+                    @include('Academy.pages.training.partials._form')
+                </main>
 
-                            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('academy.training.index') }}">{{ trans('admin.training.training') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.training.create') }}</li>
-                                </ol>
-                            </nav>
-
+                <aside class="training-form-aside">
+                    <div class="training-preview">
+                        <div class="preview-accent" id="previewAccent"></div>
+                        <div class="preview-heading">
+                            <span>{{ $isArabic ? 'معاينة التدريب' : 'Training preview' }}</span>
+                            <span class="preview-status">{{ $isArabic ? 'جديد' : 'New' }}</span>
+                        </div>
+                        <h2 id="previewName">{{ $isArabic ? 'اسم التدريب' : 'Training name' }}</h2>
+                        <p id="previewDescription">{{ $isArabic ? 'سيظهر وصف التدريب هنا أثناء الكتابة.' : 'The training description will appear here as you type.' }}</p>
+                        <dl>
+                            <div><dt><i data-feather="calendar"></i>{{ $isArabic ? 'الأيام' : 'Days' }}</dt><dd id="previewDays">-</dd></div>
+                            <div><dt><i data-feather="clock"></i>{{ $isArabic ? 'الوقت' : 'Time' }}</dt><dd id="previewTime">-</dd></div>
+                            <div><dt><i data-feather="map-pin"></i>{{ trans('admin.training.address') }}</dt><dd id="previewAddress">-</dd></div>
+                            <div><dt><i data-feather="users"></i>{{ trans('admin.training.max_players') }}</dt><dd id="previewCapacity">-</dd></div>
+                        </dl>
+                        <div class="preview-price">
+                            <span>{{ trans('admin.training.price') }}</span>
+                            <strong id="previewPrice">0</strong>
+                            <small>{{ $isArabic ? 'ج.م' : 'EGP' }}</small>
                         </div>
                     </div>
-                </header>
-            </div>
-        </div>
-        <!--  END BREADCRUMBS  -->
 
-        <div class="row layout-top-spacing">
-             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-        <form method="POST" action="{{ route('academy.training.store') }}">
-            <div class="card">
-                <div class="card-header">
-                    <h3>{{ trans('admin.training.create') }}</h3>
-                </div>
-                <div class="card-body">
-                    @include('Academy.pages.training.partials._form')
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-success mt-3">{{ trans('admin.submit') }}</button>
-                </div>
+                    <div class="form-progress-card">
+                        <div class="progress-heading">
+                            <span>{{ $isArabic ? 'اكتمال البيانات' : 'Form completion' }}</span>
+                            <strong id="formProgressValue">0%</strong>
+                        </div>
+                        <div class="progress-track"><span id="formProgressBar"></span></div>
+                        <p>{{ $isArabic ? 'الحقول المعلّمة بنجمة مطلوبة لإتمام الحفظ.' : 'Fields marked with an asterisk are required.' }}</p>
+                    </div>
+                </aside>
             </div>
+
+            <footer class="training-form-footer">
+                <a href="{{ route('academy.training.index') }}" class="training-cancel-button">{{ $isArabic ? 'إلغاء' : 'Cancel' }}</a>
+                <button type="submit" class="training-submit-button" id="trainingSubmit">
+                    <i data-feather="save"></i>
+                    <span>{{ trans('admin.submit') }}</span>
+                </button>
+            </footer>
         </form>
     </div>
-        </div>
-    </div>
 @endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('trainingForm');
+            const locale = @json(app()->getLocale());
+            const requiredFields = Array.from(form.querySelectorAll('[data-required="true"]'));
+            const daysSelect = document.getElementById('classes_days');
+
+            function selectedText(id) {
+                const element = document.getElementById(id);
+                return element && element.selectedIndex >= 0 ? element.options[element.selectedIndex].text.trim() : '-';
+            }
+
+            function updatePreview() {
+                const localizedName = document.getElementById(locale === 'ar' ? 'name_ar' : 'name_en');
+                const localizedDescription = document.getElementById(locale === 'ar' ? 'description_ar' : 'description_en');
+                document.getElementById('previewName').textContent = localizedName?.value.trim() || @json($isArabic ? 'اسم التدريب' : 'Training name');
+                document.getElementById('previewDescription').textContent = localizedDescription?.value.trim() || @json($isArabic ? 'سيظهر وصف التدريب هنا أثناء الكتابة.' : 'The training description will appear here as you type.');
+                document.getElementById('previewTime').textContent = [document.getElementById('start_time').value, document.getElementById('end_time').value].filter(Boolean).join(' - ') || '-';
+                document.getElementById('previewAddress').textContent = selectedText('address_id');
+                document.getElementById('previewCapacity').textContent = document.getElementById('max_players').value || '-';
+                document.getElementById('previewPrice').textContent = Number(document.getElementById('price').value || 0).toLocaleString();
+                document.getElementById('previewAccent').style.backgroundColor = document.getElementById('color').value || '#2563eb';
+
+                const selectedDays = Array.from(daysSelect.selectedOptions).map(option => option.text.trim());
+                document.getElementById('previewDays').textContent = selectedDays.join('، ') || '-';
+            }
+
+            function updateProgress() {
+                const complete = requiredFields.filter(field => {
+                    if (field.tagName === 'SELECT' && field.multiple) return field.selectedOptions.length > 0;
+                    return String(field.value || '').trim() !== '';
+                }).length;
+                const value = requiredFields.length ? Math.round((complete / requiredFields.length) * 100) : 0;
+                document.getElementById('formProgressValue').textContent = `${value}%`;
+                document.getElementById('formProgressBar').style.width = `${value}%`;
+            }
+
+            form.addEventListener('input', function () {
+                updatePreview();
+                updateProgress();
+            });
+            form.addEventListener('change', function () {
+                updatePreview();
+                updateProgress();
+            });
+            updatePreview();
+            updateProgress();
+            if (window.feather) feather.replace();
+        });
+    </script>
+@endpush
