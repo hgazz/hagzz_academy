@@ -146,8 +146,8 @@
                 </a>
             </li>
 
-            <li class="menu {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'active' : '' }}">
-                <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? '' : 'collapsed' }}">
+            <li class="menu {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.competitions.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'active' : '' }}">
+                <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.competitions.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.competitions.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? '' : 'collapsed' }}">
                     <div class="">
                         <img src="{{ asset('assetsAdmin/people-fill.svg') }}" alt="">
                         <span>{{ trans('admin.student_management.menu') }}</span>
@@ -156,7 +156,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </div>
                 </a>
-                <ul class="collapse submenu list-unstyled {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
+                <ul class="collapse submenu list-unstyled {{ Request::routeIs('academy.students.*') || Request::routeIs('academy.groups.*') || Request::routeIs('academy.competitions.*') || Request::routeIs('academy.attendance.*') || Request::routeIs('academy.subscriptions.*') || Request::routeIs('academy.student-reports.*') ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
                     <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}">
                         <a href="{{ route('academy.students.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -170,6 +170,14 @@
                             <div class="">
                                 <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
                                 <span>{{ trans('admin.student_management.groups') }}</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu {{ Request::routeIs('academy.competitions.*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.competitions.index') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <img src="{{ asset('assetsAdmin/card-checklist.svg') }}" alt="">
+                                <span>{{ trans('admin.student_management.competitions') }}</span>
                             </div>
                         </a>
                     </li>

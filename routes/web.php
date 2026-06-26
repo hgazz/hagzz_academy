@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AcademyAttendanceController;
+use App\Http\Controllers\AcademyCompetitionController;
 use App\Http\Controllers\AcademyGroupController;
 use App\Http\Controllers\AcademyStudentReportController;
 use App\Http\Controllers\AcademyStudentController;
@@ -145,6 +146,11 @@ Route::group(
 
         Route::resource('students', AcademyStudentController::class)->except(['show']);
         Route::resource('groups', AcademyGroupController::class)->except(['show']);
+        Route::resource('competitions', AcademyCompetitionController::class);
+        Route::put('competitions/{competition}/result', [AcademyCompetitionController::class, 'result'])
+            ->name('competitions.result');
+        Route::get('competitions/{competition}/print', [AcademyCompetitionController::class, 'print'])
+            ->name('competitions.print');
         Route::resource('subscriptions', AcademyStudentSubscriptionController::class)->except(['show']);
         Route::post('subscriptions/{subscription}/payments', [AcademyStudentSubscriptionController::class, 'storePayment'])
             ->name('subscriptions.payments.store');
