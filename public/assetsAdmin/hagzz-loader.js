@@ -20,7 +20,14 @@
         overlay.className = 'hagzz-page-transition is-hidden';
         overlay.innerHTML = [
             '<div class="hagzz-page-transition__content" role="status" aria-live="polite">',
+            '<div class="hagzz-loader-scene" aria-hidden="true">',
+            '<div class="hagzz-loader-orbit">',
+            '<span class="hagzz-ball hagzz-ball-football"></span>',
+            '<span class="hagzz-ball hagzz-ball-basketball"></span>',
+            '<span class="hagzz-ball hagzz-ball-tennis"></span>',
+            '</div>',
             '<div class="hagzz-loader-mark">H</div>',
+            '</div>',
             '<div class="hagzz-loader-copy">',
             '<strong data-hagzz-loader-title>جار تنفيذ الطلب</strong>',
             '<span data-hagzz-loader-message>نجهز الصفحة التالية<span class="hagzz-loader-dots"><i></i><i></i><i></i></span></span>',

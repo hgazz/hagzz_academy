@@ -17,7 +17,14 @@
 <div id="load_screen">
     <div class="loader">
         <div class="loader-content">
-            <div class="hagzz-loader-mark">H</div>
+            <div class="hagzz-loader-scene" aria-hidden="true">
+                <div class="hagzz-loader-orbit">
+                    <span class="hagzz-ball hagzz-ball-football"></span>
+                    <span class="hagzz-ball hagzz-ball-basketball"></span>
+                    <span class="hagzz-ball hagzz-ball-tennis"></span>
+                </div>
+                <div class="hagzz-loader-mark">H</div>
+            </div>
             <div class="hagzz-loader-copy">
                 <strong>{{ app()->getLocale() === 'ar' ? 'منظومة حجز الرقمية' : 'Hagzz Digital Platform' }}</strong>
                 <span>
