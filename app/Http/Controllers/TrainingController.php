@@ -104,7 +104,7 @@ class TrainingController extends Controller
         $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())
             ->where(function ($query) use ($training) {
                 $query->where('active', 1)
-                    ->orWhereKey($training->coach_id);
+                    ->orWhere('id', $training->coach_id);
             })
             ->get(['id','name']);
         $sports = auth('academy')->user()->sports;
