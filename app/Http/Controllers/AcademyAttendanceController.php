@@ -12,6 +12,13 @@ class AcademyAttendanceController extends Controller
     public function index()
     {
         $sessions = AcademyAttendanceSession::with(['group'])
+            ->withCount([
+                'records',
+                'records as present_count' => fn($query) => $query->where('status', 'present'),
+                'records as late_count' => fn($query) => $query->where('status', 'late'),
+                'records as absent_count' => fn($query) => $query->where('status', 'absent'),
+                'records as excused_count' => fn($query) => $query->where('status', 'excused'),
+            ])
             ->whereHas('group', fn($query) => $query->where('academy_id', auth('academy')->id()))
             ->latest('session_date')
             ->paginate(20);
@@ -23,6 +30,7 @@ class AcademyAttendanceController extends Controller
     {
         $groups = AcademyGroup::where('academy_id', auth('academy')->id())
             ->where('status', 'active')
+            ->withCount('students')
             ->orderBy('name')
             ->get();
 
@@ -35,7 +43,7 @@ class AcademyAttendanceController extends Controller
             'academy_group_id' => ['required', 'integer', 'exists:academy_groups,id'],
             'session_date' => ['required', 'date'],
             'starts_at' => ['nullable', 'date_format:H:i'],
-            'ends_at' => ['nullable', 'date_format:H:i', 'after:starts_at'],
+            'ends_at' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
         ]);
 
@@ -66,10 +74,30 @@ class AcademyAttendanceController extends Controller
 
     public function show(AcademyAttendanceSession $attendance)
     {
-        $attendance->load(['group', 'records.student']);
+        $attendance->load(['group.students', 'records.student']);
         abort_unless($attendance->group->academy_id === auth('academy')->id(), 404);
 
-        return view('Academy.pages.attendance.show', ['session' => $attendance]);
+        foreach ($attendance->group->students as $student) {
+            $attendance->records()->firstOrCreate([
+                'academy_student_id' => $student->id,
+            ]);
+        }
+
+        $attendance->load(['group', 'records.student']);
+        $attendance->setRelation(
+            'records',
+            $attendance->records->sortBy(fn($record) => $record->student?->name)->values()
+        );
+
+        $summary = [
+            'present' => $attendance->records->where('status', 'present')->count(),
+            'late' => $attendance->records->where('status', 'late')->count(),
+            'absent' => $attendance->records->where('status', 'absent')->count(),
+            'excused' => $attendance->records->where('status', 'excused')->count(),
+            'total' => $attendance->records->count(),
+        ];
+
+        return view('Academy.pages.attendance.show', ['session' => $attendance, 'summary' => $summary]);
     }
 
     public function update(Request $request, AcademyAttendanceSession $attendance)
