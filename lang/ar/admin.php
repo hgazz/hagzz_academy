@@ -657,5 +657,13 @@ return [
         'nominated_players' => 'اللاعبون المرشحون',
         'official_sheet' => 'كشف رسمي',
         'print' => 'طباعة',
+        'students_print' => 'قائمة الطلاب للطباعة',
+        'students_list_title' => 'قائمة الطلاب',
+        'export_excel' => 'تصدير Excel',
+        'print_pdf' => 'طباعة / PDF',
+        'import_students' => 'استيراد الطلاب من Excel',
+        'upload_students_file' => 'رفع ملف الطلاب',
+        'download_students_template' => 'تنزيل النموذج',
+        'students_imported' => 'تم استيراد الطلاب. جديد: :created، تحديث: :updated، تم تجاهله: :skipped',
     ],
 ];

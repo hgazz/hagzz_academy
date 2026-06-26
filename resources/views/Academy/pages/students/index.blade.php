@@ -18,6 +18,30 @@
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
             background: #e8eef0;
         }
+
+        .student-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .student-import-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e4e7ec;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .student-import-box input[type="file"] {
+            max-width: 280px;
+        }
     </style>
 @endpush
 
@@ -26,11 +50,28 @@
         <div class="row layout-top-spacing">
             <div class="col-12 layout-spacing">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h3 class="mb-0">{{ trans('admin.student_management.students') }}</h3>
-                        <a href="{{ route('academy.students.create') }}" class="btn btn-primary">{{ trans('admin.student_management.add_student') }}</a>
+                        <div class="student-tools">
+                            <a href="{{ route('academy.students.template') }}" class="btn btn-outline-secondary">
+                                {{ trans('admin.student_management.download_students_template') }}
+                            </a>
+                            <a href="{{ route('academy.students.export') }}" class="btn btn-outline-success">
+                                {{ trans('admin.student_management.export_excel') }}
+                            </a>
+                            <a href="{{ route('academy.students.print') }}" target="_blank" class="btn btn-outline-dark">
+                                {{ trans('admin.student_management.print_pdf') }}
+                            </a>
+                            <a href="{{ route('academy.students.create') }}" class="btn btn-primary">{{ trans('admin.student_management.add_student') }}</a>
+                        </div>
                     </div>
                     <div class="card-body">
+                        <form action="{{ route('academy.students.import') }}" method="POST" enctype="multipart/form-data" class="student-import-box">
+                            @csrf
+                            <strong>{{ trans('admin.student_management.import_students') }}</strong>
+                            <input type="file" name="students_file" class="form-control" accept=".xlsx,.xls,.csv" required>
+                            <button class="btn btn-success">{{ trans('admin.student_management.upload_students_file') }}</button>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-striped student-table">
                                 <thead>

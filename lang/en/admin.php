@@ -676,6 +676,14 @@ return [
         'nominated_players' => 'Nominated Players',
         'official_sheet' => 'Official Sheet',
         'print' => 'Print',
+        'students_print' => 'Students Printable List',
+        'students_list_title' => 'Students List',
+        'export_excel' => 'Export Excel',
+        'print_pdf' => 'Print / PDF',
+        'import_students' => 'Import students from Excel',
+        'upload_students_file' => 'Upload students file',
+        'download_students_template' => 'Download template',
+        'students_imported' => 'Students imported. Created: :created, Updated: :updated, Skipped: :skipped',
         'payment_recorded' => 'Payment recorded successfully',
     ]
 

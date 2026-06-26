@@ -144,6 +144,10 @@ Route::group(
             Route::get('users','index')->name('users.index');
         });
 
+        Route::get('students/export', [AcademyStudentController::class, 'export'])->name('students.export');
+        Route::get('students/template', [AcademyStudentController::class, 'template'])->name('students.template');
+        Route::post('students/import', [AcademyStudentController::class, 'import'])->name('students.import');
+        Route::get('students/print', [AcademyStudentController::class, 'print'])->name('students.print');
         Route::resource('students', AcademyStudentController::class)->except(['show']);
         Route::resource('groups', AcademyGroupController::class)->except(['show']);
         Route::resource('competitions', AcademyCompetitionController::class);
