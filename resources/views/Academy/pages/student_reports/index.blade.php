@@ -92,7 +92,7 @@
                                     <tr>
                                         <td>{{ $payment->subscription?->student?->name }}</td>
                                         <td>{{ $payment->paid_at?->format('Y-m-d') }}</td>
-                                        <td>{{ trans('admin.student_management.' . $payment->method) }}</td>
+                                        <td>{{ $payment->method_label }}</td>
                                         <td>{{ number_format($payment->amount, 2) }}</td>
                                     </tr>
                                 @empty

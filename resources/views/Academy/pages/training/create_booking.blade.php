@@ -67,6 +67,28 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
+                                    <label for="payment_method">{{ trans('admin.payment_method') }} <code>*</code></label>
+                                    <select id="payment_method" name="payment_method" class="form-select" required>
+                                        @foreach(['cash', 'instapay', 'fawry', 'app_online', 'other'] as $method)
+                                            <option value="{{ $method }}" @selected(old('payment_method', 'cash') === $method)>
+                                                {{ trans('admin.payment_methods.' . $method) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('payment_method')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3 d-none" id="payment_method_other_wrap">
+                                    <label for="payment_method_other">{{ trans('admin.payment_method_other') }} <code>*</code></label>
+                                    <input type="text" name="payment_method_other" class="form-control"
+                                           value="{{ old('payment_method_other') }}" id="payment_method_other"
+                                           placeholder="{{ trans('admin.payment_method_other_placeholder') }}">
+                                    @error('payment_method_other')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label for="name">{{trans('admin.user.name')}} <code>*</code></label>
                                     <input type="text" name="name" class="form-control"
                                            value="{{ old('name') }}" id="phone"
@@ -476,6 +498,29 @@
 
             // Check the initial state of the select (e.g., after validation errors)
             toggleMedicalConditionInput();
+
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const paymentMethodOtherWrap = document.getElementById('payment_method_other_wrap');
+            const paymentMethodOtherInput = document.getElementById('payment_method_other');
+
+            function togglePaymentMethodOther() {
+                if (!paymentMethodSelect || !paymentMethodOtherWrap || !paymentMethodOtherInput) {
+                    return;
+                }
+
+                const isOther = paymentMethodSelect.value === 'other';
+                paymentMethodOtherWrap.classList.toggle('d-none', !isOther);
+                paymentMethodOtherInput.required = isOther;
+
+                if (!isOther) {
+                    paymentMethodOtherInput.value = '';
+                }
+            }
+
+            if (paymentMethodSelect) {
+                paymentMethodSelect.addEventListener('change', togglePaymentMethodOther);
+                togglePaymentMethodOther();
+            }
         });
         $(document).ready(function() {
             $.ajaxSetup({
@@ -560,5 +605,4 @@
         });
     </script>
 @endpush
-
 

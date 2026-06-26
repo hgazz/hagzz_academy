@@ -27,11 +27,16 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">{{ trans('admin.student_management.method') }}</label>
-                                <select name="method" class="form-select">
-                                    @foreach(['cash', 'bank_transfer', 'card', 'online', 'other'] as $method)
-                                        <option value="{{ $method }}">{{ trans('admin.student_management.' . $method) }}</option>
+                                <select name="method" id="subscription_payment_method" class="form-select">
+                                    @foreach(['cash', 'instapay', 'fawry', 'app_online', 'other'] as $method)
+                                        <option value="{{ $method }}" @selected(old('method', 'cash') === $method)>{{ trans('admin.payment_methods.' . $method) }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="mb-3 d-none" id="subscription_payment_method_other_wrap">
+                                <label class="form-label">{{ trans('admin.payment_method_other') }}</label>
+                                <input type="text" name="method_other" id="subscription_payment_method_other" class="form-control"
+                                       value="{{ old('method_other') }}" placeholder="{{ trans('admin.payment_method_other_placeholder') }}">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">{{ trans('admin.student_management.reference') }}</label>
@@ -44,7 +49,10 @@
                         <h5>{{ trans('admin.student_management.payments') }}</h5>
                         @forelse($subscription->payments as $payment)
                             <div class="d-flex justify-content-between border-bottom py-2">
-                                <span>{{ $payment->paid_at?->format('Y-m-d') }}</span>
+                                <span>
+                                    {{ $payment->paid_at?->format('Y-m-d') }}
+                                    <small class="d-block text-muted">{{ $payment->method_label }}</small>
+                                </span>
                                 <strong>{{ number_format($payment->amount, 2) }}</strong>
                             </div>
                         @empty
@@ -56,3 +64,32 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const methodSelect = document.getElementById('subscription_payment_method');
+            const otherWrap = document.getElementById('subscription_payment_method_other_wrap');
+            const otherInput = document.getElementById('subscription_payment_method_other');
+
+            function toggleOtherMethod() {
+                if (!methodSelect || !otherWrap || !otherInput) {
+                    return;
+                }
+
+                const isOther = methodSelect.value === 'other';
+                otherWrap.classList.toggle('d-none', !isOther);
+                otherInput.required = isOther;
+
+                if (!isOther) {
+                    otherInput.value = '';
+                }
+            }
+
+            if (methodSelect) {
+                methodSelect.addEventListener('change', toggleOtherMethod);
+                toggleOtherMethod();
+            }
+        });
+    </script>
+@endpush

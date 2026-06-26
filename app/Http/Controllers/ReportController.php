@@ -99,6 +99,7 @@ class ReportController extends Controller
             $endDate = $request->input('end_date');
 
             $joins = Join::with([
+                'invoice',
                 'training'=>function($model){
                     $model->where('academy_id',auth('academy')->id())->get();
                 }
@@ -120,7 +121,14 @@ class ReportController extends Controller
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
-            $joins = Join::whereBetween('created_at', [$startDate, $endDate]);
+            $joins = Join::with(['invoice', 'user', 'training'])
+                ->whereHas('training', function ($q) {
+                    $q->where('academy_id', auth('academy')->id());
+                })
+                ->whereHas('invoice', function ($query) {
+                    $query->where('user_type', 'offline');
+                })
+                ->whereBetween('created_at', [$startDate, $endDate]);
 
             $joinsData = $joins->get();
 

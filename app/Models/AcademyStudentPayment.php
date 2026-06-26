@@ -15,6 +15,7 @@ class AcademyStudentPayment extends Model
         'amount',
         'paid_at',
         'method',
+        'method_other',
         'reference',
         'notes',
     ];
@@ -27,5 +28,14 @@ class AcademyStudentPayment extends Model
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(AcademyStudentSubscription::class, 'academy_student_subscription_id');
+    }
+
+    public function getMethodLabelAttribute(): string
+    {
+        if ($this->method === 'other' && $this->method_other) {
+            return $this->method_other;
+        }
+
+        return trans('admin.payment_methods.' . $this->method);
     }
 }

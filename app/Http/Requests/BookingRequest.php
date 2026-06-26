@@ -46,6 +46,8 @@ class BookingRequest extends FormRequest
             'additional_information' => 'nullable',
             'delivery_service' => 'required|in:yes,no',
             'club_member' => 'required|in:yes,no',
+            'payment_method' => 'required|in:cash,instapay,fawry,app_online,other',
+            'payment_method_other' => 'required_if:payment_method,other|nullable|string|max:255',
 
         ];
     }

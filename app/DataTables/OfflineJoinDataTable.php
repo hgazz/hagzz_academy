@@ -49,6 +49,7 @@ class OfflineJoinDataTable extends DataTable
             ->addColumn('start_date', fn($join) => $join->user->start_date)
             ->addColumn('price', fn($join) => $join?->training?->price)
             ->addColumn('user_type', fn($join) => $join?->invoice?->user_type)
+            ->addColumn('payment_method', fn($join) => $join?->invoice?->payment_method_label ?? '-')
             ->addColumn('training.created_at', fn($join) => Carbon::parse($join->training->created_at)->format('Y-m-d H:i:s'))
             ->addColumn('actions', fn($join)=> view('Academy.pages.joins.datatables.action', compact('join')))
             ->rawColumns([
@@ -57,7 +58,8 @@ class OfflineJoinDataTable extends DataTable
                 'start_date',
                 'price',
                 'training.created_at',
-                'user_type'
+                'user_type',
+                'payment_method'
             ]);
     }
 
@@ -72,6 +74,7 @@ class OfflineJoinDataTable extends DataTable
 
         return $model->newQuery()->with([
             'user',
+            'invoice',
             'training' => function ($query) {
                 $query->with(['academy', 'coach'])
                     ->where('academy_id', auth('academy')->id());
@@ -131,6 +134,7 @@ class OfflineJoinDataTable extends DataTable
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.academies.phone')],
             ['name' => 'referral_source', 'data' => 'referral_source', 'title' => trans('admin.academies.phone')],
             ['name' => 'user_type', 'data' => 'user_type', 'title' => trans('admin.academies.user_type')],
+            ['name' => 'payment_method', 'data' => 'payment_method', 'title' => trans('admin.payment_method')],
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],
             ['name' => 'training.created_at', 'data' => 'training.created_at', 'title' => trans('admin.notifications.created_at'), 'exportable' => true, 'printable' => true, 'orderable' => true, 'searchable' => false],
             ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],

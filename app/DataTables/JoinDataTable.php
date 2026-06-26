@@ -55,6 +55,7 @@ class JoinDataTable extends DataTable
             ->addColumn('count', fn($join) => $join->training?->joins?->count() ?? '')
             ->addColumn('max_player', fn($join) => $join->training->max_players ?? '')
             ->addColumn('price', fn($join) => $join?->training?->price)
+            ->addColumn('payment_method', fn($join) => $join?->invoice?->payment_method_label ?? '-')
             ->addColumn('training.created_at', fn($join) => Carbon::parse($join->training->created_at)->format('Y-m-d H:i:s'))
             ->addColumn('discount_price', fn($join) => $join?->training?->discount_price)
             ->addColumn('actions', fn($join)=> view('Academy.pages.joins.datatables.action', compact('join')))
@@ -71,6 +72,7 @@ class JoinDataTable extends DataTable
                 'count',
                 'max_player',
                 'price',
+                'payment_method',
                 'discount_price',
                 'training.created_at',
                 'actions'
@@ -88,6 +90,7 @@ class JoinDataTable extends DataTable
 
         return $model->newQuery()->with([
             'user',
+            'invoice',
             'training' => function ($query) {
                 $query->with(['academy', 'coach'])
                     ->where('academy_id', auth('academy')->id());
@@ -155,6 +158,7 @@ class JoinDataTable extends DataTable
             ['name' => 'count', 'data' => 'count', 'title' => trans('admin.booking_count')],
             ['name' => 'max_player', 'data' => 'max_player', 'title' => trans('admin.training.max_players')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
+            ['name' => 'payment_method', 'data' => 'payment_method', 'title' => trans('admin.payment_method')],
             ['name' => 'discount_price', 'data' => 'discount_price', 'title' => trans('admin.discount_price')],
             ['name' => 'training.created_at', 'data' => 'training.created_at', 'title' => trans('admin.notifications.created_at'), 'searchable' => false],
             ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'searchable' => false]

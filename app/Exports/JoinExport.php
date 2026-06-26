@@ -18,6 +18,7 @@ class JoinExport implements FromView
             $this->joins = $joinsData;
         } else {
             $joins = Join::with([
+                'invoice',
                 'training'=>function($model){
                     $model->where('academy_id',auth('academy')->id())->get();
                 }

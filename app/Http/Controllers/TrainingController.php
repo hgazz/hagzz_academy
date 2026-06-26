@@ -249,7 +249,9 @@ class TrainingController extends Controller
                 'amount' => $request->price,
                 'order_number' => uniqid(),
                 'status' => 'paid',
-                'user_type' => 'offline'
+                'user_type' => 'offline',
+                'payment_method' => $request->payment_method,
+                'payment_method_other' => $request->payment_method === 'other' ? $request->payment_method_other : null,
             ]);
             Join::create([
                 'user_id' => $user->id,

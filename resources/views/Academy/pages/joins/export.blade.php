@@ -13,6 +13,7 @@
         <th>count</th>
         <th>max_player</th>
         <th>price</th>
+        <th>payment_method</th>
         <th>discount_price</th>
     </tr>
     </thead>
@@ -31,6 +32,7 @@
             <td>{{$join->training->joins->count() ?? 'empty'}}</td>
             <td>{{$join->training->max_players ?? 'empty'}}</td>
             <td>{{$join->training->price ?? 'empty'}}</td>
+            <td>{{$join->invoice?->payment_method_label ?? 'empty'}}</td>
             <td>{{$join->training->discount_price ?? 'empty'}}</td>
 
         </tr>

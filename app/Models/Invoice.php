@@ -37,4 +37,15 @@ class Invoice extends Model
         };
     }
 
+    public function getPaymentMethodLabelAttribute(): string
+    {
+        $method = $this->payment_method ?: ($this->user_type === 'online' ? 'app_online' : 'cash');
+
+        if ($method === 'other' && $this->payment_method_other) {
+            return $this->payment_method_other;
+        }
+
+        return trans('admin.payment_methods.' . $method);
+    }
+
 }

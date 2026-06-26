@@ -72,10 +72,15 @@ class AcademyStudentSubscriptionController extends Controller
         $data = $request->validate([
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paid_at' => ['required', 'date'],
-            'method' => ['required', 'in:cash,bank_transfer,card,online,other'],
+            'method' => ['required', 'in:cash,instapay,fawry,app_online,other'],
+            'method_other' => ['required_if:method,other', 'nullable', 'string', 'max:255'],
             'reference' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        if (($data['method'] ?? null) !== 'other') {
+            $data['method_other'] = null;
+        }
 
         DB::transaction(function () use ($subscription, $data) {
             $subscription->payments()->create($data);

@@ -22,6 +22,7 @@
                                     <th>{{ trans('admin.student_management.period') }}</th>
                                     <th>{{ trans('admin.student_management.amount') }}</th>
                                     <th>{{ trans('admin.student_management.paid') }}</th>
+                                    <th>{{ trans('admin.student_management.method') }}</th>
                                     <th>{{ trans('admin.student_management.status') }}</th>
                                     <th>{{ trans('admin.student_management.actions') }}</th>
                                 </tr>
@@ -35,6 +36,7 @@
                                         <td>{{ $subscription->starts_on?->format('Y-m-d') }} / {{ $subscription->ends_on?->format('Y-m-d') }}</td>
                                         <td>{{ number_format($subscription->amount, 2) }}</td>
                                         <td>{{ number_format($subscription->paid_amount, 2) }}</td>
+                                        <td>{{ $subscription->payments->sortByDesc('paid_at')->first()?->method_label ?? '-' }}</td>
                                         <td>{{ trans('admin.student_management.' . $subscription->status) }} / {{ trans('admin.student_management.' . $subscription->payment_status) }}</td>
                                         <td>
                                             <a href="{{ route('academy.subscriptions.edit', $subscription) }}" class="btn btn-sm btn-warning">{{ trans('admin.student_management.edit') }}</a>
@@ -46,7 +48,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="8" class="text-center">{{ trans('admin.student_management.no_subscriptions_yet') }}</td></tr>
+                                    <tr><td colspan="9" class="text-center">{{ trans('admin.student_management.no_subscriptions_yet') }}</td></tr>
                                 @endforelse
                                 </tbody>
                             </table>

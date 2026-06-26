@@ -45,6 +45,9 @@ class InvoiceDataTable extends DataTable
             ->editColumn('is_canceled', function ($row) {
                 return $row->is_canceled ? trans('admin.bookings.cancelled') : 'N/A';
             })
+            ->addColumn('payment_method_label', function ($row) {
+                return $row->payment_method_label;
+            })
             ->addColumn('partner', function ($row) {
                 return $row->training->academy->commercial_name;
             })
@@ -61,7 +64,7 @@ class InvoiceDataTable extends DataTable
                 });
             })
             ->setRowId('id')
-            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner']);
+            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner', 'payment_method_label']);
     }
     /**
      * Get the query source of dataTable.
@@ -127,6 +130,7 @@ class InvoiceDataTable extends DataTable
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.bookings.training')],
             ['name' => 'amount', 'data' => 'amount', 'title' => trans('admin.bookings.amount')],
             ['name' => 'net_amount', 'data' => 'net_amount', 'title' => trans('admin.bookings.net_amount')],
+            ['name' => 'payment_method', 'data' => 'payment_method_label', 'title' => trans('admin.payment_method')],
             ['name' => 'status', 'data' => 'status', 'title' => trans('admin.bookings.status')],
             ['name' => 'user_type', 'data' => 'user_type', 'title' => trans('admin.bookings.user_type')],
             ['name' => 'is_canceled', 'data' => 'is_canceled', 'title' => trans('admin.bookings.is_canceled')],

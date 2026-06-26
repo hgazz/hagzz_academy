@@ -9,6 +9,7 @@
         <th>Status</th>
         <th>User Type</th>
         <th>Payment Status</th>
+        <th>Payment Method</th>
         <th>Is Refund</th>
         <th>Child Type</th>
         <th>School Name</th>
@@ -38,6 +39,7 @@
         <td>{{ $join->status }}</td>
         <td>{{ $join->invoice->user_type }}</td>
         <td>{{ $join->invoice->payment_status }}</td>
+        <td>{{ $join->invoice->payment_method_label }}</td>
         <td>{{ $join->invoice->is_refunded }}</td>
         <td>{{ $join->user->child_type }}</td>
         <td>{{ $join->user->school_name }}</td>
