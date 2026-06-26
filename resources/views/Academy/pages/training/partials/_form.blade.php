@@ -6,6 +6,28 @@
 @php
     $isArabic = app()->getLocale() === 'ar';
     $savedDays = old('classes_days', isset($training) ? ($training->classes_days ?: []) : []);
+    $normalizeColor = function ($color) {
+        $color = trim((string) $color);
+
+        if (preg_match('/^#?([0-9a-fA-F]{3})$/', $color, $matches)) {
+            return sprintf(
+                '#%s%s%s%s%s%s',
+                $matches[1][0],
+                $matches[1][0],
+                $matches[1][1],
+                $matches[1][1],
+                $matches[1][2],
+                $matches[1][2]
+            );
+        }
+
+        if (preg_match('/^#?([0-9a-fA-F]{6})$/', $color, $matches)) {
+            return '#' . strtolower($matches[1]);
+        }
+
+        return '#2563eb';
+    };
+    $selectedColor = $normalizeColor(old('color', isset($training) ? $training->color : '#2563eb'));
 @endphp
 
 <section class="training-form-section">
@@ -201,9 +223,9 @@
             <div class="modern-field field-full">
                 <label for="color"><span>{{ trans('admin.training.color') }}</span></label>
                 <div class="color-field">
-                    <input type="color" value="{{ old('color', isset($training) ? $training->color : '#2563eb') }}" id="color" name="color">
+                    <input type="color" value="{{ $selectedColor }}" id="color" name="color">
                     <div><strong>{{ $isArabic ? 'لون التدريب في التقويم' : 'Calendar training color' }}</strong><small>{{ $isArabic ? 'اختر لونًا واضحًا ليسهل تمييز التدريب.' : 'Choose a clear color to identify this training.' }}</small></div>
-                    <code id="colorValue">{{ old('color', isset($training) ? $training->color : '#2563eb') }}</code>
+                    <code id="colorValue">{{ $selectedColor }}</code>
                 </div>
                 @error('color')<span class="field-error"><i data-feather="alert-circle"></i>{{ $message }}</span>@enderror
             </div>

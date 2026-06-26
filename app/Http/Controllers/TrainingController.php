@@ -88,7 +88,7 @@ class TrainingController extends Controller
                'sport_id' => $request->sport_id,
                'discount_price' => $request->discount_price,
                'classes_days' => $request->classes_days,
-               'color' => $request->color,
+               'color' => $this->normalizeTrainingColor($request->color),
               'classes_number' => $request->classes_number
            ]));
 //           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
@@ -99,7 +99,14 @@ class TrainingController extends Controller
 
     public function edit(Training $training)
     {
-        $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get(['id','name']);
+        abort_unless((int) $training->academy_id === (int) auth('academy')->id(), 404);
+
+        $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())
+            ->where(function ($query) use ($training) {
+                $query->where('active', 1)
+                    ->orWhereKey($training->coach_id);
+            })
+            ->get(['id','name']);
         $sports = auth('academy')->user()->sports;
         $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
         return view('Academy.pages.training.edit',compact('academyCoaches', 'sports','training', 'addresses'));
@@ -107,6 +114,8 @@ class TrainingController extends Controller
 
     public function update(Training $training , TrainingRequest $request)
     {
+        abort_unless((int) $training->academy_id === (int) auth('academy')->id(), 404);
+
         try {
             DB::transaction(function () use ($request, $training) {
                 $originalStartDate = $training->start_date;
@@ -126,7 +135,7 @@ class TrainingController extends Controller
                     'sport_id' => $request->sport_id,
                     'discount_price' => $request->discount_price,
                     'classes_days' => $request->classes_days,
-               'color' => $request->color,
+               'color' => $this->normalizeTrainingColor($request->color),
               'classes_number' => $request->classes_number
                 ]));
                 $details = [
@@ -158,7 +167,8 @@ class TrainingController extends Controller
             session()->flash('success',trans('admin.training.updated_successfully'));
             return to_route('academy.training.index');
         }catch (\Exception $e){
-            return  response($e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', $e->getMessage());
         }
 
 
@@ -332,5 +342,28 @@ class TrainingController extends Controller
         }
         session()->flash('success', trans('admin.training.status_active_successfully'));
         return back();
+    }
+
+    private function normalizeTrainingColor(?string $color): string
+    {
+        $color = trim((string) $color);
+
+        if (preg_match('/^#?([0-9a-fA-F]{3})$/', $color, $matches)) {
+            return sprintf(
+                '#%s%s%s%s%s%s',
+                $matches[1][0],
+                $matches[1][0],
+                $matches[1][1],
+                $matches[1][1],
+                $matches[1][2],
+                $matches[1][2]
+            );
+        }
+
+        if (preg_match('/^#?([0-9a-fA-F]{6})$/', $color, $matches)) {
+            return '#' . strtolower($matches[1]);
+        }
+
+        return '#2563eb';
     }
 }

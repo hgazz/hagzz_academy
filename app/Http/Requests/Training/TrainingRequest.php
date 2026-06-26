@@ -53,7 +53,10 @@ class TrainingRequest extends FormRequest
             'address_id' => 'required|exists:addresses,id',
             'max_players' => 'required|integer',
             'sport_id' => 'required|exists:sports,id',
-            'classes_days' => 'required',
+            'classes_days' => 'required|array|min:1',
+            'classes_days.*' => 'in:saturday,sunday,monday,tuesday,wednesday,thursday,friday',
+            'classes_number' => 'nullable|integer|min:1',
+            'color' => ['nullable', 'regex:/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/'],
             'discount_price' => ['required','integer','min:0', new checkDiscountValue()],
         ];
 
