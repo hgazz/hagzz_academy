@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,7 +17,14 @@
 <div id="load_screen">
     <div class="loader">
         <div class="loader-content">
-            <div class="spinner-grow align-self-center"></div>
+            <div class="hagzz-loader-mark">H</div>
+            <div class="hagzz-loader-copy">
+                <strong>{{ app()->getLocale() === 'ar' ? 'منظومة حجز الرقمية' : 'Hagzz Digital Platform' }}</strong>
+                <span>
+                    {{ app()->getLocale() === 'ar' ? 'نجهز لوحة التحكم' : 'Preparing your dashboard' }}
+                    <span class="hagzz-loader-dots"><i></i><i></i><i></i></span>
+                </span>
+            </div>
         </div>
     </div>
 </div>

@@ -2,7 +2,14 @@ window.addEventListener("load", function(){
 
     // Remove Loader
     var load_screen = document.getElementById("load_screen");
-    document.body.removeChild(load_screen);
+    if (load_screen) {
+        load_screen.classList.add("hagzz-loader-hide");
+        window.setTimeout(function () {
+            if (load_screen && load_screen.parentNode) {
+                load_screen.parentNode.removeChild(load_screen);
+            }
+        }, 260);
+    }
 
     var layoutName = 'Vertical Light Menu';
 
@@ -165,4 +172,3 @@ window.addEventListener("load", function(){
 
     
 });
-
