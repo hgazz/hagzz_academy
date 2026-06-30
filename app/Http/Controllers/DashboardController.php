@@ -44,6 +44,10 @@ class DashboardController extends Controller
 
     public function index()
     {
+        if (auth('academy')->user()?->business_type === 'venue') {
+            return to_route('academy.venue-bookings.index');
+        }
+
         $academy = auth('academy')->user();
         $academyId = $academy->id;
         $now = now();

@@ -21,6 +21,9 @@ use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\TermsController;
 use App\Http\Controllers\TrainingCalendarController;
 use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\VenueBookingController;
+use App\Http\Controllers\VenueController;
+use App\Http\Controllers\VenueSpaceController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -194,6 +197,12 @@ Route::group(
             });
 
         Route::get('/calendar', [TrainingCalendarController::class, 'index'])->name('calendar.index');
+
+        Route::middleware('venue.module')->group(function () {
+            Route::resource('venues', VenueController::class)->except(['show']);
+            Route::resource('venue-spaces', VenueSpaceController::class)->except(['show']);
+            Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
+        });
     });
 
 });

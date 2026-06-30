@@ -7,6 +7,9 @@
         || Request::routeIs('academy.subscriptions.*')
         || Request::routeIs('academy.student-reports.*');
     $reportsActive = Request::routeIs('academy.report.*');
+    $venueActive = Request::routeIs('academy.venues.*') || Request::routeIs('academy.venue-spaces.*') || Request::routeIs('academy.venue-bookings.*');
+    $hasVenueModule = auth('academy')->user()?->hasVenueModule();
+    $isVenueOnly = auth('academy')->user()?->business_type === 'venue';
 @endphp
 
 <style>
@@ -72,6 +75,21 @@
                 </a>
             </li>
 
+            @if($hasVenueModule)
+                <li class="menu {{ $venueActive ? 'active' : '' }}">
+                    <a href="#venue-management" data-bs-toggle="collapse" aria-expanded="{{ $venueActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $venueActive ? '' : 'collapsed' }}">
+                        <div><i class="fa-solid fa-futbol menu-icon"></i><span>{{ trans('admin.venues.menu') }}</span></div>
+                        <div><i class="fa-solid fa-chevron-right menu-chevron"></i></div>
+                    </a>
+                    <ul class="collapse submenu list-unstyled {{ $venueActive ? 'show' : '' }}" id="venue-management" data-bs-parent="#accordionExample">
+                        <li class="menu {{ Request::routeIs('academy.venues.*') ? 'active' : '' }}"><a href="{{ route('academy.venues.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-location-dot menu-icon"></i><span>{{ trans('admin.venues.locations') }}</span></div></a></li>
+                        <li class="menu {{ Request::routeIs('academy.venue-spaces.*') ? 'active' : '' }}"><a href="{{ route('academy.venue-spaces.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-table-cells-large menu-icon"></i><span>{{ trans('admin.venues.spaces') }}</span></div></a></li>
+                        <li class="menu {{ Request::routeIs('academy.venue-bookings.*') ? 'active' : '' }}"><a href="{{ route('academy.venue-bookings.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-check menu-icon"></i><span>{{ trans('admin.venues.bookings') }}</span></div></a></li>
+                    </ul>
+                </li>
+            @endif
+
+            @unless($isVenueOnly)
             <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}">
                 <a href="#addresses-menu" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.address.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.address.*') ? '' : 'collapsed' }}">
                     <div>
@@ -216,6 +234,7 @@
                 </a>
             </li>
 
+            @endunless
             <li class="menu {{ Request::routeIs('academy.notification.*') ? 'active' : '' }}">
                 <a href="{{ route('academy.notification.index') }}" aria-expanded="false" class="dropdown-toggle">
                     <div>
@@ -234,6 +253,7 @@
                 </a>
             </li>
 
+            @unless($isVenueOnly)
             <li class="menu {{ $reportsActive ? 'active' : '' }}">
                 <a href="#report" data-bs-toggle="collapse" aria-expanded="{{ $reportsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $reportsActive ? '' : 'collapsed' }}">
                     <div>
@@ -285,6 +305,7 @@
                     </li>
                 </ul>
             </li>
+            @endunless
         </ul>
     </nav>
 </div>

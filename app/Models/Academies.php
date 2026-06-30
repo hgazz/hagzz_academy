@@ -57,7 +57,8 @@ class Academies extends Authenticatable
         'settlement_days_count',
         'non_refund_days_count',
         'contract_link',
-        'remember_token'
+        'remember_token',
+        'business_type',
     ];
 
     protected $hidden = [
@@ -94,5 +95,20 @@ class Academies extends Authenticatable
     public function trainings()
     {
         return $this->hasMany(Training::class, 'academy_id');
+    }
+
+    public function venues()
+    {
+        return $this->hasMany(Venue::class, 'academy_id');
+    }
+
+    public function hasVenueModule(): bool
+    {
+        return in_array($this->business_type, ['venue', 'hybrid'], true);
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOne(TenantSubscription::class, 'academy_id')->latestOfMany();
     }
 }
