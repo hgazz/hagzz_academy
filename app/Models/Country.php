@@ -11,7 +11,7 @@ class Country extends Model
 {
     use HasFactory,HasTranslations;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'iso2', 'currency_code'];
     protected $translatable = ['name'];
     public static $translatableColumns = [
         'name'=>[
@@ -33,5 +33,10 @@ class Country extends Model
     public function address(): HasMany
     {
         return $this->hasMany(Address::class , 'address_id','id');
+    }
+
+    public function saasPlanPrices(): HasMany
+    {
+        return $this->hasMany(SaasPlanPrice::class);
     }
 }
