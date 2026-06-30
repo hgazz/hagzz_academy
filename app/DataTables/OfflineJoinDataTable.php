@@ -47,7 +47,10 @@ class OfflineJoinDataTable extends DataTable
             ->addColumn('phone', fn($join) => $join->user->phone)
             ->addColumn('referral_source', fn($join) => $join->user->referral_source)
             ->addColumn('start_date', fn($join) => $join->user->start_date)
-            ->addColumn('price', fn($join) => $join?->training?->price)
+            ->addColumn('price', fn($join) => $join?->invoice?->amount ?? $join?->price)
+            ->addColumn('paid_amount', fn($join) => number_format($join?->invoice?->collected_amount ?? 0, 2))
+            ->addColumn('remaining_amount', fn($join) => number_format($join?->invoice?->remaining_amount ?? 0, 2))
+            ->addColumn('payment_state', fn($join) => $join?->invoice?->payment_state_label ?? '-')
             ->addColumn('user_type', fn($join) => $join?->invoice?->user_type)
             ->addColumn('payment_method', fn($join) => $join?->invoice?->payment_method_label ?? '-')
             ->addColumn('training.created_at', fn($join) => Carbon::parse($join->training->created_at)->format('Y-m-d H:i:s'))
@@ -57,6 +60,9 @@ class OfflineJoinDataTable extends DataTable
                 'training',
                 'start_date',
                 'price',
+                'paid_amount',
+                'remaining_amount',
+                'payment_state',
                 'training.created_at',
                 'user_type',
                 'payment_method'
@@ -130,6 +136,9 @@ class OfflineJoinDataTable extends DataTable
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
             ['name' => 'training_name', 'data' => 'training_name', 'title' => trans('admin.training.training_name')],
             ['name' => 'price', 'data' => 'price', 'title' => trans('admin.training.price')],
+            ['name' => 'paid_amount', 'data' => 'paid_amount', 'title' => trans('admin.bookings.paid_amount'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'remaining_amount', 'data' => 'remaining_amount', 'title' => trans('admin.bookings.remaining_amount'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'payment_state', 'data' => 'payment_state', 'title' => trans('admin.bookings.payment_state'), 'orderable' => false, 'searchable' => false],
             ['name' => 'user_name', 'data' => 'user_name', 'title' => trans('admin.bookings.user')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.academies.phone')],
             ['name' => 'referral_source', 'data' => 'referral_source', 'title' => trans('admin.academies.phone')],

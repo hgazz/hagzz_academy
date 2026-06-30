@@ -48,6 +48,9 @@ class InvoiceDataTable extends DataTable
             ->addColumn('payment_method_label', function ($row) {
                 return $row->payment_method_label;
             })
+            ->addColumn('paid_amount', fn($row) => number_format($row->collected_amount, 2))
+            ->addColumn('remaining_amount', fn($row) => number_format($row->remaining_amount, 2))
+            ->addColumn('payment_state', fn($row) => $row->payment_state_label)
             ->addColumn('partner', function ($row) {
                 return $row->training->academy->commercial_name;
             })
@@ -64,7 +67,7 @@ class InvoiceDataTable extends DataTable
                 });
             })
             ->setRowId('id')
-            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner', 'payment_method_label']);
+            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner', 'payment_method_label', 'paid_amount', 'remaining_amount', 'payment_state']);
     }
     /**
      * Get the query source of dataTable.
@@ -129,6 +132,9 @@ class InvoiceDataTable extends DataTable
             ['name' => 'user.name', 'data' => 'user_id', 'title' => trans('admin.bookings.user')],
             ['name' => 'training.name', 'data' => 'training_id', 'title' => trans('admin.bookings.training')],
             ['name' => 'amount', 'data' => 'amount', 'title' => trans('admin.bookings.amount')],
+            ['name' => 'paid_amount', 'data' => 'paid_amount', 'title' => trans('admin.bookings.paid_amount'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'remaining_amount', 'data' => 'remaining_amount', 'title' => trans('admin.bookings.remaining_amount'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'payment_state', 'data' => 'payment_state', 'title' => trans('admin.bookings.payment_state'), 'orderable' => false, 'searchable' => false],
             ['name' => 'net_amount', 'data' => 'net_amount', 'title' => trans('admin.bookings.net_amount')],
             ['name' => 'payment_method', 'data' => 'payment_method_label', 'title' => trans('admin.payment_method')],
             ['name' => 'status', 'data' => 'status', 'title' => trans('admin.bookings.status')],

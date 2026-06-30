@@ -45,6 +45,9 @@
                                 <span class="card-text">{{trans('admin.training.gender')}}  :  {{$join->user->gender}}</span>
                                 <p class="card-text text-primary">{{trans('admin.training.order number')}} :  {{$join->invoice->order_number}}</p>
                                 <p class="card-text text-primary">{{trans('admin.training.amount')}} :  {{$join->invoice->amount}}</p>
+                                <p class="card-text text-success">{{ trans('admin.bookings.paid_amount') }} : {{ number_format($join->invoice->collected_amount, 2) }}</p>
+                                <p class="card-text text-danger">{{ trans('admin.bookings.remaining_amount') }} : {{ number_format($join->invoice->remaining_amount, 2) }}</p>
+                                <p class="card-text">{{ trans('admin.bookings.payment_state') }} : {{ $join->invoice->payment_state_label }}</p>
                                   <button class="btn btn-warning">{{$join->invoice->status}}</button>
                             </div>
                         </div>

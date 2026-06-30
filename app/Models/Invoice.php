@@ -48,4 +48,31 @@ class Invoice extends Model
         return trans('admin.payment_methods.' . $method);
     }
 
+    public function getCollectedAmountAttribute(): float
+    {
+        // Historical invoices predate paid_amount and were always fully paid.
+        return $this->paid_amount === null
+            ? (float) $this->amount
+            : (float) $this->paid_amount;
+    }
+
+    public function getRemainingAmountAttribute(): float
+    {
+        return max(0, (float) $this->amount - $this->collected_amount);
+    }
+
+    public function getPaymentStateAttribute(): string
+    {
+        if ($this->collected_amount <= 0) {
+            return 'unpaid';
+        }
+
+        return $this->remaining_amount > 0 ? 'partial' : 'paid';
+    }
+
+    public function getPaymentStateLabelAttribute(): string
+    {
+        return trans('admin.bookings.payment_states.' . $this->payment_state);
+    }
+
 }

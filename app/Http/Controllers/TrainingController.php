@@ -23,6 +23,7 @@ use App\Services\Firebase\NotificationService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class TrainingController extends Controller
 {
@@ -224,7 +225,18 @@ class TrainingController extends Controller
     public function storeBooking(BookingRequest $request)
     {
         try {
-            $training = $this->trainingModel->findOrFail($request->training_id);
+            $training = $this->trainingModel
+                ->where('academy_id', auth('academy')->id())
+                ->findOrFail($request->training_id);
+            $totalAmount = round((float) $training->price, 2);
+            $paidAmount = round((float) $request->paid_amount, 2);
+
+            if ($paidAmount > $totalAmount) {
+                throw ValidationException::withMessages([
+                    'paid_amount' => trans('admin.bookings.paid_amount_exceeds_total'),
+                ]);
+            }
+
             DB::beginTransaction();
             $user = User::updateOrCreate(
                 ['phone' => $request->phone],
@@ -256,9 +268,10 @@ class TrainingController extends Controller
             $booking = Invoice::create([
                 'user_id' => $user->id,
                 'training_id' => $request->training_id,
-                'amount' => $request->price,
+                'amount' => $totalAmount,
+                'paid_amount' => $paidAmount,
                 'order_number' => uniqid(),
-                'status' => 'paid',
+                'status' => $paidAmount >= $totalAmount ? 'paid' : 'pending',
                 'user_type' => 'offline',
                 'payment_method' => $request->payment_method,
                 'payment_method_other' => $request->payment_method === 'other' ? $request->payment_method_other : null,
@@ -272,7 +285,13 @@ class TrainingController extends Controller
             DB::commit();
             session()->flash('success', __('admin.training.Booking created successfully'));
             return back();
-        }catch (\Exception $e) {
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
             return back()->with('error', $e->getMessage());
         }
     }

@@ -50,7 +50,9 @@
                                     <select id="training_id" name="training_id" class="form-control">
                                         <option value="">{{ trans('admin.academies.select_training') }}</option>
                                         @foreach($data as $training)
-                                            <option value="{{ $training->id }}" @selected(old('training_id') == $training->id)>{{ $training->name }}</option>
+                                            <option value="{{ $training->id }}"
+                                                    data-price="{{ number_format((float) $training->price, 2, '.', '') }}"
+                                                    @selected(old('training_id') == $training->id)>{{ $training->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('training_id')
@@ -59,12 +61,27 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="price">{{trans('admin.training.price')}} <code>*</code></label>
-                                    <input type="text" name="price" class="form-control"
+                                    <input type="number" name="price" class="form-control"
                                            value="{{ old('price') }}" id="price"
-                                           placeholder="{{trans('admin.training.price')}}" min="1">
+                                           placeholder="{{trans('admin.training.price')}}" min="1" step="0.01" readonly>
                                     @error('price')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="paid_amount">{{ trans('admin.bookings.paid_amount') }} <code>*</code></label>
+                                    <input type="number" name="paid_amount" class="form-control"
+                                           value="{{ old('paid_amount') }}" id="paid_amount"
+                                           placeholder="{{ trans('admin.bookings.paid_amount') }}" min="0" step="0.01">
+                                    @error('paid_amount')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="remaining_amount">{{ trans('admin.bookings.remaining_amount') }}</label>
+                                    <input type="number" class="form-control" id="remaining_amount"
+                                           value="0.00" step="0.01" readonly>
+                                    <small class="form-text fw-semibold" id="payment_state"></small>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="payment_method">{{ trans('admin.payment_method') }} <code>*</code></label>
@@ -477,6 +494,54 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const trainingSelect = document.getElementById('training_id');
+            const priceInput = document.getElementById('price');
+            const paidAmountInput = document.getElementById('paid_amount');
+            const remainingAmountInput = document.getElementById('remaining_amount');
+            const paymentState = document.getElementById('payment_state');
+            const labels = {
+                paid: @json(trans('admin.bookings.payment_states.paid')),
+                partial: @json(trans('admin.bookings.payment_states.partial')),
+                unpaid: @json(trans('admin.bookings.payment_states.unpaid'))
+            };
+
+            if (!trainingSelect || !priceInput || !paidAmountInput || !remainingAmountInput || !paymentState) {
+                return;
+            }
+
+            function updatePaymentSummary(resetPaidAmount) {
+                const selectedOption = trainingSelect.options[trainingSelect.selectedIndex];
+                const total = Number.parseFloat(selectedOption?.dataset.price || '0');
+
+                priceInput.value = total > 0 ? total.toFixed(2) : '';
+
+                if (resetPaidAmount || paidAmountInput.value === '') {
+                    paidAmountInput.value = total > 0 ? total.toFixed(2) : '';
+                }
+
+                const paid = Math.max(0, Number.parseFloat(paidAmountInput.value || '0'));
+                const remaining = Math.max(0, total - paid);
+                remainingAmountInput.value = remaining.toFixed(2);
+
+                const state = paid <= 0 ? 'unpaid' : (remaining > 0 ? 'partial' : 'paid');
+                paymentState.textContent = labels[state];
+                paymentState.className = 'form-text fw-semibold ' +
+                    (state === 'paid' ? 'text-success' : (state === 'partial' ? 'text-warning' : 'text-danger'));
+                paidAmountInput.setCustomValidity(
+                    paid > total ? @json(trans('admin.bookings.paid_amount_exceeds_total')) : ''
+                );
+            }
+
+            trainingSelect.addEventListener('change', function () {
+                updatePaymentSummary(true);
+            });
+            paidAmountInput.addEventListener('input', function () {
+                updatePaymentSummary(false);
+            });
+            updatePaymentSummary(false);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
             const medicalConditionSelect = document.getElementById('medical_condition');
             const medicalConditionTxt = document.getElementById('medical_condition_txt');
 
@@ -605,4 +670,3 @@
         });
     </script>
 @endpush
-

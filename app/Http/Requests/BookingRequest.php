@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BookingRequest extends FormRequest
 {
@@ -22,8 +23,13 @@ class BookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'training_id' => 'required|exists:trainings,id',
-            'price' =>'required|numeric|min:1',
+            'training_id' => [
+                'required',
+                Rule::exists('trainings', 'id')->where(
+                    fn ($query) => $query->where('academy_id', auth('academy')->id())
+                ),
+            ],
+            'paid_amount' => 'required|numeric|min:0',
             'name' =>'required|string',
             'country_code' =>'required|regex:/^\+?[0-9]+$/',
             'phone' =>'required|string',
