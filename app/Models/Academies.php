@@ -102,9 +102,15 @@ class Academies extends Authenticatable
         return $this->hasMany(Venue::class, 'academy_id');
     }
 
-    public function hasVenueModule(): bool
+    public function hasVenueModule(?TenantSubscription $subscription = null): bool
     {
-        return in_array($this->business_type, ['venue', 'hybrid'], true);
+        $subscription ??= $this->currentSubscription()->with('plan')->first();
+
+        return $subscription
+            && in_array($subscription->status, ['active', 'trial'], true)
+            && (!$subscription->ends_at || $subscription->ends_at->isToday() || $subscription->ends_at->isFuture())
+            && $subscription->plan?->active
+            && (int) $subscription->plan->max_venues > 0;
     }
 
     public function currentSubscription()
