@@ -19,6 +19,56 @@ class VenueBookingController extends Controller
         return view('Academy.pages.venue_bookings.index', compact('bookings'));
     }
 
+    public function calendar()
+    {
+        $academyId = auth('academy')->id();
+        $bookings = VenueBooking::where('academy_id', $academyId)
+            ->with(['space.venue', 'customer'])
+            ->where('starts_at', '>=', now()->subMonths(3)->startOfMonth())
+            ->where('starts_at', '<=', now()->addMonths(12)->endOfMonth())
+            ->orderBy('starts_at')
+            ->get();
+        $spaces = VenueSpace::whereHas('venue', fn ($query) => $query->where('academy_id', $academyId))
+            ->with('venue')->where('active', true)->get();
+        $todayBookings = $bookings->filter(fn ($booking) => $booking->starts_at->isToday() && $booking->status !== 'cancelled');
+
+        $events = $bookings->map(function ($booking) {
+            $colors = [
+                'pending' => '#d97706', 'confirmed' => '#2563eb', 'checked_in' => '#059669',
+                'completed' => '#64748b', 'cancelled' => '#dc2626', 'no_show' => '#7c3aed',
+            ];
+
+            return [
+                'id' => $booking->id,
+                'title' => $booking->title ?: $booking->customer?->name ?: $booking->reference,
+                'start' => $booking->starts_at->toIso8601String(),
+                'end' => $booking->ends_at->toIso8601String(),
+                'backgroundColor' => $colors[$booking->status] ?? '#2563eb',
+                'borderColor' => $colors[$booking->status] ?? '#2563eb',
+                'spaceId' => $booking->venue_space_id,
+                'space' => $booking->space?->name,
+                'venue' => $booking->space?->venue?->name,
+                'customer' => $booking->customer?->name,
+                'phone' => $booking->customer?->phone,
+                'status' => $booking->status,
+                'reference' => $booking->reference,
+                'total' => (float) $booking->total_amount,
+                'paid' => (float) $booking->paid_amount,
+                'editUrl' => route('academy.venue-bookings.edit', $booking),
+            ];
+        })->values();
+
+        $summary = [
+            'today' => $todayBookings->count(),
+            'confirmed' => $todayBookings->where('status', 'confirmed')->count(),
+            'checkedIn' => $todayBookings->where('status', 'checked_in')->count(),
+            'todayRevenue' => $todayBookings->sum('paid_amount'),
+            'upcoming' => $bookings->filter(fn ($booking) => $booking->starts_at->isFuture() && !in_array($booking->status, ['cancelled', 'completed'], true))->count(),
+        ];
+
+        return view('Academy.pages.venue_bookings.calendar', compact('events', 'spaces', 'summary', 'todayBookings'));
+    }
+
     public function create() { return view('Academy.pages.venue_bookings.form', $this->formData(new VenueBooking())); }
 
     public function store(Request $request)

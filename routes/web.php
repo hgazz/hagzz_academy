@@ -201,6 +201,7 @@ Route::group(
         Route::middleware('venue.module')->group(function () {
             Route::resource('venues', VenueController::class)->except(['show']);
             Route::resource('venue-spaces', VenueSpaceController::class)->except(['show']);
+            Route::get('venue-bookings-calendar', [VenueBookingController::class, 'calendar'])->name('venue-bookings.calendar');
             Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
         });
     });

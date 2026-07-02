@@ -82,9 +82,10 @@
                         <div><i class="fa-solid fa-chevron-right menu-chevron"></i></div>
                     </a>
                     <ul class="collapse submenu list-unstyled {{ $venueActive ? 'show' : '' }}" id="venue-management" data-bs-parent="#accordionExample">
+                        <li class="menu {{ Request::routeIs('academy.venue-bookings.calendar') ? 'active' : '' }}"><a href="{{ route('academy.venue-bookings.calendar') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-days menu-icon"></i><span>{{ app()->getLocale() === 'ar' ? 'تقويم الحجوزات' : 'Booking calendar' }}</span></div></a></li>
                         <li class="menu {{ Request::routeIs('academy.venues.*') ? 'active' : '' }}"><a href="{{ route('academy.venues.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-location-dot menu-icon"></i><span>{{ trans('admin.venues.locations') }}</span></div></a></li>
                         <li class="menu {{ Request::routeIs('academy.venue-spaces.*') ? 'active' : '' }}"><a href="{{ route('academy.venue-spaces.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-table-cells-large menu-icon"></i><span>{{ trans('admin.venues.spaces') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.venue-bookings.*') ? 'active' : '' }}"><a href="{{ route('academy.venue-bookings.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-check menu-icon"></i><span>{{ trans('admin.venues.bookings') }}</span></div></a></li>
+                        <li class="menu {{ Request::routeIs('academy.venue-bookings.*') && !Request::routeIs('academy.venue-bookings.calendar') ? 'active' : '' }}"><a href="{{ route('academy.venue-bookings.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-check menu-icon"></i><span>{{ trans('admin.venues.bookings') }}</span></div></a></li>
                     </ul>
                 </li>
             @endif
