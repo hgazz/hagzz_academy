@@ -17,8 +17,12 @@ class ProfileController extends Controller
 
     public function index()
     {
-        $user = $this->academies->where('id', auth('academy')->id())->first();
-        return view('Academy.pages.profile.profile',compact('user'));
+        $user = $this->academies
+            ->with(['currentSubscription.plan', 'currentSubscription.planPrice'])
+            ->findOrFail(auth('academy')->id());
+        $saasSubscription = $user->currentSubscription;
+
+        return view('Academy.pages.profile.profile', compact('user', 'saasSubscription'));
     }
 
     public function update(Academies $user , ProfileRequest $request)

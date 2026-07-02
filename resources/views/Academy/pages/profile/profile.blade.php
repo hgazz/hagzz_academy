@@ -7,6 +7,32 @@
 
     <link href="{{ asset('assetsAdmin/src/assets/css/dark/components/tabs.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/assets/css/dark/elements/alert.css') }}">
+    <style>
+        .saas-summary { background: linear-gradient(135deg, #0f766e, #155e75); color: #fff; border: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 14px 30px rgba(15, 118, 110, .18); }
+        .saas-summary__body { padding: 24px; }
+        .saas-summary__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+        .saas-summary__title { display: flex; align-items: center; gap: 12px; }
+        .saas-summary__icon { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border-radius: 8px; background: rgba(255,255,255,.15); }
+        .saas-summary__icon svg { width: 23px; height: 23px; }
+        .saas-summary h3 { color: #fff; margin: 0 0 3px; font-size: 21px; }
+        .saas-summary p { color: rgba(255,255,255,.76); margin: 0; }
+        .saas-status { padding: 7px 12px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 700; white-space: nowrap; }
+        .saas-status.is-active { background: #dcfce7; color: #166534; }
+        .saas-status.is-trial { background: #fef3c7; color: #92400e; }
+        .saas-summary__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+        .saas-detail { padding: 14px; border: 1px solid rgba(255,255,255,.17); border-radius: 8px; background: rgba(255,255,255,.08); min-width: 0; }
+        .saas-detail span { display: block; color: rgba(255,255,255,.7); font-size: 12px; margin-bottom: 5px; }
+        .saas-detail strong { display: block; color: #fff; font-size: 15px; overflow-wrap: anywhere; }
+        .saas-limits { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+        .saas-limit { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 7px; background: rgba(255,255,255,.1); font-size: 13px; }
+        .saas-limit svg { width: 16px; height: 16px; }
+        .saas-empty { background: #fff; color: #334155; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(15,23,42,.06); }
+        .saas-empty h3 { color: #0f172a; }
+        .saas-empty p { color: #64748b; }
+        .saas-empty .saas-summary__icon { background: #ecfeff; color: #0f766e; }
+        @media (max-width: 991px) { .saas-summary__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 575px) { .saas-summary__body { padding: 18px; } .saas-summary__top { flex-direction: column; } .saas-summary__grid { grid-template-columns: 1fr; } }
+    </style>
 @endpush
 
 @section('content')
@@ -48,6 +74,55 @@
                 </div>
             </div>
             <!--END BREADCRUMBS  -->
+
+            @php
+                $isArabic = app()->getLocale() === 'ar';
+                $subscriptionActive = $saasSubscription && in_array($saasSubscription->status, ['active', 'trial'], true)
+                    && (!$saasSubscription->ends_at || $saasSubscription->ends_at->isToday() || $saasSubscription->ends_at->isFuture());
+                $remainingDays = $saasSubscription?->ends_at && $saasSubscription->ends_at->isFuture()
+                    ? now()->startOfDay()->diffInDays($saasSubscription->ends_at)
+                    : null;
+            @endphp
+            <section class="saas-summary {{ $saasSubscription ? '' : 'saas-empty' }} mt-4" aria-label="{{ $isArabic ? 'اشتراك ساس' : 'SaaS subscription' }}">
+                <div class="saas-summary__body">
+                    <div class="saas-summary__top">
+                        <div class="saas-summary__title">
+                            <span class="saas-summary__icon"><i data-feather="layers"></i></span>
+                            <div>
+                                <p>{{ $isArabic ? 'اشتراك المنصة' : 'Platform subscription' }}</p>
+                                <h3>{{ $saasSubscription?->plan?->name ?? ($isArabic ? 'لم يتم تعيين باقة بعد' : 'No plan assigned yet') }}</h3>
+                            </div>
+                        </div>
+                        @if($saasSubscription)
+                            <span class="saas-status {{ $subscriptionActive ? ($saasSubscription->status === 'trial' ? 'is-trial' : 'is-active') : '' }}">
+                                {{ match($saasSubscription->status) { 'active' => $isArabic ? 'نشط' : 'Active', 'trial' => $isArabic ? 'تجريبي' : 'Trial', 'expired' => $isArabic ? 'منتهي' : 'Expired', default => $isArabic ? 'غير نشط' : 'Inactive' } }}
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($saasSubscription)
+                        <div class="saas-summary__grid">
+                            <div class="saas-detail"><span>{{ $isArabic ? 'دورة الفوترة' : 'Billing cycle' }}</span><strong>{{ $saasSubscription->billing_cycle === 'annual' ? ($isArabic ? 'سنوي' : 'Annual') : ($isArabic ? 'شهري' : 'Monthly') }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'قيمة الاشتراك' : 'Subscription price' }}</span><strong>{{ number_format((float) ($saasSubscription->price_amount ?? $saasSubscription->custom_price ?? 0), 2) }} {{ $saasSubscription->currency_code }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'تاريخ البداية' : 'Start date' }}</span><strong>{{ $saasSubscription->starts_at?->format('Y-m-d') ?? '-' }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'تاريخ الانتهاء' : 'End date' }}</span><strong>{{ $saasSubscription->ends_at?->format('Y-m-d') ?? ($isArabic ? 'غير محدد' : 'Open-ended') }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'مدة الاشتراك' : 'Subscription duration' }}</span><strong>{{ $saasSubscription->starts_at && $saasSubscription->ends_at ? $saasSubscription->starts_at->diffInDays($saasSubscription->ends_at) . ' ' . ($isArabic ? 'يوم' : 'days') : ($isArabic ? 'مفتوح' : 'Open-ended') }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'المدة المتبقية' : 'Remaining time' }}</span><strong>{{ $remainingDays !== null ? $remainingDays . ' ' . ($isArabic ? 'يوم' : 'days') : ($isArabic ? 'غير محدد' : 'Not specified') }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'التجديد التلقائي' : 'Auto renewal' }}</span><strong>{{ $saasSubscription->auto_renew ? ($isArabic ? 'مفعّل' : 'Enabled') : ($isArabic ? 'غير مفعّل' : 'Disabled') }}</strong></div>
+                            <div class="saas-detail"><span>{{ $isArabic ? 'نوع النشاط' : 'Business type' }}</span><strong>{{ match($user->business_type) { 'venue' => $isArabic ? 'ملاعب' : 'Venues', 'hybrid' => $isArabic ? 'أكاديمية وملاعب' : 'Academy & venues', default => $isArabic ? 'أكاديمية' : 'Academy' } }}</strong></div>
+                        </div>
+                        @if($saasSubscription->plan)
+                            <div class="saas-limits">
+                                <span class="saas-limit"><i data-feather="home"></i>{{ $isArabic ? 'الملاعب' : 'Venues' }}: {{ $saasSubscription->plan->max_venues }}</span>
+                                <span class="saas-limit"><i data-feather="map-pin"></i>{{ $isArabic ? 'المساحات' : 'Spaces' }}: {{ $saasSubscription->plan->max_spaces }}</span>
+                                <span class="saas-limit"><i data-feather="users"></i>{{ $isArabic ? 'الموظفون' : 'Staff' }}: {{ $saasSubscription->plan->max_staff }}</span>
+                            </div>
+                        @endif
+                    @else
+                        <p class="mt-3">{{ $isArabic ? 'تواصل مع إدارة المنصة لتعيين باقة مناسبة لهذا الحساب.' : 'Contact platform administration to assign a suitable plan to this account.' }}</p>
+                    @endif
+                </div>
+            </section>
 
             <div class="row layout-top-spacing">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
@@ -237,4 +312,3 @@
     </div>
 
 @endsection
-
