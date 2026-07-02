@@ -6,6 +6,9 @@
     <link href="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assetsAdmin/src/assets/css/academy-dashboard-modern.css') }}" rel="stylesheet" type="text/css">
+    <style>
+        .hybrid-venue-strip{display:grid;grid-template-columns:1.2fr repeat(4,minmax(110px,.7fr));gap:10px;padding:14px;margin-bottom:15px;border:1px solid #bae6fd;border-radius:8px;background:#f0f9ff}.hybrid-venue-title{display:flex;align-items:center;gap:10px}.hybrid-venue-title i{display:grid;place-items:center;width:40px;height:40px;border-radius:8px;background:#0f766e;color:#fff}.hybrid-venue-title strong,.hybrid-venue-item strong{display:block;color:#102a43}.hybrid-venue-title span,.hybrid-venue-item span{display:block;color:#64748b;font-size:11px}.hybrid-venue-item{padding:9px;border-inline-start:1px solid #bae6fd}.hybrid-venue-links{display:flex;gap:7px;margin-top:5px}.hybrid-venue-links a{color:#0f766e;font-size:11px;font-weight:700}@media(max-width:991px){.hybrid-venue-strip{grid-template-columns:repeat(2,1fr)}.hybrid-venue-title{grid-column:1/-1}.hybrid-venue-item{border-inline-start:0;border-top:1px solid #bae6fd}}@media(max-width:575px){.hybrid-venue-strip{grid-template-columns:1fr}}
+    </style>
 @endpush
 
 @php
@@ -87,6 +90,16 @@
                 </a>
             </div>
         </section>
+
+        @if(($dashboard['dashboardMode'] ?? 'academy') === 'hybrid' && $dashboard['venue'])
+            <section class="hybrid-venue-strip">
+                <div class="hybrid-venue-title"><i><span data-feather="map"></span></i><div><strong>{{ $isArabic ? 'تشغيل الملاعب' : 'Venue operations' }}</strong><span>{{ $isArabic ? 'ملخص سريع لنشاط الملاعب' : 'Quick venue activity summary' }}</span><div class="hybrid-venue-links"><a href="{{ route('academy.venue-bookings.calendar') }}">{{ $isArabic ? 'التقويم' : 'Calendar' }}</a><a href="{{ route('academy.venue-bookings.create') }}">{{ $isArabic ? 'حجز جديد' : 'New booking' }}</a></div></div></div>
+                <div class="hybrid-venue-item"><span>{{ $isArabic ? 'حجوزات اليوم' : 'Today bookings' }}</span><strong>{{ number_format($dashboard['venue']['todayBookings']) }}</strong></div>
+                <div class="hybrid-venue-item"><span>{{ $isArabic ? 'تحصيل اليوم' : 'Today collected' }}</span><strong>{{ number_format($dashboard['venue']['todayCollected'],2) }}</strong></div>
+                <div class="hybrid-venue-item"><span>{{ $isArabic ? 'المساحات النشطة' : 'Active spaces' }}</span><strong>{{ number_format($dashboard['venue']['spaces']) }}</strong></div>
+                <div class="hybrid-venue-item"><span>{{ $isArabic ? 'المبالغ المتبقية' : 'Outstanding' }}</span><strong>{{ number_format($dashboard['venue']['outstanding'],2) }}</strong></div>
+            </section>
+        @endif
 
         <section class="metric-grid">
             <article class="metric-card metric-students">

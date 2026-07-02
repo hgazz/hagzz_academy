@@ -18,6 +18,9 @@ use App\Models\Settlement;
 use App\Models\Sport;
 use App\Models\Training;
 use App\Models\User;
+use App\Models\Venue;
+use App\Models\VenueBooking;
+use App\Models\VenueSpace;
 use App\Services\Chart\ChartsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,14 +47,21 @@ class DashboardController extends Controller
 
     public function index()
     {
-        if (auth('academy')->user()?->business_type === 'venue') {
-            return to_route('academy.venue-bookings.index');
-        }
-
         $academy = auth('academy')->user();
         $academyId = $academy->id;
         $now = now();
         $monthStart = $now->copy()->subMonths(11)->startOfMonth();
+        $venueDashboard = in_array($academy->business_type, ['venue', 'hybrid'], true)
+            ? $this->venueDashboardData($academyId, $monthStart)
+            : null;
+
+        if ($academy->business_type === 'venue') {
+            return view('Academy.venue-dashboard', [
+                'venueDashboard' => $venueDashboard,
+                'academyName' => $this->localizedValue($academy->getRawOriginal('commercial_name')),
+                'ownerName' => $academy->owner_name ?: $academy->first_name ?: $academy->name,
+            ]);
+        }
         $currentPeriodStart = $now->copy()->subDays(29)->startOfDay();
         $previousPeriodStart = $currentPeriodStart->copy()->subDays(30);
 
@@ -217,9 +227,58 @@ class DashboardController extends Controller
             'recentBookings' => $recentBookings,
             'expiringSubscriptions' => $expiringSubscriptions,
             'hasStudentModule' => $hasStudentModule,
+            'venue' => $venueDashboard,
+            'dashboardMode' => $academy->business_type === 'hybrid' ? 'hybrid' : 'academy',
         ];
 
         return view('Academy.index', compact('dashboard'));
+    }
+
+    private function venueDashboardData(int $academyId, Carbon $monthStart): array
+    {
+        $base = VenueBooking::where('academy_id', $academyId);
+        $today = (clone $base)->whereDate('starts_at', today());
+        $currentStart = now()->subDays(29)->startOfDay();
+        $previousStart = $currentStart->copy()->subDays(30);
+        $currentCount = (clone $base)->where('created_at', '>=', $currentStart)->count();
+        $previousCount = (clone $base)->whereBetween('created_at', [$previousStart, $currentStart])->count();
+
+        $monthly = (clone $base)->where('starts_at', '>=', $monthStart)
+            ->where('status', '!=', 'cancelled')
+            ->selectRaw("DATE_FORMAT(starts_at, '%Y-%m') as month_key, COUNT(*) as bookings_count, COALESCE(SUM(total_amount),0) as revenue, COALESCE(SUM(paid_amount),0) as collected")
+            ->groupBy('month_key')->get()->keyBy('month_key');
+        $months = collect(range(0, 11))->map(function ($offset) use ($monthStart, $monthly) {
+            $month = $monthStart->copy()->addMonths($offset);
+            $row = $monthly->get($month->format('Y-m'));
+            return [
+                'label' => $month->locale(app()->getLocale())->translatedFormat('M Y'),
+                'bookings' => (int) ($row->bookings_count ?? 0),
+                'revenue' => (float) ($row->revenue ?? 0),
+                'collected' => (float) ($row->collected ?? 0),
+            ];
+        });
+        $statuses = (clone $base)->select('status')->selectRaw('COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $topSpaces = VenueSpace::whereHas('venue', fn ($query) => $query->where('academy_id', $academyId))
+            ->with('venue')->withCount(['bookings' => fn ($query) => $query->where('status', '!=', 'cancelled')])
+            ->orderByDesc('bookings_count')->limit(6)->get();
+
+        return [
+            'venues' => Venue::where('academy_id', $academyId)->where('active', true)->count(),
+            'spaces' => VenueSpace::whereHas('venue', fn ($query) => $query->where('academy_id', $academyId))->where('active', true)->count(),
+            'todayBookings' => (clone $today)->where('status', '!=', 'cancelled')->count(),
+            'todayCollected' => (float) (clone $today)->where('status', '!=', 'cancelled')->sum('paid_amount'),
+            'upcoming' => (clone $base)->where('starts_at', '>', now())->whereIn('status', ['pending', 'confirmed'])->count(),
+            'totalBookings' => (clone $base)->where('status', '!=', 'cancelled')->count(),
+            'totalRevenue' => (float) (clone $base)->where('status', '!=', 'cancelled')->sum('total_amount'),
+            'totalCollected' => (float) (clone $base)->where('status', '!=', 'cancelled')->sum('paid_amount'),
+            'outstanding' => max(0, (float) (clone $base)->where('status', '!=', 'cancelled')->sum('total_amount') - (float) (clone $base)->where('status', '!=', 'cancelled')->sum('paid_amount')),
+            'bookingTrend' => $this->percentageChange($currentCount, $previousCount),
+            'monthLabels' => $months->pluck('label'), 'monthlyBookings' => $months->pluck('bookings'),
+            'monthlyRevenue' => $months->pluck('revenue'), 'monthlyCollected' => $months->pluck('collected'),
+            'statuses' => collect(['pending','confirmed','checked_in','completed','cancelled','no_show'])->map(fn ($status) => (int) $statuses->get($status, 0)),
+            'topSpaces' => $topSpaces,
+            'recentBookings' => (clone $base)->with(['space.venue','customer'])->latest('created_at')->limit(7)->get(),
+        ];
     }
 
     public function filterBookings(Request $request)
