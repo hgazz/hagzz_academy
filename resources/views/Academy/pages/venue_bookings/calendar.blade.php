@@ -34,8 +34,8 @@
         #venueCalendarTitle { color:var(--ink); font-size:18px; margin:0; }
         #venueBookingCalendar .fc-event { border-radius:5px; padding:2px; cursor:pointer; } #venueBookingCalendar .fc-event-title { font-weight:700; }
         .booking-drawer-backdrop { position:fixed; inset:0; z-index:1040; background:rgba(15,23,42,.42); opacity:0; visibility:hidden; transition:.2s; }
-        .booking-drawer { position:fixed; z-index:1041; inset-block:0; inset-inline-end:0; width:min(390px,92vw); padding:24px; background:#fff; transform:translateX(105%); transition:.25s; box-shadow:0 0 30px rgba(15,23,42,.18); }
-        [dir="rtl"] .booking-drawer { transform:translateX(-105%); } .booking-drawer.is-open { transform:none; } .booking-drawer-backdrop.is-open { opacity:1; visibility:visible; }
+        .booking-drawer { position:fixed; z-index:1041; top:0; right:0; bottom:0; left:auto; width:min(390px,92vw); padding:24px; overflow-y:auto; background:#fff; transform:translateX(110%); visibility:hidden; pointer-events:none; transition:transform .25s, visibility 0s linear .25s; box-shadow:0 0 30px rgba(15,23,42,.18); }
+        .booking-drawer.is-open { transform:translateX(0); visibility:visible; pointer-events:auto; transition:transform .25s; } .booking-drawer-backdrop.is-open { opacity:1; visibility:visible; }
         .booking-drawer header { display:flex; justify-content:space-between; gap:15px; } .booking-drawer h3 { color:var(--ink); } .drawer-close { border:0; background:#f1f5f9; border-radius:6px; width:38px; height:38px; }
         .booking-drawer dl { display:grid; gap:12px; margin:22px 0; } .booking-drawer dl div { padding:12px; border:1px solid var(--line); border-radius:7px; } .booking-drawer dt { color:var(--muted); font-size:12px; } .booking-drawer dd { margin:4px 0 0; color:var(--ink); font-weight:700; }
         @media(max-width:1100px){.venue-metrics{grid-template-columns:repeat(2,1fr)}.venue-calendar-shell{grid-template-columns:1fr}.venue-calendar-side{border-inline-end:0;border-bottom:1px solid var(--line)}}
