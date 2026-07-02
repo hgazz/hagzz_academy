@@ -98,7 +98,7 @@
                                                 onerror="this.onerror=null;this.src='{{ $student->defaultImageUrl() }}';"
                                             >
                                         </td>
-                                        <td>{{ $student->name }}</td>
+                                        <td><button type="button" class="student-profile-trigger" data-student-profile-url="{{ route('academy.students.profile', $student) }}">{{ $student->name }}</button></td>
                                         <td>{{ $student->phone ?? '-' }}</td>
                                         <td>{{ $student->guardian_name ?? '-' }}<br><small>{{ $student->guardian_phone }}</small></td>
                                         <td><span class="badge bg-{{ $student->status === 'active' ? 'success' : 'secondary' }}">{{ trans('admin.student_management.' . $student->status) }}</span></td>
@@ -125,4 +125,5 @@
             </div>
         </div>
     </div>
+    @include('Academy.pages.students._profile_modal')
 @endsection

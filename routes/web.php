@@ -151,6 +151,7 @@ Route::group(
         Route::get('students/template', [AcademyStudentController::class, 'template'])->name('students.template');
         Route::post('students/import', [AcademyStudentController::class, 'import'])->name('students.import');
         Route::get('students/print', [AcademyStudentController::class, 'print'])->name('students.print');
+        Route::get('students/{student}/profile', [AcademyStudentController::class, 'profile'])->name('students.profile');
         Route::resource('students', AcademyStudentController::class)->except(['show']);
         Route::resource('groups', AcademyGroupController::class)->except(['show']);
         Route::resource('competitions', AcademyCompetitionController::class);

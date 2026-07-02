@@ -31,7 +31,7 @@
                                 @forelse($subscriptions as $subscription)
                                     <tr>
                                         <td>{{ $subscription->id }}</td>
-                                        <td>{{ $subscription->student?->name }}</td>
+                                        <td>@if($subscription->student)<button type="button" class="student-profile-trigger" data-student-profile-url="{{ route('academy.students.profile', $subscription->student) }}">{{ $subscription->student->name }}</button>@else - @endif</td>
                                         <td>{{ $subscription->group?->name ?? '-' }}</td>
                                         <td>{{ $subscription->starts_on?->format('Y-m-d') }} / {{ $subscription->ends_on?->format('Y-m-d') }}</td>
                                         <td>{{ number_format($subscription->amount, 2) }}</td>
@@ -59,4 +59,5 @@
             </div>
         </div>
     </div>
+    @include('Academy.pages.students._profile_modal')
 @endsection
