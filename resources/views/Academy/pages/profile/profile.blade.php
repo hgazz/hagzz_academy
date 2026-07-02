@@ -30,6 +30,10 @@
         .saas-empty h3 { color: #0f172a; }
         .saas-empty p { color: #64748b; }
         .saas-empty .saas-summary__icon { background: #ecfeff; color: #0f766e; }
+        .profile-logo-box { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; text-align: start; }
+        .profile-logo-box img { width: 74px; height: 74px; flex: 0 0 74px; object-fit: cover; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; padding: 4px; }
+        .profile-logo-box strong { display: block; color: #0f172a; margin-bottom: 4px; }
+        .profile-logo-box span { display: block; color: #64748b; font-size: 13px; }
         @media (max-width: 991px) { .saas-summary__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 575px) { .saas-summary__body { padding: 18px; } .saas-summary__top { flex-direction: column; } .saas-summary__grid { grid-template-columns: 1fr; } }
     </style>
@@ -164,6 +168,15 @@
                                           method="post" enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
+
+                                        <div class="profile-logo-box">
+                                            <img id="academy-logo-preview" src="{{ $user->logo }}" alt="{{ $user->commercial_name }}"
+                                                 onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}';">
+                                            <div>
+                                                <strong>{{ $isArabic ? 'شعار الأكاديمية الحالي' : 'Current academy logo' }}</strong>
+                                                <span>{{ $isArabic ? 'يمكنك اختيار صورة جديدة من حقل الشعار أدناه.' : 'Choose a new image from the logo field below.' }}</span>
+                                            </div>
+                                        </div>
 
                                         <div class="row">
                                             <div class="col-md-6">
@@ -312,3 +325,15 @@
     </div>
 
 @endsection
+
+@push('js')
+    <script>
+        document.getElementById('photo')?.addEventListener('change', function (event) {
+            const file = event.target.files?.[0];
+            const preview = document.getElementById('academy-logo-preview');
+            if (file && preview) {
+                preview.src = URL.createObjectURL(file);
+            }
+        });
+    </script>
+@endpush

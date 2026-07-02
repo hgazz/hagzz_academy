@@ -86,7 +86,8 @@
                 <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar-container">
                         <div class="avatar avatar-sm avatar-indicators avatar-online">
-                            <img alt="avatar" src="{{ auth()->user('academy')->logo }}" width="40px" height="40px" class="rounded-circle">
+                            <img alt="avatar" src="{{ auth()->user('academy')->logo }}" width="40px" height="40px" class="rounded-circle"
+                                 onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}';">
                         </div>
                     </div>
                 </a>

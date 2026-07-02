@@ -3,6 +3,7 @@
 <script src="{{ asset('assetsAdmin/src/plugins/src/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
 <script src="{{ asset('assetsAdmin/src/plugins/src/mousetrap/mousetrap.min.js') }}"></script>
 <script src="{{ asset('assetsAdmin/src/plugins/src/waves/waves.min.js') }}"></script>
+<script src="{{ asset('assetsAdmin/src/plugins/src/font-icons/feather/feather.min.js') }}"></script>
 <script src="{{ asset('assetsAdmin/layouts/vertical-light-menu/app.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="{{ asset('assetsAdmin/confirmationDelete.js') }}"></script>
@@ -42,3 +43,8 @@
 @endif
 
 @stack('js')
+<script>
+    if (window.feather) {
+        window.feather.replace({ width: 18, height: 18 });
+    }
+</script>
