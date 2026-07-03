@@ -152,6 +152,7 @@ Route::group(
         Route::post('students/import', [AcademyStudentController::class, 'import'])->name('students.import');
         Route::get('students/print', [AcademyStudentController::class, 'print'])->name('students.print');
         Route::get('students/{student}/profile', [AcademyStudentController::class, 'profile'])->name('students.profile');
+        Route::get('students/{student}/card', [AcademyStudentController::class, 'card'])->name('students.card');
         Route::resource('students', AcademyStudentController::class)->except(['show']);
         Route::resource('groups', AcademyGroupController::class)->except(['show']);
         Route::resource('competitions', AcademyCompetitionController::class);
@@ -164,6 +165,8 @@ Route::group(
             ->name('subscriptions.payments.store');
         Route::get('attendance', [AcademyAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('attendance/create', [AcademyAttendanceController::class, 'create'])->name('attendance.create');
+        Route::get('attendance/scanner', [AcademyAttendanceController::class, 'scanner'])->name('attendance.scanner');
+        Route::post('attendance/scanner/scan', [AcademyAttendanceController::class, 'scan'])->name('attendance.scan');
         Route::post('attendance', [AcademyAttendanceController::class, 'store'])->name('attendance.store');
         Route::get('attendance/{attendance}', [AcademyAttendanceController::class, 'show'])->name('attendance.show');
         Route::put('attendance/{attendance}', [AcademyAttendanceController::class, 'update'])->name('attendance.update');

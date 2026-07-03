@@ -181,7 +181,7 @@
                             </div>
                         </a>
                     </li>
-                    <li class="menu {{ Request::routeIs('academy.attendance.*') ? 'active' : '' }}">
+                    <li class="menu {{ Request::routeIs('academy.attendance.*') && !Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}">
                         <a href="{{ route('academy.attendance.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div>
                                 <i class="fa-solid fa-clipboard-check menu-icon"></i>
@@ -189,6 +189,7 @@
                             </div>
                         </a>
                     </li>
+                    <li class="menu {{ Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon"></i><span>{{ app()->getLocale() === 'ar' ? 'ماسح الحضور' : 'Attendance scanner' }}</span></div></a></li>
                     <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}">
                         <a href="{{ route('academy.subscriptions.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div>

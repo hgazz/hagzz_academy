@@ -103,6 +103,7 @@
                                         <td>{{ $student->guardian_name ?? '-' }}<br><small>{{ $student->guardian_phone }}</small></td>
                                         <td><span class="badge bg-{{ $student->status === 'active' ? 'success' : 'secondary' }}">{{ trans('admin.student_management.' . $student->status) }}</span></td>
                                         <td>
+                                            <a href="{{ route('academy.students.card', $student) }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ app()->getLocale() === 'ar' ? 'الكارت' : 'Card' }}</a>
                                             <a href="{{ route('academy.students.edit', $student) }}" class="btn btn-sm btn-warning">{{ trans('admin.student_management.edit') }}</a>
                                             <form action="{{ route('academy.students.destroy', $student) }}" method="POST" class="d-inline">
                                                 @csrf

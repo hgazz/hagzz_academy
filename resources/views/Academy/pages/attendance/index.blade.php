@@ -28,10 +28,7 @@
                     <h1>{{ trans('admin.student_management.attendance') }}</h1>
                     <p>{{ $isArabic ? 'تابع حضور الطلاب لكل مجموعة واحسب الغياب والتأخير من مكان واحد.' : 'Track student attendance by group and keep absence, lateness, and excuses clear.' }}</p>
                 </div>
-                <a href="{{ route('academy.attendance.create') }}" class="attendance-primary-action">
-                    <i data-feather="plus"></i>
-                    <span>{{ trans('admin.student_management.new_attendance_session') }}</span>
-                </a>
+                <div class="d-flex flex-wrap gap-2"><a href="{{ route('academy.attendance.scanner') }}" class="attendance-secondary-action"><i data-feather="maximize"></i><span>{{ $isArabic ? 'ماسح الحضور' : 'Attendance scanner' }}</span></a><a href="{{ route('academy.attendance.create') }}" class="attendance-primary-action"><i data-feather="plus"></i><span>{{ trans('admin.student_management.new_attendance_session') }}</span></a></div>
             </header>
 
             <div class="attendance-session-list">

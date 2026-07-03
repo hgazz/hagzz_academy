@@ -8,8 +8,12 @@ use App\Imports\AcademyStudentsImport;
 use App\Models\Academies;
 use App\Models\AcademyStudent;
 use App\Models\AcademyAttendanceRecord;
+use App\Support\MembershipCode;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class AcademyStudentController extends Controller
 {
@@ -85,6 +89,25 @@ class AcademyStudentController extends Controller
                 'status' => $record->status, 'check_in' => $record->check_in_at,
             ])->values(),
             'edit_url' => route('academy.students.edit', $student),
+        ]);
+    }
+
+    public function card(AcademyStudent $student)
+    {
+        $this->authorizeStudent($student);
+        $student->load(['academy', 'user', 'groups.sport', 'subscriptions.group', 'subscriptions.payments']);
+        $membershipCode = MembershipCode::make($student);
+        $subscription = $student->subscriptions->sortByDesc('starts_on')->first();
+        $qrResult = (new SvgWriter())->write(new QrCode(data: $membershipCode, size: 280, margin: 8));
+        $barcode = (new BarcodeGeneratorSVG())->getBarcode($membershipCode, BarcodeGeneratorSVG::TYPE_CODE_128, 1.55, 54);
+
+        return view('Academy.pages.students.card', [
+            'student' => $student,
+            'academy' => $student->academy,
+            'subscription' => $subscription,
+            'membershipCode' => $membershipCode,
+            'qrDataUri' => $qrResult->getDataUri(),
+            'barcodeSvg' => $barcode,
         ]);
     }
 
