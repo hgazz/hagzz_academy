@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/json/*firebase*admin*.json
 /storage/*.key
 /vendor
 .env
