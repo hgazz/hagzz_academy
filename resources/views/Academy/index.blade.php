@@ -233,14 +233,18 @@
     <script src="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const finiteNumbers = values => Array.from(values || [], value => {
+                const number = Number(value);
+                return Number.isFinite(number) ? number : 0;
+            });
             const data = {
                 labels: @json($dashboard['monthLabels']),
-                bookings: @json($dashboard['monthlyBookings']),
-                bookingRevenue: @json($dashboard['monthlyBookingRevenue']),
-                subscriptionRevenue: @json($dashboard['monthlySubscriptionRevenue']),
-                attendance: @json($dashboard['attendanceStatuses']),
+                bookings: finiteNumbers(@json($dashboard['monthlyBookings'])),
+                bookingRevenue: finiteNumbers(@json($dashboard['monthlyBookingRevenue'])),
+                subscriptionRevenue: finiteNumbers(@json($dashboard['monthlySubscriptionRevenue'])),
+                attendance: finiteNumbers(@json($dashboard['attendanceStatuses'])),
                 trainingLabels: @json($dashboard['topTrainings']->pluck('name')),
-                trainingBookings: @json($dashboard['topTrainings']->pluck('bookings'))
+                trainingBookings: finiteNumbers(@json($dashboard['topTrainings']->pluck('bookings')))
             };
             const labels = {
                 bookings: @json($copy['bookings']), bookingRevenue: @json($copy['bookingRevenue']),
@@ -269,12 +273,22 @@
                 legend: { position: 'top', horizontalAlign: '{{ $isArabic ? 'right' : 'left' }}' }, tooltip: { shared: true, intersect: false }, noData
             }).render();
 
-            new ApexCharts(document.querySelector('#attendanceChart'), {
-                chart: { ...common, type: 'donut', height: 360 }, series: data.attendance,
-                labels: [labels.present, labels.late, labels.absent, labels.excused],
-                colors: ['#14b8a6', '#f59e0b', '#ef4444', '#64748b'], stroke: { width: 0 }, dataLabels: { enabled: false },
-                legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '72%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
-            }).render();
+            const attendanceElement = document.querySelector('#attendanceChart');
+            const attendanceTotal = data.attendance.reduce((sum, value) => sum + value, 0);
+            if (attendanceTotal > 0) {
+                new ApexCharts(attendanceElement, {
+                    chart: { ...common, type: 'donut', height: 360 }, series: data.attendance,
+                    labels: [labels.present, labels.late, labels.absent, labels.excused],
+                    colors: ['#14b8a6', '#f59e0b', '#ef4444', '#64748b'], stroke: { width: 0 }, dataLabels: { enabled: false },
+                    legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '72%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
+                }).render();
+            } else {
+                attendanceElement.classList.add('empty-state');
+                attendanceElement.style.minHeight = '360px';
+                attendanceElement.style.display = 'grid';
+                attendanceElement.style.placeItems = 'center';
+                attendanceElement.textContent = @json($copy['noData']);
+            }
 
             new ApexCharts(document.querySelector('#trainingsChart'), {
                 chart: { ...common, type: 'bar', height: 300 }, series: [{ name: labels.bookings, data: data.trainingBookings }],

@@ -41,10 +41,12 @@
 <script src="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
- const d={labels:@json($venueDashboard['monthLabels']),bookings:@json($venueDashboard['monthlyBookings']),revenue:@json($venueDashboard['monthlyRevenue']),collected:@json($venueDashboard['monthlyCollected']),statuses:@json($venueDashboard['statuses'])};
+ const finiteNumbers=values=>Array.from(values||[],value=>{const number=Number(value);return Number.isFinite(number)?number:0});
+ const d={labels:@json($venueDashboard['monthLabels']),bookings:finiteNumbers(@json($venueDashboard['monthlyBookings'])),revenue:finiteNumbers(@json($venueDashboard['monthlyRevenue'])),collected:finiteNumbers(@json($venueDashboard['monthlyCollected'])),statuses:finiteNumbers(@json($venueDashboard['statuses']))};
  const common={fontFamily:'Cairo, Nunito, sans-serif',foreColor:'#64748b',toolbar:{show:false}};
  new ApexCharts(document.querySelector('#venueFinancialChart'),{chart:{...common,type:'line',height:350},series:[{name:@json($ar?'الحجوزات':'Bookings'),type:'column',data:d.bookings},{name:@json($ar?'قيمة الحجوزات':'Booking value'),type:'area',data:d.revenue},{name:@json($ar?'المحصل':'Collected'),type:'line',data:d.collected}],colors:['#2563eb','#14b8a6','#7c3aed'],stroke:{width:[0,3,3],curve:'smooth'},dataLabels:{enabled:false},xaxis:{categories:d.labels},plotOptions:{bar:{borderRadius:4,columnWidth:'42%'}},legend:{position:'top'}}).render();
- new ApexCharts(document.querySelector('#venueStatusChart'),{chart:{...common,type:'donut',height:350},series:d.statuses,labels:@json(array_values($status)),colors:['#d97706','#2563eb','#059669','#64748b','#dc2626','#7c3aed'],stroke:{width:0},legend:{position:'bottom'},plotOptions:{pie:{donut:{size:'70%'}}}}).render();
+ const statusElement=document.querySelector('#venueStatusChart');
+ if(d.statuses.reduce((sum,value)=>sum+value,0)>0){new ApexCharts(statusElement,{chart:{...common,type:'donut',height:350},series:d.statuses,labels:@json(array_values($status)),colors:['#d97706','#2563eb','#059669','#64748b','#dc2626','#7c3aed'],stroke:{width:0},legend:{position:'bottom'},plotOptions:{pie:{donut:{size:'70%'}}}}).render()}else{statusElement.classList.add('vd-empty');statusElement.style.minHeight='350px';statusElement.style.display='grid';statusElement.style.placeItems='center';statusElement.textContent=@json($ar?'لا توجد بيانات بعد':'No data available')}
  if(window.feather)feather.replace();
 });
 </script>
