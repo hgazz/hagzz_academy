@@ -265,6 +265,14 @@
                     <div><i class="fa-solid fa-chevron-right menu-chevron"></i></div>
                 </a>
                 <ul class="collapse submenu list-unstyled {{ $reportsActive ? 'show' : '' }}" id="report" data-bs-parent="#accordionExample">
+                    <li class="menu {{ Request::routeIs('academy.report.overview*') ? 'active' : '' }}">
+                        <a href="{{ route('academy.report.overview') }}" aria-expanded="false" class="dropdown-toggle">
+                            <div>
+                                <i class="fa-solid fa-chart-line menu-icon"></i>
+                                <span>{{ app()->getLocale() === 'ar' ? 'النظرة المالية الشاملة' : 'Financial overview' }}</span>
+                            </div>
+                        </a>
+                    </li>
                     <li class="menu {{ Request::routeIs('academy.report.settlement.index') ? 'active' : '' }}">
                         <a href="{{ route('academy.report.settlement.index') }}" aria-expanded="false" class="dropdown-toggle">
                             <div>

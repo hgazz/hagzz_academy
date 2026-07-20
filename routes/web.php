@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AcademyAttendanceController;
 use App\Http\Controllers\AcademyCompetitionController;
 use App\Http\Controllers\AcademyGroupController;
+use App\Http\Controllers\AcademyFinancialReportController;
 use App\Http\Controllers\AcademyStudentReportController;
 use App\Http\Controllers\AcademyStudentController;
 use App\Http\Controllers\AcademyStudentSubscriptionController;
@@ -199,6 +200,11 @@ Route::group(
                 Route::get('coach/filter','coachFilter')->name('coach.filter');
                 Route::get('coach/export','coachExport')->name('coach.export');
             });
+
+        Route::prefix('report')->as('report.')->group(function () {
+            Route::get('overview', [AcademyFinancialReportController::class, 'index'])->name('overview');
+            Route::get('overview/export/{type}', [AcademyFinancialReportController::class, 'export'])->name('overview.export');
+        });
 
         Route::get('/calendar', [TrainingCalendarController::class, 'index'])->name('calendar.index');
 
