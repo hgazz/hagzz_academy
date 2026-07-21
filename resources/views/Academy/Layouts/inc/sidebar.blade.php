@@ -10,49 +10,64 @@
 @endphp
 
 <style>
-    .sidebar-wrapper { height: 100vh !important; }
+    .sidebar-wrapper { height: 100vh !important; border-inline-end: 1px solid rgba(15, 23, 42, .07); }
     #sidebar { height: 100%; overflow: hidden !important; display: flex; flex-direction: column; position: relative; }
-    #sidebar .theme-brand { flex: 0 0 auto; z-index: 5; background: inherit; }
-    #sidebar > .shadow-bottom { flex: 0 0 auto; }
+    #sidebar .theme-brand { flex: 0 0 auto; min-height: 68px; z-index: 5; background: inherit; border-bottom: 1px solid rgba(15, 23, 42, .07); }
+    #sidebar > .shadow-bottom { display: none; }
     #sidebar > .menu-categories {
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        padding-bottom: 76px !important;
+        padding: 10px 10px 62px !important;
     }
-    #sidebar > .menu-categories::-webkit-scrollbar { width: 6px; }
+    #sidebar > .menu-categories::-webkit-scrollbar { width: 5px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }
-    #sidebar > .menu-categories::-webkit-scrollbar-thumb { background: rgba(27, 85, 226, .42); border-radius: 10px; }
-    #sidebar .menu-icon { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: rgba(14, 23, 38, .72); font-size: 18px; margin-inline-end: 12px; }
-    #sidebar .menu.active > a .menu-icon, #sidebar .submenu .menu.active > a .menu-icon { color: #1b55e2; }
-    #sidebar .submenu .menu-icon { font-size: 15px; width: 19px; min-width: 19px; }
-    #sidebar .menu-chevron { color: rgba(14, 23, 38, .5); font-size: 13px; transition: transform .2s ease; }
-    #sidebar a[aria-expanded="true"] .menu-chevron { transform: rotate(90deg); }
-    #sidebar .navigation-section { padding: 18px 22px 7px; list-style: none; }
-    #sidebar .navigation-section span { color: #888ea8; font-size: 10px; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; white-space: nowrap; }
-    #sidebar .menu > a { border-radius: 10px; margin-inline: 10px; min-width: 0; }
-    #sidebar .menu > a > div:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; }
-    #sidebar .menu > a > div:first-child > span {
-        display: block; flex: 1 1 auto; min-width: 0; white-space: nowrap;
-        transition: transform .55s cubic-bezier(.22, .75, .25, 1); will-change: transform;
+    #sidebar > .menu-categories::-webkit-scrollbar-thumb { background: rgba(27, 85, 226, .32); border-radius: 10px; }
+    #sidebar .navigation-section { padding: 17px 10px 6px; list-style: none; }
+    #sidebar .navigation-section:first-of-type { padding-top: 13px; }
+    #sidebar .navigation-section span { color: #7c849b; font-size: 10px; font-weight: 800; letter-spacing: .055em; text-transform: uppercase; white-space: nowrap; }
+    #sidebar .menu { margin: 0 0 3px; }
+    #sidebar .menu > a {
+        min-height: 43px; margin: 0; padding: 9px 11px; border: 1px solid transparent; border-radius: 10px;
+        color: #3b4254; transition: background .16s ease, color .16s ease, border-color .16s ease;
     }
-    #sidebar .menu > a > div:first-child > span.sidebar-label-overflow { cursor: help; }
-    #sidebar .menu.active > a { box-shadow: inset 3px 0 0 #1b55e2; }
-    [dir="rtl"] #sidebar .menu.active > a { box-shadow: inset -3px 0 0 #1b55e2; }
+    #sidebar .menu > a:hover { background: rgba(27, 85, 226, .055); color: #1b55e2; }
+    #sidebar .menu > a > div:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; display: flex; align-items: center; }
+    #sidebar .menu > a > div:first-child > span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+    #sidebar .menu-icon {
+        width: 30px; min-width: 30px; height: 30px; margin-inline-end: 9px; border-radius: 8px;
+        display: inline-flex; align-items: center; justify-content: center; color: #626b7f; background: rgba(148, 163, 184, .11); font-size: 15px;
+    }
+    #sidebar .menu.active > a { color: #1749c9; background: rgba(27, 85, 226, .10); border-color: rgba(27, 85, 226, .13); box-shadow: none; }
+    #sidebar .menu.active > a .menu-icon { color: #fff; background: #1b55e2; box-shadow: 0 4px 10px rgba(27, 85, 226, .24); }
+    #sidebar .submenu { margin: 3px 16px 7px 0; padding-inline-start: 8px; border-inline-start: 1px solid rgba(27, 85, 226, .16); }
+    [dir="ltr"] #sidebar .submenu { margin: 3px 0 7px 16px; }
+    #sidebar .submenu .menu { margin-bottom: 1px; }
+    #sidebar .submenu .menu > a { min-height: 36px; padding-block: 5px; border-radius: 8px; }
+    #sidebar .submenu .menu-icon { width: 24px; min-width: 24px; height: 24px; font-size: 12px; background: transparent; }
+    #sidebar .submenu .menu.active > a .menu-icon { color: #1b55e2; background: rgba(27, 85, 226, .10); box-shadow: none; }
+    #sidebar .submenu .menu > a > div:first-child > span { font-size: 12px; font-weight: 600; }
+    #sidebar .menu-chevron { color: #8b93a6; font-size: 11px; transition: transform .2s ease; }
+    #sidebar a[aria-expanded="true"] .menu-chevron { transform: rotate(90deg); }
     #sidebar .sidebar-scroll-controls {
-        position: absolute; inset-inline-end: 10px; bottom: 12px; z-index: 20; display: flex; flex-direction: column; gap: 4px;
-        padding: 4px; border: 1px solid rgba(27, 85, 226, .14); border-radius: 12px;
-        background: rgba(255, 255, 255, .88); box-shadow: 0 6px 18px rgba(31, 45, 61, .14); backdrop-filter: blur(10px);
+        position: absolute; inset-inline: 0; bottom: 0; z-index: 20; height: 48px; display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 8px 12px; border-top: 1px solid rgba(15, 23, 42, .07); background: rgba(255, 255, 255, .96); backdrop-filter: blur(12px);
     }
     #sidebar .sidebar-scroll-controls[hidden] { display: none !important; }
     #sidebar .sidebar-scroll-button {
-        width: 30px; height: 27px; display: inline-flex; align-items: center; justify-content: center;
-        border: 0; border-radius: 9px; background: #eef2ff; color: #1b55e2; cursor: pointer;
-        transition: transform .18s ease, opacity .18s ease, background .18s ease;
+        flex: 1 1 50%; max-width: 92px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid rgba(27, 85, 226, .12); border-radius: 8px; background: rgba(27, 85, 226, .055); color: #1b55e2; cursor: pointer;
+        transition: opacity .16s ease, background .16s ease, color .16s ease;
     }
-    #sidebar .sidebar-scroll-button:hover { background: #1b55e2; color: #fff; transform: translateY(-1px); }
-    #sidebar .sidebar-scroll-button:disabled { opacity: .28; cursor: default; transform: none; }
-    body.dark #sidebar .sidebar-scroll-controls, .dark #sidebar .sidebar-scroll-controls { background: rgba(20, 30, 50, .94); border-color: rgba(136, 142, 168, .25); }
+    #sidebar .sidebar-scroll-button:hover { background: #1b55e2; color: #fff; }
+    #sidebar .sidebar-scroll-button:disabled { opacity: .24; cursor: default; }
+    body.dark .sidebar-wrapper, .dark .sidebar-wrapper, body.dark #sidebar .theme-brand, .dark #sidebar .theme-brand { border-color: rgba(148, 163, 184, .12); }
+    body.dark #sidebar .menu > a, .dark #sidebar .menu > a { color: #cbd5e1; }
+    body.dark #sidebar .menu-icon, .dark #sidebar .menu-icon { color: #aab4c5; background: rgba(148, 163, 184, .09); }
+    body.dark #sidebar .menu.active > a, .dark #sidebar .menu.active > a { color: #8eb0ff; background: rgba(56, 103, 214, .18); border-color: rgba(94, 134, 228, .20); }
+    body.dark #sidebar .menu.active > a .menu-icon, .dark #sidebar .menu.active > a .menu-icon { color: #fff; background: #3867d6; }
+    body.dark #sidebar .sidebar-scroll-controls, .dark #sidebar .sidebar-scroll-controls { background: rgba(20, 30, 50, .96); border-color: rgba(136, 142, 168, .16); }
+    .sidebar-closed #sidebar .sidebar-scroll-controls { display: none !important; }
 </style>
 
 <div class="sidebar-wrapper sidebar-theme">
@@ -93,7 +108,7 @@
                     </ul>
                 </li>
 
-                <li class="navigation-section"><span>{{ $isArabic ? 'إدارة الأكاديمية' : 'Academy management' }}</span></li>
+                <li class="navigation-section"><span>{{ $isArabic ? 'الأشخاص والفريق' : 'People & team' }}</span></li>
                 <li class="menu {{ $studentsActive ? 'active' : '' }}">
                     <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ $studentsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $studentsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-graduation-cap menu-icon"></i><span>{{ trans('admin.student_management.menu') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
                     <ul class="collapse submenu list-unstyled {{ $studentsActive ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
@@ -108,16 +123,16 @@
                 </li>
                 <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
+            @endunless
+
+            <li class="navigation-section"><span>{{ $isArabic ? 'التواصل والمحتوى' : 'Communication & content' }}</span></li>
+            @unless($isVenueOnly)
+                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'مركز واتساب' : 'WhatsApp centre' }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.gallery.*') ? 'active' : '' }}"><a href="{{ route('academy.gallery.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-images menu-icon"></i><span>{{ trans('admin.gallery.gallery') }}</span></div></a></li>
             @endunless
+            <li class="menu {{ Request::routeIs('academy.notification.*') ? 'active' : '' }}"><a href="{{ route('academy.notification.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-bell menu-icon"></i><span>{{ trans('admin.notifications.notifications') }}</span></div></a></li>
 
-            @unless($isVenueOnly)
-                <li class="navigation-section"><span>{{ $isArabic ? 'التواصل' : 'Communication' }}</span></li>
-                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'مركز واتساب' : 'WhatsApp centre' }}</span></div></a></li>
-            @endunless
-
-            <li class="navigation-section"><span>{{ $isArabic ? 'الفواتير والتقارير' : 'Billing & reports' }}</span></li>
-            <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
+            <li class="navigation-section"><span>{{ $isArabic ? 'المالية والتقارير' : 'Finance & reports' }}</span></li>
             @unless($isVenueOnly)
                 <li class="menu {{ $reportsActive ? 'active' : '' }}">
                     <a href="#report" data-bs-toggle="collapse" aria-expanded="{{ $reportsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $reportsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-chart-column menu-icon"></i><span>{{ trans('admin.report') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
@@ -130,12 +145,12 @@
                     </ul>
                 </li>
             @endunless
+            <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
 
-            <li class="navigation-section"><span>{{ $isArabic ? 'الحساب والمنصة' : 'Account & platform' }}</span></li>
+            <li class="navigation-section"><span>{{ $isArabic ? 'إعدادات المنشأة' : 'Business settings' }}</span></li>
             @unless($isVenueOnly)
                 <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}"><a href="{{ route('academy.address.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-map-location-dot menu-icon"></i><span>{{ trans('admin.address.address') }}</span></div></a></li>
             @endunless
-            <li class="menu {{ Request::routeIs('academy.notification.*') ? 'active' : '' }}"><a href="{{ route('academy.notification.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-bell menu-icon"></i><span>{{ trans('admin.notifications.notifications') }}</span></div></a></li>
             <li class="menu {{ Request::routeIs('academy.terms.*') ? 'active' : '' }}"><a href="{{ route('academy.terms.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-shield menu-icon"></i><span>{{ trans('admin.terms.terms') }}</span></div></a></li>
         </ul>
 
@@ -172,34 +187,11 @@
         };
         buttons.forEach(function (button) { button.addEventListener('click', function () { menu.scrollBy({ top: Number(button.dataset.scrollDirection) * Math.max(220, menu.clientHeight * .55), behavior: 'smooth' }); }); });
         menu.addEventListener('scroll', function () { sessionStorage.setItem(storageKey, String(Math.round(menu.scrollTop))); updateControls(); }, { passive: true });
-        const prepareMovingLabels = function () {
-            menu.querySelectorAll('.menu > a > div:first-child > span').forEach(function (label) {
-                const link = label.closest('a');
-                if (!link || link.dataset.labelMotionReady === 'true') return;
-                link.dataset.labelMotionReady = 'true';
-                const moveLabel = function () {
-                    label.style.transform = 'none';
-                    const overflow = Math.ceil(label.scrollWidth - label.clientWidth);
-                    label.classList.toggle('sidebar-label-overflow', overflow > 2);
-                    if (overflow > 2) {
-                        const direction = document.documentElement.dir === 'rtl' ? 1 : -1;
-                        label.style.transform = 'translateX(' + (direction * Math.min(overflow + 10, 180)) + 'px)';
-                        link.title = label.textContent.trim();
-                    }
-                };
-                const resetLabel = function () { label.style.transform = 'none'; };
-                link.addEventListener('mouseenter', moveLabel);
-                link.addEventListener('mouseleave', resetLabel);
-                link.addEventListener('focusin', moveLabel);
-                link.addEventListener('focusout', resetLabel);
-            });
-        };
         menu.querySelectorAll('.collapse').forEach(function (collapse) {
-            collapse.addEventListener('shown.bs.collapse', function () { updateControls(); revealActiveItem(); prepareMovingLabels(); });
+            collapse.addEventListener('shown.bs.collapse', function () { updateControls(); revealActiveItem(); });
             collapse.addEventListener('hidden.bs.collapse', updateControls);
         });
-        window.addEventListener('resize', function () { updateControls(); prepareMovingLabels(); }, { passive: true });
-        prepareMovingLabels();
+        window.addEventListener('resize', updateControls, { passive: true });
         requestAnimationFrame(function () { revealActiveItem(); updateControls(); });
     });
 </script>
