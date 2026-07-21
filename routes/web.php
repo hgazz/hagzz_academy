@@ -15,6 +15,7 @@ use App\Http\Controllers\CoachController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\InvoicePrintController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -58,6 +59,11 @@ Route::group(
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::get('billing-invoices', [InvoicePrintController::class, 'index'])->name('billing-invoices.index');
+        Route::get('invoices/bookings/{invoice}/print', [InvoicePrintController::class, 'booking'])->name('invoices.bookings.print');
+        Route::get('invoices/students/{subscription}/print', [InvoicePrintController::class, 'student'])->name('invoices.students.print');
+        Route::get('invoices/venues/{booking}/print', [InvoicePrintController::class, 'venue'])->name('invoices.venues.print');
+        Route::get('invoices/platform/{invoice}/print', [InvoicePrintController::class, 'platform'])->name('invoices.platform.print');
         Route::get('booking/filter', [DashboardController::class, 'filterBookings'])->name('filter-bookings');
         Route::get('/revenue-data', [DashboardController::class, 'getRevenueDataByMonth'])->name('revenue-data');
         Route::get('/chart/users-by-month', [DashboardController::class, 'getUserDataByMonthAjax'])->name('getUserDataByMonth');

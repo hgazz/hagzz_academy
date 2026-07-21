@@ -39,6 +39,7 @@
                                         <td>{{ $subscription->payments->sortByDesc('paid_at')->first()?->method_label ?? '-' }}</td>
                                         <td>{{ trans('admin.student_management.' . $subscription->status) }} / {{ trans('admin.student_management.' . $subscription->payment_status) }}</td>
                                         <td>
+                                            <a href="{{ route('academy.invoices.students.print', ['subscription' => $subscription, 'paper' => 'a4']) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="{{ app()->getLocale()==='ar'?'طباعة الفاتورة':'Print invoice' }}"><i class="fa-solid fa-print"></i></a>
                                             <a href="{{ route('academy.subscriptions.edit', $subscription) }}" class="btn btn-sm btn-warning">{{ trans('admin.student_management.edit') }}</a>
                                             <form action="{{ route('academy.subscriptions.destroy', $subscription) }}" method="POST" class="d-inline">
                                                 @csrf

@@ -90,6 +90,12 @@
                 </li>
             @endif
 
+            <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}">
+                <a href="{{ route('academy.billing-invoices.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    <div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ app()->getLocale()==='ar'?'فواتير اشتراك Hagzz':'Hagzz invoices' }}</span></div>
+                </a>
+            </li>
+
             @unless($isVenueOnly)
             <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}">
                 <a href="#addresses-menu" data-bs-toggle="collapse" aria-expanded="{{ Request::routeIs('academy.address.*') ? 'true' : 'false' }}" class="dropdown-toggle {{ Request::routeIs('academy.address.*') ? '' : 'collapsed' }}">

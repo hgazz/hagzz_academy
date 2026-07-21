@@ -54,6 +54,9 @@ class InvoiceDataTable extends DataTable
             ->addColumn('partner', function ($row) {
                 return $row->training->academy->commercial_name;
             })
+            ->addColumn('action', function ($row) {
+                return '<a class="btn btn-sm btn-outline-primary" target="_blank" href="'.route('academy.invoices.bookings.print', ['invoice' => $row, 'paper' => 'a4']).'" title="'.(app()->getLocale() === 'ar' ? 'طباعة الفاتورة' : 'Print invoice').'"><i class="fa-solid fa-print"></i></a>';
+            })
             ->filterColumn('training.name', function ($query, $keyword) {
                 $query->whereHas('training',function ($q) use($keyword){
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
@@ -67,7 +70,7 @@ class InvoiceDataTable extends DataTable
                 });
             })
             ->setRowId('id')
-            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner', 'payment_method_label', 'paid_amount', 'remaining_amount', 'payment_state']);
+            ->rawColumns(['created_at', 'user_id', 'training_id', 'is_canceled', 'partner', 'payment_method_label', 'paid_amount', 'remaining_amount', 'payment_state', 'action']);
     }
     /**
      * Get the query source of dataTable.
@@ -140,6 +143,7 @@ class InvoiceDataTable extends DataTable
             ['name' => 'status', 'data' => 'status', 'title' => trans('admin.bookings.status')],
             ['name' => 'user_type', 'data' => 'user_type', 'title' => trans('admin.bookings.user_type')],
             ['name' => 'is_canceled', 'data' => 'is_canceled', 'title' => trans('admin.bookings.is_canceled')],
+            ['name' => 'action', 'data' => 'action', 'title' => trans('admin.actions'), 'exportable' => false, 'printable' => false, 'orderable' => false, 'searchable' => false],
         ];
     }
 
