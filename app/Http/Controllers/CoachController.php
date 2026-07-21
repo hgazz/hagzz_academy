@@ -30,6 +30,18 @@ class CoachController extends Controller
         return $dataTable->render('Academy.pages.coaches.index');
     }
 
+    public function filter(Request $request, CoachDataTable $dataTable)
+    {
+        $query = Coach::query()->where('academy_id', auth('academy')->id());
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereDate('created_at', '>=', $request->input('start_date'))
+                ->whereDate('created_at', '<=', $request->input('end_date'));
+        }
+
+        return $dataTable->with('query', $query)->render('Academy.pages.coaches.index');
+    }
+
     public function create()
     {
         $sports = $this->sportModel::whereHas('academies', function ($q){

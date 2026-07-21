@@ -57,28 +57,31 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="card">
                     <div class="card-header">
-                        @if(request()->url() === route('academy.coach'))
+                        @if(Request::routeIs('academy.coach', 'academy.coach.filter'))
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{route('academy.coach.create')}}">
                                     <h3>{{ trans('admin.coaches.create') }}</h3>
                                 </a>
-                                <a href="{{route('academy.coach.create')}}" class="btn btn-primary">
-                                    {{ trans('admin.coaches.create') }}
-                                </a>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ route('academy.coach.export') }}" class="btn btn-outline-primary">
+                                        {{ trans('admin.export') }}
+                                    </a>
+                                    <a href="{{route('academy.coach.create')}}" class="btn btn-primary">
+                                        {{ trans('admin.coaches.create') }}
+                                    </a>
+                                </div>
                             </div>
                             <hr>
                         @endif
 
                         <div class="row">
-                        <form method="GET" action="{{ route('academy.report.coach.filter') }}">
+                        <form method="GET" action="{{ route('academy.coach.filter') }}">
                             @include('Academy.pages.filter._form_filter')
                         </form>
                 </div>
             </div>
 
             <div class="card-body">
-{{--                <a class="btn btn-primary my-3" href="{{route('academy.report.coach.export')}}">{{ trans('admin.export') }}</a>--}}
-
                 {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable']) !!}
             </div>
         </div>

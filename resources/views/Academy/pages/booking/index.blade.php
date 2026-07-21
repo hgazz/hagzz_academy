@@ -1,6 +1,8 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.transaction'))
+@php($transactionTitle = app()->getLocale() === 'ar' ? 'فواتير ومدفوعات الحجوزات' : 'Booking invoices & payments')
+
+@section('title', $transactionTitle)
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
@@ -32,7 +34,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.transaction') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ $transactionTitle }}</li>
                                 </ol>
                             </nav>
 

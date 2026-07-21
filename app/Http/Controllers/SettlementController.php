@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\SettlementDataTable;
-use Illuminate\Http\Request;
-
 class SettlementController extends Controller
 {
-    public function index(SettlementDataTable $datatable)
+    public function index()
     {
-        return $datatable->render('Academy.pages.settlements.index');
+        return redirect()->route('academy.report.settlement.index');
     }
 }

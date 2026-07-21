@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CoachDataTable;
 use App\DataTables\InvoiceDataTable;
 use App\DataTables\JoinDataTable;
 use App\DataTables\OfflineJoinDataTable;
 use App\DataTables\SettlementDataTable;
 use App\Exports\BookingOfflineExport;
-use App\Exports\CoachExport;
 use App\Exports\InvoiceExport;
 use App\Exports\JoinExport;
 use App\Exports\SettlementExport;
-use App\Models\Coach;
-use App\Models\Invoice;
 use App\Models\Join;
 use App\Models\Settlement;
 use Illuminate\Http\Request;
@@ -55,26 +51,9 @@ class ReportController extends Controller
     {
         return $dataTable->render('Academy.pages.booking.index');
     }
-    public function invoice(Request $request, InvoiceDataTable $dataTable)
+    public function invoice(Request $request)
     {
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
-
-            $booking = Invoice::with([
-                'training' => function ($q) {
-                    $q->where('academy_id', auth('academy')->id());
-                },
-                'user'
-            ])->whereHas('training', function ($q) {
-                $q->where('academy_id', auth('academy')->id());
-            })->whereBetween('created_at', [$startDate, $endDate]);
-            $invoiceData = $booking->get();
-            session(['invoiceData' => $invoiceData]);
-            return $dataTable->with('query', $booking)->render('Academy.pages.booking.index');
-        }
-
-        return $dataTable->render('Academy.pages.booking.index');
+        return redirect()->route('academy.report.transaction.index', $request->query());
     }
 
     public function bookingExport()
@@ -147,32 +126,20 @@ class ReportController extends Controller
     }
 
 
-    public function coach(CoachDataTable $dataTable)
+    public function coach()
     {
-        return $dataTable->render('Academy.pages.coaches.index');
+        return redirect()->route('academy.coach');
     }
 
 
-    public function coachFilter(Request $request , CoachDataTable $dataTable)
+    public function coachFilter(Request $request)
     {
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
-
-            $coaches = Coach::where('academy_id',auth('academy')->id())->whereBetween('created_at', [$startDate, $endDate]);
-
-            $coachesData = $coaches->get();
-
-            session(['coachesData' => $coachesData]);
-            return $dataTable->with('query', $coaches)->render('Academy.pages.coaches.index');
-        }
-
-        return $dataTable->render('Academy.pages.coaches.index');
+        return redirect()->route('academy.coach.filter', $request->query());
     }
 
     public function coachExport()
     {
-        return Excel::download(new CoachExport(), 'coaches.xlsx');
+        return redirect()->route('academy.coach.export');
     }
 
     public function viewBookingDetails(Join $join)

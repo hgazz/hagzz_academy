@@ -97,6 +97,7 @@ Route::group(
         // coach routes
         Route::controller(CoachController::class)->group(function(){
             Route::get('coach','index')->name('coach');
+            Route::get('coach/filter','filter')->name('coach.filter');
             Route::get('coach/create','create')->name('coach.create');
             Route::post('coach/store','store')->name('coach.store');
             Route::get('coach/edit/{coach}','edit')->name('coach.edit');
