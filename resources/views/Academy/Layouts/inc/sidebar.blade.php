@@ -3,6 +3,7 @@
     $studentsActive = Request::routeIs('academy.students.*', 'academy.groups.*', 'academy.competitions.*', 'academy.attendance.*', 'academy.subscriptions.*', 'academy.student-reports.*');
     $reportsActive = Request::routeIs('academy.report.*');
     $venueActive = Request::routeIs('academy.venues.*', 'academy.venue-spaces.*', 'academy.venue-bookings.*');
+    $whatsappActive = Request::routeIs('academy.whatsapp.*');
     $hasVenueModule = auth('academy')->user()?->hasVenueModule();
     $isVenueOnly = auth('academy')->user()?->business_type === 'venue';
     $isArabic = app()->getLocale() === 'ar';
@@ -106,6 +107,7 @@
                         <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}"><a href="{{ route('academy.student-reports.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ trans('admin.student_management.reports') }}</span></div></a></li>
                     </ul>
                 </li>
+                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'رسائل ومحادثات WhatsApp' : 'WhatsApp messages' }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.gallery.*') ? 'active' : '' }}"><a href="{{ route('academy.gallery.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-images menu-icon"></i><span>{{ trans('admin.gallery.gallery') }}</span></div></a></li>

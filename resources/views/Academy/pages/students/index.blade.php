@@ -53,6 +53,9 @@
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h3 class="mb-0">{{ trans('admin.student_management.students') }}</h3>
                         <div class="student-tools">
+                            <a href="{{ route('academy.whatsapp.compose') }}" class="btn btn-success">
+                                <i class="fa-brands fa-whatsapp"></i> {{ app()->getLocale() === 'ar' ? 'إرسال جماعي' : 'Bulk WhatsApp' }}
+                            </a>
                             <a href="{{ route('academy.students.template') }}" class="btn btn-outline-secondary">
                                 {{ trans('admin.student_management.download_students_template') }}
                             </a>
@@ -103,6 +106,9 @@
                                         <td>{{ $student->guardian_name ?? '-' }}<br><small>{{ $student->guardian_phone }}</small></td>
                                         <td><span class="badge bg-{{ $student->status === 'active' ? 'success' : 'secondary' }}">{{ trans('admin.student_management.' . $student->status) }}</span></td>
                                         <td>
+                                            @if($student->phone || $student->guardian_phone)
+                                                <a href="{{ route('academy.whatsapp.compose', ['recipients' => ['student:'.$student->id]]) }}" class="btn btn-sm btn-success" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                            @endif
                                             <a href="{{ route('academy.students.card', $student) }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ app()->getLocale() === 'ar' ? 'الكارت' : 'Card' }}</a>
                                             <a href="{{ route('academy.students.edit', $student) }}" class="btn btn-sm btn-warning">{{ trans('admin.student_management.edit') }}</a>
                                             <form action="{{ route('academy.students.destroy', $student) }}" method="POST" class="d-inline">

@@ -1,0 +1,18 @@
+@extends('Academy.Layouts.master')
+@php($ar = app()->getLocale()==='ar')
+@section('title', $ar?'ربط WhatsApp Business':'Connect WhatsApp Business')
+@push('css') @include('Academy.pages.whatsapp._styles') @endpush
+@section('content')
+<div class="middle-content container-xxl p-0 wa-page"><section class="wa-hero"><h1><i class="fa-brands fa-meta"></i> {{ $ar?'ربط حساب الشريك':'Connect partner account' }}</h1><p>{{ $ar?'هذه البيانات تخص أكاديميتك فقط، ويتم تشفير رمز الوصول داخل المنصة.':'These credentials belong only to your academy; the access token is encrypted.' }}</p></section>
+@if(session('success'))<div class="alert alert-success mt-3">{{ session('success') }}</div>@endif @if($errors->any())<div class="wa-errors">{{ $errors->first() }}</div>@endif
+<form class="wa-form" method="POST" action="{{ route('academy.whatsapp.settings.update') }}">@csrf @method('PUT')<div class="wa-form-grid">
+<div class="wa-field"><label>WhatsApp Business Account ID</label><input name="business_account_id" value="{{ old('business_account_id',$channel->business_account_id) }}" required></div>
+<div class="wa-field"><label>Phone Number ID</label><input name="phone_number_id" value="{{ old('phone_number_id',$channel->phone_number_id) }}" required></div>
+<div class="wa-field"><label>{{ $ar?'رقم WhatsApp الظاهر':'Display WhatsApp number' }}</label><input name="display_phone_number" value="{{ old('display_phone_number',$channel->display_phone_number) }}" dir="ltr"></div>
+<div class="wa-field"><label>{{ $ar?'كود الدولة الافتراضي':'Default country code' }}</label><input name="default_country_code" value="{{ old('default_country_code',$channel->default_country_code) }}" required dir="ltr"><small>{{ $ar?'مصر: 20 بدون علامة +':'Egypt: 20 without +' }}</small></div>
+<div class="wa-field wa-span-2"><label>Permanent System User Access Token</label><input type="password" name="access_token" placeholder="{{ $channel->access_token?($ar?'اتركه فارغًا للاحتفاظ بالرمز المحفوظ':'Leave blank to keep saved token'):'' }}" autocomplete="new-password"><small>{{ $ar?'لا تستخدم الرمز المؤقت الخاص بصفحة الاختبار.':'Do not use the temporary test-page token.' }}</small></div>
+<div class="wa-field wa-span-2"><label>Meta App Secret</label><input type="password" name="app_secret" placeholder="{{ $channel->app_secret?($ar?'اتركه فارغًا للاحتفاظ بالرمز المحفوظ':'Leave blank to keep saved secret'):'' }}" autocomplete="new-password"><small>{{ $ar?'يُستخدم للتحقق من أن إشعارات Webhook صادرة من Meta فعلًا.':'Used to verify webhook notifications really come from Meta.' }}</small></div>
+</div><div class="wa-toolbar"><button class="wa-btn wa-btn-primary"><i class="fa-solid fa-floppy-disk"></i>{{ $ar?'حفظ الاتصال':'Save connection' }}</button><a class="wa-btn wa-btn-outline" href="{{ route('academy.whatsapp.index') }}">{{ $ar?'مركز الرسائل':'Message centre' }}</a></div></form>
+<section class="wa-form"><h3>{{ $ar?'إعداد Webhook في Meta':'Meta Webhook setup' }}</h3><div class="wa-field mt-3"><label>Callback URL</label><div class="wa-code" dir="ltr">{{ route('whatsapp.webhook.receive') }}</div></div><div class="wa-field mt-3"><label>Verify Token</label><div class="wa-code wa-secret" dir="ltr">{{ $channel->verify_token }}</div><small>{{ $ar?'مرر المؤشر لإظهار الرمز ثم انسخه إلى إعداد Webhooks في Meta.':'Hover to reveal, then copy it into Meta Webhooks.' }}</small></div><div class="wa-alert"><strong>{{ $ar?'الحالة الحالية:':'Current status:' }}</strong> {{ $channel->status }} @if($channel->last_webhook_at) · {{ $ar?'آخر Webhook:':'Last webhook:' }} {{ $channel->last_webhook_at->diffForHumans() }} @endif</div></section>
+</div>
+@endsection

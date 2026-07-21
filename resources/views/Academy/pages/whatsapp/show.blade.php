@@ -1,0 +1,12 @@
+@extends('Academy.Layouts.master')
+@php($ar = app()->getLocale()==='ar')
+@section('title', $conversation->contact_name)
+@push('css') @include('Academy.pages.whatsapp._styles') @endpush
+@section('content')
+<div class="middle-content container-xxl p-0 wa-page"><div class="wa-toolbar mt-3"><a class="wa-btn wa-btn-outline" href="{{ route('academy.whatsapp.index') }}"><i class="fa-solid fa-arrow-right"></i>{{ $ar?'كل المحادثات':'All conversations' }}</a></div>
+@if($errors->any())<div class="wa-errors">{{ $errors->first() }}</div>@endif
+<section class="wa-card wa-chat mt-3"><header class="wa-chat-head"><div class="wa-avatar">{{ mb_substr($conversation->contact_name,0,1) }}</div><div><strong class="wa-name">{{ $conversation->contact_name }}</strong><div class="wa-preview" dir="ltr">+{{ $conversation->phone }} · {{ $conversation->contact_type ?: ($ar?'رقم غير مسجل':'Unknown contact') }}</div></div><span class="wa-status ms-auto">{{ $conversation->serviceWindowIsOpen()?($ar?'المحادثة متاحة':'Window open'):($ar?'يتطلب قالبًا':'Template required') }}</span></header>
+<div class="wa-messages" id="wa-messages">@forelse($messages as $message)<div class="wa-bubble {{ $message->direction }}"><div>{!! nl2br(e($message->body ?: '['.$message->message_type.']')) !!}</div><div class="wa-bubble-meta"><span>{{ $message->created_at->format('H:i') }}</span><span>{{ $message->status }}</span>@if($message->status==='read')<i class="fa-solid fa-check-double" style="color:#0284c7"></i>@elseif($message->direction==='outbound')<i class="fa-solid fa-check"></i>@endif</div></div>@empty<div class="wa-empty">{{ $ar?'لا توجد رسائل':'No messages' }}</div>@endforelse</div>
+<div class="wa-reply">@if($conversation->serviceWindowIsOpen() && $channel?->isReady())<form method="POST" action="{{ route('academy.whatsapp.conversations.reply',$conversation) }}">@csrf<textarea name="body" required placeholder="{{ $ar?'اكتب ردك...':'Write a reply...' }}"></textarea><button class="wa-btn wa-btn-primary"><i class="fa-solid fa-paper-plane"></i></button></form>@else<div class="wa-alert m-0">{{ $ar?'لإعادة فتح المحادثة أرسل رسالة قالب معتمدة من صفحة إرسال جديد.':'Send an approved template from New message to reopen the conversation.' }}</div>@endif</div></section></div>
+@endsection
+@push('js')<script>document.addEventListener('DOMContentLoaded',()=>{const box=document.getElementById('wa-messages');if(box)box.scrollTop=box.scrollHeight;});</script>@endpush

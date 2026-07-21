@@ -63,6 +63,9 @@
                                     <h3>{{ trans('admin.coaches.create') }}</h3>
                                 </a>
                                 <div class="d-flex gap-2">
+                                    <a href="{{ route('academy.whatsapp.compose') }}" class="btn btn-success">
+                                        <i class="fa-brands fa-whatsapp"></i> {{ app()->getLocale() === 'ar' ? 'إرسال جماعي' : 'Bulk WhatsApp' }}
+                                    </a>
                                     <a href="{{ route('academy.coach.export') }}" class="btn btn-outline-primary">
                                         {{ trans('admin.export') }}
                                     </a>

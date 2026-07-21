@@ -26,8 +26,14 @@ use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\VenueBookingController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\VenueSpaceController;
+use App\Http\Controllers\WhatsAppCenterController;
+use App\Http\Controllers\WhatsAppSettingsController;
+use App\Http\Controllers\WhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+
+Route::get('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'verify'])->name('whatsapp.webhook.verify');
+Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])->name('whatsapp.webhook.receive');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +78,16 @@ Route::group(
         Route::get('/intermediate/sports', [DashboardController::class, 'getIntermediateSportsCount'])->name('intermediate.sports');
         Route::get('/advanced/sports', [DashboardController::class, 'getAdvancedSportsCount'])->name('advanced.sports');
         Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadNotificationCount'])->name('check-notifications');
+
+        Route::prefix('whatsapp')->as('whatsapp.')->group(function () {
+            Route::get('/', [WhatsAppCenterController::class, 'index'])->name('index');
+            Route::get('compose', [WhatsAppCenterController::class, 'compose'])->name('compose');
+            Route::post('send', [WhatsAppCenterController::class, 'send'])->name('send');
+            Route::get('settings', [WhatsAppSettingsController::class, 'edit'])->name('settings.edit');
+            Route::put('settings', [WhatsAppSettingsController::class, 'update'])->name('settings.update');
+            Route::get('conversations/{conversation}', [WhatsAppCenterController::class, 'show'])->name('conversations.show');
+            Route::post('conversations/{conversation}/reply', [WhatsAppCenterController::class, 'reply'])->name('conversations.reply');
+        });
 
 
         Route::controller(ProfileController::class)->group(function (){
