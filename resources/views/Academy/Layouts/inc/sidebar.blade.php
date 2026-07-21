@@ -18,7 +18,7 @@
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        padding-bottom: 18px !important;
+        padding-bottom: 76px !important;
     }
     #sidebar > .menu-categories::-webkit-scrollbar { width: 6px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }
@@ -40,14 +40,13 @@
     #sidebar .menu.active > a { box-shadow: inset 3px 0 0 #1b55e2; }
     [dir="rtl"] #sidebar .menu.active > a { box-shadow: inset -3px 0 0 #1b55e2; }
     #sidebar .sidebar-scroll-controls {
-        position: static; flex: 0 0 auto; align-self: flex-end; z-index: 20; display: flex; gap: 7px;
-        margin: 8px 14px 12px;
-        padding: 6px; border: 1px solid rgba(27, 85, 226, .16); border-radius: 14px;
-        background: rgba(255, 255, 255, .94); box-shadow: 0 8px 24px rgba(31, 45, 61, .16); backdrop-filter: blur(8px);
+        position: absolute; inset-inline-end: 10px; bottom: 12px; z-index: 20; display: flex; flex-direction: column; gap: 4px;
+        padding: 4px; border: 1px solid rgba(27, 85, 226, .14); border-radius: 12px;
+        background: rgba(255, 255, 255, .88); box-shadow: 0 6px 18px rgba(31, 45, 61, .14); backdrop-filter: blur(10px);
     }
     #sidebar .sidebar-scroll-controls[hidden] { display: none !important; }
     #sidebar .sidebar-scroll-button {
-        width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 27px; display: inline-flex; align-items: center; justify-content: center;
         border: 0; border-radius: 9px; background: #eef2ff; color: #1b55e2; cursor: pointer;
         transition: transform .18s ease, opacity .18s ease, background .18s ease;
     }
@@ -107,10 +106,14 @@
                         <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}"><a href="{{ route('academy.student-reports.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ trans('admin.student_management.reports') }}</span></div></a></li>
                     </ul>
                 </li>
-                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'رسائل ومحادثات WhatsApp' : 'WhatsApp messages' }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.gallery.*') ? 'active' : '' }}"><a href="{{ route('academy.gallery.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-images menu-icon"></i><span>{{ trans('admin.gallery.gallery') }}</span></div></a></li>
+            @endunless
+
+            @unless($isVenueOnly)
+                <li class="navigation-section"><span>{{ $isArabic ? 'التواصل' : 'Communication' }}</span></li>
+                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'مركز واتساب' : 'WhatsApp centre' }}</span></div></a></li>
             @endunless
 
             <li class="navigation-section"><span>{{ $isArabic ? 'الفواتير والتقارير' : 'Billing & reports' }}</span></li>

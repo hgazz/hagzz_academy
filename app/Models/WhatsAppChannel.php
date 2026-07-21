@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhatsAppChannel extends Model
 {
+    protected $table = 'whatsapp_channels';
+
     protected $fillable = ['academy_id', 'business_account_id', 'phone_number_id', 'display_phone_number', 'access_token', 'app_secret', 'verify_token', 'default_country_code', 'status', 'connected_at', 'last_webhook_at'];
 
     protected $casts = [
