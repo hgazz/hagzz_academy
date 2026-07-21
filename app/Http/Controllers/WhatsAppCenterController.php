@@ -58,10 +58,10 @@ class WhatsAppCenterController extends Controller
             }
         }
 
-        $students = AcademyStudent::where('academy_id', $academyId)->where(fn ($q) => $q->whereNotNull('phone')->orWhereNotNull('guardian_phone'))->orderBy('name')->get();
-        $coaches = Coach::where('academy_id', $academyId)->whereNotNull('phone')->orderBy('id')->get();
-        $selected = $selected->all();
-        return view('Academy.pages.whatsapp.compose', compact('students', 'coaches', 'selected'));
+        $recipientStudents = AcademyStudent::where('academy_id', $academyId)->where(fn ($q) => $q->whereNotNull('phone')->orWhereNotNull('guardian_phone'))->orderBy('name')->get();
+        $recipientCoaches = Coach::where('academy_id', $academyId)->whereNotNull('phone')->orderBy('id')->get();
+        $selectedRecipients = $selected->all();
+        return view('Academy.pages.whatsapp.compose', compact('recipientStudents', 'recipientCoaches', 'selectedRecipients'));
     }
 
     public function send(Request $request, WhatsAppCloudService $whatsApp)
