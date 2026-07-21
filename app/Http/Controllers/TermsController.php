@@ -14,8 +14,11 @@ class TermsController extends Controller
     }
     public function index()
     {
-        $terms = $this->getTerms();
-        return view('Academy.pages.terms.index', compact('terms'));
+        $termsSetting = Setting::where('key', 'terms')->first();
+        $terms = $termsSetting?->value ?? '';
+        $termsUpdatedAt = $termsSetting?->updated_at;
+
+        return view('Academy.pages.terms.index', compact('terms', 'termsUpdatedAt'));
     }
 
 }

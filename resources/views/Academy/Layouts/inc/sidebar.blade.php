@@ -17,7 +17,7 @@
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        padding-bottom: 88px !important;
+        padding-bottom: 18px !important;
     }
     #sidebar > .menu-categories::-webkit-scrollbar { width: 6px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }
@@ -29,11 +29,18 @@
     #sidebar a[aria-expanded="true"] .menu-chevron { transform: rotate(90deg); }
     #sidebar .navigation-section { padding: 18px 22px 7px; list-style: none; }
     #sidebar .navigation-section span { color: #888ea8; font-size: 10px; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; white-space: nowrap; }
-    #sidebar .menu > a { border-radius: 10px; margin-inline: 10px; }
+    #sidebar .menu > a { border-radius: 10px; margin-inline: 10px; min-width: 0; }
+    #sidebar .menu > a > div:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+    #sidebar .menu > a > div:first-child > span {
+        display: block; flex: 1 1 auto; min-width: 0; white-space: nowrap;
+        transition: transform .55s cubic-bezier(.22, .75, .25, 1); will-change: transform;
+    }
+    #sidebar .menu > a > div:first-child > span.sidebar-label-overflow { cursor: help; }
     #sidebar .menu.active > a { box-shadow: inset 3px 0 0 #1b55e2; }
     [dir="rtl"] #sidebar .menu.active > a { box-shadow: inset -3px 0 0 #1b55e2; }
     #sidebar .sidebar-scroll-controls {
-        position: absolute; inset-inline-end: 14px; bottom: 14px; z-index: 20; display: flex; gap: 7px;
+        position: static; flex: 0 0 auto; align-self: flex-end; z-index: 20; display: flex; gap: 7px;
+        margin: 8px 14px 12px;
         padding: 6px; border: 1px solid rgba(27, 85, 226, .16); border-radius: 14px;
         background: rgba(255, 255, 255, .94); box-shadow: 0 8px 24px rgba(31, 45, 61, .16); backdrop-filter: blur(8px);
     }
@@ -144,7 +151,14 @@
         const buttons = controls.querySelectorAll('[data-scroll-direction]');
         const savedPosition = Number(sessionStorage.getItem(storageKey));
         if (Number.isFinite(savedPosition) && savedPosition > 0) menu.scrollTop = savedPosition;
-        else { const activeItem = menu.querySelector('.menu.active'); if (activeItem) activeItem.scrollIntoView({ block: 'center' }); }
+        const activeItem = menu.querySelector('.menu.active');
+        const revealActiveItem = function () {
+            if (!activeItem) return;
+            const menuRect = menu.getBoundingClientRect();
+            const activeRect = activeItem.getBoundingClientRect();
+            if (activeRect.top < menuRect.top + 10) menu.scrollTop -= (menuRect.top + 10 - activeRect.top);
+            else if (activeRect.bottom > menuRect.bottom - 10) menu.scrollTop += (activeRect.bottom - menuRect.bottom + 10);
+        };
         const updateControls = function () {
             const maxScroll = Math.max(0, menu.scrollHeight - menu.clientHeight);
             buttons[0].disabled = menu.scrollTop <= 2;
@@ -153,7 +167,34 @@
         };
         buttons.forEach(function (button) { button.addEventListener('click', function () { menu.scrollBy({ top: Number(button.dataset.scrollDirection) * Math.max(220, menu.clientHeight * .55), behavior: 'smooth' }); }); });
         menu.addEventListener('scroll', function () { sessionStorage.setItem(storageKey, String(Math.round(menu.scrollTop))); updateControls(); }, { passive: true });
-        window.addEventListener('resize', updateControls, { passive: true });
-        requestAnimationFrame(updateControls);
+        const prepareMovingLabels = function () {
+            menu.querySelectorAll('.menu > a > div:first-child > span').forEach(function (label) {
+                const link = label.closest('a');
+                if (!link || link.dataset.labelMotionReady === 'true') return;
+                link.dataset.labelMotionReady = 'true';
+                const moveLabel = function () {
+                    label.style.transform = 'none';
+                    const overflow = Math.ceil(label.scrollWidth - label.clientWidth);
+                    label.classList.toggle('sidebar-label-overflow', overflow > 2);
+                    if (overflow > 2) {
+                        const direction = document.documentElement.dir === 'rtl' ? 1 : -1;
+                        label.style.transform = 'translateX(' + (direction * Math.min(overflow + 10, 180)) + 'px)';
+                        link.title = label.textContent.trim();
+                    }
+                };
+                const resetLabel = function () { label.style.transform = 'none'; };
+                link.addEventListener('mouseenter', moveLabel);
+                link.addEventListener('mouseleave', resetLabel);
+                link.addEventListener('focusin', moveLabel);
+                link.addEventListener('focusout', resetLabel);
+            });
+        };
+        menu.querySelectorAll('.collapse').forEach(function (collapse) {
+            collapse.addEventListener('shown.bs.collapse', function () { updateControls(); revealActiveItem(); prepareMovingLabels(); });
+            collapse.addEventListener('hidden.bs.collapse', updateControls);
+        });
+        window.addEventListener('resize', function () { updateControls(); prepareMovingLabels(); }, { passive: true });
+        prepareMovingLabels();
+        requestAnimationFrame(function () { revealActiveItem(); updateControls(); });
     });
 </script>
