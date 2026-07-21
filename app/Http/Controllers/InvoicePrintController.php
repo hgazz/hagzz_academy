@@ -89,7 +89,7 @@ class InvoicePrintController extends Controller
         return $this->render($request, [
             'type' => 'platform_subscription', 'number' => $invoice->invoice_number,
             'issued_at' => $invoice->issued_at, 'due_at' => $invoice->due_at,
-            'seller' => $this->party('Hagzz'), 'buyer' => $this->academyParty($invoice->academy),
+            'seller' => $this->party('Hagzz', null, null, null, null, asset('assetsAdmin/logo/Primary.svg')), 'buyer' => $this->academyParty($invoice->academy),
             'lines' => [['description' => trim(($plan ?: 'Hagzz platform subscription') . ' · ' . optional($invoice->period_starts_at)->format('Y-m-d') . ' — ' . optional($invoice->period_ends_at)->format('Y-m-d')), 'quantity' => 1, 'unit_price' => (float) $invoice->list_amount, 'total' => (float) $invoice->subtotal_amount]],
             'subtotal' => (float) $invoice->list_amount, 'discount' => (float) $invoice->discount_amount,
             'tax' => (float) $invoice->tax_amount, 'tax_rate' => (float) $invoice->tax_rate,
@@ -102,10 +102,14 @@ class InvoicePrintController extends Controller
     private function render(Request $request, array $document)
     {
         $paper = $request->validate(['paper' => ['nullable', 'in:a4,a5,pos']])['paper'] ?? 'a4';
+        $signaturePayload = implode('|', [$document['type'], $document['number'], $document['total'], optional($document['issued_at'] ?? null)->format('c')]);
+        $document['printed_at'] = now();
+        $document['signature_reference'] = strtoupper(substr(hash_hmac('sha256', $signaturePayload, (string) config('app.key')), 0, 20));
+        $document['platform_logo'] = asset('assetsAdmin/logo/Primary.svg');
         return view('Academy.pages.invoice_print.show', compact('document', 'paper'));
     }
 
     private function owns($academyId): void { abort_unless((int) $academyId === (int) auth('academy')->id(), 404); }
-    private function academyParty($academy): array { return $this->party($academy?->commercial_name, $academy?->phone, $academy?->email, $academy?->tax_number, $academy?->address); }
-    private function party($name, $phone = null, $email = null, $taxNumber = null, $address = null): array { return compact('name', 'phone', 'email', 'taxNumber', 'address'); }
+    private function academyParty($academy): array { return $this->party($academy?->commercial_name, $academy?->phone, $academy?->email, $academy?->tax_number, $academy?->address, $academy?->logo); }
+    private function party($name, $phone = null, $email = null, $taxNumber = null, $address = null, $logo = null): array { return compact('name', 'phone', 'email', 'taxNumber', 'address', 'logo'); }
 }
