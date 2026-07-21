@@ -107,7 +107,7 @@
                                         <td><span class="badge bg-{{ $student->status === 'active' ? 'success' : 'secondary' }}">{{ trans('admin.student_management.' . $student->status) }}</span></td>
                                         <td>
                                             @if($student->phone || $student->guardian_phone)
-                                                <a href="{{ route('academy.whatsapp.compose', ['recipients' => ['student:'.$student->id]]) }}" class="btn btn-sm btn-success" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                                <a href="#" class="btn btn-sm btn-success js-whatsapp-direct" data-phone="{{ $student->phone ?: $student->guardian_phone }}" data-name="{{ $student->name }}" title="{{ app()->getLocale() === 'ar' ? 'فتح واتساب' : 'Open WhatsApp' }}"><i class="fa-brands fa-whatsapp"></i></a>
                                             @endif
                                             <a href="{{ route('academy.students.card', $student) }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ app()->getLocale() === 'ar' ? 'الكارت' : 'Card' }}</a>
                                             <a href="{{ route('academy.students.edit', $student) }}" class="btn btn-sm btn-warning">{{ trans('admin.student_management.edit') }}</a>
@@ -133,4 +133,5 @@
         </div>
     </div>
     @include('Academy.pages.students._profile_modal')
+    @include('Academy.components.whatsapp-direct-modal')
 @endsection

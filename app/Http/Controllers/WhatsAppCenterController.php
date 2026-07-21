@@ -38,12 +38,29 @@ class WhatsAppCenterController extends Controller
         return view('Academy.pages.whatsapp.show', compact('conversation', 'messages', 'channel'));
     }
 
-    public function compose(Request $request)
+    public function compose(Request $request, WhatsAppCloudService $whatsApp)
     {
         $academyId = auth('academy')->id();
+        $selected = collect((array) $request->input('recipients'))->filter()->unique()->values();
+
+        if ($selected->count() === 1) {
+            $recipient = $this->resolveRecipients($selected->all(), $academyId)->first();
+            $countryCode = WhatsAppChannel::where('academy_id', $academyId)->value('default_country_code') ?: '20';
+            $phone = $recipient ? $whatsApp->normalizePhone($recipient['phone'], $countryCode) : null;
+            if ($phone) {
+                $academy = auth('academy')->user();
+                $academyName = (string) ($academy->commercial_name ?: $academy->name ?: 'Hagzz');
+                $text = app()->getLocale() === 'ar'
+                    ? "مرحبًا {$recipient['name']}، معك فريق {$academyName}. كيف يمكننا مساعدتك؟"
+                    : "Hello {$recipient['name']}, this is the {$academyName} team. How can we help you?";
+
+                return redirect()->away('https://wa.me/' . $phone . '?text=' . rawurlencode($text));
+            }
+        }
+
         $students = AcademyStudent::where('academy_id', $academyId)->where(fn ($q) => $q->whereNotNull('phone')->orWhereNotNull('guardian_phone'))->orderBy('name')->get();
         $coaches = Coach::where('academy_id', $academyId)->whereNotNull('phone')->orderBy('id')->get();
-        $selected = collect((array) $request->input('recipients'))->filter()->values()->all();
+        $selected = $selected->all();
         return view('Academy.pages.whatsapp.compose', compact('students', 'coaches', 'selected'));
     }
 

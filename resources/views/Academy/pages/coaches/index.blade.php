@@ -90,6 +90,7 @@
         </div>
     </div>
     </div>
+    @include('Academy.components.whatsapp-direct-modal')
 @endsection
 
 
