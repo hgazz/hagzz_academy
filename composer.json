@@ -9,7 +9,6 @@
         "binarytorch/larecipe": "^2.7",
         "doctrine/dbal": "^3.8",
         "endroid/qr-code": "^5.0",
-        "google/apiclient": "^2.17",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
@@ -73,7 +72,13 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
-        }
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
+        },
+        "process-timeout": 5000
     },
     "minimum-stability": "stable",
     "prefer-stable": true

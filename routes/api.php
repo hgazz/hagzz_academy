@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Mobile\PartnerAttendanceController;
 use App\Http\Controllers\Api\Mobile\PartnerAuthController;
 use App\Http\Controllers\Api\Mobile\PartnerDashboardController;
+use App\Http\Controllers\Api\Mobile\PartnerGroupController;
 use App\Http\Controllers\Api\Mobile\PartnerScheduleController;
 use App\Http\Controllers\Api\Mobile\PartnerStudentController;
 
@@ -67,10 +68,13 @@ Route::prefix('mobile/v1')->group(function () {
         Route::post('students', [PartnerStudentController::class, 'store']);
         Route::get('students/{student}', [PartnerStudentController::class, 'show']);
         Route::get('subscriptions', [PartnerStudentController::class, 'subscriptions']);
+        Route::get('reports/financial', [PartnerStudentController::class, 'financialReport']);
         Route::get('notifications', [PartnerStudentController::class, 'notifications']);
         Route::get('messages', [PartnerStudentController::class, 'messages']);
         Route::get('schedule', PartnerScheduleController::class);
+        Route::get('groups', [PartnerGroupController::class, 'index']);
         Route::get('attendance/sessions', [PartnerAttendanceController::class, 'sessions']);
+        Route::post('attendance/sessions', [PartnerAttendanceController::class, 'store']);
         Route::post('attendance/scan', [PartnerAttendanceController::class, 'scan']);
     });
 });

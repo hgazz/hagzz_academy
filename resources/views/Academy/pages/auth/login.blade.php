@@ -131,6 +131,7 @@
                             id="partner-email"
                             type="email"
                             name="email"
+                            dir="auto"
                             value="{{ old('email') }}"
                             placeholder="{{ $copy['email_placeholder'] }}"
                             autocomplete="email"
@@ -151,6 +152,7 @@
                                 id="partner-password"
                                 type="password"
                                 name="password"
+                                dir="auto"
                                 placeholder="{{ $copy['password_placeholder'] }}"
                                 autocomplete="current-password"
                                 required
@@ -186,7 +188,38 @@
                     <span aria-hidden="true">✓</span>
                     {{ $copy['security'] }}
                 </div>
-                <p class="login-help">{{ $copy['help'] }}</p>
+
+                <div style="margin-top: 24px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                    <img src="{{ asset('assetsAdmin/logo/mesk_hagzz_logo_dark.png') }}" alt="Mesk | Hagzz" style="height: 38px; max-width: 100%; object-fit: contain; margin-bottom: 12px;">
+                    <p style="font-size: 12px; color: #64748b; line-height: 1.6; margin-bottom: 16px;">
+                        هذا التطبيق مخصص للشركاء والعملاء المميزين من منصة حجز الرقمية للتكنولوجيا الرياضية من شركة ميسك القطرية
+                    </p>
+
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: right; font-size: 13px; color: #1e293b;">
+                        <strong style="display: block; font-size: 14px; margin-bottom: 10px; color: #0f172a;">🎧 الدعم الفني والأرقام الرسمية:</strong>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span>🇪🇬 مصر: <strong>01017799580</strong></span>
+                            <div>
+                                <a href="tel:01017799580" style="padding: 3px 8px; background: #0984e3; color: #fff; border-radius: 6px; text-decoration: none; font-size: 11px; margin-left: 4px;">اتصال 📞</a>
+                                <a href="https://wa.me/201017799580" target="_blank" style="padding: 3px 8px; background: #25d366; color: #fff; border-radius: 6px; text-decoration: none; font-size: 11px;">واتساب 💬</a>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span>🇶🇦 قطر: <strong>+97470542458</strong></span>
+                            <div>
+                                <a href="tel:+97470542458" style="padding: 3px 8px; background: #0984e3; color: #fff; border-radius: 6px; text-decoration: none; font-size: 11px; margin-left: 4px;">اتصال 📞</a>
+                                <a href="https://wa.me/97470542458" target="_blank" style="padding: 3px 8px; background: #25d366; color: #fff; border-radius: 6px; text-decoration: none; font-size: 11px;">واتساب 💬</a>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            ✉️ البريد: <a href="mailto:info@el7lm.com" style="color: #0984e3; text-decoration: none; font-weight: 600;">info@el7lm.com</a><br>
+                            🌐 الموقع الرسمي: <a href="https://hagzz.el7lm.com/" target="_blank" style="color: #0984e3; text-decoration: none; font-weight: 600;">https://hagzz.el7lm.com/</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -195,14 +228,28 @@
         (() => {
             const password = document.getElementById('partner-password');
             const toggle = document.getElementById('password-toggle');
-            if (!password || !toggle) return;
+            if (password && toggle) {
+                toggle.addEventListener('click', () => {
+                    const isVisible = password.type === 'text';
+                    password.type = isVisible ? 'password' : 'text';
+                    toggle.textContent = isVisible ? toggle.dataset.show : toggle.dataset.hide;
+                    toggle.setAttribute('aria-pressed', String(!isVisible));
+                });
+            }
 
-            toggle.addEventListener('click', () => {
-                const isVisible = password.type === 'text';
-                password.type = isVisible ? 'password' : 'text';
-                toggle.textContent = isVisible ? toggle.dataset.show : toggle.dataset.hide;
-                toggle.setAttribute('aria-pressed', String(!isVisible));
-            });
+            const form = document.querySelector('.partner-login-form');
+            if (form) {
+                form.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.keyCode === 13) {
+                            if (form.checkValidity()) {
+                                const submitBtn = form.querySelector('.login-submit');
+                                if (submitBtn) submitBtn.click();
+                            }
+                        }
+                    });
+                });
+            }
         })();
     </script>
 </body>

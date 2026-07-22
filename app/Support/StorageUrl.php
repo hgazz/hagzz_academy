@@ -10,10 +10,17 @@ class StorageUrl
             return $fallback ?? '';
         }
 
-        if (filter_var($value, FILTER_VALIDATE_URL)) {
-            return $value;
+        $trimmed = trim($value);
+
+        if (str_contains($trimmed, 'data:image')) {
+            $pos = strpos($trimmed, 'data:image');
+            return substr($trimmed, $pos);
         }
 
-        return rtrim(config('services.storage.url'), '/') . '/' . trim($path, '/') . '/' . ltrim($value, '/');
+        if (str_starts_with($trimmed, 'data:') || str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://') || filter_var($trimmed, FILTER_VALIDATE_URL)) {
+            return $trimmed;
+        }
+
+        return rtrim(config('services.storage.url'), '/') . '/' . trim($path, '/') . '/' . ltrim($trimmed, '/');
     }
 }

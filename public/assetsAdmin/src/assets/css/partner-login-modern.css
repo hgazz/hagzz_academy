@@ -388,6 +388,7 @@ body.partner-login-page {
     color: var(--hagzz-ink);
     font: inherit;
     font-size: 14px;
+    text-align: start;
     transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 

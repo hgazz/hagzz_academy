@@ -258,20 +258,32 @@
             const common = { fontFamily: 'Cairo, Nunito, sans-serif', foreColor: text, toolbar: { show: false }, animations: { enabled: true, easing: 'easeinout', speed: 550 } };
             const noData = { text: @json($copy['noData']), align: 'center', verticalAlign: 'middle', style: { color: text } };
 
-            new ApexCharts(document.querySelector('#financialChart'), {
-                chart: { ...common, type: 'line', height: 360 },
-                series: [
-                    { name: labels.bookings, type: 'column', data: data.bookings },
-                    { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
-                    { name: labels.subscriptionRevenue, type: 'line', data: data.subscriptionRevenue }
-                ],
-                colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
-                fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
-                plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } }, dataLabels: { enabled: false },
-                grid: { borderColor: grid, strokeDashArray: 4 }, xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: [{ min: 0, forceNiceScale: true }, { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }],
-                legend: { position: 'top', horizontalAlign: '{{ $isArabic ? 'right' : 'left' }}' }, tooltip: { shared: true, intersect: false }, noData
-            }).render();
+            const financialElement = document.querySelector('#financialChart');
+            const financialTotal = data.bookings.reduce((sum, v) => sum + v, 0) +
+                                   data.bookingRevenue.reduce((sum, v) => sum + v, 0) +
+                                   data.subscriptionRevenue.reduce((sum, v) => sum + v, 0);
+            if (financialTotal > 0) {
+                new ApexCharts(financialElement, {
+                    chart: { ...common, type: 'line', height: 360 },
+                    series: [
+                        { name: labels.bookings, type: 'column', data: data.bookings },
+                        { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
+                        { name: labels.subscriptionRevenue, type: 'line', data: data.subscriptionRevenue }
+                    ],
+                    colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
+                    fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } }, dataLabels: { enabled: false },
+                    grid: { borderColor: grid, strokeDashArray: 4 }, xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false } },
+                    yaxis: [{ min: 0, forceNiceScale: true }, { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }],
+                    legend: { position: 'top', horizontalAlign: '{{ $isArabic ? 'right' : 'left' }}' }, tooltip: { shared: true, intersect: false }, noData
+                }).render();
+            } else {
+                financialElement.classList.add('empty-state');
+                financialElement.style.minHeight = '360px';
+                financialElement.style.display = 'grid';
+                financialElement.style.placeItems = 'center';
+                financialElement.textContent = @json($copy['noData']);
+            }
 
             const attendanceElement = document.querySelector('#attendanceChart');
             const attendanceTotal = data.attendance.reduce((sum, value) => sum + value, 0);
@@ -290,12 +302,22 @@
                 attendanceElement.textContent = @json($copy['noData']);
             }
 
-            new ApexCharts(document.querySelector('#trainingsChart'), {
-                chart: { ...common, type: 'bar', height: 300 }, series: [{ name: labels.bookings, data: data.trainingBookings }],
-                colors: ['#f97316'], plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '48%' } },
-                dataLabels: { enabled: false }, grid: { borderColor: grid, strokeDashArray: 4 },
-                xaxis: { categories: data.trainingLabels, min: 0, forceNiceScale: true }, noData
-            }).render();
+            const trainingsElement = document.querySelector('#trainingsChart');
+            const trainingsTotal = data.trainingBookings.reduce((sum, v) => sum + v, 0);
+            if (trainingsTotal > 0 && data.trainingLabels.length > 0) {
+                new ApexCharts(trainingsElement, {
+                    chart: { ...common, type: 'bar', height: 300 }, series: [{ name: labels.bookings, data: data.trainingBookings }],
+                    colors: ['#f97316'], plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '48%' } },
+                    dataLabels: { enabled: false }, grid: { borderColor: grid, strokeDashArray: 4 },
+                    xaxis: { categories: data.trainingLabels, min: 0, forceNiceScale: true }, noData
+                }).render();
+            } else {
+                trainingsElement.classList.add('empty-state');
+                trainingsElement.style.minHeight = '300px';
+                trainingsElement.style.display = 'grid';
+                trainingsElement.style.placeItems = 'center';
+                trainingsElement.textContent = @json($copy['noData']);
+            }
 
             flatpickr('#start_date', { dateFormat: 'Y-m-d' });
             flatpickr('#end_date', { dateFormat: 'Y-m-d' });
