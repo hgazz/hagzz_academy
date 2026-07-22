@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use App\Support\StorageUrl;
 use Spatie\Translatable\HasTranslations;
 
 class Academies extends Authenticatable
 {
-    use HasFactory, HasTranslations, Notifiable;
+    use HasApiTokens, HasFactory, HasTranslations, Notifiable;
 
     public array $translatable = ['commercial_name'];
     const PATH ='images/academies';
