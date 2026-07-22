@@ -8,6 +8,9 @@ use App\Models\AcademyAttendanceSession;
 use App\Models\AcademyGroup;
 use App\Models\AcademyStudent;
 use App\Models\AcademyStudentSubscription;
+use App\Models\Address;
+use App\Models\City;
+use App\Models\Area;
 use App\Models\Venue;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -164,27 +167,110 @@ class PartnerAuthController extends Controller
             $logoUrl = str_starts_with($logo, 'http') ? $logo : url($logo);
         }
 
-        // Fetch real venues / branches from DB
-        $realVenues = Venue::where('academy_id', $academy->id)->get();
+        // Fetch real branches / locations from Address, Venue, and sub-academies
         $branches = [];
 
-        if ($realVenues->isNotEmpty()) {
-            foreach ($realVenues as $idx => $venue) {
+        // 1. Real addresses linked to academy
+        $realAddresses = Address::where('academy_id', $academy->id)->with(['city', 'area', 'country'])->get();
+        if ($realAddresses->isNotEmpty()) {
+            foreach ($realAddresses as $idx => $addr) {
+                $cityName = '';
+                if ($addr->city) {
+                    try {
+                        $cityName = $addr->city->getTranslation('name', 'ar') ?: $addr->city->name;
+                    } catch (\Throwable $e) {
+                        $cityName = is_string($addr->city->name) ? $addr->city->name : '';
+                    }
+                }
+
+                $areaName = '';
+                if ($addr->area) {
+                    try {
+                        $areaName = $addr->area->getTranslation('name', 'ar') ?: $addr->area->name;
+                    } catch (\Throwable $e) {
+                        $areaName = is_string($addr->area->name) ? $addr->area->name : '';
+                    }
+                }
+
+                $addressText = '';
+                try {
+                    $addressText = is_string($addr->address) ? $addr->address : ($addr->getTranslation('address', 'ar') ?? '');
+                } catch (\Throwable $e) {
+                    $addressText = is_string($addr->address) ? $addr->address : '';
+                }
+
+                $branchName = $areaName ? "فرع $areaName" : ($cityName ? "فرع $cityName" : "الفرع الرئيسي");
+                $fullLocation = implode(' - ', array_filter([$addressText, $areaName, $cityName]));
+
                 $branches[] = [
-                    'id' => $venue->id,
-                    'name' => $venue->name,
-                    'address' => $venue->address ?: ($academy->address ?: 'المملكة العربية السعودية'),
+                    'id' => $addr->id,
+                    'name' => $branchName,
+                    'address' => $fullLocation ?: ($academy->address ?: 'المملكة العربية السعودية'),
+                    'city' => $cityName,
+                    'area' => $areaName,
+                    'latitude' => $addr->latitude,
+                    'longitude' => $addr->longitude,
                     'is_primary' => $idx === 0,
                 ];
             }
-        } else {
+        }
+
+        // 2. Real venues linked to academy
+        $realVenues = Venue::where('academy_id', $academy->id)->get();
+        if ($realVenues->isNotEmpty()) {
+            foreach ($realVenues as $idx => $venue) {
+                $venueName = 'ملعب الأكاديمية';
+                try {
+                    $venueName = is_string($venue->name) ? $venue->name : ($venue->getTranslation('name', 'ar') ?? 'ملعب الأكاديمية');
+                } catch (\Throwable $e) {
+                    $venueName = is_string($venue->name) ? $venue->name : 'ملعب الأكاديمية';
+                }
+
+                $branches[] = [
+                    'id' => $venue->id + 1000,
+                    'name' => $venueName,
+                    'address' => $venue->address ?: ($academy->address ?: 'المملكة العربية السعودية'),
+                    'city' => '',
+                    'area' => '',
+                    'latitude' => null,
+                    'longitude' => null,
+                    'is_primary' => empty($branches) && $idx === 0,
+                ];
+            }
+        }
+
+        // 3. Child academies (sub-branches)
+        $subBranches = Academies::where('branch_to', $academy->id)->get();
+        if ($subBranches->isNotEmpty()) {
+            foreach ($subBranches as $sub) {
+                $branches[] = [
+                    'id' => $sub->id + 5000,
+                    'name' => 'فرع ' . ($sub->commercial_name ?: $sub->name),
+                    'address' => $sub->address ?: 'المملكة العربية السعودية',
+                    'city' => '',
+                    'area' => '',
+                    'latitude' => null,
+                    'longitude' => null,
+                    'is_primary' => false,
+                ];
+            }
+        }
+
+        // 4. Default fallback if no address or venue or sub-branch found
+        if (empty($branches)) {
             $branches[] = [
                 'id' => 1,
                 'name' => 'الفرع الرئيسي (' . ($academy->commercial_name ?: 'الأكاديمية') . ')',
                 'address' => $academy->address ?: 'المملكة العربية السعودية',
+                'city' => '',
+                'area' => '',
+                'latitude' => null,
+                'longitude' => null,
                 'is_primary' => true,
             ];
         }
+
+        $primaryBranch = $branches[0];
 
         return [
             'id' => $academy->id,
@@ -204,8 +290,8 @@ class PartnerAuthController extends Controller
             'business_type' => $academy->business_type ?: 'academy',
             'academy_info' => [
                 'name' => $academy->commercial_name ?: 'أكاديمية Hagzz ⚽',
-                'branch_name' => $branches[0]['name'],
-                'address' => $academy->address ?: 'المملكة العربية السعودية',
+                'branch_name' => $primaryBranch['name'],
+                'address' => $primaryBranch['address'],
                 'phone' => $academy->phone,
                 'branches' => $branches,
             ],
