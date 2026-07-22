@@ -63,13 +63,7 @@ Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])
 */
 
 Route::get('/login', function () {
-    return redirect('/partner/login');
-});
-Route::get('/ar/login', function () {
-    return redirect('/ar/partner/login');
-});
-Route::get('/en/login', function () {
-    return redirect('/en/partner/login');
+    return redirect()->route('academy.loginPage');
 });
 
 Route::group(
@@ -78,10 +72,7 @@ Route::group(
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function(){ //...
     Route::get('/', function () {
-        return redirect('/partner/login');
-    });
-    Route::get('/login', function () {
-        return redirect('/partner/login');
+        return redirect()->route('academy.loginPage');
     });
     // login page , login route and logout route
     Route::group(['prefix' => 'partner', 'as' => 'academy.', 'controller' => AuthController::class], function () {
