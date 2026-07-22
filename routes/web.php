@@ -119,9 +119,9 @@ Route::group(
             Route::put('address/update/{address}','update')->name('address.update');
             Route::delete('address/delete','delete')->name('address.delete');
             Route::get('address/area/{city}','getAreaByCity')->name('area.getAreaByCity');
-            Route::get('address/edit/area/{city}','getAreaByCity')->name('area.getAreaByCity');
+            Route::get('address/edit/area/{city}','getAreaByCity')->name('area.editGetAreaByCity');
             Route::get('address/country/{country}','getAllCountry')->name('country.getCountry');
-            Route::get('address/edit/country/{country}','getAllCountry')->name('country.getCountry');
+            Route::get('address/edit/country/{country}','getAllCountry')->name('country.editGetCountry');
             Route::get('address/export','export')->name('address.export');
 
         });
