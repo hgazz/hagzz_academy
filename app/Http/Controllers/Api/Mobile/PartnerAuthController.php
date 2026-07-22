@@ -300,30 +300,51 @@ class PartnerAuthController extends Controller
 
     private function playerAccountFor(AcademyStudent $student): array
     {
-        $subscription = AcademyStudentSubscription::where('student_id', $student->id)->latest()->first();
+        $subscription = null;
+        try {
+            $subscription = AcademyStudentSubscription::where('student_id', $student->id)->latest()->first();
+        } catch (\Throwable $e) {}
+
         $academy = $student->academy ?: Academies::first();
 
         // Fetch upcoming sessions for student's groups
-        $groupIds = $student->groups()->pluck('academy_groups.id')->toArray();
-        $sessions = AcademyAttendanceSession::query()
-            ->with('group')
-            ->whereIn('group_id', $groupIds)
-            ->whereDate('session_date', '>=', today())
-            ->orderBy('session_date')
-            ->take(3)
-            ->get();
+        $upcomingMatches = [];
+        try {
+            $groupIds = $student->groups()->pluck('academy_groups.id')->toArray();
+            if (!empty($groupIds)) {
+                $sessions = AcademyAttendanceSession::query()
+                    ->with('group')
+                    ->whereIn('group_id', $groupIds)
+                    ->whereDate('session_date', '>=', today())
+                    ->orderBy('session_date')
+                    ->take(3)
+                    ->get();
 
-        $upcomingMatches = $sessions->map(fn ($s) => [
-            'id' => $s->id,
-            'title' => 'تمرين ' . ($s->group?->name ?: 'المجموعة'),
-            'home_team' => $s->group?->name ?: 'الفريق الرئيسي',
-            'opponent' => 'تمرين داخلي',
-            'date' => $s->session_date?->format('Y-m-d'),
-            'time' => $s->starts_at ?: '04:00 PM',
-            'venue' => $academy->address ?: 'ملعب الأكاديمية الرئيسي',
-            'player_role' => 'أساسي',
-            'status' => 'مؤكد',
-        ])->toArray();
+                $upcomingMatches = $sessions->map(fn ($s) => [
+                    'id' => $s->id,
+                    'title' => 'تمرين ' . ($s->group?->name ?: 'المجموعة'),
+                    'home_team' => $s->group?->name ?: 'الفريق الرئيسي',
+                    'opponent' => 'تمرين داخلي',
+                    'date' => $s->session_date?->format('Y-m-d'),
+                    'time' => $s->starts_at ?: '04:00 PM',
+                    'venue' => $academy->address ?: 'ملعب الأكاديمية الرئيسي',
+                    'player_role' => 'أساسي',
+                    'status' => 'مؤكد',
+                ])->toArray();
+            }
+        } catch (\Throwable $e) {}
+
+        $birthDate = null;
+        if ($student->birth_date) {
+            $birthDate = is_string($student->birth_date) ? $student->birth_date : ($student->birth_date->format('Y-m-d') ?? (string)$student->birth_date);
+        }
+
+        $avatarUrl = null;
+        try {
+            $avatarUrl = $student->avatarUrl();
+        } catch (\Throwable $e) {
+            $avatarUrl = url('assetsAdmin/img/default-user-male.webp');
+        }
 
         return [
             'id' => $student->id,
@@ -334,14 +355,14 @@ class PartnerAuthController extends Controller
             'phone' => $student->phone ?: $student->guardian_phone,
             'guardian_name' => $student->guardian_name,
             'guardian_phone' => $student->guardian_phone,
-            'birth_date' => $student->birth_date?->format('Y-m-d') ?? $student->birth_date,
+            'birth_date' => $birthDate,
             'gender' => $student->gender,
             'medical_notes' => $student->medical_notes ?: 'حالة صحية ممتازة',
-            'joined_at' => $student->created_at?->format('Y-m-d') ?? '2024-01-01',
-            'image' => $student->avatarUrl(),
+            'joined_at' => is_string($student->created_at) ? $student->created_at : ($student->created_at?->format('Y-m-d') ?? '2024-01-01'),
+            'image' => $avatarUrl,
             'business_type' => 'player',
             'subscription_info' => [
-                'plan_name' => $subscription?->group?->name ? 'اشتراك ' . $subscription->group->name : 'اشتراك شهر جديد',
+                'plan_name' => $subscription?->group?->name ? 'اشتراك ' . $subscription->group->name : 'اشتراك ساري',
                 'amount' => (float) ($subscription?->price ?? 500.0),
                 'starts_on' => $subscription?->starts_on?->format('Y-m-d') ?? now()->startOfMonth()->format('Y-m-d'),
                 'ends_on' => $subscription?->ends_on?->format('Y-m-d') ?? now()->addDays(30)->format('Y-m-d'),
@@ -362,12 +383,21 @@ class PartnerAuthController extends Controller
 
         $childrenData = [];
         foreach ($children as $child) {
-            $sub = AcademyStudentSubscription::where('student_id', $child->id)->latest()->first();
+            $sub = null;
+            try {
+                $sub = AcademyStudentSubscription::where('student_id', $child->id)->latest()->first();
+            } catch (\Throwable $e) {}
+
+            $groupName = 'المجموعة العامة';
+            try {
+                $groupName = $child->groups->first()?->name ?: 'المجموعة العامة';
+            } catch (\Throwable $e) {}
+
             $childrenData[] = [
                 'id' => $child->id,
                 'name' => $child->name,
                 'academy' => $child->academy?->commercial_name ?: 'أكاديمية Hagzz',
-                'group' => $child->groups->first()?->name ?: 'المجموعة العامة',
+                'group' => $groupName,
                 'subscription' => [
                     'plan_name' => $sub?->group?->name ? 'اشتراك ' . $sub->group->name : 'اشتراك ساري',
                     'ends_on' => $sub?->ends_on?->format('Y-m-d') ?? now()->addDays(30)->format('Y-m-d'),
@@ -389,7 +419,7 @@ class PartnerAuthController extends Controller
             'phone' => $guardianPhone,
             'guardian_name' => $guardianName,
             'guardian_phone' => $guardianPhone,
-            'joined_at' => $firstStudent->created_at?->format('Y-m-d') ?? '2024-01-01',
+            'joined_at' => is_string($firstStudent->created_at) ? $firstStudent->created_at : ($firstStudent->created_at?->format('Y-m-d') ?? '2024-01-01'),
             'image' => null,
             'children' => $childrenData,
             'business_type' => 'parent',

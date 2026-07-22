@@ -43,7 +43,7 @@ class AcademyStudent extends Model
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(AcademyGroup::class, 'academy_group_students')
+        return $this->belongsToMany(AcademyGroup::class, 'academy_group_students', 'academy_student_id', 'academy_group_id')
             ->withPivot(['joined_at', 'status'])
             ->withTimestamps();
     }
