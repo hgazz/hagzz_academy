@@ -62,12 +62,19 @@ Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])
 |
 */
 
+Route::get('/login', function () {
+    return redirect(\route('academy.loginPage'));
+});
+
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function(){ //...
     Route::get('/', function () {
+        return redirect(\route('academy.loginPage'));
+    });
+    Route::get('/login', function () {
         return redirect(\route('academy.loginPage'));
     });
     // login page , login route and logout route
