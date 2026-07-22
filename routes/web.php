@@ -68,11 +68,16 @@ Route::get('/', function () {
 Route::get('/login', function () { 
     return redirect()->route('academy.loginPage'); 
 });
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['ar', 'en'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
 
 Route::group(
     [
-        'prefix' => LaravelLocalization::setLocale(),
-        'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
+        'middleware' => [ 'localeViewPath' ]
     ], function(){ //...
 
     Route::group(['prefix' => 'partner', 'as' => 'academy.', 'controller' => AuthController::class], function () {

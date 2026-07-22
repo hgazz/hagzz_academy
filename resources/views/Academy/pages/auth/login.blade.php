@@ -104,7 +104,7 @@
                     <img src="{{ asset('assetsAdmin/logo/Primary.svg') }}" alt="">
                     <span>hagzz</span>
                 </a>
-                <a class="language-link" href="{{ url($isArabic ? '/en/partner/login' : '/ar/partner/login') }}">
+                <a class="language-link" href="{{ route('lang.switch', $isArabic ? 'en' : 'ar') }}">
                     {{ $copy['language'] }}
                 </a>
             </div>

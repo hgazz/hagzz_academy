@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        if (session()->has('locale') && in_array(session('locale'), ['ar', 'en'])) {
+            app()->setLocale(session('locale'));
+        }
+
         $views = ['*'];
         View::composer($views,function (\Illuminate\View\View $view){
             if (! auth('academy')->check()) {
