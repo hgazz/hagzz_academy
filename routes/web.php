@@ -65,6 +65,12 @@ Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])
 Route::get('/login', function () {
     return redirect()->route('academy.loginPage');
 });
+Route::get('/ar/partner', function () {
+    return redirect()->route('academy.loginPage');
+});
+Route::get('/en/partner', function () {
+    return redirect()->route('academy.loginPage');
+});
 
 Route::group(
     [
