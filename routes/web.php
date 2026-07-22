@@ -62,28 +62,26 @@ Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])
 |
 */
 
-// Direct partner auth routes (immune to localization redirect loops)
-Route::group(['prefix' => 'partner', 'as' => 'academy.', 'controller' => AuthController::class], function () {
-    Route::group(['middleware' => 'guest:academy'], function () {
-        Route::get('/login', 'loginPage')->name('loginPage');
-        Route::post('/login', 'login')->name('login');
-    });
-    Route::get('/logout', 'logout')->name('logout')->middleware('auth:academy');
+Route::get('/', function () { 
+    return redirect()->route('academy.loginPage'); 
 });
-
-// Clean fallbacks for all entry URLs
-Route::get('/', function () { return redirect()->route('academy.loginPage'); });
-Route::get('/login', function () { return redirect()->route('academy.loginPage'); });
-Route::get('/ar/partner', function () { return redirect()->route('academy.loginPage'); });
-Route::get('/en/partner', function () { return redirect()->route('academy.loginPage'); });
-Route::get('/ar/login', function () { return redirect()->route('academy.loginPage'); });
-Route::get('/en/login', function () { return redirect()->route('academy.loginPage'); });
+Route::get('/login', function () { 
+    return redirect()->route('academy.loginPage'); 
+});
 
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function(){ //...
+
+    Route::group(['prefix' => 'partner', 'as' => 'academy.', 'controller' => AuthController::class], function () {
+        Route::group(['middleware' => 'guest:academy'], function () {
+            Route::get('/login', 'loginPage')->name('loginPage');
+            Route::post('/login', 'login')->name('login');
+        });
+        Route::get('/logout', 'logout')->name('logout')->middleware('auth:academy');
+    });
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
