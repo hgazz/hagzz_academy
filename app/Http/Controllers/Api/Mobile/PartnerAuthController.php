@@ -61,7 +61,7 @@ class PartnerAuthController extends Controller
         }
 
         // 3. Real Parent (Guardian) Login
-        $children = AcademyStudent::where('guardian_email', $input)->orWhere('guardian_phone', $input)->get();
+        $children = AcademyStudent::where('guardian_phone', $input)->get();
         if ($children->isNotEmpty()) {
             $firstStudent = $children->first();
             $academy = $firstStudent->academy ?: Academies::first();
@@ -244,7 +244,7 @@ class PartnerAuthController extends Controller
             'role' => 'player',
             'name' => $student->name,
             'owner_name' => $student->name,
-            'email' => $student->email ?: ($student->guardian_email ?: 'player@hagzz.com'),
+            'email' => $student->email ?: 'player@hagzz.com',
             'phone' => $student->phone ?: $student->guardian_phone,
             'guardian_name' => $student->guardian_name,
             'guardian_phone' => $student->guardian_phone,
@@ -299,7 +299,7 @@ class PartnerAuthController extends Controller
             'role' => 'parent',
             'name' => $guardianName,
             'owner_name' => $guardianName,
-            'email' => $firstStudent->guardian_email ?: $input,
+            'email' => $input,
             'phone' => $guardianPhone,
             'guardian_name' => $guardianName,
             'guardian_phone' => $guardianPhone,
