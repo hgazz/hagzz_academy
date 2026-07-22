@@ -71,9 +71,24 @@ Route::get('/login', function () {
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['ar', 'en'])) {
         session(['locale' => $locale]);
+        app()->setLocale($locale);
     }
-    return redirect()->back();
+    $referer = request()->header('referer');
+    if ($referer) {
+        $cleanUrl = preg_replace('#/(ar|en)(?=/|$)#i', '', $referer);
+        return redirect($cleanUrl);
+    }
+    return redirect()->route('academy.loginPage');
 })->name('lang.switch');
+
+Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
+    if (in_array($locale, ['ar', 'en'])) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    $target = '/partner' . ($path ? '/' . $path : '');
+    return redirect($target);
+})->where('locale', 'ar|en')->where('path', '.*');
 
 Route::group(
     [
