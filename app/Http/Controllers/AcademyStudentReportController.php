@@ -35,6 +35,9 @@ class AcademyStudentReportController extends Controller
             ->limit(10)
             ->get();
 
+        $students = AcademyStudent::with(['country', 'city', 'area'])
+            ->where('academy_id', $academyId)->orderBy('name')->get();
+
         return view('Academy.pages.student_reports.index', [
             'activeStudentsCount' => AcademyStudent::where('academy_id', $academyId)->where('status', 'active')->count(),
             'activeGroupsCount' => AcademyGroup::where('academy_id', $academyId)->where('status', 'active')->count(),
@@ -45,6 +48,7 @@ class AcademyStudentReportController extends Controller
             'attendanceByStatus' => $attendanceByStatus,
             'latestPayments' => $latestPayments,
             'expiringSubscriptions' => $expiringSubscriptions,
+            'students' => $students,
         ]);
     }
 }

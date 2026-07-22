@@ -10,6 +10,7 @@ class Join extends Model
 
     protected $fillable = [
         'user_id',
+        'academy_student_id',
         'training_id',
         'invoice_id',
         'price',
@@ -20,6 +21,11 @@ class Join extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(AcademyStudent::class, 'academy_student_id');
     }
 
     public function training(): BelongsTo

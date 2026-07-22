@@ -43,10 +43,10 @@ class OfflineJoinDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('training_name', fn($join) => $join->training->name)
-            ->addColumn('user_name', fn($join) => $join->user->name)
-            ->addColumn('phone', fn($join) => $join->user->phone)
-            ->addColumn('referral_source', fn($join) => $join->user->referral_source)
-            ->addColumn('start_date', fn($join) => $join->user->start_date)
+            ->addColumn('user_name', fn($join) => $join->student?->name ?? $join->user?->name)
+            ->addColumn('phone', fn($join) => $join->student?->phone ?? $join->user?->phone)
+            ->addColumn('referral_source', fn($join) => $join->student?->referral_source ?? $join->user?->referral_source)
+            ->addColumn('start_date', fn($join) => $join->student?->start_date ?? $join->user?->start_date)
             ->addColumn('price', fn($join) => $join?->invoice?->amount ?? $join?->price)
             ->addColumn('paid_amount', fn($join) => number_format($join?->invoice?->collected_amount ?? 0, 2))
             ->addColumn('remaining_amount', fn($join) => number_format($join?->invoice?->remaining_amount ?? 0, 2))
@@ -80,6 +80,7 @@ class OfflineJoinDataTable extends DataTable
 
         return $model->newQuery()->with([
             'user',
+            'student',
             'invoice',
             'training' => function ($query) {
                 $query->with(['academy', 'coach'])
@@ -141,7 +142,7 @@ class OfflineJoinDataTable extends DataTable
             ['name' => 'payment_state', 'data' => 'payment_state', 'title' => trans('admin.bookings.payment_state'), 'orderable' => false, 'searchable' => false],
             ['name' => 'user_name', 'data' => 'user_name', 'title' => trans('admin.bookings.user')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.academies.phone')],
-            ['name' => 'referral_source', 'data' => 'referral_source', 'title' => trans('admin.academies.phone')],
+            ['name' => 'referral_source', 'data' => 'referral_source', 'title' => app()->getLocale() === 'ar' ? 'مصدر التعرف' : 'Referral source'],
             ['name' => 'user_type', 'data' => 'user_type', 'title' => trans('admin.academies.user_type')],
             ['name' => 'payment_method', 'data' => 'payment_method', 'title' => trans('admin.payment_method')],
             ['name' => 'start_date', 'data' => 'start_date', 'title' => trans('admin.training.start_date')],

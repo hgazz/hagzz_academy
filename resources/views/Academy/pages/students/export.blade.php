@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <th colspan="11">{{ $academy?->commercial_name ?: 'Academy' }} - {{ trans('admin.student_management.students') }}</th>
+        <th colspan="16">{{ $academy?->commercial_name ?: 'Academy' }} - {{ trans('admin.student_management.students') }}</th>
     </tr>
     <tr>
         <th>#</th>
@@ -11,6 +11,11 @@
         <th>{{ trans('admin.student_management.email') }}</th>
         <th>{{ trans('admin.student_management.gender') }}</th>
         <th>{{ trans('admin.student_management.birth_date') }}</th>
+        <th>{{ trans('admin.academies.school_name') }}</th>
+        <th>{{ trans('admin.academies.club_member') }}</th>
+        <th>{{ app()->getLocale()==='ar' ? 'نوع الحساب' : 'Account type' }}</th>
+        <th>{{ app()->getLocale()==='ar' ? 'مصدر التعرف' : 'Referral source' }}</th>
+        <th>{{ app()->getLocale()==='ar' ? 'تاريخ البدء' : 'Start date' }}</th>
         <th>{{ trans('admin.student_management.guardian_name') }}</th>
         <th>{{ trans('admin.student_management.guardian_phone') }}</th>
         <th>{{ trans('admin.student_management.status') }}</th>
@@ -31,6 +36,7 @@
             <td>{{ $student->email }}</td>
             <td>{{ $student->gender ? trans('admin.student_management.' . $student->gender) : '' }}</td>
             <td>{{ $student->birth_date?->format('Y-m-d') }}</td>
+            <td>{{ $student->school_name }}</td><td>{{ $student->club_member }}</td><td>{{ $student->child_type }}</td><td>{{ $student->referral_source }}</td><td>{{ $student->start_date?->format('Y-m-d') }}</td>
             <td>{{ $student->guardian_name }}</td>
             <td>{{ $student->guardian_phone }}</td>
             <td>{{ trans('admin.student_management.' . $student->status) }}</td>

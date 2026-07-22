@@ -44,5 +44,19 @@
         form.addEventListener('change', updatePreview);
         updatePreview();
         if (window.feather) feather.replace();
+
+        const csrf = @json(csrf_token());
+        const country = document.getElementById('country'), city = document.getElementById('city'), area = document.getElementById('area');
+        async function loadOptions(url, payload, target, selected) {
+            target.innerHTML = '<option value="">-</option>';
+            if (!Object.values(payload)[0]) return;
+            const response = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrf,'Accept':'application/json'}, body:JSON.stringify(payload)});
+            (await response.json()).forEach(item => target.add(new Option(item.name, item.id, false, String(item.id) === String(selected))));
+        }
+        async function loadCities(){ await loadOptions(@json(route('academy.training.getCities')), {country_id:country.value}, city, city.dataset.selected); await loadAreas(); }
+        async function loadAreas(){ await loadOptions(@json(route('academy.training.getAreaByCity')), {city_id:city.value}, area, area.dataset.selected); }
+        country.addEventListener('change', () => { city.dataset.selected=''; area.dataset.selected=''; loadCities(); });
+        city.addEventListener('change', () => { area.dataset.selected=''; loadAreas(); });
+        loadCities();
     });
 </script>

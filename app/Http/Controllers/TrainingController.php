@@ -8,6 +8,7 @@ use App\Http\Requests\BookingRequest;
 use App\Http\Requests\Training\TrainingRequest;
 use App\Http\Traits\CoacheTrait;
 use App\Models\Academies;
+use App\Models\AcademyStudent;
 use App\Models\Address;
 use App\Models\Area;
 use App\Models\City;
@@ -207,9 +208,10 @@ class TrainingController extends Controller
 
     public function createBooking()
     {
-        $countries = Country::get(['id','name']);
         $data = $this->trainingModel::where('academy_id', auth('academy')->id())->get();
-        return view('Academy.pages.training.create_booking', compact('countries', 'data'));
+        $students = AcademyStudent::where('academy_id', auth('academy')->id())
+            ->where('status', 'active')->orderBy('name')->get(['id', 'name', 'phone', 'guardian_name']);
+        return view('Academy.pages.training.create_booking', compact('data', 'students'));
     }
     public function getAreaByCity(Request $request)
     {
@@ -228,6 +230,15 @@ class TrainingController extends Controller
             $training = $this->trainingModel
                 ->where('academy_id', auth('academy')->id())
                 ->findOrFail($request->training_id);
+            $student = AcademyStudent::where('academy_id', auth('academy')->id())
+                ->findOrFail($request->academy_student_id);
+            if (blank($student->phone)) {
+                throw ValidationException::withMessages([
+                    'academy_student_id' => app()->getLocale() === 'ar'
+                        ? 'أضف رقم هاتف الطالب إلى ملفه قبل إنشاء الحجز.'
+                        : 'Add the student phone number before creating a booking.',
+                ]);
+            }
             $totalAmount = round((float) $training->price, 2);
             $paidAmount = round((float) $request->paid_amount, 2);
 
@@ -238,33 +249,27 @@ class TrainingController extends Controller
             }
 
             DB::beginTransaction();
+            $user = $student->user ?: User::where('phone', $student->phone)->first();
             $user = User::updateOrCreate(
-                ['phone' => $request->phone],
+                ['id' => $user?->id],
                 [
-                    'name' => $request->name,
-                    'gender' => $request->gender,
-                    'country_code' => $request->country_code,
-                    'country_id' => $request->country_id,
-                    'city_id' => $request->city_id,
-                    'area_id' => $request->area_id,
+                    'name' => $student->name, 'phone' => $student->phone,
+                    'gender' => $student->gender, 'country_code' => $student->country_code,
+                    'country_id' => $student->country_id, 'city_id' => $student->city_id,
+                    'area_id' => $student->area_id,
                     'user_type'=> 'system',
-                    'birth_date'=> $request->birth_date,
-                    'club_member' => $request->club_member,
-                    'email' => $request->email,
-                    'child_type' => $request->child_type,
-                    'school_name' => $request->school_name,
-                    'parent_name' => $request->parent_name,
-                    'parent_phone' => $request->parent_phone,
-                    'coach_preference' =>  $request->coach_preference,
-                    'frequent_attendance' => $request->frequent_attendance,
-                    'relation_with_child' => $request->relation_with_child,
-                    'referral_source' => $request->referral_source,
-                    'delivery_service' => $request->delivery_service,
-                    'medical_condition' => $request->medical_condition,
-                    'start_date' => $request->start_date,
-                    'medical_condition_details' => $request->medical_condition == 'yes' ? $request->medical_condition_details : null,
-                    'additional_information' => $request->has('additional_information') ? $request->additional_information : null
+                    'birth_date'=> $student->birth_date, 'club_member' => $student->club_member,
+                    'email' => $student->email, 'child_type' => $student->child_type,
+                    'school_name' => $student->school_name, 'parent_name' => $student->guardian_name,
+                    'parent_phone' => $student->guardian_phone, 'coach_preference' => $student->coach_preference,
+                    'frequent_attendance' => $student->frequent_attendance,
+                    'relation_with_child' => $student->relation_with_child,
+                    'referral_source' => $student->referral_source, 'delivery_service' => $student->delivery_service,
+                    'medical_condition' => $student->medical_condition, 'start_date' => $student->start_date,
+                    'medical_condition_details' => $student->medical_notes,
+                    'additional_information' => $student->notes,
                 ]);
+            if ((int) $student->user_id !== (int) $user->id) $student->update(['user_id' => $user->id]);
             $booking = Invoice::create([
                 'user_id' => $user->id,
                 'training_id' => $request->training_id,
@@ -278,6 +283,7 @@ class TrainingController extends Controller
             ]);
             Join::create([
                 'user_id' => $user->id,
+                'academy_student_id' => $student->id,
                 'training_id' => $request->training_id,
                 'price' => $booking->amount,
                 'invoice_id' => $booking->id,

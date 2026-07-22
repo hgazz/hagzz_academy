@@ -69,6 +69,8 @@
                 <th>{{ trans('admin.student_management.email') }}</th>
                 <th>{{ trans('admin.student_management.gender') }}</th>
                 <th>{{ trans('admin.student_management.birth_date') }}</th>
+                <th>{{ trans('admin.academies.school_name') }}</th>
+                <th>{{ trans('admin.academies.club_member') }}</th>
                 <th>{{ trans('admin.student_management.guardian') }}</th>
                 <th>{{ trans('admin.student_management.status') }}</th>
                 <th>{{ trans('admin.student_management.medical_notes') }}</th>
@@ -85,13 +87,15 @@
                     <td>{{ $student->email ?: '-' }}</td>
                     <td>{{ $student->gender ? trans('admin.student_management.' . $student->gender) : '-' }}</td>
                     <td>{{ $student->birth_date?->format('Y-m-d') ?: '-' }}</td>
+                    <td>{{ $student->school_name ?: '-' }}</td>
+                    <td>{{ $student->club_member ?: '-' }}</td>
                     <td>{{ $student->guardian_name ?: '-' }}<br>{{ $student->guardian_phone ?: '' }}</td>
                     <td>{{ trans('admin.student_management.' . $student->status) }}</td>
                     <td>{{ $student->medical_notes ?: '-' }}</td>
                     <td>{{ $student->notes ?: '-' }}</td>
                 </tr>
             @empty
-                <tr><td colspan="11">{{ trans('admin.student_management.no_students_yet') }}</td></tr>
+                <tr><td colspan="13">{{ trans('admin.student_management.no_students_yet') }}</td></tr>
             @endforelse
             </tbody>
         </table>

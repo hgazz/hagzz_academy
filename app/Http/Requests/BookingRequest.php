@@ -23,6 +23,12 @@ class BookingRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'academy_student_id' => [
+                'required',
+                Rule::exists('academy_students', 'id')->where(
+                    fn ($query) => $query->where('academy_id', auth('academy')->id())
+                ),
+            ],
             'training_id' => [
                 'required',
                 Rule::exists('trainings', 'id')->where(
@@ -30,28 +36,6 @@ class BookingRequest extends FormRequest
                 ),
             ],
             'paid_amount' => 'required|numeric|min:0',
-            'name' =>'required|string',
-            'country_code' =>'required|regex:/^\+?[0-9]+$/',
-            'phone' =>'required|string',
-            'gender' =>'required|in:male,female',
-            'country_id' =>'required|string|exists:countries,id',
-            'city_id' =>'required|string|exists:cities,id',
-            'area_id' =>'required|string|exists:areas,id',
-            'birth_date' =>'required|date',
-            'email' => 'required|email',
-            'child_type' => 'required|in:parent,child,athlete',
-            'school_name' => 'required|string',
-            'parent_name' => 'required|string',
-            'parent_phone' => 'required|string|min:7|max:15',
-            'coach_preference' => 'required|in:male,female,not_important',
-            'frequent_attendance' => 'required|in:daily,weekly,monthly',
-            'relation_with_child' => 'required|in:father,mother,brother,sister,guardian',
-            'referral_source' => 'required|in:friends,facebook,hagzz_app',
-            'medical_condition' => 'required|in:yes,no',
-            'medical_condition_details' => 'required_if:medical_condition,yes',
-            'additional_information' => 'nullable',
-            'delivery_service' => 'required|in:yes,no',
-            'club_member' => 'required|in:yes,no',
             'payment_method' => 'required|in:cash,instapay,fawry,app_online,other',
             'payment_method_other' => 'required_if:payment_method,other|nullable|string|max:255',
 

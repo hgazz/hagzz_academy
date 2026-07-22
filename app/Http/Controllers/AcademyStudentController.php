@@ -8,6 +8,8 @@ use App\Imports\AcademyStudentsImport;
 use App\Models\Academies;
 use App\Models\AcademyStudent;
 use App\Models\AcademyAttendanceRecord;
+use App\Models\Country;
+use App\Models\User;
 use App\Support\MembershipCode;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
@@ -29,14 +31,15 @@ class AcademyStudentController extends Controller
 
     public function create()
     {
-        return view('Academy.pages.students.create');
+        $countries = Country::orderBy('name')->get(['id', 'name']);
+        return view('Academy.pages.students.create', compact('countries'));
     }
 
     public function profile(AcademyStudent $student)
     {
         $this->authorizeStudent($student);
         $student->load([
-            'user.country', 'user.city', 'user.area', 'groups',
+            'country', 'city', 'area', 'user.country', 'user.city', 'user.area', 'groups',
             'subscriptions.group', 'subscriptions.payments', 'attendanceRecords.session.group',
         ]);
         $subscription = $student->subscriptions->sortByDesc('starts_on')->first();
@@ -60,7 +63,9 @@ class AcademyStudentController extends Controller
             'status' => $student->status,
             'guardian_name' => $student->guardian_name ?: $student->user?->parent_name,
             'guardian_phone' => $student->guardian_phone ?: $student->user?->parent_phone,
-            'location' => collect([$student->user?->area?->name, $student->user?->city?->name, $student->user?->country?->name])->filter()->join(' - '),
+            'location' => collect([$student->area?->name ?: $student->user?->area?->name, $student->city?->name ?: $student->user?->city?->name, $student->country?->name ?: $student->user?->country?->name])->filter()->join(' - '),
+            'school_name' => $student->school_name, 'club_member' => $student->club_member,
+            'child_type' => $student->child_type, 'referral_source' => $student->referral_source,
             'groups' => $student->groups->pluck('name')->filter()->values(),
             'medical_notes' => $student->medical_notes ?: $student->user?->medical_condition_details,
             'notes' => $student->notes ?: $student->user?->additional_information,
@@ -158,7 +163,8 @@ class AcademyStudentController extends Controller
         $data = $this->validated($request);
         $data['academy_id'] = auth('academy')->id();
 
-        AcademyStudent::create($data);
+        $student = AcademyStudent::create($data);
+        $this->syncLinkedUser($student);
 
         session()->flash('success', trans('admin.student_management.student_created'));
         return to_route('academy.students.index');
@@ -168,13 +174,15 @@ class AcademyStudentController extends Controller
     {
         $this->authorizeStudent($student);
 
-        return view('Academy.pages.students.edit', compact('student'));
+        $countries = Country::orderBy('name')->get(['id', 'name']);
+        return view('Academy.pages.students.edit', compact('student', 'countries'));
     }
 
     public function update(Request $request, AcademyStudent $student)
     {
         $this->authorizeStudent($student);
         $student->update($this->validated($request));
+        $this->syncLinkedUser($student);
 
         session()->flash('success', trans('admin.student_management.student_updated'));
         return to_route('academy.students.index');
@@ -194,14 +202,42 @@ class AcademyStudentController extends Controller
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
+            'country_code' => ['nullable', 'string', 'max:10'],
+            'country_id' => ['nullable', 'exists:countries,id'], 'city_id' => ['nullable', 'exists:cities,id'],
+            'area_id' => ['nullable', 'exists:areas,id'],
             'email' => ['nullable', 'email', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
             'birth_date' => ['nullable', 'date'],
+            'child_type' => ['nullable', 'in:parent,child,athlete'], 'school_name' => ['nullable', 'string', 'max:255'],
+            'club_member' => ['nullable', 'in:yes,no'], 'coach_preference' => ['nullable', 'in:male,female,not_important'],
+            'frequent_attendance' => ['nullable', 'in:daily,weekly,monthly'],
             'guardian_name' => ['nullable', 'string', 'max:255'],
             'guardian_phone' => ['nullable', 'string', 'max:30'],
+            'relation_with_child' => ['nullable', 'in:father,mother,brother,sister,guardian'],
+            'referral_source' => ['nullable', 'in:friends,facebook,hagzz_app'],
+            'delivery_service' => ['nullable', 'in:yes,no'],
             'status' => ['required', 'in:active,inactive,suspended'],
             'medical_notes' => ['nullable', 'string'],
+            'medical_condition' => ['nullable', 'in:yes,no'], 'start_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
+        ]);
+    }
+
+    private function syncLinkedUser(AcademyStudent $student): void
+    {
+        if (! $student->user_id) return;
+        $student->user()->update([
+            'name' => $student->name, 'phone' => $student->phone, 'email' => $student->email,
+            'gender' => $student->gender, 'birth_date' => $student->birth_date,
+            'country_code' => $student->country_code, 'country_id' => $student->country_id,
+            'city_id' => $student->city_id, 'area_id' => $student->area_id,
+            'child_type' => $student->child_type, 'school_name' => $student->school_name,
+            'club_member' => $student->club_member, 'parent_name' => $student->guardian_name,
+            'parent_phone' => $student->guardian_phone, 'coach_preference' => $student->coach_preference,
+            'frequent_attendance' => $student->frequent_attendance, 'relation_with_child' => $student->relation_with_child,
+            'referral_source' => $student->referral_source, 'delivery_service' => $student->delivery_service,
+            'medical_condition' => $student->medical_condition, 'start_date' => $student->start_date,
+            'medical_condition_details' => $student->medical_notes, 'additional_information' => $student->notes,
         ]);
     }
 
