@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small fw-bold uppercase">{{ $ar ? 'إجمالي الإيرادات (الفترة)' : 'Total Revenue (Period)' }}</span>
-                        <h3 class="fw-bold text-success mb-0 mt-1">{{ number_format($totalRevenue, 2) }} <small class="fs-6">SAR</small></h3>
+                        <h3 class="fw-bold text-success mb-0 mt-1">{{ number_format($totalRevenue, 2) }} <small class="fs-6">{{ $academyCurrencySymbol }}</small></h3>
                     </div>
                     <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
                         <i class="fa-solid fa-hand-holding-dollar fa-2x"></i>
@@ -43,8 +43,8 @@
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-danger border-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <span class="text-muted small fw-bold uppercase">{{ $ar ? 'إجمالي المصروفات' : 'Total Expenses' }}</span>
-                        <h3 class="fw-bold text-danger mb-0 mt-1">{{ number_format($totalExpenses, 2) }} <small class="fs-6">SAR</small></h3>
+                        <span class="text-muted small fw-bold uppercase">{{ $ar ? 'إجمالي المصروفات (بالعملة المحلية)' : 'Total Expenses (Base Currency)' }}</span>
+                        <h3 class="fw-bold text-danger mb-0 mt-1">{{ number_format($totalExpenses, 2) }} <small class="fs-6">{{ $academyCurrencySymbol }}</small></h3>
                     </div>
                     <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger">
                         <i class="fa-solid fa-receipt fa-2x"></i>
@@ -58,7 +58,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-muted small fw-bold uppercase">{{ $ar ? 'صافي الربح الفعلي (الإيراد - المصروف)' : 'Net Profit (Revenue - Expense)' }}</span>
-                        <h3 class="fw-bold {{ $netProfit >= 0 ? 'text-primary' : 'text-warning' }} mb-0 mt-1">{{ number_format($netProfit, 2) }} <small class="fs-6">SAR</small></h3>
+                        <h3 class="fw-bold {{ $netProfit >= 0 ? 'text-primary' : 'text-warning' }} mb-0 mt-1">{{ number_format($netProfit, 2) }} <small class="fs-6">{{ $academyCurrencySymbol }}</small></h3>
                     </div>
                     <div class="rounded-circle {{ $netProfit >= 0 ? 'bg-primary text-primary' : 'bg-warning text-warning' }} bg-opacity-10 p-3">
                         <i class="fa-solid fa-chart-line fa-2x"></i>
@@ -85,7 +85,7 @@
 
             <form method="GET" action="{{ route('academy.expenses.index') }}" class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold">{{ $ar ? 'دورة المصروف (Period)' : 'Period Type' }}</label>
+                    <label class="form-label small fw-bold">{{ $ar ? 'دورة المصروف' : 'Period Type' }}</label>
                     <select name="period_type" class="form-select">
                         <option value="">{{ $ar ? 'جميع الفترات' : 'All Periods' }}</option>
                         <option value="daily" @selected(request('period_type') == 'daily')>{{ $ar ? 'يومي (Daily)' : 'Daily' }}</option>
@@ -134,10 +134,11 @@
                             <th>#</th>
                             <th>{{ $ar ? 'عنوان المصروف' : 'Expense Title' }}</th>
                             <th>{{ $ar ? 'التصنيف' : 'Category' }}</th>
-                            <th>{{ $ar ? 'المبلغ' : 'Amount' }}</th>
+                            <th>{{ $ar ? 'المبلغ المسدد' : 'Paid Amount' }}</th>
+                            <th>{{ $ar ? 'المقابل بعملة المنشأة' : 'Base Amount' }}</th>
                             <th>{{ $ar ? 'نوع الدورة' : 'Period Type' }}</th>
-                            <th>{{ $ar ? 'تاريخ المصروف' : 'Expense Date' }}</th>
-                            <th>{{ $ar ? 'الشخص المعتمد' : 'Approved By' }}</th>
+                            <th>{{ $ar ? 'التاريخ' : 'Date' }}</th>
+                            <th>{{ $ar ? 'المعتمد' : 'Approved By' }}</th>
                             <th>{{ $ar ? 'الإجراءات' : 'Actions' }}</th>
                         </tr>
                     </thead>
@@ -150,7 +151,13 @@
                                     {{ $exp->title }}
                                 </td>
                                 <td><span class="badge bg-light text-dark border"><i class="fa-solid fa-tag me-1"></i> {{ $exp->category?->name ?: '-' }}</span></td>
-                                <td class="fw-bold text-danger fs-6">{{ number_format($exp->amount, 2) }} {{ $exp->currency }}</td>
+                                <td class="fw-bold text-dark fs-6">{{ number_format($exp->amount, 2) }} <small class="text-muted">{{ $exp->currency }}</small></td>
+                                <td class="fw-bold text-danger fs-6">
+                                    {{ number_format($exp->base_amount ?: $exp->amount, 2) }} <small>{{ $exp->base_currency ?: $academyCurrencyCode }}</small>
+                                    @if($exp->currency !== ($exp->base_currency ?: $academyCurrencyCode))
+                                        <div class="small text-muted font-monospace opacity-75">(1 {{ $exp->currency }} = {{ number_format($exp->exchange_rate, 2) }})</div>
+                                    @endif
+                                </td>
                                 <td><span class="badge bg-info text-dark">{{ ucfirst($exp->period_type) }}</span></td>
                                 <td>{{ $exp->expense_date?->format('Y-m-d') }}</td>
                                 <td><i class="fa-solid fa-user-check text-success me-1"></i> {{ $exp->approved_by ?: '-' }}</td>
@@ -173,7 +180,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
+                                <td colspan="9" class="text-center text-muted py-4">
                                     <i class="fa-solid fa-receipt fa-2x mb-2 d-block text-muted opacity-50"></i>
                                     {{ $ar ? 'لا يوجد مصروفات مسجلة بهذه الفلاتر.' : 'No expenses recorded with these filters.' }}
                                 </td>
@@ -191,7 +198,7 @@
     </div>
 </div>
 
-<!-- MODAL: ADD EXPENSE -->
+<!-- MODAL: ADD EXPENSE WITH MULTI-CURRENCY -->
 <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -205,7 +212,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $ar ? 'عنوان/بيان المصروف' : 'Expense Title' }} <span class="text-danger">*</span></label>
-                            <input type="text" name="title" class="form-control" placeholder="{{ $ar ? 'مثال: إيجار الملعب الرئيسي عن شهر 7' : 'e.g. Main Pitch Rent July' }}" required>
+                            <input type="text" name="title" class="form-control" placeholder="{{ $ar ? 'مثال: إيجار الملعب الرئيسي أو شراء ادوات بالدولار' : 'e.g. Main Pitch Rent or Equipment in USD' }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $ar ? 'تصنيف المصروف' : 'Expense Category' }} <span class="text-danger">*</span></label>
@@ -216,10 +223,38 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <!-- AMOUNT & CURRENCY SELECTOR -->
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $ar ? 'المبلغ (SAR)' : 'Amount' }} <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" min="0.01" name="amount" class="form-control fw-bold" placeholder="0.00" required>
+                            <label class="form-label fw-bold">{{ $ar ? 'المبلغ المدفوع' : 'Amount Paid' }} <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" id="exp_amount" name="amount" class="form-control fw-bold" placeholder="0.00" required>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">{{ $ar ? 'عملة السداد' : 'Payment Currency' }} <span class="text-danger">*</span></label>
+                            <select id="exp_currency" name="currency" class="form-select fw-bold" required>
+                                <option value="{{ $academyCurrencyCode }}" selected>{{ $academyCurrencyCode }} ({{ $academyCurrencySymbol }}) - {{ $ar ? 'عملة المنشأة الأساسية' : 'Main Currency' }}</option>
+                                <option value="USD">USD ($) - {{ $ar ? 'دولار أمريكي' : 'US Dollar' }}</option>
+                                <option value="EUR">EUR (€) - {{ $ar ? 'يورو أوروبي' : 'Euro' }}</option>
+                                <option value="EGP">EGP (ج.م) - {{ $ar ? 'جنيه مصري' : 'Egyptian Pound' }}</option>
+                                <option value="SAR">SAR (ر.س) - {{ $ar ? 'ريال سعودي' : 'Saudi Riyal' }}</option>
+                                <option value="QAR">QAR (ر.ق) - {{ $ar ? 'ريال قطري' : 'Qatari Riyal' }}</option>
+                                <option value="AED">AED (د.إ) - {{ $ar ? 'درهم إماراتي' : 'UAE Dirham' }}</option>
+                                <option value="KWD">KWD (د.ك) - {{ $ar ? 'دينار كويتي' : 'Kuwaiti Dinar' }}</option>
+                                <option value="BHD">BHD (د.ب) - {{ $ar ? 'دينار بحريني' : 'Bahraini Dinar' }}</option>
+                                <option value="OMR">OMR (ر.ع) - {{ $ar ? 'ريال عماني' : 'Omani Rial' }}</option>
+                            </select>
+                        </div>
+                        
+                        <!-- FX EQUIVALENT FIELD (Shown when currency != base currency) -->
+                        <div class="col-md-4 d-none" id="fx_wrapper">
+                            <label class="form-label fw-bold text-primary">
+                                <i class="fa-solid fa-calculator me-1"></i>
+                                {{ $ar ? 'المقابل بـ '.$academyCurrencySymbol : 'Equivalent in '.$academyCurrencyCode }} <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" step="0.01" min="0.01" id="exp_base_amount" name="base_amount" class="form-control fw-bold border-primary" placeholder="0.00">
+                            <span class="small text-muted d-block mt-1">{{ $ar ? 'لتحويل المصروف بدقة وعرض الأرباح الصحيحة' : 'For accurate P&L calculation' }}</span>
+                        </div>
+
                         <div class="col-md-4">
                             <label class="form-label fw-bold">{{ $ar ? 'تاريخ المصروف' : 'Expense Date' }} <span class="text-danger">*</span></label>
                             <input type="date" name="expense_date" class="form-control" value="{{ date('Y-m-d') }}" required>
@@ -233,7 +268,7 @@
                                 <option value="annual">{{ $ar ? 'سنوي (Annual)' : 'Annual' }}</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-bold">{{ $ar ? 'الشخص المعتمد للمصروف' : 'Approved By' }}</label>
                             <input type="text" name="approved_by" class="form-control" value="{{ auth('academy')->user()?->name }}" placeholder="{{ $ar ? 'اسم المدير أو المعتمد' : 'Approver Name' }}">
                         </div>
@@ -241,9 +276,9 @@
                             <label class="form-label fw-bold">{{ $ar ? 'صورة الإيصال / السند' : 'Receipt Image' }}</label>
                             <input type="file" name="receipt_image" class="form-control" accept="image/*">
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $ar ? 'ملاحظات وتفاصيل إضافية' : 'Notes & Additional Info' }}</label>
-                            <textarea name="notes" class="form-control" rows="3" placeholder="{{ $ar ? 'تفاصيل أخرى عن المصروف...' : 'Additional notes...' }}"></textarea>
+                            <input type="text" name="notes" class="form-control" placeholder="{{ $ar ? 'تفاصيل أخرى عن المصروف...' : 'Additional notes...' }}">
                         </div>
                     </div>
                 </div>
@@ -284,4 +319,34 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const currencySelect = document.getElementById('exp_currency');
+    const fxWrapper = document.getElementById('fx_wrapper');
+    const baseAmountInput = document.getElementById('exp_base_amount');
+    const expAmountInput = document.getElementById('exp_amount');
+    const baseCurrencyCode = "{{ $academyCurrencyCode }}";
+
+    function toggleFX() {
+        if (currencySelect.value !== baseCurrencyCode) {
+            fxWrapper.classList.remove('d-none');
+            baseAmountInput.setAttribute('required', 'required');
+        } else {
+            fxWrapper.classList.add('d-none');
+            baseAmountInput.removeAttribute('required');
+            baseAmountInput.value = expAmountInput.value;
+        }
+    }
+
+    currencySelect.addEventListener('change', toggleFX);
+    expAmountInput.addEventListener('input', function () {
+        if (currencySelect.value === baseCurrencyCode) {
+            baseAmountInput.value = expAmountInput.value;
+        }
+    });
+
+    toggleFX();
+});
+</script>
 @endsection

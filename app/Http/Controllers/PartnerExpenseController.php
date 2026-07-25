@@ -15,7 +15,10 @@ class PartnerExpenseController extends Controller
     public function index(Request $request)
     {
         $user = auth('academy')->user();
-        $academyId = $user->academy_id ?: $user->id;
+        $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
+        $academyId = $user->academy_id ?: $academy->id;
+        $academyCurrencyCode = $academy->currency_code ?: 'SAR';
+        $academyCurrencySymbol = $academy->currency_symbol ?: (app()->getLocale() === 'ar' ? 'ر.س' : 'SAR');
 
         // Categories available (System + Partner Custom)
         $categories = PartnerExpenseCategory::whereNull('academy_id')
@@ -46,8 +49,8 @@ class PartnerExpenseController extends Controller
 
         $expenses = $query->orderBy('expense_date', 'desc')->paginate(20);
 
-        // Financial Summary Calculations
-        $totalExpenses = (float) (clone $query)->sum('amount');
+        // Financial Summary Calculations in Base Currency
+        $totalExpenses = (float) (clone $query)->sum(\Illuminate\Support\Facades\DB::raw('COALESCE(base_amount, amount)'));
 
         // Revenue query in matching period
         $revenueQuery = Invoice::whereHas('training', function ($q) use ($academyId) {
@@ -69,7 +72,9 @@ class PartnerExpenseController extends Controller
             'categories',
             'totalRevenue',
             'totalExpenses',
-            'netProfit'
+            'netProfit',
+            'academyCurrencyCode',
+            'academyCurrencySymbol'
         ));
     }
 
@@ -79,6 +84,9 @@ class PartnerExpenseController extends Controller
             'category_id' => 'required|exists:partner_expense_categories,id',
             'title' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0.01',
+            'currency' => 'required|string|max:10',
+            'exchange_rate' => 'nullable|numeric|min:0.0001',
+            'base_amount' => 'nullable|numeric|min:0.01',
             'expense_date' => 'required|date',
             'period_type' => 'required|in:daily,monthly,quarterly,annual',
             'approved_by' => 'nullable|string|max:255',
@@ -87,7 +95,23 @@ class PartnerExpenseController extends Controller
         ]);
 
         $user = auth('academy')->user();
-        $academyId = $user->academy_id ?: $user->id;
+        $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
+        $academyId = $user->academy_id ?: $academy->id;
+        $academyCurrencyCode = $academy->currency_code ?: 'SAR';
+
+        $currency = strtoupper($request->currency);
+        $amount = (float) $request->amount;
+        $exchangeRate = (float) ($request->exchange_rate ?: 1.0);
+
+        if ($currency === $academyCurrencyCode) {
+            $exchangeRate = 1.0;
+            $baseAmount = $amount;
+        } else {
+            $baseAmount = $request->filled('base_amount') ? (float) $request->base_amount : round($amount * $exchangeRate, 2);
+            if ($amount > 0 && $baseAmount > 0 && !$request->filled('exchange_rate')) {
+                $exchangeRate = round($baseAmount / $amount, 4);
+            }
+        }
 
         $receiptPath = null;
         if ($request->hasFile('receipt_image')) {
@@ -98,8 +122,11 @@ class PartnerExpenseController extends Controller
             'academy_id' => $academyId,
             'category_id' => $request->category_id,
             'title' => $request->title,
-            'amount' => $request->amount,
-            'currency' => 'SAR',
+            'amount' => $amount,
+            'currency' => $currency,
+            'exchange_rate' => $exchangeRate,
+            'base_amount' => $baseAmount,
+            'base_currency' => $academyCurrencyCode,
             'expense_date' => $request->expense_date,
             'period_type' => $request->period_type,
             'approved_by' => $request->approved_by ?: $user->name,

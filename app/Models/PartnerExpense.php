@@ -16,6 +16,9 @@ class PartnerExpense extends Model
         'title',
         'amount',
         'currency',
+        'exchange_rate',
+        'base_amount',
+        'base_currency',
         'expense_date',
         'period_type',
         'approved_by',
@@ -27,6 +30,8 @@ class PartnerExpense extends Model
     protected $casts = [
         'expense_date' => 'date',
         'amount' => 'decimal:2',
+        'exchange_rate' => 'decimal:4',
+        'base_amount' => 'decimal:2',
     ];
 
     public function academy(): BelongsTo

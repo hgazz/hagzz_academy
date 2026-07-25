@@ -73,6 +73,43 @@ class Academies extends Authenticatable
     ];
 
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function getCurrencyCodeAttribute(): string
+    {
+        if ($this->relationLoaded('country') && $this->country && !empty($this->country->currency_code)) {
+            return strtoupper($this->country->currency_code);
+        }
+        if ($this->country_id) {
+            $country = Country::find($this->country_id);
+            if ($country && !empty($country->currency_code)) {
+                return strtoupper($country->currency_code);
+            }
+        }
+        return 'SAR';
+    }
+
+    public function getCurrencySymbolAttribute(): string
+    {
+        $code = $this->currency_code;
+        $ar = app()->getLocale() === 'ar';
+
+        return match ($code) {
+            'EGP' => $ar ? 'ج.م' : 'EGP',
+            'QAR' => $ar ? 'ر.ق' : 'QAR',
+            'EUR' => '€',
+            'USD' => '$',
+            'AED' => $ar ? 'د.إ' : 'AED',
+            'BHD' => $ar ? 'د.ب' : 'BHD',
+            'KWD' => $ar ? 'د.ك' : 'KWD',
+            'OMR' => $ar ? 'ر.ع' : 'OMR',
+            default => $ar ? 'ر.س' : 'SAR',
+        };
+    }
+
     public function getLogoAttribute($value): string
     {
         return StorageUrl::asset($value, self::PATH, asset('assetsAdmin/logo/Icon-Primary.svg'));

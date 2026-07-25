@@ -122,6 +122,16 @@ class PartnerUser extends Authenticatable
         return $this->academy?->business_type;
     }
 
+    public function getCurrencyCodeAttribute()
+    {
+        return $this->academy?->currency_code ?: 'SAR';
+    }
+
+    public function getCurrencySymbolAttribute()
+    {
+        return $this->academy?->currency_symbol ?: (app()->getLocale() === 'ar' ? 'ر.س' : 'SAR');
+    }
+
     public function getLogoAttribute()
     {
         return $this->academy?->logo;
