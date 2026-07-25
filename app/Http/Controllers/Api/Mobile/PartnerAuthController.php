@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use App\Models\PartnerUser;
+
 class PartnerAuthController extends Controller
 {
     public function login(Request $request): JsonResponse
@@ -29,7 +31,28 @@ class PartnerAuthController extends Controller
 
         $input = trim($data['email']);
 
-        // 1. Standard Academy Partner Login
+        // 1. Partner User Login (Multi-user per partner)
+        $partnerUser = PartnerUser::where('email', $input)->orWhere('phone', $input)->first();
+        if ($partnerUser && Hash::check($data['password'], $partnerUser->password)) {
+            if ($partnerUser->status !== 'active') {
+                return response()->json([
+                    'message' => app()->getLocale() === 'ar'
+                        ? 'حساب المستخدم غير نشط. تواصل مع مالك الحساب أو إدارة Hagzz.'
+                        : 'The user account is not active. Please contact Hagzz support.',
+                ], 403);
+            }
+
+            $partnerUser->tokens()->where('name', $data['device_name'] ?? 'hagzz-partners')->delete();
+            $token = $partnerUser->createToken($data['device_name'] ?? 'hagzz-partners', ['partner'])->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'account' => $this->accountForPartnerUser($partnerUser),
+            ]);
+        }
+
+        // 1b. Legacy Academy Partner Login Fallback
         $partner = Academies::where('email', $input)->orWhere('phone', $input)->first();
 
         if ($partner && Hash::check($data['password'], $partner->password)) {
@@ -86,6 +109,10 @@ class PartnerAuthController extends Controller
     {
         $user = $request->user();
 
+        if ($user instanceof PartnerUser) {
+            return response()->json(['account' => $this->accountForPartnerUser($user)]);
+        }
+
         if ($user instanceof Academies) {
             return response()->json(['account' => $this->account($user)]);
         }
@@ -93,6 +120,38 @@ class PartnerAuthController extends Controller
         return response()->json([
             'account' => $this->account(Academies::first()),
         ]);
+    }
+
+    private function accountForPartnerUser(PartnerUser $user): array
+    {
+        $academy = $user->academy ?: Academies::first();
+        $account = $this->account($academy);
+
+        $account['id'] = $user->id;
+        $account['user_id'] = $user->id;
+        $account['academy_id'] = $academy->id;
+        $account['name'] = $user->name;
+        $account['owner_name'] = $user->name;
+        $account['email'] = $user->email;
+        $account['phone'] = $user->phone ?: $academy->phone;
+        $account['is_owner'] = $user->is_owner;
+        $account['access_all_branches'] = $user->access_all_branches;
+        $account['roles'] = $user->roles->pluck('name')->toArray();
+
+        if ($user->is_owner && !in_array('owner', $account['roles'])) {
+            $account['roles'][] = 'owner';
+        }
+
+        if (!$user->is_owner && !$user->access_all_branches) {
+            $allowedBranchIds = $user->assignedBranches->pluck('id')->toArray();
+            $filteredBranches = array_filter($account['academy_info']['branches'] ?? [], function ($b) use ($allowedBranchIds) {
+                return in_array($b['id'], $allowedBranchIds);
+            });
+            $account['branches'] = array_values($filteredBranches);
+            $account['academy_info']['branches'] = array_values($filteredBranches);
+        }
+
+        return $account;
     }
 
     public function updateProfile(Request $request): JsonResponse
