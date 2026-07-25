@@ -90,9 +90,26 @@
                                 <select name="country_id" id="country_select" class="form-select">
                                     <option value="">{{ $isArabic ? 'اختر الدولة...' : 'Select Country...' }}</option>
                                     @foreach(is_iterable($countries ?? null) ? $countries : [] as $c)
-                                        <option value="{{ $c->id }}" {{ old('country_id', $camp->country_id) == $c->id ? 'selected' : '' }}>{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
+                                        <option value="{{ $c->id }}" data-name="{{ $c->name }}" data-iso2="{{ strtoupper($c->iso2 ?? '') }}" {{ old('country_id', $camp->country_id) == $c->id ? 'selected' : '' }}>{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
                                     @endforeach
                                 </select>
+
+                                <!-- VISA DYNAMIC HINT BOX -->
+                                <div id="visa_dynamic_box" class="mt-3 d-none">
+                                    <div id="visa_alert_badge" class="p-3 rounded-3 border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm">
+                                        <div>
+                                            <span id="visa_badge_icon" class="me-2 fs-5"></span>
+                                            <strong id="visa_badge_title" class="fs-6"></strong>
+                                            <p id="visa_badge_desc" class="mb-0 small text-muted mt-1"></p>
+                                        </div>
+                                        <div id="visa_link_container">
+                                            <a id="visa_official_link" href="#" target="_blank" class="btn btn-sm btn-outline-primary fw-bold text-decoration-none shadow-sm">
+                                                <i class="fa-solid fa-passport me-1"></i>
+                                                {{ $isArabic ? '🌐 شروط التأشيرة والتقديم الرسمي' : 'Visa Info & Official Portal' }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -251,4 +268,65 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const countrySelect = document.getElementById('country_select');
+    const homeCountryId = "{{ $homeCountry?->id ?? '' }}";
+    const homeCountryName = "{{ $homeCountry?->name ?? ($isArabic ? 'مصر' : 'Egypt') }}";
+
+    const visaBox = document.getElementById('visa_dynamic_box');
+    const visaBadge = document.getElementById('visa_alert_badge');
+    const visaIcon = document.getElementById('visa_badge_icon');
+    const visaTitle = document.getElementById('visa_badge_title');
+    const visaDesc = document.getElementById('visa_badge_desc');
+    const visaLink = document.getElementById('visa_official_link');
+    const campTypeSelect = document.querySelector('select[name="type"]');
+    const visaSwitch = document.getElementById('visaSwitch') || document.querySelector('input[name="visa_required"]');
+
+    function checkVisaHint() {
+        if (!countrySelect) return;
+        const countryId = countrySelect.value;
+        const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+        if (!countryId || !selectedOption) {
+            if (visaBox) visaBox.classList.add('d-none');
+            return;
+        }
+
+        const countryName = selectedOption.getAttribute('data-name') || selectedOption.text;
+        const iso2 = selectedOption.getAttribute('data-iso2') || '';
+
+        if (visaBox) {
+            visaBox.classList.remove('d-none');
+            if (countryId == homeCountryId || iso2 === 'EG') {
+                // Domestic Camp
+                visaBadge.className = 'p-3 rounded-3 border border-success bg-success bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm';
+                visaIcon.innerHTML = '🟢 🇪🇬';
+                visaTitle.className = 'text-success fw-bold fs-6';
+                visaTitle.innerText = '{{ $isArabic ? "معسكر محلي - لا تتطلب تأشيرة دخول للمواطنين" : "Domestic Camp - No Visa Required" }}';
+                visaDesc.innerText = `{{ $isArabic ? "الدولة المستضيفة هي نفسها دولة الشريك" : "Host country matches partner home country" }} (${homeCountryName}). {{ $isArabic ? "تنقل وتدريب محلي بدون إجراءات تأشيرة." : "No visa required." }}`;
+                if (visaLink) visaLink.classList.add('d-none');
+            } else {
+                // International Camp
+                visaBadge.className = 'p-3 rounded-3 border border-warning bg-warning bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm';
+                visaIcon.innerHTML = '✈️ ⚠️';
+                visaTitle.className = 'text-dark fw-bold fs-6';
+                visaTitle.innerText = `{{ $isArabic ? "معسكر دولي - تتطلب تأشيرة دخول (Visa) إلى" : "International Camp - Visa Required to" }} (${countryName})`;
+                visaDesc.innerText = `{{ $isArabic ? "للمواطنين والمقيمين التابعين لـ" : "For citizens of" }} (${homeCountryName})، {{ $isArabic ? "يُرجى الاستعلام واستخراج التأشيرة قبل موعد السفر." : "please check visa requirements before departure." }}`;
+
+                if (visaLink) {
+                    const q = encodeURIComponent(`visa requirements for ${homeCountryName} passport travelling to ${countryName} official application portal`);
+                    visaLink.href = `https://www.google.com/search?q=${q}`;
+                    visaLink.classList.remove('d-none');
+                }
+            }
+        }
+    }
+
+    if (countrySelect) {
+        countrySelect.addEventListener('change', checkVisaHint);
+        checkVisaHint(); // trigger on page load
+    }
+});
+</script>
 @endsection

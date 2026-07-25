@@ -82,11 +82,13 @@ class PartnerCampController extends Controller
     {
         $academyId = $this->resolveAcademyId();
         $currency = $this->getAcademyCurrency($academyId);
+        $academy = Academies::with('country')->find($academyId);
+        $homeCountry = $academy?->country ?: Country::where('iso2', 'EG')->first();
         $sports = Sport::all();
         $countries = Country::all();
         $coaches = Coach::where('academy_id', $academyId)->get();
 
-        return view('Academy.pages.camps.create', compact('sports', 'countries', 'coaches', 'currency'));
+        return view('Academy.pages.camps.create', compact('sports', 'countries', 'coaches', 'currency', 'homeCountry'));
     }
 
     public function store(Request $request)
@@ -190,12 +192,14 @@ class PartnerCampController extends Controller
     {
         $academyId = $this->resolveAcademyId();
         $currency = $this->getAcademyCurrency($academyId);
+        $academy = Academies::with('country')->find($academyId);
+        $homeCountry = $academy?->country ?: Country::where('iso2', 'EG')->first();
         $camp = AcademyCamp::with(['supervisors'])->where('academy_id', $academyId)->findOrFail($id);
         $sports = Sport::all();
         $countries = Country::all();
         $coaches = Coach::where('academy_id', $academyId)->get();
 
-        return view('Academy.pages.camps.edit', compact('camp', 'sports', 'countries', 'coaches', 'currency'));
+        return view('Academy.pages.camps.edit', compact('camp', 'sports', 'countries', 'coaches', 'currency', 'homeCountry'));
     }
 
     public function update(Request $request, $id)
