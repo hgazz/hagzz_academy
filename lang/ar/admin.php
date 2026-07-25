@@ -715,4 +715,11 @@ return [
         'statuses' => ['pending' => 'معلق', 'confirmed' => 'مؤكد', 'checked_in' => 'تم الحضور', 'completed' => 'مكتمل', 'cancelled' => 'ملغى', 'no_show' => 'لم يحضر'],
         'payment_states' => ['unpaid' => 'غير مدفوع', 'partial' => 'مدفوع جزئيًا', 'paid' => 'مدفوع'],
     ],
+    'bookings' => [
+        'paid_amount' => 'المبلغ المدفوع',
+        'remaining_amount' => 'المبلغ المتبقي',
+        'paid_amount_exceeds_total' => 'المبلغ المدفوع يتجاوز إجمالي سعر الحجز',
+        'offline_bookings' => 'الحجوزات المسجلة يدويًا (أوفلاين)',
+        'booking_created_successfully' => 'تم إنشاء الحجز بنجاح',
+    ],
 ];

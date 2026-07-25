@@ -42,8 +42,8 @@
                         </select>
                     </div>
                     <div class="col-md-4"><label class="form-label fw-bold">{{ $ar ? 'قيمة الحجز' : 'Booking total' }}</label><input id="price" class="form-control" type="number" step="0.01" readonly></div>
-                    <div class="col-md-4"><label class="form-label fw-bold" for="paid_amount">{{ trans('admin.bookings.paid_amount') }} <span class="text-danger">*</span></label><input id="paid_amount" name="paid_amount" class="form-control" type="number" min="0" step="0.01" value="{{ old('paid_amount', 0) }}" required></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">{{ trans('admin.bookings.remaining_amount') }}</label><input id="remaining_amount" class="form-control" type="number" step="0.01" readonly></div>
+                    <div class="col-md-4"><label class="form-label fw-bold" for="paid_amount">{{ $ar ? 'المبلغ المدفوع' : 'Paid Amount' }} <span class="text-danger">*</span></label><input id="paid_amount" name="paid_amount" class="form-control" type="number" min="0" step="0.01" value="{{ old('paid_amount', 0) }}" required></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">{{ $ar ? 'المبلغ المتبقي' : 'Remaining Amount' }}</label><input id="remaining_amount" class="form-control" type="number" step="0.01" readonly></div>
                     <div class="col-12"><label class="form-label fw-bold"><i class="fa-solid fa-credit-card text-info me-1"></i> {{ trans('admin.payment_method') }} <span class="text-danger">*</span></label>
                         <div class="d-flex flex-wrap gap-2 mt-1">
                             @foreach(App\Helpers\PaymentMethodHelper::getMethodsForCountry(auth('academy')->user()?->academy?->country?->iso2 ?: 'SA') as $pm)
