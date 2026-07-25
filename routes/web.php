@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InvoicePrintController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PartnerExpenseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
@@ -242,6 +243,13 @@ Route::group(
 
         Route::controller(SettlementController::class)->group(function (){
             Route::get('settlements','index')->name('settlement.index');
+        });
+
+        Route::controller(PartnerExpenseController::class)->group(function () {
+            Route::get('expenses', 'index')->name('expenses.index');
+            Route::post('expenses', 'store')->name('expenses.store');
+            Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
+            Route::post('expenses/categories', 'storeCategory')->name('expenses.categories.store');
         });
 
         Route::prefix('report')->as('report.')->controller(ReportController::class)

@@ -147,6 +147,7 @@
                 </li>
             @endunless
             <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
+            <li class="menu {{ Request::routeIs('academy.expenses.*') ? 'active' : '' }}"><a href="{{ route('academy.expenses.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-coins menu-icon"></i><span>{{ $isArabic ? 'إدارة المصروفات والأرباح' : 'Expenses & Net profit' }}</span></div></a></li>
 
             <li class="navigation-section"><span>{{ $isArabic ? 'إعدادات المنشأة' : 'Business settings' }}</span></li>
             @unless($isVenueOnly)

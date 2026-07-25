@@ -44,8 +44,16 @@
                     <div class="col-md-4"><label class="form-label fw-bold">{{ $ar ? 'قيمة الحجز' : 'Booking total' }}</label><input id="price" class="form-control" type="number" step="0.01" readonly></div>
                     <div class="col-md-4"><label class="form-label fw-bold" for="paid_amount">{{ trans('admin.bookings.paid_amount') }} <span class="text-danger">*</span></label><input id="paid_amount" name="paid_amount" class="form-control" type="number" min="0" step="0.01" value="{{ old('paid_amount', 0) }}" required></div>
                     <div class="col-md-4"><label class="form-label fw-bold">{{ trans('admin.bookings.remaining_amount') }}</label><input id="remaining_amount" class="form-control" type="number" step="0.01" readonly></div>
-                    <div class="col-md-6"><label class="form-label fw-bold" for="payment_method">{{ trans('admin.payment_method') }} <span class="text-danger">*</span></label>
-                        <select id="payment_method" name="payment_method" class="form-select" required>@foreach(['cash','instapay','fawry','app_online','other'] as $method)<option value="{{ $method }}" @selected(old('payment_method','cash') === $method)>{{ trans('admin.payment_methods.'.$method) }}</option>@endforeach</select>
+                    <div class="col-12"><label class="form-label fw-bold"><i class="fa-solid fa-credit-card text-info me-1"></i> {{ trans('admin.payment_method') }} <span class="text-danger">*</span></label>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                            @foreach(App\Helpers\PaymentMethodHelper::getMethodsForCountry(auth('academy')->user()?->academy?->country?->iso2 ?: 'SA') as $pm)
+                                <label class="btn btn-outline-light border shadow-sm p-2 d-flex align-items-center gap-2">
+                                    <input type="radio" name="payment_method" value="{{ $pm['id'] }}" @checked(old('payment_method', 'cash') === $pm['id']) required>
+                                    <img src="{{ $pm['logo'] }}" alt="{{ $pm['name_ar'] }}" style="height: 26px; width: 50px; object-fit: contain;">
+                                    <span class="fw-bold text-dark small">{{ $ar ? $pm['name_ar'] : $pm['name_en'] }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
                     <div class="col-md-6 d-none" id="other_wrap"><label class="form-label fw-bold" for="payment_method_other">{{ trans('admin.payment_method_other') }}</label><input id="payment_method_other" name="payment_method_other" class="form-control" value="{{ old('payment_method_other') }}"></div>
                     <div class="col-12 d-flex justify-content-end gap-2"><a href="{{ route('academy.report.offline-joins') }}" class="btn btn-light">{{ $ar ? 'إلغاء' : 'Cancel' }}</a><button class="btn btn-primary" type="submit" @disabled($students->isEmpty())><i data-feather="check-circle" class="me-1"></i>{{ $ar ? 'حفظ الحجز' : 'Save booking' }}</button></div>
