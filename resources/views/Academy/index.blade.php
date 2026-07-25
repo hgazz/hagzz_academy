@@ -264,7 +264,7 @@
                                    data.subscriptionRevenue.reduce((sum, v) => sum + v, 0);
             if (financialTotal > 0) {
                 new ApexCharts(financialElement, {
-                    chart: { ...common, type: 'line', height: 360 },
+                    chart: { ...common, type: 'line', height: 420 },
                     series: [
                         { name: labels.bookings, type: 'column', data: data.bookings },
                         { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
@@ -272,14 +272,19 @@
                     ],
                     colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
                     fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
-                    plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } }, dataLabels: { enabled: false },
-                    grid: { borderColor: grid, strokeDashArray: 4 }, xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false } },
-                    yaxis: [{ min: 0, forceNiceScale: true }, { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }],
-                    legend: { position: 'top', horizontalAlign: '{{ $isArabic ? 'right' : 'left' }}' }, tooltip: { shared: true, intersect: false }, noData
+                    plotOptions: { bar: { borderRadius: 5, columnWidth: '40%' } }, dataLabels: { enabled: false },
+                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 25, right: 35, bottom: 15, left: 35 } },
+                    xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { colors: text, fontSize: '12px', fontWeight: 600 } } },
+                    yaxis: [
+                        { title: { text: labels.bookings, style: { color: '#2563eb', fontSize: '12px', fontWeight: 700 } }, min: 0, forceNiceScale: true },
+                        { opposite: true, title: { text: labels.bookingRevenue + ' (' + labels.currency + ')', style: { color: '#14b8a6', fontSize: '12px', fontWeight: 700 } }, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }
+                    ],
+                    legend: { position: 'top', horizontalAlign: 'center', offsetY: -5, fontSize: '13px', fontWeight: 700, itemMargin: { horizontal: 15, vertical: 8 } },
+                    tooltip: { shared: true, intersect: false }, noData
                 }).render();
             } else {
                 financialElement.classList.add('empty-state');
-                financialElement.style.minHeight = '360px';
+                financialElement.style.minHeight = '420px';
                 financialElement.style.display = 'grid';
                 financialElement.style.placeItems = 'center';
                 financialElement.textContent = @json($copy['noData']);
