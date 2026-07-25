@@ -1,339 +1,341 @@
 @extends('Academy.Layouts.master')
-@section('title', trans('admin.bokit'))
-@push('css')
-    <!--  BEGIN CUSTOM STYLE FILE  -->
-    <link href="{{ asset('assetsAdmin/src/assets/css/light/components/tabs.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/assets/css/light/elements/alert.css') }}">
 
-    <link href="{{ asset('assetsAdmin/src/assets/css/dark/components/tabs.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/assets/css/dark/elements/alert.css') }}">
+@section('title', app()->getLocale() === 'ar' ? 'الملف الشخصي وإعدادات الأكاديمية' : 'Academy Profile & Settings')
+
+@push('css')
+    <link href="{{ asset('assetsAdmin/src/assets/css/light/components/tabs.css') }}" rel="stylesheet" type="text/css">
     <style>
-        .saas-summary { background: linear-gradient(135deg, #0f766e, #155e75); color: #fff; border: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 14px 30px rgba(15, 118, 110, .18); }
-        .saas-summary__body { padding: 24px; }
-        .saas-summary__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-        .saas-summary__title { display: flex; align-items: center; gap: 12px; }
-        .saas-summary__icon { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border-radius: 8px; background: rgba(255,255,255,.15); }
-        .saas-summary__icon svg { width: 23px; height: 23px; }
-        .saas-summary h3 { color: #fff; margin: 0 0 3px; font-size: 21px; }
-        .saas-summary p { color: rgba(255,255,255,.76); margin: 0; }
-        .saas-status { padding: 7px 12px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 700; white-space: nowrap; }
-        .saas-status.is-active { background: #dcfce7; color: #166534; }
-        .saas-status.is-trial { background: #fef3c7; color: #92400e; }
-        .saas-summary__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
-        .saas-detail { padding: 14px; border: 1px solid rgba(255,255,255,.17); border-radius: 8px; background: rgba(255,255,255,.08); min-width: 0; }
-        .saas-detail span { display: block; color: rgba(255,255,255,.7); font-size: 12px; margin-bottom: 5px; }
-        .saas-detail strong { display: block; color: #fff; font-size: 15px; overflow-wrap: anywhere; }
-        .saas-limits { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
-        .saas-limit { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 7px; background: rgba(255,255,255,.1); font-size: 13px; }
-        .saas-limit svg { width: 16px; height: 16px; }
-        .saas-empty { background: #fff; color: #334155; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(15,23,42,.06); }
-        .saas-empty h3 { color: #0f172a; }
-        .saas-empty p { color: #64748b; }
-        .saas-empty .saas-summary__icon { background: #ecfeff; color: #0f766e; }
-        .profile-logo-box { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; text-align: start; }
-        .profile-logo-box img { width: 74px; height: 74px; flex: 0 0 74px; object-fit: cover; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; padding: 4px; }
-        .profile-logo-box strong { display: block; color: #0f172a; margin-bottom: 4px; }
-        .profile-logo-box span { display: block; color: #64748b; font-size: 13px; }
-        @media (max-width: 991px) { .saas-summary__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (max-width: 575px) { .saas-summary__body { padding: 18px; } .saas-summary__top { flex-direction: column; } .saas-summary__grid { grid-template-columns: 1fr; } }
+        .profile-header-banner { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(15,23,42,0.12); margin-bottom: 24px; }
+        .profile-avatar-wrapper { width: 90px; height: 90px; border-radius: 14px; background: #fff; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); flex: 0 0 90px; overflow: hidden; }
+        .profile-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        .saas-card-summary { background: linear-gradient(135deg, #0f766e, #0369a1); color: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 10px 25px rgba(15,118,110,0.15); }
+        .saas-grid-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; padding: 12px 14px; }
+        .saas-grid-item span { display: block; color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 3px; }
+        .saas-grid-item strong { display: block; color: #fff; font-size: 15px; font-weight: 700; }
+        .nav-tabs .nav-link { font-weight: 700; color: #64748b; border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 12px 20px; }
+        .nav-tabs .nav-link.active { color: #1b55e2; background: transparent; border-bottom-color: #1b55e2; }
     </style>
 @endpush
 
 @section('content')
-    <!--BEGIN CONTENT AREA  -->
-    <div class="layout-px-spacing">
-        <div class="middle-content container-xxl p-0">
+@php
+    $ar = app()->getLocale() === 'ar';
+    $subscriptionActive = $saasSubscription && in_array($saasSubscription->status, ['active', 'trial'], true)
+        && (!$saasSubscription->ends_at || $saasSubscription->ends_at->isToday() || $saasSubscription->ends_at->isFuture());
+    $remainingDays = $saasSubscription?->ends_at && $saasSubscription->ends_at->isFuture()
+        ? now()->startOfDay()->diffInDays($saasSubscription->ends_at)
+        : null;
 
-            <!--BEGIN BREADCRUMBS -->
-            <div class="secondary-nav">
-                <div class="breadcrumbs-container" data-page-heading="Analytics">
-                    <header class="header navbar navbar-expand-sm">
-                        <a href="javascript:void(0);" class="btn-toggle sidebarCollapse" data-placement="bottom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round" class="feather feather-menu">
-                                <line x1="3" y1="12" x2="21" y2="12"></line>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <line x1="3" y1="18" x2="21" y2="18"></line>
-                            </svg>
-                        </a>
-                        <div class="d-flex breadcrumb-content">
-                            <div class="page-header">
+    $country = $user->country;
+    $currencyCode = $user->currency_code;
+    $currencySymbol = $user->currency_symbol;
+@endphp
 
-                                <div class="page-title"></div>
+<div class="middle-content container-xxl p-0">
+    <!--  BREADCRUMBS  -->
+    <div class="secondary-nav mb-4">
+        <div class="breadcrumbs-container">
+            <header class="header navbar navbar-expand-sm">
+                <a href="javascript:void(0);" class="btn-toggle sidebarCollapse"><i data-feather="menu"></i></a>
+                <div class="d-flex breadcrumb-content">
+                    <nav class="breadcrumb-style-one">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ $ar ? 'الملف الشخصي وإعدادات المنشأة' : 'Profile & Facility Settings' }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </header>
+        </div>
+    </div>
 
-                                <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a
-                                                href="#">{{ trans('admin.profile.user') }}</a>
-                                        </li>
-                                        <li class="breadcrumb-item active" aria-current="page">
-                                            {{ trans('admin.profile.profile') }}</li>
-                                    </ol>
-                                </nav>
-
-                            </div>
-                        </div>
-                    </header>
+    <!-- PROFILE HEADER BANNER -->
+    <div class="profile-header-banner">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="profile-avatar-wrapper">
+                    <img id="header-logo-preview" src="{{ $user->logo }}" alt="{{ $user->commercial_name }}" onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}';">
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <h2 class="fw-bold text-white mb-0">{{ $user->commercial_name }}</h2>
+                        <span class="badge bg-success rounded-pill px-3 py-2 fs-6"><i class="fa-solid fa-circle-check me-1"></i> {{ $ar ? 'حساب معتمد' : 'Verified Partner' }}</span>
+                        <span class="badge bg-primary bg-opacity-25 text-white border border-light border-opacity-25 rounded-pill px-3 py-2 fs-6">
+                            <i class="fa-solid fa-earth-americas me-1"></i> {{ $country?->getTranslation('name', app()->getLocale()) ?: 'مصر' }} ({{ $currencySymbol }})
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0 d-flex align-items-center gap-3 flex-wrap small">
+                        <span><i class="fa-solid fa-envelope me-1"></i> {{ $user->email }}</span>
+                        <span><i class="fa-solid fa-phone me-1"></i> {{ $user->phone }}</span>
+                        <span><i class="fa-solid fa-briefcase me-1"></i> {{ match($user->business_type) { 'venue' => $ar ? 'ملاعب وحجوزات' : 'Venues', 'hybrid' => $ar ? 'أكاديمية وملاعب' : 'Academy & Venues', default => $ar ? 'أكاديمية تدريب' : 'Academy' } }}</span>
+                    </p>
                 </div>
             </div>
-            <!--END BREADCRUMBS  -->
-
-            @php
-                $isArabic = app()->getLocale() === 'ar';
-                $subscriptionActive = $saasSubscription && in_array($saasSubscription->status, ['active', 'trial'], true)
-                    && (!$saasSubscription->ends_at || $saasSubscription->ends_at->isToday() || $saasSubscription->ends_at->isFuture());
-                $remainingDays = $saasSubscription?->ends_at && $saasSubscription->ends_at->isFuture()
-                    ? now()->startOfDay()->diffInDays($saasSubscription->ends_at)
-                    : null;
-            @endphp
-            <section class="saas-summary {{ $saasSubscription ? '' : 'saas-empty' }} mt-4" aria-label="{{ $isArabic ? 'اشتراك ساس' : 'SaaS subscription' }}">
-                <div class="saas-summary__body">
-                    <div class="saas-summary__top">
-                        <div class="saas-summary__title">
-                            <span class="saas-summary__icon"><i data-feather="layers"></i></span>
-                            <div>
-                                <p>{{ $isArabic ? 'اشتراك المنصة' : 'Platform subscription' }}</p>
-                                <h3>{{ $saasSubscription?->plan?->name ?? ($isArabic ? 'لم يتم تعيين باقة بعد' : 'No plan assigned yet') }}</h3>
-                            </div>
-                        </div>
-                        @if($saasSubscription)
-                            <span class="saas-status {{ $subscriptionActive ? ($saasSubscription->status === 'trial' ? 'is-trial' : 'is-active') : '' }}">
-                                {{ match($saasSubscription->status) { 'active' => $isArabic ? 'نشط' : 'Active', 'trial' => $isArabic ? 'تجريبي' : 'Trial', 'expired' => $isArabic ? 'منتهي' : 'Expired', default => $isArabic ? 'غير نشط' : 'Inactive' } }}
-                            </span>
-                        @endif
-                    </div>
-
-                    @if($saasSubscription)
-                        <div class="saas-summary__grid">
-                            <div class="saas-detail"><span>{{ $isArabic ? 'دورة الفوترة' : 'Billing cycle' }}</span><strong>{{ $saasSubscription->billing_cycle === 'annual' ? ($isArabic ? 'سنوي' : 'Annual') : ($isArabic ? 'شهري' : 'Monthly') }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'قيمة الاشتراك' : 'Subscription price' }}</span><strong>{{ number_format((float) ($saasSubscription->price_amount ?? $saasSubscription->custom_price ?? 0), 2) }} {{ $saasSubscription->currency_code }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'تاريخ البداية' : 'Start date' }}</span><strong>{{ $saasSubscription->starts_at?->format('Y-m-d') ?? '-' }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'تاريخ الانتهاء' : 'End date' }}</span><strong>{{ $saasSubscription->ends_at?->format('Y-m-d') ?? ($isArabic ? 'غير محدد' : 'Open-ended') }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'مدة الاشتراك' : 'Subscription duration' }}</span><strong>{{ $saasSubscription->starts_at && $saasSubscription->ends_at ? $saasSubscription->starts_at->diffInDays($saasSubscription->ends_at) . ' ' . ($isArabic ? 'يوم' : 'days') : ($isArabic ? 'مفتوح' : 'Open-ended') }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'المدة المتبقية' : 'Remaining time' }}</span><strong>{{ $remainingDays !== null ? $remainingDays . ' ' . ($isArabic ? 'يوم' : 'days') : ($isArabic ? 'غير محدد' : 'Not specified') }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'التجديد التلقائي' : 'Auto renewal' }}</span><strong>{{ $saasSubscription->auto_renew ? ($isArabic ? 'مفعّل' : 'Enabled') : ($isArabic ? 'غير مفعّل' : 'Disabled') }}</strong></div>
-                            <div class="saas-detail"><span>{{ $isArabic ? 'نوع النشاط' : 'Business type' }}</span><strong>{{ match($user->business_type) { 'venue' => $isArabic ? 'ملاعب' : 'Venues', 'hybrid' => $isArabic ? 'أكاديمية وملاعب' : 'Academy & venues', default => $isArabic ? 'أكاديمية' : 'Academy' } }}</strong></div>
-                        </div>
-                        @if($saasSubscription->plan)
-                            <div class="saas-limits">
-                                <span class="saas-limit"><i data-feather="home"></i>{{ $isArabic ? 'الملاعب' : 'Venues' }}: {{ $saasSubscription->plan->max_venues }}</span>
-                                <span class="saas-limit"><i data-feather="map-pin"></i>{{ $isArabic ? 'المساحات' : 'Spaces' }}: {{ $saasSubscription->plan->max_spaces }}</span>
-                                <span class="saas-limit"><i data-feather="users"></i>{{ $isArabic ? 'الموظفون' : 'Staff' }}: {{ $saasSubscription->plan->max_staff }}</span>
-                            </div>
-                        @endif
-                    @else
-                        <p class="mt-3">{{ $isArabic ? 'تواصل مع إدارة المنصة لتعيين باقة مناسبة لهذا الحساب.' : 'Contact platform administration to assign a suitable plan to this account.' }}</p>
-                    @endif
-                </div>
-            </section>
-
-            <div class="row layout-top-spacing">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
-                <div class="widget-content widget-content-area">
-                    <div class="simple-tab">
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                        data-bs-target="#home-tab-pane" type="button" role="tab"
-                                        aria-controls="home-tab-pane"
-                                        aria-selected="true">{{ trans('admin.Personal') }}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                        data-bs-target="#profile-tab-pane" type="button" role="tab"
-                                        aria-controls="profile-tab-pane"
-                                        aria-selected="false">{{ trans('admin.contract_information') }}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                                        data-bs-target="#contact-tab-pane" type="button" role="tab"
-                                        aria-controls="contact-tab-pane"
-                                        aria-selected="false">{{ trans('admin.bank_information') }}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                        data-bs-target="#disabled-tab-pane" type="button" role="tab"
-                                        aria-controls="disabled-tab-pane"
-                                        aria-selected="false">{{ trans('admin.settlements') }}</button>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
-                                 aria-labelledby="home-tab" tabindex="0">
-                                <div class="row">
-                                    <h3 class="text-center mt-2">{{ trans('admin.contract_information') }}</h3>
-                                    <form action="{{ route('academy.profile.update', auth()->user()) }}" class="text-center"
-                                          method="post" enctype="multipart/form-data">
-                                        @csrf
-                                        @method('PUT')
-
-                                        <div class="profile-logo-box">
-                                            <img id="academy-logo-preview" src="{{ $user->logo }}" alt="{{ $user->commercial_name }}"
-                                                 onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}';">
-                                            <div>
-                                                <strong>{{ $isArabic ? 'شعار الأكاديمية الحالي' : 'Current academy logo' }}</strong>
-                                                <span>{{ $isArabic ? 'يمكنك اختيار صورة جديدة من حقل الشعار أدناه.' : 'Choose a new image from the logo field below.' }}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="email">{{ trans('admin.profile.email') }}: </label>
-                                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email', auth('academy')->user()->email)}}" placeholder="{{ trans('admin.profile.email') }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="username">{{ trans('admin.profile.name') }}: </label>
-                                                <input type="text" class="form-control" id="username" name="name"
-                                                       value="{{ old('name', auth()->user()->commercial_name) }}"
-                                                       placeholder="{{ trans('admin.profile.name') }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="phone">{{ trans('admin.profile.phone') }}: </label>
-                                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', auth()->user()->phone) }}" placeholder="{{ trans('admin.profile.phone') }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="photo">{{ trans('admin.logo') }}:</label>
-                                                <input type="file" class="form-control" id="photo" name="logo" accept="image/*">
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <div class="row">
-                                            <h3 class="text-center">{{ trans('admin.social_links') }}</h3>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="link__facebook">{{ trans('admin.facebook_link') }}</label>
-                                                <input type="text" class="form-control" id="link__facebook" name="facebook" placeholder="{{ trans('admin.facebook_link') }}" value="{{ old('facebook', auth('academy')->user()->facebook) }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="link__instagram">{{ trans('admin.instagram_link') }}</label>
-                                                <input type="text" class="form-control" id="link__instagram" name="instagram" placeholder="Enter Instagram Page Link"
-                                                       value="{{ old('instagram', auth('academy')->user()->instagram) }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="link__linkedIn">{{ trans('admin.linkedIn_link') }}</label>
-                                                <input type="text" class="form-control" id="link__linkedIn" name="linkedin" value="{{ old('linkedin', auth('academy')->user()->linkedin) }}" placeholder="{{ trans('admin.linkedIn_link') }}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="from-label" for="link__website">{{ trans('admin.website_link') }}</label>
-                                                <input type="text" class="form-control" id="link__website" name="website"
-                                                       placeholder="{{ trans('admin.website_link') }}"
-                                                       value="{{ old('website', auth('academy')->user()->website) }}">
-                                            </div>
-                                        </div>
-
-                                        <button class="btn btn-secondary fs-4 mt-3 w-100 m-auto"
-                                                type="submit">{{ trans('admin.profile.save') }}</button>
-                                    </form>
-                                </div>
-
-                            </div>
-                            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                                <h3 class="text-center mt-2">{{ trans('admin.contract_information') }}</h3>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label for="cname">{{ trans('admin.contract_number') }}:</label>
-                                        <input class="form-control" disabled type="text" id="cname" name="contract_number"
-                                               placeholder="{{ trans('admin.contract_number') }}"
-                                               value="{{ old('contract_number', auth('academy')->user()->contract_number) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="cdate">{{ trans('admin.contract_date') }}</label>
-                                        <input disabled class="form-control" type="date" id="cdate" name="cdate"
-                                               placeholder="{{ trans('admin.contract_date') }}" value="{{ old('contract_date', auth('academy')->user()->contract_date) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="csdate">{{ trans('admin.contract_start_date') }}</label>
-                                        <input disabled class="form-control" type="date" id="csdate" name="csdate"
-                                               placeholder="{{ trans('admin.contract_start_date') }}"
-                                               value="{{ old('start_date', auth('academy')->user()->start_date) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="cedate">{{ trans('admin.contract_end_date') }}</label>
-                                        <input disabled class="form-control" type="date" id="cedate" name="cedate"
-                                               placeholder="{{ trans('admin.contract_end_date') }}"
-                                               value="{{ old('end_date', auth('academy')->user()->end_date) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        @if(! is_null(auth('academy')->user()->contract_link))
-                                            <a href="{{  auth('academy')->user()->contract_link }}" target="_blank">{{ trans('admin.download_contract') }}</a>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="commission_percentage">{{ trans('admin.commission_percentage') }}</label>
-                                        <input disabled class="form-control" type="number" id="commission_percentage" name="commission_percentage"
-                                                   placeholder="{{ trans('admin.commission_percentage') }}"
-                                               value="{{ old('commission_percentage', auth('academy')->user()->commission_percentage) }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel"
-                                 aria-labelledby="contact-tab" tabindex="0">
-                                <h3 class="text-center mt-2">{{ trans('admin.bank_information') }}</h3>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label for="btype">{{ trans('admin.bank_type') }}</label>
-                                        <input disabled class="form-control" type="text" id="btype" name="btype"
-                                               placeholder="{{ trans('admin.bank_type') }}"
-                                               value="{{ old('bank_account_type', auth('academy')->user()->bank_account_type) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="bname">{{ trans('admin.bank_name') }}</label>
-                                        <input disabled class="form-control" type="text" id="bname" name="bname"
-                                               value="{{ old('bank_name', auth('academy')->user()->bank_name) }}"
-                                               placeholder="{{ trans('admin.bank_name') }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="bnum">{{ trans('admin.bank_account_number') }}</label>
-                                        <input disabled class="form-control" type="text" id="bnum" name="bnum"
-                                               value="{{ old('bank_account_number', auth('academy')->user()->bank_account_number)}}"
-                                               placeholder="{{ trans('admin.bank_account_number') }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="beneficiary_name">{{ trans('admin.beneficiary_name') }}</label>
-                                        <input disabled class="form-control" type="text" id="beneficiary_name" name="beneficiary_name"
-                                               value="{{ old('beneficiary_name', auth('academy')->user()->beneficiary_name)}}"
-                                               placeholder="{{ trans('admin.beneficiary_name') }}">
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-                            <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel"
-                                 aria-labelledby="disabled-tab" tabindex="0">
-                                <h3 class="text-center mt-2">{{ trans('admin.settlements') }}</h3>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label for="nrefund" class="form-label">{{ trans('admin.non_refund_days_acount') }}</label>
-                                        <input disabled class="form-control" type="number" id="nrefund" name="nrefund" value="{{ old('non_refund_days_count', auth('academy')->user()->non_refund_days_count) }}" placeholder="{{ trans('admin.non_refund_days_acount') }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="scount" class="form-label">{{ trans('admin.settlement_days_count') }}</label>
-                                        <input disabled class="form-control" type="number" id="scount" name="scount" value="{{ old('settlement_days_count', auth('academy')->user()->settlement_days_count)}}" placeholder="settlements Days Count">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-                </div>
+            
+            <div class="d-flex gap-2">
+                <a href="#editProfileSection" class="btn btn-light fw-bold px-3">
+                    <i class="fa-solid fa-pen-to-square me-1"></i> {{ $ar ? 'تعديل البيانات' : 'Edit Profile' }}
+                </a>
             </div>
         </div>
     </div>
 
+    <!-- SAAS SUBSCRIPTION SUMMARY CARD -->
+    <div class="saas-card-summary mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-white bg-opacity-20 p-2 rounded-circle">
+                    <i class="fa-solid fa-layer-group fa-lg"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-white mb-0">{{ $ar ? 'اشتراك المنصة والباقة الحالية' : 'Platform Subscription' }}</h5>
+                    <small class="text-white-50">{{ $saasSubscription?->plan?->name ?? ($ar ? 'باقة غير محددة' : 'Custom Plan') }}</small>
+                </div>
+            </div>
+            @if($saasSubscription)
+                <span class="badge {{ $subscriptionActive ? ($saasSubscription->status === 'trial' ? 'bg-warning text-dark' : 'bg-success') : 'bg-danger' }} fs-6 px-3 py-2 fw-bold">
+                    {{ match($saasSubscription->status) { 'active' => $ar ? 'اشتراك نشط' : 'Active', 'trial' => $ar ? 'فترة تجريبية' : 'Trial', 'expired' => $ar ? 'اشتراك منتهي' : 'Expired', default => $ar ? 'غير نشط' : 'Inactive' } }}
+                </span>
+            @endif
+        </div>
+
+        @if($saasSubscription)
+            <div class="row g-2">
+                <div class="col-md-3 col-6">
+                    <div class="saas-grid-item">
+                        <span>{{ $ar ? 'دورة الفوترة' : 'Billing Cycle' }}</span>
+                        <strong>{{ $saasSubscription->billing_cycle === 'annual' ? ($ar ? 'سنوي (Annual)' : 'Annual') : ($ar ? 'شهري (Monthly)' : 'Monthly') }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="saas-grid-item">
+                        <span>{{ $ar ? 'قيمة الاشتراك' : 'Subscription Cost' }}</span>
+                        <strong>{{ number_format((float) ($saasSubscription->price_amount ?? $saasSubscription->custom_price ?? 0), 2) }} {{ $saasSubscription->currency_code ?: $currencySymbol }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="saas-grid-item">
+                        <span>{{ $ar ? 'تاريخ البداية' : 'Start Date' }}</span>
+                        <strong>{{ $saasSubscription->starts_at?->format('Y-m-d') ?? '-' }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="saas-grid-item">
+                        <span>{{ $ar ? 'تاريخ الانتهاء' : 'End Date' }}</span>
+                        <strong>{{ $saasSubscription->ends_at?->format('Y-m-d') ?? ($ar ? 'مفتوح' : 'Open-ended') }}</strong>
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="p-3 bg-white bg-opacity-10 rounded-3">
+                <p class="mb-0 text-white-50"><i class="fa-solid fa-info-circle me-1"></i> {{ $ar ? 'حسابك يعمل بالشروط القياسية، للتطوير تواصل مع إدارة المنصة لتعيين باقة مخصصة.' : 'Contact platform admin to upgrade your plan.' }}</p>
+            </div>
+        @endif
+    </div>
+
+    <!-- TABS CARD -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white" id="editProfileSection">
+        <div class="card-header bg-white p-0 border-bottom">
+            <ul class="nav nav-tabs px-3" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic-tab-pane" type="button" role="tab">
+                        <i class="fa-solid fa-user me-1"></i> {{ $ar ? 'البيانات الأساسية والتواصل' : 'Basic & Social Info' }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="commercial-tab" data-bs-toggle="tab" data-bs-target="#commercial-tab-pane" type="button" role="tab">
+                        <i class="fa-solid fa-id-card me-1"></i> {{ $ar ? 'السجل والتراخيص' : 'Commercial & License' }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="contract-tab" data-bs-toggle="tab" data-bs-target="#contract-tab-pane" type="button" role="tab">
+                        <i class="fa-solid fa-file-contract me-1"></i> {{ $ar ? 'بيانات العقد والعمولة' : 'Contract & Commission' }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bank-tab" data-bs-toggle="tab" data-bs-target="#bank-tab-pane" type="button" role="tab">
+                        <i class="fa-solid fa-building-columns me-1"></i> {{ $ar ? 'الحساب البنكي والتحصيل' : 'Bank & Payouts' }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settlement-tab" data-bs-toggle="tab" data-bs-target="#settlement-tab-pane" type="button" role="tab">
+                        <i class="fa-solid fa-sliders me-1"></i> {{ $ar ? 'شروط التسوية والاسترداد' : 'Settlement Rules' }}
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="tab-content" id="profileTabsContent">
+                <!-- TAB 1: BASIC INFO & SOCIAL LINKS -->
+                <div class="tab-pane fade show active" id="basic-tab-pane" role="tabpanel">
+                    <form action="{{ route('academy.profile.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-pen-nib text-primary me-2"></i> {{ $ar ? 'تحديث البيانات الأساسية والشعار' : 'Update Basic Info & Logo' }}</h5>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ $ar ? 'الاسم التجاري للأكاديمية / المنشأة:' : 'Commercial Name:' }} <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control fw-bold" value="{{ old('name', $user->commercial_name) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ $ar ? 'البريد الإلكتروني للرئيسي:' : 'Primary Email:' }} <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ $ar ? 'رقم الهاتف للتواصل:' : 'Phone Number:' }} <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ $ar ? 'تحديث شعار الأكاديمية (Logo):' : 'Update Logo:' }}</label>
+                                <input type="file" name="logo" id="logo-input" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-share-nodes text-primary me-2"></i> {{ $ar ? 'روابط التواصل الاجتماعي والموقع' : 'Social Media & Website' }}</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-brands fa-facebook text-primary me-1"></i> {{ $ar ? 'رابط فيسبوك:' : 'Facebook Link:' }}</label>
+                                <input type="url" name="facebook" class="form-control" value="{{ old('facebook', $user->facebook) }}" placeholder="https://facebook.com/yourpage">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-brands fa-instagram text-danger me-1"></i> {{ $ar ? 'رابط إنستغرام:' : 'Instagram Link:' }}</label>
+                                <input type="url" name="instagram" class="form-control" value="{{ old('instagram', $user->instagram) }}" placeholder="https://instagram.com/yourprofile">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-brands fa-linkedin text-info me-1"></i> {{ $ar ? 'رابط لينكد إن:' : 'LinkedIn Link:' }}</label>
+                                <input type="url" name="linkedin" class="form-control" value="{{ old('linkedin', $user->linkedin) }}" placeholder="https://linkedin.com/in/yourcompany">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-globe text-secondary me-1"></i> {{ $ar ? 'الموقع الإلكتروني الرسمي:' : 'Official Website:' }}</label>
+                                <input type="url" name="website" class="form-control" value="{{ old('website', $user->website) }}" placeholder="https://yourwebsite.com">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary fw-bold px-4 py-2 fs-6">
+                                <i class="fa-solid fa-save me-1"></i> {{ $ar ? 'حفظ التعديلات' : 'Save Changes' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TAB 2: COMMERCIAL & LICENSE INFO -->
+                <div class="tab-pane fade" id="commercial-tab-pane" role="tabpanel">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-file-invoice text-success me-2"></i> {{ $ar ? 'بيانات السجل التجاري والرخصة' : 'Commercial & License Details' }}</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'رقم السجل التجاري / الرخصة:' : 'Trade License No:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->trade_license_number ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'تاريخ انتهاء الرخصة:' : 'License Expiry Date:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->trade_license_expire_date ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'الرقم الضريبي:' : 'Tax Number:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->tax_number ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'رقم الهوية الوطنية / الإقامة للمالك:' : 'Owner National ID:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->national_id_number ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'عنوان المنشأة الرئيسي:' : 'Main Office Address:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->address ?: 'N/A' }}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: CONTRACT & COMMISSION -->
+                <div class="tab-pane fade" id="contract-tab-pane" role="tabpanel">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-file-contract text-warning me-2"></i> {{ $ar ? 'معلومات العقد ونسبة المنصة' : 'Contract & Platform Commission' }}</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'رقم العقد:' : 'Contract Number:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->contract_number ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'تاريخ توقيع العقد:' : 'Contract Date:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->contract_date ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'تاريخ بداية العقد:' : 'Start Date:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->start_date ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'تاريخ نهاية العقد:' : 'End Date:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->end_date ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'نسبة عمولة المنصة:' : 'Platform Commission:' }}</label>
+                            <input type="text" class="form-control fw-bold text-primary" value="{{ $user->commission_percentage ?: '0' }}%" disabled>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            @if(!is_null($user->contract_link))
+                                <a href="{{ $user->contract_link }}" target="_blank" class="btn btn-outline-primary fw-bold w-100">
+                                    <i class="fa-solid fa-file-pdf me-1"></i> {{ $ar ? 'تحميل العقد الموثق PDF' : 'Download Contract PDF' }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: BANK & PAYOUTS -->
+                <div class="tab-pane fade" id="bank-tab-pane" role="tabpanel">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-building-columns text-info me-2"></i> {{ $ar ? 'بيانات الحساب البنكي لتحويل المبالغ' : 'Bank Account Details for Payouts' }}</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'نوع الحساب:' : 'Account Type:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->bank_account_type ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'اسم البنك:' : 'Bank Name:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->bank_name ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'رقم الحساب / الايبان IBAN:' : 'Account Number / IBAN:' }}</label>
+                            <input type="text" class="form-control font-monospace fw-bold" value="{{ $user->bank_account_number ?: 'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'اسم المستفيد المعرف بالبنك:' : 'Beneficiary Name:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->beneficiary_name ?: 'N/A' }}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: SETTLEMENT RULES -->
+                <div class="tab-pane fade" id="settlement-tab-pane" role="tabpanel">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i> {{ $ar ? 'شروط وقواعد التسويات المالية' : 'Settlement & Refund Rules' }}</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'عدد أيام عدم الاسترداد بعد الحجز:' : 'Non-refundable Days:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->non_refund_days_count ?: '0' }} {{ $ar ? 'أيام' : 'days' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">{{ $ar ? 'دورة التسويات المالية (أيام الدفع):' : 'Settlement Cycle:' }}</label>
+                            <input type="text" class="form-control" value="{{ $user->settlement_days_count ?: '0' }} {{ $ar ? 'أيام' : 'days' }}" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
-    <script>
-        document.getElementById('photo')?.addEventListener('change', function (event) {
-            const file = event.target.files?.[0];
-            const preview = document.getElementById('academy-logo-preview');
-            if (file && preview) {
-                preview.src = URL.createObjectURL(file);
-            }
-        });
-    </script>
+<script>
+document.getElementById('logo-input')?.addEventListener('change', function (e) {
+    const file = e.target.files?.[0];
+    const preview = document.getElementById('header-logo-preview');
+    if (file && preview) {
+        preview.src = URL.createObjectURL(file);
+    }
+});
+</script>
 @endpush
