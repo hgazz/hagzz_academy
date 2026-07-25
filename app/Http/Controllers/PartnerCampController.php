@@ -111,6 +111,9 @@ class PartnerCampController extends Controller
             'deposit_amount' => 'nullable|numeric|min:0',
             'visa_required' => 'nullable|boolean',
             'description' => 'nullable|string',
+            'room_features' => 'nullable|string',
+            'venue_features' => 'nullable|string',
+            'program_itinerary' => 'nullable|string',
             'included_services' => 'nullable|array',
             'supervisors' => 'nullable|array',
             'supervisors.*' => 'exists:coaches,id',
@@ -137,6 +140,9 @@ class PartnerCampController extends Controller
             'visa_required' => (bool) ($validated['visa_required'] ?? false),
             'status' => 'upcoming',
             'description' => $validated['description'] ?? null,
+            'room_features' => $validated['room_features'] ?? null,
+            'venue_features' => $validated['venue_features'] ?? null,
+            'program_itinerary' => $validated['program_itinerary'] ?? null,
             'created_by' => auth('academy')->id(),
         ]);
 
@@ -215,6 +221,9 @@ class PartnerCampController extends Controller
             'visa_required' => 'nullable|boolean',
             'status' => 'required|in:draft,upcoming,active,completed,cancelled',
             'description' => 'nullable|string',
+            'room_features' => 'nullable|string',
+            'venue_features' => 'nullable|string',
+            'program_itinerary' => 'nullable|string',
             'included_services' => 'nullable|array',
         ]);
 
@@ -236,6 +245,9 @@ class PartnerCampController extends Controller
             'visa_required' => (bool) ($validated['visa_required'] ?? false),
             'status' => $validated['status'],
             'description' => $validated['description'] ?? null,
+            'room_features' => $validated['room_features'] ?? null,
+            'venue_features' => $validated['venue_features'] ?? null,
+            'program_itinerary' => $validated['program_itinerary'] ?? null,
             'included_services' => $validated['included_services'] ?? [],
         ]);
 

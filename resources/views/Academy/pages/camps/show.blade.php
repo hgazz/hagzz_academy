@@ -247,29 +247,85 @@
 
                 <!-- TAB 3: OVERVIEW -->
                 <div class="tab-pane fade" id="tab-overview" role="tabpanel">
-                    <div class="row g-3">
+                    <div class="row g-4 mb-4">
                         <div class="col-md-6">
-                            <div class="bg-light rounded p-3">
-                                <h6 class="fw-bold text-dark mb-2">{{ $isArabic ? 'تفاصيل الموقع والإقامة' : 'Location & Hotel' }}</h6>
-                                <p class="mb-1"><strong>{{ $isArabic ? 'البلد:' : 'Country:' }}</strong> {{ $camp->country?->name ?: ($isArabic ? 'جمهورية مصر العربية' : 'Egypt') }}</p>
-                                <p class="mb-1"><strong>{{ $isArabic ? 'المدينة:' : 'City:' }}</strong> {{ $camp->city_name ?: '-' }}</p>
-                                <p class="mb-1"><strong>{{ $isArabic ? 'الفندق:' : 'Hotel:' }}</strong> {{ $camp->hotel_name ?: '-' }}</p>
-                                <p class="mb-0"><strong>{{ $isArabic ? 'الملعب/النادي:' : 'Venue:' }}</strong> {{ $camp->venue_name ?: '-' }}</p>
+                            <div class="bg-light rounded-3 p-4 h-100 border">
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-hotel text-primary me-2"></i> {{ $isArabic ? 'تفاصيل الموقع والإقامة' : 'Location & Hotel' }}</h6>
+                                <p class="mb-2"><strong>{{ $isArabic ? 'الدولة:' : 'Country:' }}</strong> {{ $camp->country?->name ?: ($isArabic ? 'مصر' : 'Egypt') }}</p>
+                                <p class="mb-2"><strong>{{ $isArabic ? 'المدينة:' : 'City:' }}</strong> {{ $camp->city_name ?: '-' }}</p>
+                                <p class="mb-2"><strong>{{ $isArabic ? 'الفندق والمنتجع:' : 'Hotel & Resort:' }}</strong> {{ $camp->hotel_name ?: '-' }}</p>
+                                <p class="mb-0"><strong>{{ $isArabic ? 'المعلب والنادي:' : 'Venue & Pitch:' }}</strong> {{ $camp->venue_name ?: '-' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="bg-light rounded p-3">
-                                <h6 class="fw-bold text-dark mb-2">{{ $isArabic ? 'الخدمات والتجهيزات المشمولة' : 'Included Services' }}</h6>
+                            <div class="bg-light rounded-3 p-4 h-100 border">
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-list-check text-success me-2"></i> {{ $isArabic ? 'الخدمات المشمولة بالباقة' : 'Included Services' }}</h6>
                                 @if(!empty($camp->included_services))
-                                    <ul class="mb-0 ps-3">
+                                    <div class="d-flex flex-wrap gap-2">
                                         @foreach($camp->included_services as $srv)
-                                            <li>{{ ucfirst($srv) }}</li>
+                                            <span class="badge bg-white text-dark border px-3 py-2 fw-bold">
+                                                <i class="fa-solid fa-check text-success me-1"></i> {{ ucfirst($srv) }}
+                                            </span>
                                         @endforeach
-                                    </ul>
+                                    </div>
                                 @else
                                     <p class="text-muted mb-0">{{ $isArabic ? 'لم تتم إضافة قائمة خدمات' : 'No services listed' }}</p>
                                 @endif
+                                <div class="mt-3 pt-2 border-top">
+                                    <span class="fw-bold text-dark me-2">{{ $isArabic ? 'التأشيرة:' : 'Visa:' }}</span>
+                                    <span class="badge {{ $camp->visa_required ? 'bg-warning text-dark' : 'bg-secondary' }}">
+                                        {{ $camp->visa_required ? ($isArabic ? 'تتطلب تأشيرة دخول' : 'Visa Required') : ($isArabic ? 'غير مطلوبة' : 'Not Required') }}
+                                    </span>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- ROOM & VENUE RICH FEATURES -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-3 h-100">
+                                <div class="card-header bg-white border-bottom p-3">
+                                    <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-bed text-info me-2"></i> {{ $isArabic ? 'مميزات ومواصفات الغرف والإقامة' : 'Room & Accommodation Features' }}</h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    @if($camp->room_features)
+                                        <p class="mb-0 text-secondary" style="white-space: pre-line;">{{ $camp->room_features }}</p>
+                                    @else
+                                        <p class="text-muted mb-0 small">{{ $isArabic ? 'لم يتم تسجيل مواصفات الغرف حتى الآن.' : 'No room features specified.' }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-3 h-100">
+                                <div class="card-header bg-white border-bottom p-3">
+                                    <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-futbol text-success me-2"></i> {{ $isArabic ? 'مميزات وتجهيزات الملاعب والصالات' : 'Pitch & Facility Features' }}</h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    @if($camp->venue_features)
+                                        <p class="mb-0 text-secondary" style="white-space: pre-line;">{{ $camp->venue_features }}</p>
+                                    @else
+                                        <p class="text-muted mb-0 small">{{ $isArabic ? 'لم يتم تسجيل مواصفات الملاعب حتى الآن.' : 'No venue features specified.' }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DAILY PROGRAM ITINERARY -->
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-white border-bottom p-3">
+                            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-calendar-check text-warning me-2"></i> {{ $isArabic ? 'برنامج وجدول المعسكر اليومي (Program Itinerary)' : 'Daily Camp Program & Schedule' }}</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            @if($camp->program_itinerary)
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <p class="mb-0 text-dark fw-medium" style="white-space: pre-line; line-height: 1.8;">{{ $camp->program_itinerary }}</p>
+                                </div>
+                            @else
+                                <p class="text-muted mb-0 small">{{ $isArabic ? 'لم يتم إضافة الجدول والبرنامج اليومي بعد.' : 'No daily itinerary added yet.' }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>

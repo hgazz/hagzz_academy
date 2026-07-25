@@ -115,6 +115,19 @@
                             <label class="form-label fw-bold">{{ $isArabic ? 'الوصف والتفاصيل العامة للمعسكر' : 'Camp Description' }}</label>
                             <textarea name="description" class="form-control" rows="3">{{ old('description', $camp->description) }}</textarea>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-bed text-info me-1"></i> {{ $isArabic ? 'مميزات ومواصفات الغرف والإقامة' : 'Room & Accommodation Features' }}</label>
+                            <textarea name="room_features" class="form-control" rows="2" placeholder="{{ $isArabic ? 'غرف ثنائية وثلاثية فاخرة، تكييف، شاشة، Wi-Fi، حمام خاص...' : 'Room features...' }}">{{ old('room_features', $camp->room_features) }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-futbol text-success me-1"></i> {{ $isArabic ? 'مميزات وتجهيزات الملاعب والصالات' : 'Pitch & Facility Features' }}</label>
+                            <textarea name="venue_features" class="form-control" rows="2" placeholder="{{ $isArabic ? 'ملاعب نجيل طبيعي، جيم، حمام سباحة...' : 'Facility features...' }}">{{ old('venue_features', $camp->venue_features) }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-clipboard-list text-warning me-1"></i> {{ $isArabic ? 'برنامج وجدول المعسكر اليومي (Program Itinerary)' : 'Daily Camp Program & Schedule' }}</label>
+                            <textarea name="program_itinerary" class="form-control" rows="4" placeholder="{{ $isArabic ? 'جدول المواعيد اليومية...' : 'Daily itinerary...' }}">{{ old('program_itinerary', $camp->program_itinerary) }}</textarea>
+                        </div>
                     </div>
                 </div>
 

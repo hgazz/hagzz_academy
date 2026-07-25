@@ -32,6 +32,9 @@ class AcademyCamp extends Model
         'visa_required',
         'status',
         'description',
+        'room_features',
+        'venue_features',
+        'program_itinerary',
         'notes',
         'created_by',
     ];

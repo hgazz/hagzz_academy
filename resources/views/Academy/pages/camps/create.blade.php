@@ -77,9 +77,30 @@
                                 <input type="text" name="hotel_name" class="form-control" placeholder="{{ $isArabic ? 'اسم الفندق والإقامة' : 'Hotel name' }}">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold">{{ $isArabic ? 'مكان التدريب / النادي' : 'Training Facility / Club' }}</label>
+                                 <label class="form-label fw-bold">{{ $isArabic ? 'مكان التدريب / النادي' : 'Training Facility / Club' }}</label>
                                 <input type="text" name="venue_name" class="form-control" placeholder="{{ $isArabic ? 'اسم الملعب أو النادي' : 'Stadium/Facility' }}">
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILED SPECIFICATIONS & PROGRAM -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-white border-bottom p-3">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-hotel text-primary me-2"></i> {{ $isArabic ? 'تفاصيل الغرف، الملاعب وبرنامج المعسكر' : 'Room, Facility & Program Details' }}</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-bed text-info me-1"></i> {{ $isArabic ? 'مميزات ومواصفات الغرف والإقامة' : 'Room & Accommodation Features' }}</label>
+                            <textarea name="room_features" class="form-control" rows="2" placeholder="{{ $isArabic ? 'مثال: غرف ثنائية وثلاثية فاخرة، تكييف، شاشة، Wi-Fi، حمام خاص، إطلالة على البسين...' : 'e.g. Double & Triple rooms, AC, Wi-Fi, private bathroom...' }}"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-futbol text-success me-1"></i> {{ $isArabic ? 'مميزات وتجهيزات الملاعب والصالات' : 'Pitch & Facility Features' }}</label>
+                            <textarea name="venue_features" class="form-control" rows="2" placeholder="{{ $isArabic ? 'مثال: ملاعب نجيل طبيعي معتمدة قانونية، صالة لياقة بدنية (Gym)، حمام سباحة أولمبي، غرفة قياسات رياضية...' : 'e.g. Legal natural grass pitches, gym, swimming pool, changing rooms...' }}"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-clipboard-list text-warning me-1"></i> {{ $isArabic ? 'برنامج وجدول المعسكر اليومي (Program Itinerary)' : 'Daily Camp Program & Schedule' }}</label>
+                            <textarea name="program_itinerary" class="form-control" rows="4" placeholder="{{ $isArabic ? 'مثال:\n- 08:00 ص: الإفطار والتوجه للملعب\n- 09:30 ص: التدريب الصباحي البدني\n- 01:30 م: الغداء وفترة الراحة\n- 05:00 م: التكتيك والتدريب المسائي والمباريات...' : 'Daily itinerary...' }}"></textarea>
                         </div>
                     </div>
                 </div>
