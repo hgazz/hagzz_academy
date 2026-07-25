@@ -382,18 +382,27 @@
             // Expenses Monthly Trend Chart
             const expensesElement = document.querySelector('#expensesChart');
             if (expensesElement) {
-                new ApexCharts(expensesElement, {
-                    chart: { ...common, type: 'area', height: 460 },
-                    series: [{ name: @json($isArabic ? 'إجمالي المصروفات' : 'Total Expenses'), data: extraData.expenses }],
-                    colors: ['#ef4444'],
-                    stroke: { curve: 'smooth', width: 3 },
-                    fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.04 } },
-                    dataLabels: { enabled: false },
-                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
-                    xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
-                    yaxis: { min: 0, forceNiceScale: true, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
-                    noData
-                }).render();
+                const totalExpensesSum = extraData.expenses.reduce((a, b) => a + b, 0);
+                if (totalExpensesSum > 0) {
+                    new ApexCharts(expensesElement, {
+                        chart: { ...common, type: 'area', height: 460 },
+                        series: [{ name: @json($isArabic ? 'إجمالي المصروفات' : 'Total Expenses'), data: extraData.expenses }],
+                        colors: ['#ef4444'],
+                        stroke: { curve: 'smooth', width: 3 },
+                        fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.04 } },
+                        dataLabels: { enabled: false },
+                        grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
+                        xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
+                        yaxis: { min: 0, forceNiceScale: true, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
+                        noData
+                    }).render();
+                } else {
+                    expensesElement.classList.add('empty-state');
+                    expensesElement.style.minHeight = '460px';
+                    expensesElement.style.display = 'grid';
+                    expensesElement.style.placeItems = 'center';
+                    expensesElement.textContent = @json($copy['noData']);
+                }
             }
 
             // Expense Categories Donut Chart
@@ -424,18 +433,27 @@
             // Expiring Subscriptions Countdown Chart (10 to 0 days)
             const countdownElement = document.querySelector('#expiringCountdownChart');
             if (countdownElement) {
-                new ApexCharts(countdownElement, {
-                    chart: { ...common, type: 'bar', height: 460 },
-                    series: [{ name: @json($isArabic ? 'عدد الطلاب' : 'Subscribers Count'), data: extraData.expiringCountdownCounts }],
-                    colors: ['#f43f5e'],
-                    plotOptions: { bar: { borderRadius: 6, columnWidth: '45%', distributed: true } },
-                    dataLabels: { enabled: true, style: { colors: ['#ffffff'], fontSize: '11px', fontWeight: 700 } },
-                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 25, right: 35, bottom: 65, left: 35 } },
-                    xaxis: { categories: extraData.expiringCountdownLabels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -40, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
-                    yaxis: { min: 0, forceNiceScale: true },
-                    legend: { show: false },
-                    noData
-                }).render();
+                const totalExpiringSum = extraData.expiringCountdownCounts.reduce((a, b) => a + b, 0);
+                if (totalExpiringSum > 0) {
+                    new ApexCharts(countdownElement, {
+                        chart: { ...common, type: 'bar', height: 460 },
+                        series: [{ name: @json($isArabic ? 'عدد الطلاب' : 'Subscribers Count'), data: extraData.expiringCountdownCounts }],
+                        colors: ['#f43f5e'],
+                        plotOptions: { bar: { borderRadius: 6, columnWidth: '45%', distributed: true } },
+                        dataLabels: { enabled: true, style: { colors: ['#ffffff'], fontSize: '11px', fontWeight: 700 } },
+                        grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 25, right: 35, bottom: 65, left: 35 } },
+                        xaxis: { categories: extraData.expiringCountdownLabels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -40, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
+                        yaxis: { min: 0, forceNiceScale: true },
+                        legend: { show: false },
+                        noData
+                    }).render();
+                } else {
+                    countdownElement.classList.add('empty-state');
+                    countdownElement.style.minHeight = '460px';
+                    countdownElement.style.display = 'grid';
+                    countdownElement.style.placeItems = 'center';
+                    countdownElement.textContent = @json($copy['noData']);
+                }
             }
 
             flatpickr('#start_date', { dateFormat: 'Y-m-d' });
