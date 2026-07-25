@@ -63,39 +63,45 @@
                                         <option value="{{ $c->id }}" data-name="{{ $c->name }}" data-iso2="{{ strtoupper($c->iso2 ?? '') }}">{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
                                     @endforeach
                                 </select>
-
-                                <!-- VISA DYNAMIC HINT BOX -->
-                                <div id="visa_dynamic_box" class="mt-3 d-none">
-                                    <div id="visa_alert_badge" class="p-3 rounded-3 border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm">
-                                        <div>
-                                            <span id="visa_badge_icon" class="me-2 fs-5"></span>
-                                            <strong id="visa_badge_title" class="fs-6"></strong>
-                                            <p id="visa_badge_desc" class="mb-0 small text-muted mt-1"></p>
-                                        </div>
-                                        <div id="visa_link_container">
-                                            <a id="visa_official_link" href="#" target="_blank" class="btn btn-sm btn-outline-primary fw-bold text-decoration-none shadow-sm">
-                                                <i class="fa-solid fa-passport me-1"></i>
-                                                {{ $isArabic ? '🌐 شروط التأشيرة والتقديم الرسمي' : 'Visa Info & Official Portal' }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold">{{ $isArabic ? 'المدينة' : 'City' }}</label>
                                 <select name="city_name" id="city_select" class="form-select mb-2">
                                     <option value="">{{ $isArabic ? 'اختر الدولة أولاً...' : 'Select Country first...' }}</option>
                                 </select>
                                 <input type="text" id="custom_city_input" class="form-control d-none" placeholder="{{ $isArabic ? 'اكتب اسم المدينة يدوياً...' : 'Type custom city name...' }}">
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold">{{ $isArabic ? 'اسم الفندق / منتجع الإقامة' : 'Hotel / Resort Name' }}</label>
                                 <input type="text" name="hotel_name" class="form-control" placeholder="{{ $isArabic ? 'اسم الفندق والإقامة' : 'Hotel name' }}">
                             </div>
-                            <div class="col-md-4">
-                                 <label class="form-label fw-bold">{{ $isArabic ? 'مكان التدريب / النادي' : 'Training Facility / Club' }}</label>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ $isArabic ? 'مكان التدريب / النادي' : 'Training Facility / Club' }}</label>
                                 <input type="text" name="venue_name" class="form-control" placeholder="{{ $isArabic ? 'اسم الملعب أو النادي' : 'Stadium/Facility' }}">
+                            </div>
+
+                            <!-- VISA DYNAMIC HINT FULL-WIDTH HORIZONTAL RECTANGLE BANNER -->
+                            <div class="col-12" id="visa_dynamic_box_wrapper">
+                                <div id="visa_dynamic_box" class="d-none mt-2">
+                                    <div id="visa_alert_badge" class="p-3 bg-white rounded-3 border shadow-sm d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 w-100">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div id="visa_badge_icon" class="fs-3"></div>
+                                            <div>
+                                                <h6 id="visa_badge_title" class="fw-bold mb-1"></h6>
+                                                <p id="visa_badge_desc" class="mb-0 text-dark fw-medium small"></p>
+                                            </div>
+                                        </div>
+                                        <div id="visa_link_container">
+                                            <a id="visa_official_link" href="#" target="_blank" class="btn btn-primary fw-bold text-white shadow-sm px-3 py-2 text-nowrap">
+                                                <i class="fa-solid fa-passport me-1"></i>
+                                                {{ $isArabic ? '🌐 شروط التأشيرة والتقديم الرسمي' : 'Visa Info & Official Portal' }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -288,21 +294,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 visaBox.classList.remove('d-none');
                 if (countryId == homeCountryId || iso2 === 'EG') {
                     // Domestic Camp
-                    visaBadge.className = 'p-3 rounded-3 border border-success bg-success bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm';
+                    visaBadge.className = 'p-3 bg-white rounded-3 border-start border-4 border-success border shadow-sm d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 w-100';
                     visaIcon.innerHTML = '🟢 🇪🇬';
-                    visaTitle.className = 'text-success fw-bold fs-6';
+                    visaTitle.className = 'fw-bold text-success mb-1 fs-6';
                     visaTitle.innerText = '{{ $isArabic ? "معسكر محلي - لا تتطلب تأشيرة دخول للمواطنين" : "Domestic Camp - No Visa Required" }}';
+                    visaDesc.className = 'mb-0 text-dark fw-medium small';
                     visaDesc.innerText = `{{ $isArabic ? "الدولة المستضيفة هي نفسها دولة الشريك" : "Host country matches partner home country" }} (${homeCountryName}). {{ $isArabic ? "تنقل وتدريب محلي بدون إجراءات تأشيرة." : "No visa required." }}`;
                     if (campTypeSelect) campTypeSelect.value = 'domestic';
                     if (visaSwitch) visaSwitch.checked = false;
                     if (visaLink) visaLink.classList.add('d-none');
                 } else {
-                    // International Camp - Premium Indigo / Royal Blue Styling
-                    visaBadge.className = 'p-3 rounded-3 border border-primary border-opacity-25 bg-primary bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 shadow-sm';
+                    // International Camp
+                    visaBadge.className = 'p-3 bg-white rounded-3 border-start border-4 border-primary border shadow-sm d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 w-100';
                     visaIcon.innerHTML = '✈️ 🌍';
-                    visaTitle.className = 'text-primary fw-bold fs-6';
+                    visaTitle.className = 'fw-bold text-dark mb-1 fs-6';
                     visaTitle.innerText = `{{ $isArabic ? "معسكر دولي - تتطلب تأشيرة دخول (Visa) إلى" : "International Camp - Visa Required to" }} (${countryName})`;
-                    visaDesc.className = 'mb-0 small text-dark fw-medium mt-1';
+                    visaDesc.className = 'mb-0 text-dark fw-medium small';
                     visaDesc.innerText = `{{ $isArabic ? "للمواطنين والمقيمين التابعين لـ" : "For citizens of" }} (${homeCountryName})، {{ $isArabic ? "يُرجى الاستعلام واستخراج التأشيرة قبل موعد السفر." : "please check visa requirements before departure." }}`;
                     if (campTypeSelect) campTypeSelect.value = 'international';
                     if (visaSwitch) visaSwitch.checked = true;
@@ -310,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (visaLink) {
                         const q = encodeURIComponent(`visa requirements for ${homeCountryName} passport travelling to ${countryName} official application portal`);
                         visaLink.href = `https://www.google.com/search?q=${q}`;
-                        visaLink.className = 'btn btn-sm btn-primary fw-bold text-decoration-none shadow-sm px-3 py-2';
+                        visaLink.className = 'btn btn-primary fw-bold text-white shadow-sm px-3 py-2 text-nowrap';
                         visaLink.classList.remove('d-none');
                     }
                 }
