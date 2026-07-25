@@ -83,7 +83,7 @@ class PartnerCampController extends Controller
         $academyId = $this->resolveAcademyId();
         $currency = $this->getAcademyCurrency($academyId);
         $sports = Sport::whereHas('academies', fn ($q) => $q->where('academies.id', $academyId))->get();
-        $countries = Country::where('active', 1)->get();
+        $countries = Country::all();
         $coaches = Coach::where('academy_id', $academyId)->get();
 
         return view('Academy.pages.camps.create', compact('sports', 'countries', 'coaches', 'currency'));

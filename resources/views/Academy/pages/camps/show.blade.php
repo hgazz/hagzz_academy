@@ -239,7 +239,7 @@
                         <div class="col-md-6">
                             <div class="bg-light rounded p-3">
                                 <h6 class="fw-bold text-dark mb-2">{{ $isArabic ? 'تفاصيل الموقع والإقامة' : 'Location & Hotel' }}</h6>
-                                <p class="mb-1"><strong>{{ $isArabic ? 'البلد:' : 'Country:' }}</strong> {{ $camp->country?->name_ar ?: ($isArabic ? 'جمهورية مصر العربية' : 'Egypt') }}</p>
+                                <p class="mb-1"><strong>{{ $isArabic ? 'البلد:' : 'Country:' }}</strong> {{ $camp->country?->name ?: ($isArabic ? 'جمهورية مصر العربية' : 'Egypt') }}</p>
                                 <p class="mb-1"><strong>{{ $isArabic ? 'المدينة:' : 'City:' }}</strong> {{ $camp->city_name ?: '-' }}</p>
                                 <p class="mb-1"><strong>{{ $isArabic ? 'الفندق:' : 'Hotel:' }}</strong> {{ $camp->hotel_name ?: '-' }}</p>
                                 <p class="mb-0"><strong>{{ $isArabic ? 'الملعب/النادي:' : 'Venue:' }}</strong> {{ $camp->venue_name ?: '-' }}</p>

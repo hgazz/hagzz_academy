@@ -168,7 +168,7 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-1">
                                 <span class="text-muted"><i class="fa-solid fa-hotel me-1 text-primary"></i> {{ $isArabic ? 'الإقامة:' : 'Hotel:' }}</span>
-                                <strong class="text-dark">{{ $camp->hotel_name ?: ($camp->country?->name_ar ?: ($isArabic ? 'غير محدد' : 'N/A')) }}</strong>
+                                <strong class="text-dark">{{ $camp->hotel_name ?: ($camp->country?->name ?: ($isArabic ? 'غير محدد' : 'N/A')) }}</strong>
                             </div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-muted"><i class="fa-solid fa-coins me-1 text-primary"></i> {{ $isArabic ? 'سعر الفرد:' : 'Price/Person:' }}</span>

@@ -60,7 +60,7 @@
                                 <select name="country_id" class="form-select">
                                     <option value="">{{ $isArabic ? 'اختر الدولة...' : 'Select Country...' }}</option>
                                     @foreach($countries as $c)
-                                        <option value="{{ $c->id }}">{{ $c->name_ar }} ({{ $c->code }})</option>
+                                        <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
                                     @endforeach
                                 </select>
                             </div>
