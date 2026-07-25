@@ -18,6 +18,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InvoicePrintController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerExpenseController;
+use App\Http\Controllers\PartnerCampController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
@@ -250,6 +251,20 @@ Route::group(
             Route::post('expenses', 'store')->name('expenses.store');
             Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
             Route::post('expenses/categories', 'storeCategory')->name('expenses.categories.store');
+        });
+
+        Route::controller(PartnerCampController::class)->group(function () {
+            Route::get('camps', 'index')->name('camps.index');
+            Route::get('camps/create', 'create')->name('camps.create');
+            Route::post('camps', 'store')->name('camps.store');
+            Route::get('camps/{id}', 'show')->name('camps.show');
+            Route::put('camps/{id}', 'update')->name('camps.update');
+            Route::delete('camps/{id}', 'destroy')->name('camps.destroy');
+            Route::post('camps/{campId}/participants', 'storeParticipant')->name('camps.participants.store');
+            Route::delete('camps/{campId}/participants/{participantId}', 'destroyParticipant')->name('camps.participants.destroy');
+            Route::post('camps/{campId}/expenses', 'storeExpense')->name('camps.expenses.store');
+            Route::delete('camps/{campId}/expenses/{expenseId}', 'destroyExpense')->name('camps.expenses.destroy');
+            Route::get('camps/{campId}/export-roster', 'exportRoster')->name('camps.export-roster');
         });
 
         Route::prefix('report')->as('report.')->controller(ReportController::class)
