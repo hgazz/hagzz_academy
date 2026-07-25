@@ -283,20 +283,20 @@
     <div class="modal-dialog modal-lg">
         <form method="POST" action="{{ route('academy.camps.participants.store', $camp->id) }}">
             @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-plus text-primary me-2"></i> {{ $isArabic ? 'تسجيل مشترك جديد بالمعسكر' : 'Register New Camper' }}</h5>
+            <div class="modal-content bg-white border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-white border-bottom p-4">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-user-plus text-primary me-2"></i> {{ $isArabic ? 'تسجيل مشترك جديد بالمعسكر' : 'Register New Camper' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body bg-white p-4 text-dark">
                     <div class="row g-3">
                         <div class="col-12">
-                            <div class="p-3 bg-light rounded-3 border">
+                            <div class="p-3 bg-white rounded-3 border border-primary border-opacity-25 shadow-sm">
                                 <label class="form-label fw-bold text-primary mb-1">
                                     <i class="fa-solid fa-user-check me-1"></i>
                                     {{ $isArabic ? 'اختيار لاعب/طالب مسجل بالأكاديمية:' : 'Select Registered Academy Student:' }}
                                 </label>
-                                <select name="academy_student_id" id="camper_student_select" class="form-select">
+                                <select name="academy_student_id" id="camper_student_select" class="form-select bg-white text-dark border-primary border-opacity-50 fw-bold">
                                     <option value="">{{ $isArabic ? '-- اختر طالباً مسجلاً (أو أدخل مشتركاً خارجياً بالأسفل) --' : '-- Select Registered Student (Or type guest below) --' }}</option>
                                     @foreach(is_iterable($students ?? null) ? $students : [] as $st)
                                         <option value="{{ $st->id }}" 
@@ -308,43 +308,43 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted d-block mt-1">
+                                <small class="text-secondary d-block mt-1">
                                     {{ $isArabic ? '💡 عند اختيار طالب من القائمة يتم تعبئة الاسم ورقم الهاتف وملاحظات ولي الأمر تلقائياً.' : 'Selecting a student auto-fills name, phone & notes.' }}
                                 </small>
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'اسم المشترك' : 'Participant Name' }} <span class="text-danger">*</span></label>
-                            <input type="text" name="name" id="camper_name_input" class="form-control" required placeholder="{{ $isArabic ? 'الاسم الثلاثي' : 'Full Name' }}">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'اسم المشترك' : 'Participant Name' }} <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="camper_name_input" class="form-control bg-white text-dark border" required placeholder="{{ $isArabic ? 'الاسم الثلاثي' : 'Full Name' }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'رقم الهاتف' : 'Phone' }} <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" id="camper_phone_input" class="form-control" required placeholder="01xxxxxxxxx">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'رقم الهاتف' : 'Phone' }} <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" id="camper_phone_input" class="form-control bg-white text-dark border" required placeholder="01xxxxxxxxx">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'هاتف الطوارئ / ولي الأمر' : 'Emergency Phone' }}</label>
-                            <input type="text" name="emergency_phone" id="camper_emergency_input" class="form-control">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'هاتف الطوارئ / ولي الأمر' : 'Emergency Phone' }}</label>
+                            <input type="text" name="emergency_phone" id="camper_emergency_input" class="form-control bg-white text-dark border">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'رقم الجواز (للمعسكرات الدولية)' : 'Passport Number' }}</label>
-                            <input type="text" name="passport_number" class="form-control">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'رقم الجواز (للمعسكرات الدولية)' : 'Passport Number' }}</label>
+                            <input type="text" name="passport_number" class="form-control bg-white text-dark border">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'تاريخ انتهاء الجواز' : 'Passport Expiry' }}</label>
-                            <input type="date" name="passport_expiry" class="form-control">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'تاريخ انتهاء الجواز' : 'Passport Expiry' }}</label>
+                            <input type="date" name="passport_expiry" class="form-control bg-white text-dark border">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'حالة التأشيرة (Visa)' : 'Visa Status' }}</label>
-                            <select name="visa_status" class="form-select">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'حالة التأشيرة (Visa)' : 'Visa Status' }}</label>
+                            <select name="visa_status" class="form-select bg-white text-dark border">
                                 <option value="not_required">{{ $isArabic ? 'غير مطلوبة' : 'Not Required' }}</option>
                                 <option value="pending">{{ $isArabic ? 'قيد الإجراء' : 'Pending' }}</option>
                                 <option value="issued">{{ $isArabic ? 'تم الإصدار' : 'Issued' }}</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'مقاس الزي (T-Shirt)' : 'T-Shirt Size' }}</label>
-                            <select name="tshirt_size" class="form-select">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'مقاس الزي (T-Shirt)' : 'T-Shirt Size' }}</label>
+                            <select name="tshirt_size" class="form-select bg-white text-dark border">
                                 <option value="S">S</option>
                                 <option value="M" selected>M</option>
                                 <option value="L">L</option>
@@ -353,33 +353,33 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'رقم الغرفة' : 'Room Number' }}</label>
-                            <input type="text" name="room_number" class="form-control" placeholder="101">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'رقم الغرفة' : 'Room Number' }}</label>
+                            <input type="text" name="room_number" class="form-control bg-white text-dark border" placeholder="101">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'إجمالي رسوم الاشتراك' : 'Total Fee' }} <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" name="total_fee" class="form-control" value="{{ $camp->price }}" required>
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'إجمالي رسوم الاشتراك' : 'Total Fee' }} <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="total_fee" class="form-control bg-white text-dark border" value="{{ $camp->price }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'المبلغ المدفوع الآن' : 'Paid Amount' }} <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" name="paid_amount" class="form-control" value="{{ $camp->deposit_amount }}" required>
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'المبلغ المدفوع الآن' : 'Paid Amount' }} <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="paid_amount" class="form-control bg-white text-dark border" value="{{ $camp->deposit_amount }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'حالة التسجيل' : 'Registration Status' }}</label>
-                            <select name="status" class="form-select">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'حالة التسجيل' : 'Registration Status' }}</label>
+                            <select name="status" class="form-select bg-white text-dark border">
                                 <option value="confirmed" selected>{{ $isArabic ? 'مؤكد' : 'Confirmed' }}</option>
                                 <option value="registered">{{ $isArabic ? 'مسجل مبدئياً' : 'Registered' }}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ $isArabic ? 'ملاحظات طبية / خاصة' : 'Medical / Special Notes' }}</label>
-                            <input type="text" name="medical_notes" class="form-control" placeholder="{{ $isArabic ? 'حساسية، علاج خاص...' : 'Allergies, etc.' }}">
+                            <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'ملاحظات طبية / خاصة' : 'Medical / Special Notes' }}</label>
+                            <input type="text" name="medical_notes" class="form-control bg-white text-dark border" placeholder="{{ $isArabic ? 'حساسية، علاج خاص...' : 'Allergies, etc.' }}">
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $isArabic ? 'إلغاء' : 'Cancel' }}</button>
-                    <button type="submit" class="btn btn-primary fw-bold">{{ $isArabic ? 'حفظ وحجز المقعد' : 'Save Participant' }}</button>
+                <div class="modal-footer bg-light border-top p-3">
+                    <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">{{ $isArabic ? 'إلغاء' : 'Cancel' }}</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">{{ $isArabic ? 'حفظ وحجز المقعد' : 'Save Participant' }}</button>
                 </div>
             </div>
         </form>
@@ -391,19 +391,19 @@
     <div class="modal-dialog">
         <form method="POST" action="{{ route('academy.camps.expenses.store', $camp->id) }}">
             @csrf
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content bg-white border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-white border-bottom p-4">
                     <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-plus-circle me-2"></i> {{ $isArabic ? 'تسجيل مصروف جديد للمعسكر' : 'Record Camp Expense' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body bg-white p-4 text-dark">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">{{ $isArabic ? 'عنوان المصروف' : 'Expense Title' }} <span class="text-danger">*</span></label>
-                        <input type="text" name="title" class="form-control" required placeholder="{{ $isArabic ? 'مثال: حجز ملاعب خارجية / اتوبيسات' : 'e.g., Bus Transport / Stadium Hire' }}">
+                        <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'عنوان المصروف' : 'Expense Title' }} <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control bg-white text-dark border" required placeholder="{{ $isArabic ? 'مثال: حجز ملاعب خارجية / اتوبيسات' : 'e.g., Bus Transport / Stadium Hire' }}">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">{{ $isArabic ? 'التصنيف' : 'Category' }}</label>
-                        <select name="category_id" class="form-select">
+                        <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'التصنيف' : 'Category' }}</label>
+                        <select name="category_id" class="form-select bg-white text-dark border">
                             <option value="">{{ $isArabic ? 'مصروف عام' : 'General Expense' }}</option>
                             @foreach($expenseCategories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name_ar }}</option>
@@ -411,17 +411,17 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">{{ $isArabic ? 'المبلغ (' . $currency['symbol'] . ')' : 'Amount' }} <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" name="amount" class="form-control" required placeholder="0.00">
+                        <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'المبلغ (' . $currency['symbol'] . ')' : 'Amount' }} <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="amount" class="form-control bg-white text-dark border" required placeholder="0.00">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">{{ $isArabic ? 'تاريخ المصروف' : 'Expense Date' }} <span class="text-danger">*</span></label>
-                        <input type="date" name="expense_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        <label class="form-label fw-bold text-dark mb-1">{{ $isArabic ? 'تاريخ المصروف' : 'Expense Date' }} <span class="text-danger">*</span></label>
+                        <input type="date" name="expense_date" class="form-control bg-white text-dark border" value="{{ date('Y-m-d') }}" required>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $isArabic ? 'إلغاء' : 'Cancel' }}</button>
-                    <button type="submit" class="btn btn-danger fw-bold">{{ $isArabic ? 'حفظ المصروف' : 'Save Expense' }}</button>
+                <div class="modal-footer bg-light border-top p-3">
+                    <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">{{ $isArabic ? 'إلغاء' : 'Cancel' }}</button>
+                    <button type="submit" class="btn btn-danger px-4 fw-bold shadow-sm">{{ $isArabic ? 'حفظ المصروف' : 'Save Expense' }}</button>
                 </div>
             </div>
         </form>
