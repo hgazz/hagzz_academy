@@ -7,7 +7,7 @@ use App\Models\Academies;
 use App\Models\PartnerRole;
 use App\Models\PartnerUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\PartnerActivityLog;
 
 class AuthController extends Controller
 {
@@ -22,6 +22,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (auth()->guard('academy')->attempt($credentials, $remember_me)) {
+            PartnerActivityLog::log('login', 'تسجيل دخول ناجح إلى لوحة تحكم الشريك');
             return to_route('academy.index');
         }
 

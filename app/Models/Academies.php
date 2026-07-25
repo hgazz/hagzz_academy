@@ -124,6 +124,11 @@ class Academies extends Authenticatable
         return $this->hasMany(PartnerUser::class, 'academy_id');
     }
 
+    public function activityLogs()
+    {
+        return $this->hasMany(PartnerActivityLog::class, 'academy_id')->latest();
+    }
+
     public function branches()
     {
         return $this->hasMany(Academies::class, 'branch_to');
