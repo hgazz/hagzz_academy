@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Academies;
 use App\Models\AcademyCamp;
 use App\Models\AcademyCampExpense;
 use App\Models\AcademyCampParticipant;
