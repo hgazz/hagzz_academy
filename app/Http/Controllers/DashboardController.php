@@ -137,11 +137,11 @@ class DashboardController extends Controller
                 ->count();
 
             $expiringSubscriptions = (clone $subscriptionScope)
-                ->with(['student:id,name', 'group:id,name'])
+                ->with(['student:id,name,phone', 'group:id,name'])
                 ->where('status', 'active')
-                ->whereBetween('ends_on', [$now->toDateString(), $now->copy()->addDays(14)->toDateString()])
+                ->whereBetween('ends_on', [$now->toDateString(), $now->copy()->addDays(10)->toDateString()])
                 ->orderBy('ends_on')
-                ->limit(6)
+                ->limit(10)
                 ->get();
 
             $monthlyPayments = (clone $paymentScope)
@@ -150,6 +150,46 @@ class DashboardController extends Controller
                 ->groupBy('month_key')
                 ->pluck('total', 'month_key');
         }
+
+        // Expenses breakdown data
+        $monthlyExpenses = \App\Models\PartnerExpense::where('academy_id', $academyId)
+            ->where('expense_date', '>=', $monthStart)
+            ->selectRaw("DATE_FORMAT(expense_date, '%Y-%m') as month_key, COALESCE(SUM(COALESCE(base_amount, amount)), 0) as total")
+            ->groupBy('month_key')
+            ->pluck('total', 'month_key');
+
+        $expenseCategoriesBreakdown = \App\Models\PartnerExpenseCategory::where(function ($q) use ($academyId) {
+                $q->whereNull('academy_id')->orWhere('academy_id', $academyId);
+            })
+            ->withSum(['expenses' => function ($q) use ($academyId) {
+                $q->where('academy_id', $academyId);
+            }], DB::raw('COALESCE(base_amount, amount)'))
+            ->get()
+            ->map(function ($cat) {
+                return [
+                    'name' => app()->getLocale() === 'ar' ? $cat->name_ar : ($cat->name_en ?: $cat->name_ar),
+                    'total' => (float) ($cat->expenses_sum_coalescebase_amount_amount ?? 0),
+                ];
+            })
+            ->filter(fn ($cat) => $cat['total'] > 0)
+            ->values();
+
+        // Expiring subscriptions 10 to 0 days countdown data
+        $expiringCountdown = collect(range(10, 0, -1))->map(function ($days) use ($academyId, $now) {
+            $targetDate = $now->copy()->addDays($days)->toDateString();
+            $count = \App\Models\AcademyStudentSubscription::whereHas('student', fn ($q) => $q->where('academy_id', $academyId))
+                ->where('status', 'active')
+                ->whereDate('ends_on', $targetDate)
+                ->count();
+
+            return [
+                'days' => $days,
+                'label' => $days === 0 
+                    ? (app()->getLocale() === 'ar' ? 'ينتهي اليوم' : 'Expires Today') 
+                    : ($days . ' ' . (app()->getLocale() === 'ar' ? 'أيام متبقية' : 'days left')),
+                'count' => $count,
+            ];
+        });
 
         $monthlyBookings = Join::query()
             ->join('trainings', 'trainings.id', '=', 'joins.training_id')
@@ -160,7 +200,7 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('month_key');
 
-        $months = collect(range(0, 11))->map(function ($offset) use ($monthStart, $monthlyBookings, $monthlyPayments) {
+        $months = collect(range(0, 11))->map(function ($offset) use ($monthStart, $monthlyBookings, $monthlyPayments, $monthlyExpenses) {
             $month = $monthStart->copy()->addMonths($offset);
             $key = $month->format('Y-m');
             $booking = $monthlyBookings->get($key);
@@ -170,6 +210,7 @@ class DashboardController extends Controller
                 'bookings' => (int) ($booking->bookings_count ?? 0),
                 'bookingRevenue' => round((float) ($booking->revenue ?? 0), 2),
                 'subscriptionRevenue' => round((float) ($monthlyPayments->get($key, 0)), 2),
+                'expenses' => round((float) ($monthlyExpenses->get($key, 0)), 2),
             ];
         });
 
@@ -218,6 +259,11 @@ class DashboardController extends Controller
             'monthlyBookings' => $months->pluck('bookings'),
             'monthlyBookingRevenue' => $months->pluck('bookingRevenue'),
             'monthlySubscriptionRevenue' => $months->pluck('subscriptionRevenue'),
+            'monthlyExpenses' => $months->pluck('expenses'),
+            'expenseCategories' => $expenseCategoriesBreakdown->pluck('name'),
+            'expenseCategoryTotals' => $expenseCategoriesBreakdown->pluck('total'),
+            'expiringCountdownLabels' => $expiringCountdown->pluck('label'),
+            'expiringCountdownCounts' => $expiringCountdown->pluck('count'),
             'attendanceStatuses' => [
                 (int) $attendanceStatuses->get('present', 0),
                 (int) $attendanceStatuses->get('late', 0),

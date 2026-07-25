@@ -187,37 +187,81 @@
             </div>
         </section>
 
-        <section class="dashboard-grid dashboard-grid-tables">
-            <article class="dashboard-panel data-panel">
-                <header class="panel-header"><div><h3>{{ $copy['recent'] }}</h3><p>{{ $copy['recentHint'] }}</p></div><a href="{{ route('academy.report.joins') }}" class="panel-link">{{ $copy['viewAll'] }}</a></header>
-                <div class="recent-list">
-                    @forelse($dashboard['recentBookings'] as $booking)
-                        @php
-                            $invoiceStatus = $booking->invoice?->getRawOriginal('status');
-                            $isCanceled = (bool) ($booking->invoice?->is_canceled ?? false);
-                        @endphp
-                        <div class="recent-item">
-                            <div class="recent-avatar">{{ mb_substr($booking->user?->name ?: '?', 0, 1) }}</div>
-                            <div class="recent-content">
-                                <div class="recent-title"><strong>{{ $booking->user?->name ?: $copy['noData'] }}</strong><span>{{ number_format($booking->price, 0) }} {{ $copy['currency'] }}</span></div>
-                                <p>{{ $booking->training?->name ?: $copy['trainings'] }}</p>
-                                <div class="recent-meta"><span>{{ $booking->created_at?->locale(app()->getLocale())->diffForHumans() }}</span><span class="booking-status {{ $isCanceled ? 'is-canceled' : ($invoiceStatus === 'paid' ? 'is-paid' : 'is-pending') }}">{{ $isCanceled ? $copy['canceled'] : ($invoiceStatus === 'paid' ? $copy['paid'] : $copy['pending']) }}</span></div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="empty-state">{{ $copy['noData'] }}</div>
-                    @endforelse
-                </div>
+        <section class="dashboard-grid dashboard-grid-main mt-4">
+            <article class="dashboard-panel">
+                <header class="panel-header">
+                    <div>
+                        <h3>{{ $isArabic ? 'تطور المصروفات الشهرية' : 'Monthly Expenses Trend' }}</h3>
+                        <p>{{ $isArabic ? 'تتبع المصروفات التشغيلية خلال آخر 12 شهراً' : 'Track operational expenses over last 12 months' }}</p>
+                    </div>
+                    <a href="{{ route('academy.expenses.index') }}" class="panel-link"><i class="fa-solid fa-plus-circle me-1"></i> {{ $isArabic ? 'إدارة المصروفات' : 'Manage Expenses' }}</a>
+                </header>
+                <div id="expensesChart" class="chart-slot chart-slot-large"></div>
+            </article>
+
+            <article class="dashboard-panel">
+                <header class="panel-header">
+                    <div>
+                        <h3>{{ $isArabic ? 'توزيع المصروفات حسب التصنيف' : 'Expense Categories Distribution' }}</h3>
+                        <p>{{ $isArabic ? 'نسبة كل بند من إجمالي المصروفات' : 'Cost breakdown by category' }}</p>
+                    </div>
+                </header>
+                <div id="expenseCategoryChart" class="chart-slot chart-slot-large"></div>
+            </article>
+        </section>
+
+        <!-- EXPIRING SUBSCRIBERS 10-0 DAYS COUNTDOWN SECTION -->
+        <section class="dashboard-grid dashboard-grid-main mt-4">
+            <article class="dashboard-panel">
+                <header class="panel-header">
+                    <div>
+                        <h3>{{ $isArabic ? 'تنازلي انتهاء اشتراكات الطلاب (10 أيام إلى اليوم)' : 'Subscribers Expiration Countdown (10 Days to Today)' }}</h3>
+                        <p>{{ $isArabic ? 'عدد الاشتراكات المقاربة على الانتهاء مصنفة حسب الأيام المتبقية' : 'Active subscriptions categorized by days remaining' }}</p>
+                    </div>
+                    <span class="panel-badge bg-danger text-white">{{ $isArabic ? 'تنبيه انتهاء' : 'Expiring Alert' }}</span>
+                </header>
+                <div id="expiringCountdownChart" class="chart-slot chart-slot-large"></div>
             </article>
 
             <article class="dashboard-panel data-panel">
-                <header class="panel-header"><div><h3>{{ $copy['expiring'] }}</h3><p>{{ $copy['expiringHint'] }}</p></div><a href="{{ route('academy.subscriptions.index') }}" class="panel-link">{{ $copy['viewAll'] }}</a></header>
+                <header class="panel-header">
+                    <div>
+                        <h3>{{ $isArabic ? 'قائمة الطلاب المقاربين على الانتهاء' : 'Expiring Subscribers List' }}</h3>
+                        <p>{{ $isArabic ? 'تواصل سريع عبر واتساب للتذكير بالتجديد' : 'Quick WhatsApp reminder to renew' }}</p>
+                    </div>
+                    <a href="{{ route('academy.subscriptions.index') }}" class="panel-link">{{ $copy['viewAll'] }}</a>
+                </header>
                 <div class="subscription-list">
-                    @forelse($dashboard['expiringSubscriptions'] as $subscription)
-                        <div class="subscription-item">
-                            <div class="subscription-icon"><i data-feather="clock"></i></div>
-                            <div><strong>{{ $subscription->student?->name ?: $copy['noData'] }}</strong><p>{{ $subscription->group?->name ?: $copy['groups'] }}</p></div>
-                            <span><small>{{ $copy['endsOn'] }}</small>{{ $subscription->ends_on?->locale(app()->getLocale())->translatedFormat('d M') }}</span>
+                    @forelse($dashboard['expiringSubscriptions'] as $sub)
+                        @php
+                            $daysLeft = now()->startOfDay()->diffInDays($sub->ends_on, false);
+                            $studentPhone = preg_replace('/[^0-9]/', '', $sub->student?->phone ?: '');
+                            $studentName = $sub->student?->name ?: ($isArabic ? 'مشترك' : 'Subscriber');
+                            $groupName = $sub->group?->name ?: '';
+                            $waMessage = rawurlencode($isArabic 
+                                ? "مرحباً {$studentName}، نود تذكيرك بقرب انتهاء اشتراكك في مجموعة {$groupName} بتاريخ {$sub->ends_on?->format('Y-m-d')}. يرجى التواصل للتجديد." 
+                                : "Hello {$studentName}, reminder that your subscription for {$groupName} expires on {$sub->ends_on?->format('Y-m-d')}.");
+                        @endphp
+                        <div class="subscription-item d-flex align-items-center justify-content-between p-3 border-bottom">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="subscription-icon text-warning bg-warning bg-opacity-10 p-2 rounded-circle">
+                                    <i data-feather="clock"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark mb-1">{{ $studentName }}</strong>
+                                    <small class="text-muted"><i class="fa-solid fa-users me-1"></i> {{ $groupName }}</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge {{ $daysLeft <= 2 ? 'bg-danger' : 'bg-warning text-dark' }} px-2 py-1 mb-1 d-block">
+                                    {{ $daysLeft === 0 ? ($isArabic ? 'ينتهي اليوم' : 'Today') : ($daysLeft . ' ' . ($isArabic ? 'أيام متبقية' : 'days left')) }}
+                                </span>
+                                @if($studentPhone)
+                                    <a href="https://wa.me/{{ $studentPhone }}?text={{ $waMessage }}" target="_blank" class="btn btn-sm btn-success py-1 px-2 text-white fw-bold mt-1">
+                                        <i class="fa-brands fa-whatsapp me-1"></i> {{ $isArabic ? 'تذكير' : 'Remind' }}
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     @empty
                         <div class="empty-state">{{ $copy['noData'] }}</div>
@@ -325,6 +369,73 @@
                 trainingsElement.style.display = 'grid';
                 trainingsElement.style.placeItems = 'center';
                 trainingsElement.textContent = @json($copy['noData']);
+            }
+
+            const extraData = {
+                expenses: finiteNumbers(@json($dashboard['monthlyExpenses'])),
+                expenseCategories: @json($dashboard['expenseCategories']),
+                expenseCategoryTotals: finiteNumbers(@json($dashboard['expenseCategoryTotals'])),
+                expiringCountdownLabels: @json($dashboard['expiringCountdownLabels']),
+                expiringCountdownCounts: finiteNumbers(@json($dashboard['expiringCountdownCounts']))
+            };
+
+            // Expenses Monthly Trend Chart
+            const expensesElement = document.querySelector('#expensesChart');
+            if (expensesElement) {
+                new ApexCharts(expensesElement, {
+                    chart: { ...common, type: 'area', height: 460 },
+                    series: [{ name: @json($isArabic ? 'إجمالي المصروفات' : 'Total Expenses'), data: extraData.expenses }],
+                    colors: ['#ef4444'],
+                    stroke: { curve: 'smooth', width: 3 },
+                    fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.04 } },
+                    dataLabels: { enabled: false },
+                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
+                    xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
+                    yaxis: { min: 0, forceNiceScale: true, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
+                    noData
+                }).render();
+            }
+
+            // Expense Categories Donut Chart
+            const categoryElement = document.querySelector('#expenseCategoryChart');
+            if (categoryElement) {
+                const totalCatExpenses = extraData.expenseCategoryTotals.reduce((a, b) => a + b, 0);
+                if (totalCatExpenses > 0) {
+                    new ApexCharts(categoryElement, {
+                        chart: { ...common, type: 'donut', height: 460 },
+                        series: extraData.expenseCategoryTotals,
+                        labels: extraData.expenseCategories,
+                        colors: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#6366f1'],
+                        stroke: { width: 0 },
+                        dataLabels: { enabled: false },
+                        legend: { position: 'bottom' },
+                        plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: @json($isArabic ? 'المصروفات' : 'Expenses'), formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() + ' ' + labels.currency } } } } },
+                        noData
+                    }).render();
+                } else {
+                    categoryElement.classList.add('empty-state');
+                    categoryElement.style.minHeight = '460px';
+                    categoryElement.style.display = 'grid';
+                    categoryElement.style.placeItems = 'center';
+                    categoryElement.textContent = @json($copy['noData']);
+                }
+            }
+
+            // Expiring Subscriptions Countdown Chart (10 to 0 days)
+            const countdownElement = document.querySelector('#expiringCountdownChart');
+            if (countdownElement) {
+                new ApexCharts(countdownElement, {
+                    chart: { ...common, type: 'bar', height: 460 },
+                    series: [{ name: @json($isArabic ? 'عدد الطلاب' : 'Subscribers Count'), data: extraData.expiringCountdownCounts }],
+                    colors: ['#f43f5e'],
+                    plotOptions: { bar: { borderRadius: 6, columnWidth: '45%', distributed: true } },
+                    dataLabels: { enabled: true, style: { colors: ['#ffffff'], fontSize: '11px', fontWeight: 700 } },
+                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 25, right: 35, bottom: 65, left: 35 } },
+                    xaxis: { categories: extraData.expiringCountdownLabels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -40, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
+                    yaxis: { min: 0, forceNiceScale: true },
+                    legend: { show: false },
+                    noData
+                }).render();
             }
 
             flatpickr('#start_date', { dateFormat: 'Y-m-d' });
