@@ -290,17 +290,41 @@
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <label class="form-label fw-bold text-primary mb-1">
+                                    <i class="fa-solid fa-user-check me-1"></i>
+                                    {{ $isArabic ? 'اختيار لاعب/طالب مسجل بالأكاديمية:' : 'Select Registered Academy Student:' }}
+                                </label>
+                                <select name="academy_student_id" id="camper_student_select" class="form-select">
+                                    <option value="">{{ $isArabic ? '-- اختر طالباً مسجلاً (أو أدخل مشتركاً خارجياً بالأسفل) --' : '-- Select Registered Student (Or type guest below) --' }}</option>
+                                    @foreach(is_iterable($students ?? null) ? $students : [] as $st)
+                                        <option value="{{ $st->id }}" 
+                                                data-name="{{ $st->name }}" 
+                                                data-phone="{{ $st->phone }}" 
+                                                data-emergency="{{ $st->guardian_phone ?: $st->phone }}"
+                                                data-notes="{{ $st->medical_notes ?? '' }}">
+                                            {{ $st->name }} ({{ $st->phone }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    {{ $isArabic ? '💡 عند اختيار طالب من القائمة يتم تعبئة الاسم ورقم الهاتف وملاحظات ولي الأمر تلقائياً.' : 'Selecting a student auto-fills name, phone & notes.' }}
+                                </small>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $isArabic ? 'اسم المشترك' : 'Participant Name' }} <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" required placeholder="{{ $isArabic ? 'الاسم الثلاثي' : 'Full Name' }}">
+                            <input type="text" name="name" id="camper_name_input" class="form-control" required placeholder="{{ $isArabic ? 'الاسم الثلاثي' : 'Full Name' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $isArabic ? 'رقم الهاتف' : 'Phone' }} <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control" required placeholder="01xxxxxxxxx">
+                            <input type="text" name="phone" id="camper_phone_input" class="form-control" required placeholder="01xxxxxxxxx">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $isArabic ? 'هاتف الطوارئ / ولي الأمر' : 'Emergency Phone' }}</label>
-                            <input type="text" name="emergency_phone" class="form-control">
+                            <input type="text" name="emergency_phone" id="camper_emergency_input" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">{{ $isArabic ? 'رقم الجواز (للمعسكرات الدولية)' : 'Passport Number' }}</label>
@@ -403,4 +427,26 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const studentSelect = document.getElementById('camper_student_select');
+    if (studentSelect) {
+        studentSelect.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            if (this.value) {
+                const nameInput = document.getElementById('camper_name_input');
+                const phoneInput = document.getElementById('camper_phone_input');
+                const emergencyInput = document.getElementById('camper_emergency_input');
+                const notesInput = document.querySelector('input[name="medical_notes"]');
+
+                if (nameInput && selected.dataset.name) nameInput.value = selected.dataset.name;
+                if (phoneInput && selected.dataset.phone) phoneInput.value = selected.dataset.phone;
+                if (emergencyInput && selected.dataset.emergency) emergencyInput.value = selected.dataset.emergency;
+                if (notesInput && selected.dataset.notes) notesInput.value = selected.dataset.notes;
+            }
+        });
+    }
+});
+</script>
 @endsection
