@@ -51,6 +51,12 @@ class PaymentMethodHelper
                 'name_en' => 'NAPS Qatar',
                 'logo' => asset('assetsAdmin/img/payments/naps.svg'),
             ],
+            'fawran' => [
+                'id' => 'fawran',
+                'name_ar' => 'فوران قطر (Fawran)',
+                'name_en' => 'Fawran Qatar',
+                'logo' => asset('assetsAdmin/img/payments/fawran.svg'),
+            ],
             'mbway' => [
                 'id' => 'mbway',
                 'name_ar' => 'MB WAY البرتغال',
@@ -65,11 +71,11 @@ class PaymentMethodHelper
             case 'EG':
                 return [$all['cash'], $all['instapay'], $all['fawry'], $all['apple_pay']];
             case 'QA':
-                return [$all['cash'], $all['naps'], $all['apple_pay']];
+                return [$all['cash'], $all['naps'], $all['fawran'], $all['apple_pay']];
             case 'PT':
                 return [$all['cash'], $all['mbway'], $all['apple_pay']];
             default:
-                return [$all['cash'], $all['mada'], $all['apple_pay'], $all['instapay'], $all['fawry'], $all['naps'], $all['mbway']];
+                return [$all['cash'], $all['mada'], $all['apple_pay'], $all['instapay'], $all['fawry'], $all['naps'], $all['fawran'], $all['mbway']];
         }
     }
 }
