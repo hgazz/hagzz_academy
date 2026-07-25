@@ -180,6 +180,18 @@ class PartnerCampController extends Controller
         ));
     }
 
+    public function edit($id)
+    {
+        $academyId = $this->resolveAcademyId();
+        $currency = $this->getAcademyCurrency($academyId);
+        $camp = AcademyCamp::with(['supervisors'])->where('academy_id', $academyId)->findOrFail($id);
+        $sports = Sport::all();
+        $countries = Country::all();
+        $coaches = Coach::where('academy_id', $academyId)->get();
+
+        return view('Academy.pages.camps.edit', compact('camp', 'sports', 'countries', 'coaches', 'currency'));
+    }
+
     public function update(Request $request, $id)
     {
         $academyId = $this->resolveAcademyId();

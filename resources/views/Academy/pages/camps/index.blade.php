@@ -189,9 +189,14 @@
                     </div>
 
                     <div class="card-footer bg-white border-top p-3 d-flex align-items-center justify-content-between">
-                        <a href="{{ route('academy.camps.show', $camp->id) }}" class="btn btn-sm btn-outline-primary fw-bold">
-                            <i class="fa-solid fa-eye me-1"></i> {{ $isArabic ? 'عرض التفاصيل والطلاب' : 'View Hub' }}
-                        </a>
+                        <div class="d-flex gap-1">
+                            <a href="{{ route('academy.camps.show', $camp->id) }}" class="btn btn-sm btn-outline-primary fw-bold">
+                                <i class="fa-solid fa-eye me-1"></i> {{ $isArabic ? 'عرض التفاصيل والطلاب' : 'View Hub' }}
+                            </a>
+                            <a href="{{ route('academy.camps.edit', $camp->id) }}" class="btn btn-sm btn-outline-warning text-dark fw-bold" title="{{ $isArabic ? 'تعديل المعسكر' : 'Edit' }}">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                        </div>
                         <form method="POST" action="{{ route('academy.camps.destroy', $camp->id) }}" onsubmit="return confirm('{{ $isArabic ? 'هل أنت تأكد من حذف هذا المعسكر؟' : 'Are you sure you want to delete this camp?' }}');">
                             @csrf
                             @method('DELETE')

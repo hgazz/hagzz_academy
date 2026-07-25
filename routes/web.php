@@ -259,6 +259,7 @@ Route::group(
             Route::get('camps/api/countries/{countryId}/cities', 'getCountryCities')->name('camps.cities');
             Route::post('camps', 'store')->name('camps.store');
             Route::get('camps/{id}', 'show')->name('camps.show');
+            Route::get('camps/{id}/edit', 'edit')->name('camps.edit');
             Route::put('camps/{id}', 'update')->name('camps.update');
             Route::delete('camps/{id}', 'destroy')->name('camps.destroy');
             Route::post('camps/{campId}/participants', 'storeParticipant')->name('camps.participants.store');

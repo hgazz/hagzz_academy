@@ -32,11 +32,15 @@
                     </p>
                 </div>
                 <div class="d-flex gap-2">
+                    <a href="{{ route('academy.camps.edit', $camp->id) }}" class="btn btn-warning fw-bold text-dark shadow-sm">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                        {{ $isArabic ? 'تعديل بيانات المعسكر' : 'Edit Camp' }}
+                    </a>
                     <a href="{{ route('academy.camps.export-roster', $camp->id) }}" class="btn btn-light fw-bold text-primary shadow-sm">
                         <i class="fa-solid fa-file-excel me-1 text-success"></i>
-                        {{ $isArabic ? 'تصدير كشف المسافرين (CSV)' : 'Export Roster' }}
+                        {{ $isArabic ? 'تصدير الكشف (CSV)' : 'Export Roster' }}
                     </a>
-                    <button class="btn btn-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
+                    <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
                         <i class="fa-solid fa-user-plus me-1"></i>
                         {{ $isArabic ? 'تسجيل مشترك جديد' : 'Add Camper' }}
                     </button>
