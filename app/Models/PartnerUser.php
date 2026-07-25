@@ -38,6 +38,16 @@ class PartnerUser extends Authenticatable
         return $this->belongsTo(Academies::class, 'academy_id');
     }
 
+    public function sports()
+    {
+        return $this->academy ? $this->academy->sports() : $this->hasMany(Sport::class, 'academy_id');
+    }
+
+    public function currentSubscription()
+    {
+        return $this->academy ? $this->academy->currentSubscription() : null;
+    }
+
     public function roles()
     {
         return $this->belongsToMany(PartnerRole::class, 'partner_user_roles', 'user_id', 'role_id');
