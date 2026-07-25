@@ -26,7 +26,7 @@
         'rate' => 'Collection rate', 'records' => 'financial records', 'cancelled' => 'cancelled', 'currency' => 'EGP',
         'filters' => 'Report filters', 'from' => 'From date', 'to' => 'To date', 'source' => 'Report source',
         'payment' => 'Payment status', 'search' => 'Search by name, phone, or reference', 'apply' => 'Apply', 'reset' => 'Reset filters',
-        'all' => 'All', 'subscriptions' => 'Student accounts & subscriptions', 'training' => 'Training bookings', 'venues' => 'Venue bookings',
+        'all' => 'All', 'subscriptions' => 'Student accounts & subscriptions', 'training' => 'Training bookings', 'venues' => 'Venue bookings', 'camps' => 'Training Camps',
         'paid' => 'Paid', 'partial' => 'Partially paid', 'unpaid' => 'Unpaid', 'export' => 'Export CSV',
         'customer' => 'Customer / student', 'service' => 'Service', 'date' => 'Date', 'amount' => 'Billed',
         'paidAmount' => 'Collected', 'remainingAmount' => 'Outstanding', 'method' => 'Payment method', 'status' => 'Status',
@@ -34,7 +34,7 @@
         'details' => 'Full details', 'summary' => 'Source summary', 'activeRecords' => 'included records',
     ];
     $paymentLabels = ['paid' => $copy['paid'], 'partial' => $copy['partial'], 'unpaid' => $copy['unpaid']];
-    $sourceLabels = ['subscriptions' => $copy['subscriptions'], 'training' => $copy['training'], 'venues' => $copy['venues']];
+    $sourceLabels = ['subscriptions' => $copy['subscriptions'], 'training' => $copy['training'], 'venues' => $copy['venues'], 'camps' => $copy['camps']];
     $money = fn ($value) => number_format((float) $value, 2);
     $queryFilters = array_filter($filters, fn ($value) => $value !== null && $value !== '' && $value !== 'all');
 @endphp
@@ -70,7 +70,7 @@
             <section class="fr-breakdown">
                 @foreach($breakdown as $source => $totals)
                     <a class="fr-source-card" href="#{{ $source }}-report">
-                        <div class="fr-source-head"><i class="fa-solid {{ $source === 'subscriptions' ? 'fa-user-graduate' : ($source === 'training' ? 'fa-ticket' : 'fa-futbol') }}"></i><strong>{{ $sourceLabels[$source] }}</strong></div>
+                        <div class="fr-source-head"><i class="fa-solid {{ $source === 'subscriptions' ? 'fa-user-graduate' : ($source === 'training' ? 'fa-ticket' : ($source === 'venues' ? 'fa-futbol' : 'fa-campground')) }}"></i><strong>{{ $sourceLabels[$source] ?? $source }}</strong></div>
                         <div class="fr-source-values"><span>{{ $copy['collected'] }} <b>{{ $money($totals['collected']) }}</b></span><span>{{ $copy['remaining'] }} <b>{{ $money($totals['remaining']) }}</b></span></div>
                         <small>{{ number_format($totals['records']) }} {{ $copy['activeRecords'] }}</small>
                     </a>
@@ -126,6 +126,16 @@
                         <tr><td><strong>{{ $booking->reference }}</strong><small>{{ $booking->source }}</small></td><td><strong>{{ $booking->customer?->name ?: '-' }}</strong><small>{{ $booking->customer?->phone ?: '-' }}</small></td><td><strong>{{ $booking->space?->venue?->name ?: '-' }}</strong><small>{{ $booking->space?->name ?: '-' }}</small></td><td><strong>{{ $booking->starts_at?->format('Y-m-d') }}</strong><small>{{ $booking->starts_at?->format('H:i') }} – {{ $booking->ends_at?->format('H:i') }}</small></td><td>{{ $money($booking->total_amount) }}</td><td class="is-positive">{{ $money($booking->paid_amount) }}</td><td class="{{ $booking->remaining_amount > 0 ? 'is-negative' : '' }}">{{ $money($booking->remaining_amount) }}</td><td>{{ $booking->payment_method }}</td><td>@if($booking->status === 'cancelled')<span class="fr-status is-cancelled">{{ $ar ? 'ملغي' : 'Cancelled' }}</span>@else<span class="fr-status is-{{ $booking->payment_status }}">{{ $paymentLabels[$booking->payment_status] }}</span><small>{{ $booking->status }}</small>@endif</td></tr>
                     @empty <tr><td colspan="9" class="fr-empty">{{ $copy['noData'] }}</td></tr> @endforelse
                     </tbody></table></div>{{ $venueBookings->links() }}
+                </section>
+            @if(in_array($filters['source'], ['all', 'camps'], true))
+                <section class="fr-report-panel" id="camps-report">
+                    <header><div><i class="fa-solid fa-campground"></i><div><h2>{{ $copy['camps'] }}</h2><p>{{ $copy['details'] }}</p></div></div><a href="{{ route('academy.report.overview.export', array_merge(['type' => 'camps'], $queryFilters)) }}"><i class="fa-solid fa-download"></i>{{ $copy['export'] }}</a></header>
+                    <div class="fr-table-wrap"><table><thead><tr><th>#</th><th>{{ $copy['customer'] }}</th><th>{{ $copy['service'] }}</th><th>{{ $copy['date'] }}</th><th>{{ $copy['amount'] }}</th><th>{{ $copy['paidAmount'] }}</th><th>{{ $copy['remainingAmount'] }}</th><th>{{ $copy['status'] }}</th></tr></thead><tbody>
+                    @forelse($campParticipants as $p)
+                        @php $rem = max(0, (float)$p->total_fee - (float)$p->paid_amount); @endphp
+                        <tr><td><strong>#{{ $p->id }}</strong></td><td><strong>{{ $p->name }}</strong><small>{{ $p->phone }}</small></td><td><strong>{{ $p->camp?->title_ar ?: 'معسكر تدريبي' }}</strong></td><td>{{ $p->created_at?->format('Y-m-d') }}</td><td>{{ $money($p->total_fee) }}</td><td class="is-positive">{{ $money($p->paid_amount) }}</td><td class="{{ $rem > 0 ? 'is-negative' : '' }}">{{ $money($rem) }}</td><td><span class="fr-status is-{{ $p->status === 'confirmed' ? 'paid' : 'partial' }}">{{ $p->status }}</span></td></tr>
+                    @empty <tr><td colspan="8" class="fr-empty">{{ $copy['noData'] }}</td></tr> @endforelse
+                    </tbody></table></div>{{ $campParticipants->links() }}
                 </section>
             @endif
         </main>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademyCampParticipant;
 use App\Models\AcademyStudentSubscription;
 use App\Models\Invoice;
 use App\Models\VenueBooking;
@@ -14,23 +15,27 @@ class AcademyFinancialReportController extends Controller
     public function index(Request $request)
     {
         $filters = $this->filters($request);
-        [$subscriptions, $trainingBookings, $venueBookings] = $this->queries($filters);
+        [$subscriptions, $trainingBookings, $venueBookings, $campParticipants] = $this->queries($filters);
 
         $subscriptionFinancial = (clone $subscriptions)->where('status', '!=', 'cancelled');
         $trainingFinancial = (clone $trainingBookings)->where('is_canceled', false);
         $venueFinancial = (clone $venueBookings)->where('status', '!=', 'cancelled');
+        $campFinancial = (clone $campParticipants)->where('status', '!=', 'cancelled');
 
         $breakdown = [
             'subscriptions' => $this->subscriptionTotals($subscriptionFinancial),
             'training' => $this->invoiceTotals($trainingFinancial),
             'venues' => $this->venueTotals($venueFinancial),
+            'camps' => $this->campTotals($campFinancial),
         ];
         $breakdown['subscriptions']['cancelled'] = (clone $subscriptions)->where('status', 'cancelled')->count();
         $breakdown['training']['cancelled'] = (clone $trainingBookings)->where('is_canceled', true)->count();
         $breakdown['venues']['cancelled'] = (clone $venueBookings)->where('status', 'cancelled')->count();
+        $breakdown['camps']['cancelled'] = (clone $campParticipants)->where('status', 'cancelled')->count();
+
         $summarySources = $filters['source'] === 'all'
             ? $breakdown
-            : [$filters['source'] => $breakdown[$filters['source']]];
+            : [$filters['source'] => $breakdown[$filters['source']] ?? ['billed' => 0, 'collected' => 0, 'remaining' => 0, 'records' => 0, 'cancelled' => 0]];
 
         $summary = [
             'billed' => collect($summarySources)->sum('billed'),
@@ -50,14 +55,15 @@ class AcademyFinancialReportController extends Controller
             'subscriptions' => (clone $subscriptions)->latest()->paginate(15, ['*'], 'subscription_page')->withQueryString(),
             'trainingBookings' => (clone $trainingBookings)->latest()->paginate(15, ['*'], 'training_page')->withQueryString(),
             'venueBookings' => (clone $venueBookings)->latest('starts_at')->paginate(15, ['*'], 'venue_page')->withQueryString(),
+            'campParticipants' => (clone $campParticipants)->latest()->paginate(15, ['*'], 'camp_page')->withQueryString(),
         ]);
     }
 
     public function export(Request $request, string $type)
     {
-        abort_unless(in_array($type, ['subscriptions', 'training', 'venues'], true), 404);
+        abort_unless(in_array($type, ['subscriptions', 'training', 'venues', 'camps'], true), 404);
         $filters = $this->filters($request);
-        [$subscriptions, $trainingBookings, $venueBookings] = $this->queries($filters);
+        [$subscriptions, $trainingBookings, $venueBookings, $campParticipants] = $this->queries($filters);
 
         $rows = match ($type) {
             'subscriptions' => (clone $subscriptions)->latest()->get()->map(fn ($row) => [
@@ -76,6 +82,13 @@ class AcademyFinancialReportController extends Controller
                 trim(($row->space?->venue?->name ?? '') . ' - ' . ($row->space?->name ?? ''), ' -'),
                 $row->starts_at?->format('Y-m-d H:i'), $row->payment_status, $row->payment_method,
                 (float) $row->total_amount, (float) $row->paid_amount, $row->remaining_amount,
+            ]),
+            'camps' => (clone $campParticipants)->latest()->get()->map(fn ($row) => [
+                'camps', $row->id, $row->name,
+                $row->camp?->title_ar ?: 'معسكر تدريبي',
+                $row->created_at?->format('Y-m-d'), $row->status, '-',
+                (float) $row->total_fee, (float) $row->paid_amount,
+                max(0, (float) $row->total_fee - (float) $row->paid_amount),
             ]),
         };
 
@@ -97,7 +110,7 @@ class AcademyFinancialReportController extends Controller
         $validated = $request->validate([
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-            'source' => ['nullable', 'in:all,subscriptions,training,venues'],
+            'source' => ['nullable', 'in:all,subscriptions,training,venues,camps'],
             'payment_status' => ['nullable', 'in:all,paid,partial,unpaid'],
             'search' => ['nullable', 'string', 'max:100'],
         ]);
@@ -160,7 +173,21 @@ class AcademyFinancialReportController extends Controller
                         ->orWhere('phone', 'like', "%{$search}%"));
             }));
 
-        return [$subscriptions, $trainingBookings, $venueBookings];
+        $campParticipants = AcademyCampParticipant::query()
+            ->with(['camp', 'student'])
+            ->whereHas('camp', fn (Builder $query) => $query->where('academy_id', $academyId))
+            ->when($filters['start_date'], fn (Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($filters['end_date'], fn (Builder $query, $date) => $query->whereDate('created_at', '<=', $date))
+            ->when($filters['payment_status'] === 'paid', fn (Builder $query) => $query->whereColumn('paid_amount', '>=', 'total_fee'))
+            ->when($filters['payment_status'] === 'partial', fn (Builder $query) => $query->where('paid_amount', '>', 0)->whereColumn('paid_amount', '<', 'total_fee'))
+            ->when($filters['payment_status'] === 'unpaid', fn (Builder $query) => $query->where('paid_amount', '<=', 0))
+            ->when($search !== '', fn (Builder $query) => $query->where(function (Builder $query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereHas('camp', fn (Builder $camp) => $camp->where('title_ar', 'like', "%{$search}%"));
+            }));
+
+        return [$subscriptions, $trainingBookings, $venueBookings, $campParticipants];
     }
 
     private function subscriptionTotals(Builder $query): array
@@ -193,6 +220,17 @@ class AcademyFinancialReportController extends Controller
         )->first();
         $billed = (float) $totals->billed;
         $collected = (float) $totals->collected;
+
+        return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
+    }
+
+    private function campTotals(Builder $query): array
+    {
+        $totals = (clone $query)->selectRaw(
+            'COALESCE(SUM(total_fee), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected'
+        )->first();
+        $billed = (float) ($totals->billed ?? 0);
+        $collected = (float) ($totals->collected ?? 0);
 
         return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
     }
