@@ -112,7 +112,7 @@ return new class extends Migration
             ['iso2' => 'MK', 'currency' => 'MKD', 'ar' => '🇲🇰 مقدونيا الشمالية', 'en' => 'North Macedonia'],
             ['iso2' => 'ME', 'currency' => 'EUR', 'ar' => '🇲🇪 الجبل الأسود (مونتينيغرو)', 'en' => 'Montenegro'],
             ['iso2' => 'MD', 'currency' => 'MDL', 'ar' => '🇲🇩 مولدوفا', 'en' => 'Moldova'],
-            ['iso2' => 'ARM', 'currency' => 'AMD', 'ar' => '🇦🇲 أرمينيا', 'en' => 'Armenia'],
+            ['iso2' => 'AM', 'currency' => 'AMD', 'ar' => '🇦🇲 أرمينيا', 'en' => 'Armenia'],
         ];
 
         foreach ($allCountries as $c) {
