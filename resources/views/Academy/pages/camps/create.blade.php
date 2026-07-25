@@ -49,7 +49,7 @@
                                 <label class="form-label fw-bold">{{ $isArabic ? 'الرياضة المستهدفة' : 'Target Sport' }}</label>
                                 <select name="sport_id" class="form-select">
                                     <option value="">{{ $isArabic ? 'جميع الرياضات / معسكر متعدد' : 'All Sports / Multi-Sport' }}</option>
-                                    @foreach($sports as $s)
+                                    @foreach(is_iterable($sports ?? null) ? $sports : [] as $s)
                                         <option value="{{ $s->id }}">{{ $s->name }}</option>
                                     @endforeach
                                 </select>
@@ -59,7 +59,7 @@
                                 <label class="form-label fw-bold">{{ $isArabic ? 'الدولة المستضيفة' : 'Destination Country' }}</label>
                                 <select name="country_id" class="form-select">
                                     <option value="">{{ $isArabic ? 'اختر الدولة...' : 'Select Country...' }}</option>
-                                    @foreach($countries as $c)
+                                    @foreach(is_iterable($countries ?? null) ? $countries : [] as $c)
                                         <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
                                     @endforeach
                                 </select>
@@ -182,7 +182,7 @@
                     </div>
                     <div class="card-body p-4">
                         <label class="form-label fw-bold mb-2">{{ $isArabic ? 'اختر المدربين والمشرفين:' : 'Select Coaches:' }}</label>
-                        @foreach($coaches as $coach)
+                        @foreach(is_iterable($coaches ?? null) ? $coaches : [] as $coach)
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="supervisors[]" value="{{ $coach->id }}" id="coach_{{ $coach->id }}">
                                 <label class="form-check-label" for="coach_{{ $coach->id }}">
