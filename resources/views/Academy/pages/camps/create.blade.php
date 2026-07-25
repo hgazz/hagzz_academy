@@ -57,7 +57,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">{{ $isArabic ? 'الدولة المستضيفة' : 'Destination Country' }}</label>
-                                <select name="country_id" class="form-select">
+                                <select name="country_id" id="country_select" class="form-select">
                                     <option value="">{{ $isArabic ? 'اختر الدولة...' : 'Select Country...' }}</option>
                                     @foreach(is_iterable($countries ?? null) ? $countries : [] as $c)
                                         <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->iso2 ?: $c->currency_code }})</option>
@@ -67,7 +67,10 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">{{ $isArabic ? 'المدينة' : 'City' }}</label>
-                                <input type="text" name="city_name" class="form-control" placeholder="{{ $isArabic ? 'مثال: الغردقة / مدريد' : 'e.g. Hurghada / Madrid' }}">
+                                <select name="city_name" id="city_select" class="form-select mb-2">
+                                    <option value="">{{ $isArabic ? 'اختر الدولة أولاً...' : 'Select Country first...' }}</option>
+                                </select>
+                                <input type="text" id="custom_city_input" class="form-control d-none" placeholder="{{ $isArabic ? 'اكتب اسم المدينة يدوياً...' : 'Type custom city name...' }}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">{{ $isArabic ? 'اسم الفندق / منتجع الإقامة' : 'Hotel / Resort Name' }}</label>
@@ -205,4 +208,56 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const countrySelect = document.getElementById('country_select');
+    const citySelect = document.getElementById('city_select');
+    const customCityInput = document.getElementById('custom_city_input');
+
+    if (countrySelect && citySelect) {
+        countrySelect.addEventListener('change', function() {
+            const countryId = this.value;
+            citySelect.innerHTML = '<option value="">{{ $isArabic ? "جاري تحميل المدن..." : "Loading cities..." }}</option>';
+            
+            if (!countryId) {
+                citySelect.innerHTML = '<option value="">{{ $isArabic ? "اختر الدولة أولاً..." : "Select Country first..." }}</option>';
+                customCityInput.classList.add('d-none');
+                customCityInput.removeAttribute('name');
+                citySelect.name = 'city_name';
+                return;
+            }
+
+            fetch(`{{ url('partner/camps/api/countries') }}/${countryId}/cities`)
+                .then(res => res.json())
+                .then(cities => {
+                    let html = '<option value="">{{ $isArabic ? "اختر المدينة..." : "Select City..." }}</option>';
+                    if (cities && cities.length > 0) {
+                        cities.forEach(c => {
+                            html += `<option value="${c.name}">${c.name}</option>`;
+                        });
+                    }
+                    html += '<option value="__custom__">{{ $isArabic ? "✏️ أخرى (أدخل اسمها يدوياً)" : "✏️ Other (Custom city)" }}</option>';
+                    citySelect.innerHTML = html;
+                })
+                .catch(() => {
+                    citySelect.innerHTML = '<option value="__custom__">{{ $isArabic ? "✏️ أدخل المدينة يدوياً" : "✏️ Enter Custom City" }}</option>';
+                });
+        });
+
+        citySelect.addEventListener('change', function() {
+            if (this.value === '__custom__') {
+                customCityInput.classList.remove('d-none');
+                customCityInput.name = 'city_name';
+                customCityInput.focus();
+                citySelect.removeAttribute('name');
+            } else {
+                customCityInput.classList.add('d-none');
+                customCityInput.removeAttribute('name');
+                citySelect.name = 'city_name';
+            }
+        });
+    }
+});
+</script>
 @endsection

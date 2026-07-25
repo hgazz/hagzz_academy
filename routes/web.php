@@ -256,6 +256,7 @@ Route::group(
         Route::controller(PartnerCampController::class)->group(function () {
             Route::get('camps', 'index')->name('camps.index');
             Route::get('camps/create', 'create')->name('camps.create');
+            Route::get('camps/api/countries/{countryId}/cities', 'getCountryCities')->name('camps.cities');
             Route::post('camps', 'store')->name('camps.store');
             Route::get('camps/{id}', 'show')->name('camps.show');
             Route::put('camps/{id}', 'update')->name('camps.update');
