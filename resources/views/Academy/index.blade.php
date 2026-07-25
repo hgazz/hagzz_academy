@@ -5,7 +5,7 @@
 @push('css')
     <link href="{{ asset('assetsAdmin/src/plugins/src/apex/apexcharts.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assetsAdmin/src/plugins/src/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assetsAdmin/src/assets/css/academy-dashboard-modern.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assetsAdmin/src/assets/css/academy-dashboard-modern.css') }}?v={{ time() }}" rel="stylesheet" type="text/css">
     <style>
         .hybrid-venue-strip{display:grid;grid-template-columns:1.2fr repeat(4,minmax(110px,.7fr));gap:10px;padding:14px;margin-bottom:15px;border:1px solid #bae6fd;border-radius:8px;background:#f0f9ff}.hybrid-venue-title{display:flex;align-items:center;gap:10px}.hybrid-venue-title i{display:grid;place-items:center;width:40px;height:40px;border-radius:8px;background:#0f766e;color:#fff}.hybrid-venue-title strong,.hybrid-venue-item strong{display:block;color:#102a43}.hybrid-venue-title span,.hybrid-venue-item span{display:block;color:#64748b;font-size:11px}.hybrid-venue-item{padding:9px;border-inline-start:1px solid #bae6fd}.hybrid-venue-links{display:flex;gap:7px;margin-top:5px}.hybrid-venue-links a{color:#0f766e;font-size:11px;font-weight:700}@media(max-width:991px){.hybrid-venue-strip{grid-template-columns:repeat(2,1fr)}.hybrid-venue-title{grid-column:1/-1}.hybrid-venue-item{border-inline-start:0;border-top:1px solid #bae6fd}}@media(max-width:575px){.hybrid-venue-strip{grid-template-columns:1fr}}
     </style>
@@ -264,7 +264,7 @@
                                    data.subscriptionRevenue.reduce((sum, v) => sum + v, 0);
             if (financialTotal > 0) {
                 new ApexCharts(financialElement, {
-                    chart: { ...common, type: 'line', height: 420 },
+                    chart: { ...common, type: 'line', height: 460 },
                     series: [
                         { name: labels.bookings, type: 'column', data: data.bookings },
                         { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
@@ -272,19 +272,19 @@
                     ],
                     colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
                     fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
-                    plotOptions: { bar: { borderRadius: 5, columnWidth: '40%' } }, dataLabels: { enabled: false },
-                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 25, right: 35, bottom: 15, left: 35 } },
-                    xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { colors: text, fontSize: '12px', fontWeight: 600 } } },
+                    plotOptions: { bar: { borderRadius: 5, columnWidth: '38%' } }, dataLabels: { enabled: false },
+                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
+                    xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
                     yaxis: [
-                        { title: { text: labels.bookings, style: { color: '#2563eb', fontSize: '12px', fontWeight: 700 } }, min: 0, forceNiceScale: true },
-                        { opposite: true, title: { text: labels.bookingRevenue + ' (' + labels.currency + ')', style: { color: '#14b8a6', fontSize: '12px', fontWeight: 700 } }, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }
+                        { min: 0, forceNiceScale: true },
+                        { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }
                     ],
                     legend: { position: 'top', horizontalAlign: 'center', offsetY: -5, fontSize: '13px', fontWeight: 700, itemMargin: { horizontal: 15, vertical: 8 } },
                     tooltip: { shared: true, intersect: false }, noData
                 }).render();
             } else {
                 financialElement.classList.add('empty-state');
-                financialElement.style.minHeight = '420px';
+                financialElement.style.minHeight = '460px';
                 financialElement.style.display = 'grid';
                 financialElement.style.placeItems = 'center';
                 financialElement.textContent = @json($copy['noData']);
@@ -294,14 +294,14 @@
             const attendanceTotal = data.attendance.reduce((sum, value) => sum + value, 0);
             if (attendanceTotal > 0) {
                 new ApexCharts(attendanceElement, {
-                    chart: { ...common, type: 'donut', height: 360 }, series: data.attendance,
+                    chart: { ...common, type: 'donut', height: 380 }, series: data.attendance,
                     labels: [labels.present, labels.late, labels.absent, labels.excused],
                     colors: ['#14b8a6', '#f59e0b', '#ef4444', '#64748b'], stroke: { width: 0 }, dataLabels: { enabled: false },
-                    legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '72%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
+                    legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
                 }).render();
             } else {
                 attendanceElement.classList.add('empty-state');
-                attendanceElement.style.minHeight = '360px';
+                attendanceElement.style.minHeight = '380px';
                 attendanceElement.style.display = 'grid';
                 attendanceElement.style.placeItems = 'center';
                 attendanceElement.textContent = @json($copy['noData']);
@@ -311,14 +311,17 @@
             const trainingsTotal = data.trainingBookings.reduce((sum, v) => sum + v, 0);
             if (trainingsTotal > 0 && data.trainingLabels.length > 0) {
                 new ApexCharts(trainingsElement, {
-                    chart: { ...common, type: 'bar', height: 300 }, series: [{ name: labels.bookings, data: data.trainingBookings }],
-                    colors: ['#f97316'], plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '48%' } },
-                    dataLabels: { enabled: false }, grid: { borderColor: grid, strokeDashArray: 4 },
-                    xaxis: { categories: data.trainingLabels, min: 0, forceNiceScale: true }, noData
+                    chart: { ...common, type: 'bar', height: 380 }, series: [{ name: labels.bookings, data: data.trainingBookings }],
+                    colors: ['#f97316'], plotOptions: { bar: { horizontal: true, borderRadius: 6, barHeight: '52%' } },
+                    dataLabels: { enabled: true, textAnchor: 'start', style: { colors: ['#ffffff'], fontSize: '11px', fontWeight: 700 }, formatter: val => val > 0 ? val : '', offsetX: 5 },
+                    grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 20, right: 40, bottom: 20, left: 110 } },
+                    xaxis: { categories: data.trainingLabels, min: 0, forceNiceScale: true },
+                    yaxis: { labels: { show: true, align: 'left', style: { colors: text, fontSize: '13px', fontWeight: 700 } } },
+                    noData
                 }).render();
             } else {
                 trainingsElement.classList.add('empty-state');
-                trainingsElement.style.minHeight = '300px';
+                trainingsElement.style.minHeight = '380px';
                 trainingsElement.style.display = 'grid';
                 trainingsElement.style.placeItems = 'center';
                 trainingsElement.textContent = @json($copy['noData']);
