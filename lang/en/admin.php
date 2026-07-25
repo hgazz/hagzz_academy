@@ -735,7 +735,11 @@ return [
         'statuses' => ['pending' => 'Pending', 'confirmed' => 'Confirmed', 'checked_in' => 'Checked In', 'completed' => 'Completed', 'cancelled' => 'Cancelled', 'no_show' => 'No Show'],
         'payment_states' => ['unpaid' => 'Unpaid', 'partial' => 'Partially Paid', 'paid' => 'Paid'],
     ],
+    'add_booking' => 'Add New Booking',
+    'services_management' => 'Trainings & Services',
+    'bokit' => 'Hagzz Platform',
     'bookings' => [
+        'bookings' => 'Bookings',
         'paid_amount' => 'Paid Amount',
         'remaining_amount' => 'Remaining Amount',
         'paid_amount_exceeds_total' => 'Paid amount exceeds total booking price',

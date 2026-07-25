@@ -715,7 +715,11 @@ return [
         'statuses' => ['pending' => 'معلق', 'confirmed' => 'مؤكد', 'checked_in' => 'تم الحضور', 'completed' => 'مكتمل', 'cancelled' => 'ملغى', 'no_show' => 'لم يحضر'],
         'payment_states' => ['unpaid' => 'غير مدفوع', 'partial' => 'مدفوع جزئيًا', 'paid' => 'مدفوع'],
     ],
+    'add_booking' => 'إضافة حجز جديد',
+    'services_management' => 'التدريبات والأنشطة',
+    'bokit' => 'منصة Hagzz',
     'bookings' => [
+        'bookings' => 'الحجوزات',
         'paid_amount' => 'المبلغ المدفوع',
         'remaining_amount' => 'المبلغ المتبقي',
         'paid_amount_exceeds_total' => 'المبلغ المدفوع يتجاوز إجمالي سعر الحجز',
