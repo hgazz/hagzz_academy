@@ -307,16 +307,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 visaDesc.innerText = `{{ $isArabic ? "الدولة المستضيفة هي نفسها دولة الشريك" : "Host country matches partner home country" }} (${homeCountryName}). {{ $isArabic ? "تنقل وتدريب محلي بدون إجراءات تأشيرة." : "No visa required." }}`;
                 if (visaLink) visaLink.classList.add('d-none');
             } else {
-                // International Camp
-                visaBadge.className = 'p-3 rounded-3 border border-warning bg-warning bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-sm';
-                visaIcon.innerHTML = '✈️ ⚠️';
-                visaTitle.className = 'text-dark fw-bold fs-6';
+                // International Camp - Premium Indigo / Royal Blue Styling
+                visaBadge.className = 'p-3 rounded-3 border border-primary border-opacity-25 bg-primary bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 shadow-sm';
+                visaIcon.innerHTML = '✈️ 🌍';
+                visaTitle.className = 'text-primary fw-bold fs-6';
                 visaTitle.innerText = `{{ $isArabic ? "معسكر دولي - تتطلب تأشيرة دخول (Visa) إلى" : "International Camp - Visa Required to" }} (${countryName})`;
+                visaDesc.className = 'mb-0 small text-dark fw-medium mt-1';
                 visaDesc.innerText = `{{ $isArabic ? "للمواطنين والمقيمين التابعين لـ" : "For citizens of" }} (${homeCountryName})، {{ $isArabic ? "يُرجى الاستعلام واستخراج التأشيرة قبل موعد السفر." : "please check visa requirements before departure." }}`;
 
                 if (visaLink) {
                     const q = encodeURIComponent(`visa requirements for ${homeCountryName} passport travelling to ${countryName} official application portal`);
                     visaLink.href = `https://www.google.com/search?q=${q}`;
+                    visaLink.className = 'btn btn-sm btn-primary fw-bold text-decoration-none shadow-sm px-3 py-2';
                     visaLink.classList.remove('d-none');
                 }
             }
