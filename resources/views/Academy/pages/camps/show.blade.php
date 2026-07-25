@@ -9,6 +9,14 @@
 
 @section('content')
 <div class="container-fluid py-4">
+    <!-- NAVIGATION BACK BUTTON -->
+    <div class="mb-3">
+        <a href="{{ route('academy.camps.index') }}" class="btn btn-sm btn-light border fw-bold text-dark shadow-sm px-3 py-2 rounded-3">
+            <i class="fa-solid fa-arrow-right me-1 text-primary"></i>
+            {{ $isArabic ? 'الرجوع إلى قائمة المعسكرات' : 'Back to Camps List' }}
+        </a>
+    </div>
+
     <!-- CAMP TOP HEADER BANNER -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">
         <div class="card-body p-4">
