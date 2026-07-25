@@ -123,6 +123,7 @@
                 </li>
                 <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
+                <li class="menu {{ Request::routeIs('academy.team.*') ? 'active' : '' }}"><a href="{{ route('academy.team.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users-gear menu-icon"></i><span>{{ $isArabic ? 'طاقم العمل والصلاحيات' : 'Team & Permissions' }}</span></div></a></li>
             @endunless
 
             <li class="navigation-section"><span>{{ $isArabic ? 'التواصل والمحتوى' : 'Communication & content' }}</span></li>

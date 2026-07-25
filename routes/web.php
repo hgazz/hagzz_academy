@@ -277,6 +277,16 @@ Route::group(
             Route::get('venue-bookings-calendar', [VenueBookingController::class, 'calendar'])->name('venue-bookings.calendar');
             Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
         });
+
+        Route::controller(\App\Http\Controllers\PartnerUserController::class)->prefix('team')->as('team.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{team}/edit', 'edit')->name('edit');
+            Route::put('/{team}', 'update')->name('update');
+            Route::delete('/{team}', 'destroy')->name('destroy');
+            Route::patch('/{team}/status', 'updateStatus')->name('updateStatus');
+        });
     });
 
 });

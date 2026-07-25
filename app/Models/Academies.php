@@ -118,4 +118,19 @@ class Academies extends Authenticatable
     {
         return $this->hasOne(TenantSubscription::class, 'academy_id')->latestOfMany();
     }
+
+    public function users()
+    {
+        return $this->hasMany(PartnerUser::class, 'academy_id');
+    }
+
+    public function branches()
+    {
+        return $this->hasMany(Academies::class, 'branch_to');
+    }
+
+    public function parentAcademy()
+    {
+        return $this->belongsTo(Academies::class, 'branch_to');
+    }
 }

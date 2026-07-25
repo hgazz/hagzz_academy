@@ -42,7 +42,7 @@ return [
         ],
         'academy' => [
             'driver' => 'session',
-            'provider' => 'academies',
+            'provider' => 'partner_users',
         ],
     ],
 
@@ -68,15 +68,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'partner_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\PartnerUser::class,
+        ],
         'academies' => [
             'driver' => 'eloquent',
             'model' => App\Models\Academies::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
