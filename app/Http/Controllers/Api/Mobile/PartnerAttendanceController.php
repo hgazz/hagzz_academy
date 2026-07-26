@@ -236,9 +236,11 @@ class PartnerAttendanceController extends Controller
 
     private function academyId(Request $request): int
     {
-        abort_unless($request->user() instanceof Academies, 403);
+        $user = $request->user();
+        $academy = $user instanceof \App\Models\PartnerUser ? $user->academy : $user;
+        abort_unless($academy instanceof Academies, 403);
 
-        return $request->user()->id;
+        return $academy->id;
     }
 
     private function response(AcademyStudent $student, $record, string $action): array

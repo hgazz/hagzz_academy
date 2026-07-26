@@ -16,9 +16,11 @@ class PartnerGroupController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        abort_unless($request->user() instanceof Academies, 403);
+        $user = $request->user();
+        $academy = $user instanceof \App\Models\PartnerUser ? $user->academy : $user;
+        abort_unless($academy instanceof Academies, 403);
 
-        $academyId = $request->user()->id;
+        $academyId = $academy->id;
 
         $groups = AcademyGroup::query()
             ->where('academy_id', $academyId)

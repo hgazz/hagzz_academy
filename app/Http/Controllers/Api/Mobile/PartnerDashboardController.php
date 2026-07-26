@@ -17,7 +17,8 @@ class PartnerDashboardController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $academy = $request->user();
+        $user = $request->user();
+        $academy = $user instanceof \App\Models\PartnerUser ? $user->academy : $user;
         abort_unless($academy instanceof Academies, 403);
         $academyId = $academy->id;
 

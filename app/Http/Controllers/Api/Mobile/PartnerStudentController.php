@@ -335,7 +335,7 @@ class PartnerStudentController extends Controller
         $user = $request->user();
         $notifications = [];
 
-        if ($user instanceof Academies) {
+        if ($user instanceof Academies || $user instanceof \App\Models\PartnerUser) {
             // Manager / Academy Notifications
             try {
                 $expiring = AcademyStudentSubscription::query()
@@ -475,7 +475,7 @@ class PartnerStudentController extends Controller
         $user = $request->user();
         $conversations = [];
 
-        if ($user instanceof Academies) {
+        if ($user instanceof Academies || $user instanceof \App\Models\PartnerUser) {
             // Manager: get real students / parents list
             try {
                 $students = AcademyStudent::where('academy_id', $user->id)->latest()->take(6)->get();
@@ -533,6 +533,9 @@ class PartnerStudentController extends Controller
     private function academyId(Request $request): int
     {
         $user = $request->user();
+        if ($user instanceof \App\Models\PartnerUser) {
+            return $user->academy_id;
+        }
         if ($user instanceof Academies) {
             return $user->id;
         }
