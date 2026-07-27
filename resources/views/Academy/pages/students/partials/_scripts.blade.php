@@ -108,6 +108,11 @@
             'US': '+1', 'CA': '+1', 'FR': '+33', 'DE': '+49', 'ES': '+34', 'IT': '+39'
         };
 
+        const customCityShell = document.getElementById('customCityShell');
+        const customCityInput = document.getElementById('customCityInput');
+        const customAreaShell = document.getElementById('customAreaShell');
+        const customAreaInput = document.getElementById('customAreaInput');
+
         async function loadOptions(url, payload, target, selected) {
             target.innerHTML = '<option value="">' + (isArabic ? 'اختر...' : 'Select...') + '</option>';
             if (!Object.values(payload)[0]) return;
@@ -122,6 +127,7 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
+                let foundSelected = false;
                 data.forEach(item => {
                     let displayName = item.name;
                     if (typeof displayName === 'object' && displayName !== null) {
@@ -129,8 +135,23 @@
                     }
                     const optVal = item.id !== undefined && item.id !== null ? item.id : item.name;
                     const isSel = String(optVal) === String(selected) || String(displayName) === String(selected);
+                    if (isSel) foundSelected = true;
                     target.add(new Option(displayName, optVal, false, isSel));
                 });
+
+                target.add(new Option(isArabic ? '✏️ أخرى (أدخل اسمها يدوياً)' : '✏️ Other (Type custom)', '__custom__', false, String(selected) === '__custom__'));
+
+                if (selected && !foundSelected && String(selected) !== '__custom__') {
+                    if (target === city && customCityShell && customCityInput) {
+                        customCityShell.style.display = 'flex';
+                        customCityInput.value = selected;
+                        target.value = '__custom__';
+                    } else if (target === area && customAreaShell && customAreaInput) {
+                        customAreaShell.style.display = 'flex';
+                        customAreaInput.value = selected;
+                        target.value = '__custom__';
+                    }
+                }
             } catch (e) {
                 console.error('Error loading options:', e);
             }
@@ -151,17 +172,40 @@
             if (countryCodeInput && iso2 && codeMap[iso2]) {
                 countryCodeInput.value = codeMap[iso2];
             }
+            if (customCityShell) customCityShell.style.display = 'none';
+            if (customAreaShell) customAreaShell.style.display = 'none';
             city.dataset.selected = '';
             area.dataset.selected = '';
             loadCities();
         });
 
-        city.addEventListener('change', () => {
+        city.addEventListener('change', function () {
+            if (this.value === '__custom__') {
+                if (customCityShell) customCityShell.style.display = 'flex';
+                if (customCityInput) customCityInput.focus();
+            } else {
+                if (customCityShell) customCityShell.style.display = 'none';
+            }
+            if (customAreaShell) customAreaShell.style.display = 'none';
             area.dataset.selected = '';
             loadAreas();
         });
 
+        area.addEventListener('change', function () {
+            if (this.value === '__custom__') {
+                if (customAreaShell) customAreaShell.style.display = 'flex';
+                if (customAreaInput) customAreaInput.focus();
+            } else {
+                if (customAreaShell) customAreaShell.style.display = 'none';
+            }
+        });
+
         if (country && country.value) {
+            const selectedOpt = country.options[country.selectedIndex];
+            const iso2 = selectedOpt ? selectedOpt.dataset.iso2 : '';
+            if (countryCodeInput && (!countryCodeInput.value || countryCodeInput.value === '+20') && iso2 && codeMap[iso2]) {
+                countryCodeInput.value = codeMap[iso2];
+            }
             loadCities();
         }
     });

@@ -161,6 +161,7 @@ class AcademyStudentController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
+        $this->processLocationData($data, $request);
         $data['academy_id'] = auth('academy')->id();
 
         if ($request->hasFile('medical_certificate')) {
@@ -183,7 +184,7 @@ class AcademyStudentController extends Controller
     {
         $this->authorizeStudent($student);
 
-        $countries = Country::orderBy('name')->get(['id', 'name']);
+        $countries = Country::orderBy('name')->get(['id', 'name', 'iso2']);
         return view('Academy.pages.students.edit', compact('student', 'countries'));
     }
 
@@ -191,6 +192,7 @@ class AcademyStudentController extends Controller
     {
         $this->authorizeStudent($student);
         $data = $this->validated($request);
+        $this->processLocationData($data, $request);
 
         if ($request->hasFile('medical_certificate')) {
             $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
@@ -223,8 +225,11 @@ class AcademyStudentController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'country_code' => ['nullable', 'string', 'max:10'],
-            'country_id' => ['nullable', 'exists:countries,id'], 'city_id' => ['nullable', 'exists:cities,id'],
-            'area_id' => ['nullable', 'exists:areas,id'],
+            'country_id' => ['nullable'],
+            'city_id' => ['nullable'],
+            'area_id' => ['nullable'],
+            'custom_city_name' => ['nullable', 'string', 'max:255'],
+            'custom_area_name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
             'birth_date' => ['nullable', 'date'],
@@ -246,8 +251,14 @@ class AcademyStudentController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        if (!empty($validated['country_id']) && empty($validated['country_code'])) {
-            $country = Country::find($validated['country_id']);
+        return $validated;
+    }
+
+    private function processLocationData(array &$data, Request $request): void
+    {
+        // Auto-assign country_code if missing
+        if (empty($data['country_code']) && !empty($data['country_id'])) {
+            $country = Country::find($data['country_id']);
             if ($country && !empty($country->iso2)) {
                 $codeMap = [
                     'EG' => '+20', 'SA' => '+966', 'AE' => '+971', 'QA' => '+974', 'KW' => '+965',
@@ -256,11 +267,63 @@ class AcademyStudentController extends Controller
                     'YE' => '+967', 'SY' => '+963', 'PS' => '+970', 'TR' => '+90', 'GB' => '+44',
                     'US' => '+1', 'CA' => '+1', 'FR' => '+33', 'DE' => '+49', 'ES' => '+34',
                 ];
-                $validated['country_code'] = $codeMap[strtoupper($country->iso2)] ?? null;
+                $data['country_code'] = $codeMap[strtoupper($country->iso2)] ?? null;
             }
         }
 
-        return $validated;
+        // Process City
+        $cityId = $data['city_id'] ?? null;
+        $customCityName = trim((string) ($request->input('custom_city_name') ?? ''));
+
+        if ($cityId === '__custom__' || $customCityName !== '') {
+            if ($customCityName !== '') {
+                $city = City::firstOrCreate(
+                    ['name' => $customCityName],
+                    ['country_id' => $data['country_id'] ?? null]
+                );
+                $data['city_id'] = $city->id;
+            } else {
+                $data['city_id'] = null;
+            }
+        } elseif (is_numeric($cityId)) {
+            $data['city_id'] = (int) $cityId;
+        } elseif (!empty($cityId)) {
+            $city = City::firstOrCreate(
+                ['name' => $cityId],
+                ['country_id' => $data['country_id'] ?? null]
+            );
+            $data['city_id'] = $city->id;
+        } else {
+            $data['city_id'] = null;
+        }
+
+        // Process Area
+        $areaId = $data['area_id'] ?? null;
+        $customAreaName = trim((string) ($request->input('custom_area_name') ?? ''));
+
+        if ($areaId === '__custom__' || $customAreaName !== '') {
+            if ($customAreaName !== '') {
+                $area = Area::firstOrCreate(
+                    ['name' => $customAreaName],
+                    ['city_id' => $data['city_id'] ?? null]
+                );
+                $data['area_id'] = $area->id;
+            } else {
+                $data['area_id'] = null;
+            }
+        } elseif (is_numeric($areaId)) {
+            $data['area_id'] = (int) $areaId;
+        } elseif (!empty($areaId)) {
+            $area = Area::firstOrCreate(
+                ['name' => $areaId],
+                ['city_id' => $data['city_id'] ?? null]
+            );
+            $data['area_id'] = $area->id;
+        } else {
+            $data['area_id'] = null;
+        }
+
+        unset($data['custom_city_name'], $data['custom_area_name']);
     }
 
     private function syncLinkedUser(AcademyStudent $student): void

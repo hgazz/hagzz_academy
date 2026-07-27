@@ -3,6 +3,12 @@
     $isArabic = app()->getLocale() === 'ar';
     $birthDate = old('birth_date', isset($student) && $student->birth_date ? $student->birth_date->format('Y-m-d') : '');
     $currentStatus = old('status', $student->status ?? 'active');
+
+    $selectedCountryId = old('country_id', $student->country_id ?? null);
+    if (!$selectedCountryId) {
+        $egyptCountry = $countries->first(fn ($c) => strtoupper($c->iso2 ?? '') === 'EG' || str_contains($c->name, 'مصر') || str_contains(strtolower($c->name), 'egypt'));
+        $selectedCountryId = $egyptCountry?->id;
+    }
 @endphp
 
 <div class="student-form-layout">
@@ -107,18 +113,20 @@
                     </div>
 
                     {{-- Location Fields --}}
-                    <input type="hidden" name="country_code" id="countryCodeInput" value="{{ old('country_code', $student->country_code ?? '') }}">
+                    <input type="hidden" name="country_code" id="countryCodeInput" value="{{ old('country_code', $student->country_code ?? '+20') }}">
                     <div class="student-field">
                         <label for="country">{{ trans('admin.training.country') }}</label>
-                        <div class="student-select-shell"><i data-feather="globe"></i><select id="country" name="country_id"><option value="">-</option>@foreach($countries as $country)<option value="{{ $country->id }}" data-iso2="{{ strtoupper($country->iso2 ?? '') }}" @selected(old('country_id',$student->country_id ?? '')==$country->id)>{{ $country->name }}</option>@endforeach</select><i data-feather="chevron-down"></i></div>
+                        <div class="student-select-shell"><i data-feather="globe"></i><select id="country" name="country_id"><option value="">-</option>@foreach($countries as $country)<option value="{{ $country->id }}" data-iso2="{{ strtoupper($country->iso2 ?? '') }}" @selected($selectedCountryId == $country->id)>{{ $country->name }}</option>@endforeach</select><i data-feather="chevron-down"></i></div>
                     </div>
                     <div class="student-field">
                         <label for="city">{{ trans('admin.city.city') }}</label>
                         <div class="student-select-shell"><i data-feather="map"></i><select id="city" name="city_id" data-selected="{{ old('city_id',$student->city_id ?? '') }}"></select><i data-feather="chevron-down"></i></div>
+                        <div class="student-input-shell" id="customCityShell" style="display: none; margin-top: 8px;"><i data-feather="edit-3"></i><input type="text" id="customCityInput" name="custom_city_name" value="{{ old('custom_city_name') }}" placeholder="{{ $isArabic ? 'اكتب اسم المدينة يدوياً...' : 'Type custom city name...' }}"></div>
                     </div>
                     <div class="student-field">
                         <label for="area">{{ trans('admin.area.area') }}</label>
                         <div class="student-select-shell"><i data-feather="navigation"></i><select id="area" name="area_id" data-selected="{{ old('area_id',$student->area_id ?? '') }}"></select><i data-feather="chevron-down"></i></div>
+                        <div class="student-input-shell" id="customAreaShell" style="display: none; margin-top: 8px;"><i data-feather="edit-3"></i><input type="text" id="customAreaInput" name="custom_area_name" value="{{ old('custom_area_name') }}" placeholder="{{ $isArabic ? 'اكتب اسم المنطقة يدوياً...' : 'Type custom area name...' }}"></div>
                     </div>
 
                     {{-- Account details --}}
