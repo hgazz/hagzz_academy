@@ -127,6 +127,7 @@
                     @empty <tr><td colspan="9" class="fr-empty">{{ $copy['noData'] }}</td></tr> @endforelse
                     </tbody></table></div>{{ $venueBookings->links() }}
                 </section>
+            @endif
             @if(in_array($filters['source'], ['all', 'camps'], true))
                 <section class="fr-report-panel" id="camps-report">
                     <header><div><i class="fa-solid fa-campground"></i><div><h2>{{ $copy['camps'] }}</h2><p>{{ $copy['details'] }}</p></div></div><a href="{{ route('academy.report.overview.export', array_merge(['type' => 'camps'], $queryFilters)) }}"><i class="fa-solid fa-download"></i>{{ $copy['export'] }}</a></header>
