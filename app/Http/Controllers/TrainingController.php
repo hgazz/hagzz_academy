@@ -215,13 +215,27 @@ class TrainingController extends Controller
     }
     public function getAreaByCity(Request $request)
     {
-        $areas = Area::where('city_id', $request->city_id)->get();
+        $locale = app()->getLocale();
+        $areas = Area::where('city_id', $request->city_id)->get()->map(function ($area) use ($locale) {
+            $name = $area->getTranslation('name', $locale, false) ?: $area->name;
+            return [
+                'id' => $area->id,
+                'name' => is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name,
+            ];
+        });
         return response()->json($areas);
     }
 
     public function getCityByCountry(Request $request)
     {
-        $cities = City::where('country_id', $request->country_id)->get();
+        $locale = app()->getLocale();
+        $cities = City::where('country_id', $request->country_id)->get()->map(function ($city) use ($locale) {
+            $name = $city->getTranslation('name', $locale, false) ?: $city->name;
+            return [
+                'id' => $city->id,
+                'name' => is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name,
+            ];
+        });
         return response()->json($cities);
     }
     public function storeBooking(BookingRequest $request)

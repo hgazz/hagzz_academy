@@ -21,13 +21,13 @@ class AcademyStudent extends Model
         'email',
         'gender',
         'birth_date',
-        'child_type', 'school_name', 'club_member', 'coach_preference', 'frequent_attendance',
+        'child_type', 'school_name', 'club_member', 'club_card_number', 'club_card_file', 'coach_preference', 'frequent_attendance',
         'guardian_name',
         'guardian_phone',
         'relation_with_child', 'referral_source', 'delivery_service',
         'status',
         'medical_condition', 'start_date',
-        'medical_notes',
+        'medical_notes', 'medical_certificate',
         'notes',
     ];
 

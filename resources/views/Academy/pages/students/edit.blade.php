@@ -34,7 +34,7 @@
             </div>
         @endif
 
-        <form action="{{ route('academy.students.update', $student) }}" method="POST" id="studentForm">
+        <form action="{{ route('academy.students.update', $student) }}" method="POST" id="studentForm" enctype="multipart/form-data">
             @method('PUT')
             @include('Academy.pages.students.partials._form')
         </form>

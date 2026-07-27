@@ -34,7 +34,7 @@
             </div>
         @endif
 
-        <form action="{{ route('academy.students.store') }}" method="POST" id="studentForm">
+        <form action="{{ route('academy.students.store') }}" method="POST" id="studentForm" enctype="multipart/form-data">
             @include('Academy.pages.students.partials._form')
         </form>
     </div>

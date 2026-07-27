@@ -163,6 +163,15 @@ class AcademyStudentController extends Controller
         $data = $this->validated($request);
         $data['academy_id'] = auth('academy')->id();
 
+        if ($request->hasFile('medical_certificate')) {
+            $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
+            $data['medical_certificate'] = 'storage/' . $path;
+        }
+        if ($request->hasFile('club_card_file')) {
+            $path = $request->file('club_card_file')->store('students/club_cards', 'public');
+            $data['club_card_file'] = 'storage/' . $path;
+        }
+
         $student = AcademyStudent::create($data);
         $this->syncLinkedUser($student);
 
@@ -181,7 +190,18 @@ class AcademyStudentController extends Controller
     public function update(Request $request, AcademyStudent $student)
     {
         $this->authorizeStudent($student);
-        $student->update($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->hasFile('medical_certificate')) {
+            $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
+            $data['medical_certificate'] = 'storage/' . $path;
+        }
+        if ($request->hasFile('club_card_file')) {
+            $path = $request->file('club_card_file')->store('students/club_cards', 'public');
+            $data['club_card_file'] = 'storage/' . $path;
+        }
+
+        $student->update($data);
         $this->syncLinkedUser($student);
 
         session()->flash('success', trans('admin.student_management.student_updated'));
@@ -199,7 +219,7 @@ class AcademyStudentController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'country_code' => ['nullable', 'string', 'max:10'],
@@ -209,7 +229,10 @@ class AcademyStudentController extends Controller
             'gender' => ['nullable', 'in:male,female'],
             'birth_date' => ['nullable', 'date'],
             'child_type' => ['nullable', 'in:parent,child,athlete'], 'school_name' => ['nullable', 'string', 'max:255'],
-            'club_member' => ['nullable', 'in:yes,no'], 'coach_preference' => ['nullable', 'in:male,female,not_important'],
+            'club_member' => ['nullable', 'in:yes,no'],
+            'club_card_number' => ['nullable', 'string', 'max:100'],
+            'club_card_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            'coach_preference' => ['nullable', 'in:male,female,not_important'],
             'frequent_attendance' => ['nullable', 'in:daily,weekly,monthly'],
             'guardian_name' => ['nullable', 'string', 'max:255'],
             'guardian_phone' => ['nullable', 'string', 'max:30'],
@@ -218,9 +241,26 @@ class AcademyStudentController extends Controller
             'delivery_service' => ['nullable', 'in:yes,no'],
             'status' => ['required', 'in:active,inactive,suspended'],
             'medical_notes' => ['nullable', 'string'],
+            'medical_certificate' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
             'medical_condition' => ['nullable', 'in:yes,no'], 'start_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        if (!empty($validated['country_id']) && empty($validated['country_code'])) {
+            $country = Country::find($validated['country_id']);
+            if ($country && !empty($country->iso2)) {
+                $codeMap = [
+                    'EG' => '+20', 'SA' => '+966', 'AE' => '+971', 'QA' => '+974', 'KW' => '+965',
+                    'OM' => '+968', 'BH' => '+973', 'JO' => '+962', 'LB' => '+961', 'IQ' => '+964',
+                    'LY' => '+218', 'SD' => '+249', 'TN' => '+216', 'MA' => '+212', 'DZ' => '+213',
+                    'YE' => '+967', 'SY' => '+963', 'PS' => '+970', 'TR' => '+90', 'GB' => '+44',
+                    'US' => '+1', 'CA' => '+1', 'FR' => '+33', 'DE' => '+49', 'ES' => '+34',
+                ];
+                $validated['country_code'] = $codeMap[strtoupper($country->iso2)] ?? null;
+            }
+        }
+
+        return $validated;
     }
 
     private function syncLinkedUser(AcademyStudent $student): void
@@ -232,12 +272,14 @@ class AcademyStudentController extends Controller
             'country_code' => $student->country_code, 'country_id' => $student->country_id,
             'city_id' => $student->city_id, 'area_id' => $student->area_id,
             'child_type' => $student->child_type, 'school_name' => $student->school_name,
-            'club_member' => $student->club_member, 'parent_name' => $student->guardian_name,
-            'parent_phone' => $student->guardian_phone, 'coach_preference' => $student->coach_preference,
-            'frequent_attendance' => $student->frequent_attendance, 'relation_with_child' => $student->relation_with_child,
-            'referral_source' => $student->referral_source, 'delivery_service' => $student->delivery_service,
-            'medical_condition' => $student->medical_condition, 'start_date' => $student->start_date,
-            'medical_condition_details' => $student->medical_notes, 'additional_information' => $student->notes,
+            'club_member' => $student->club_member, 'club_card_number' => $student->club_card_number,
+            'club_card_file' => $student->club_card_file, 'medical_certificate' => $student->medical_certificate,
+            'parent_name' => $student->guardian_name, 'parent_phone' => $student->guardian_phone,
+            'coach_preference' => $student->coach_preference, 'frequent_attendance' => $student->frequent_attendance,
+            'relation_with_child' => $student->relation_with_child, 'referral_source' => $student->referral_source,
+            'delivery_service' => $student->delivery_service, 'medical_condition' => $student->medical_condition,
+            'start_date' => $student->start_date, 'medical_condition_details' => $student->medical_notes,
+            'additional_information' => $student->notes,
         ]);
     }
 
