@@ -204,29 +204,29 @@ class AcademyFinancialReportController extends Controller
 
     private function invoiceTotals(Builder $query): array
     {
-        $totals = (clone $query)->selectRaw(
+        $totals = (clone $query)->reorder()->toBase()->selectRaw(
             'COALESCE(SUM(amount), 0) AS billed, COALESCE(SUM(COALESCE(paid_amount, amount)), 0) AS collected'
         )->first();
-        $billed = (float) $totals->billed;
-        $collected = (float) $totals->collected;
+        $billed = (float) ($totals->billed ?? 0);
+        $collected = (float) ($totals->collected ?? 0);
 
         return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
     }
 
     private function venueTotals(Builder $query): array
     {
-        $totals = (clone $query)->selectRaw(
+        $totals = (clone $query)->reorder()->toBase()->selectRaw(
             'COALESCE(SUM(total_amount), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected'
         )->first();
-        $billed = (float) $totals->billed;
-        $collected = (float) $totals->collected;
+        $billed = (float) ($totals->billed ?? 0);
+        $collected = (float) ($totals->collected ?? 0);
 
         return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
     }
 
     private function campTotals(Builder $query): array
     {
-        $totals = (clone $query)->selectRaw(
+        $totals = (clone $query)->reorder()->toBase()->selectRaw(
             'COALESCE(SUM(total_fee), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected'
         )->first();
         $billed = (float) ($totals->billed ?? 0);
