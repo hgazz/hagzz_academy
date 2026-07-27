@@ -110,7 +110,7 @@
                     <input type="hidden" name="country_code" id="countryCodeInput" value="{{ old('country_code', $student->country_code ?? '') }}">
                     <div class="student-field">
                         <label for="country">{{ trans('admin.training.country') }}</label>
-                        <div class="student-select-shell"><i data-feather="globe"></i><select id="country" name="country_id"><option value="">-</option>@foreach($countries as $country)<option value="{{ $country->id }}" @selected(old('country_id',$student->country_id ?? '')==$country->id)>{{ $country->name }}</option>@endforeach</select><i data-feather="chevron-down"></i></div>
+                        <div class="student-select-shell"><i data-feather="globe"></i><select id="country" name="country_id"><option value="">-</option>@foreach($countries as $country)<option value="{{ $country->id }}" data-iso2="{{ strtoupper($country->iso2 ?? '') }}" @selected(old('country_id',$student->country_id ?? '')==$country->id)>{{ $country->name }}</option>@endforeach</select><i data-feather="chevron-down"></i></div>
                     </div>
                     <div class="student-field">
                         <label for="city">{{ trans('admin.city.city') }}</label>

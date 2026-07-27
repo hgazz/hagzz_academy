@@ -215,28 +215,171 @@ class TrainingController extends Controller
     }
     public function getAreaByCity(Request $request)
     {
+        $cityId = $request->city_id;
+        if (blank($cityId)) {
+            return response()->json([]);
+        }
+
         $locale = app()->getLocale();
-        $areas = Area::where('city_id', $request->city_id)->get()->map(function ($area) use ($locale) {
-            $name = $area->getTranslation('name', $locale, false) ?: $area->name;
-            return [
-                'id' => $area->id,
-                'name' => is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name,
-            ];
-        });
-        return response()->json($areas);
+        
+        if (is_numeric($cityId)) {
+            try {
+                $areas = Area::where('city_id', $cityId)->get()->map(function ($area) use ($locale) {
+                    $name = $area->getTranslation('name', $locale, false) ?: $area->name;
+                    $displayName = is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name;
+                    return [
+                        'id' => $area->id,
+                        'name' => $displayName,
+                    ];
+                });
+                if ($areas->isNotEmpty()) {
+                    return response()->json($areas);
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+        }
+
+        $cityName = is_numeric($cityId) ? City::find($cityId)?->name : $cityId;
+        $cityNameStr = is_array($cityName) ? ($cityName[$locale] ?? reset($cityName)) : (string) $cityName;
+
+        $areasMap = [
+            'القاهرة' => ['التجمع الخامس', 'مدينة نصر', 'المعادي', 'مصر الجديدة', 'الزمالك', 'الشروق', 'مدينتي', 'العاصمة الإدارية', 'وسط البلد', 'المقطم', 'عين شمس'],
+            'Cairo' => ['Fifth Settlement', 'Nasr City', 'Maadi', 'Heliopolis', 'Zamalek', 'Shorouk', 'Madinaty', 'New Capital', 'Downtown'],
+            'الجيزة' => ['الشيخ زايد', '٦ أكتوبر', 'الدقي', 'المهندسين', 'الهرم', 'فيصل', 'حدائق الأهرام'],
+            'Giza' => ['Sheikh Zayed', '6th of October', 'Dokki', 'Mohandessin', 'Haram', 'Faisal'],
+            'الإسكندرية' => ['سموحة', 'ميامي', 'المنتزة', 'ستانلي', 'رشدي', 'العجمي', 'سيدي بشر', 'جليم'],
+            'Alexandria' => ['Smouha', 'Miami', 'Montazah', 'Stanley', 'Roushdy', 'Agami'],
+            'الرياض' => ['العليا', 'النرجس', 'الياسمين', 'الملقا', 'الصحافة', 'الملز', 'الشفا', 'النسيم'],
+            'Riyadh' => ['Olaya', 'An Narjis', 'Alyasmin', 'Al Malqa', 'As Sahafah', 'Al Malaz'],
+            'جدة' => ['الروضة', 'الشاطئ', 'الحمراء', 'الزهراء', 'السلامة', 'النعيم', 'المرجان'],
+            'Jeddah' => ['Ar Rawdah', 'Ash Shati', 'Al Hamra', 'Az Zahra', 'As Salamah'],
+            'دبي' => ['داون تاون دبي', 'دبي مارينا', 'البرشاء', 'جميرا', 'المرقبات', 'دبي لاند', 'القرية العالمية'],
+            'Dubai' => ['Downtown Dubai', 'Dubai Marina', 'Al Barsha', 'Jumeirah', 'Al Muraqqabat'],
+            'الدوحة' => ['الدفنة', 'اللؤلؤة', 'الخليج الغربي', 'مشيرب', 'السد', 'الوعب'],
+            'Doha' => ['West Bay', 'The Pearl', 'Msheireb', 'Al Sadd', 'Al Waab'],
+        ];
+
+        $list = [];
+        foreach ($areasMap as $key => $items) {
+            if ($cityNameStr && (mb_stripos($cityNameStr, $key) !== false || mb_stripos($key, $cityNameStr) !== false)) {
+                $list = $items;
+                break;
+            }
+        }
+
+        $result = collect($list)->map(fn ($areaName) => [
+            'id' => $areaName,
+            'name' => $areaName,
+        ]);
+
+        return response()->json($result->values());
     }
 
     public function getCityByCountry(Request $request)
     {
+        $countryId = $request->country_id;
+        if (blank($countryId)) {
+            return response()->json([]);
+        }
+
         $locale = app()->getLocale();
-        $cities = City::where('country_id', $request->country_id)->get()->map(function ($city) use ($locale) {
-            $name = $city->getTranslation('name', $locale, false) ?: $city->name;
+        $isArabic = $locale === 'ar';
+
+        try {
+            $dbCities = City::query()
+                ->where('country_id', $countryId)
+                ->orWhere('county_id', $countryId)
+                ->get();
+
+            if ($dbCities->isNotEmpty()) {
+                $result = $dbCities->map(function ($city) use ($locale) {
+                    $name = $city->getTranslation('name', $locale, false) ?: $city->name;
+                    $displayName = is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name;
+                    return [
+                        'id' => $city->id,
+                        'name' => $displayName,
+                    ];
+                });
+                return response()->json($result);
+            }
+        } catch (\Throwable $e) {
+            // Ignore missing column fallback to dictionary
+        }
+
+        $country = Country::find($countryId);
+        if (!$country) {
+            return response()->json([]);
+        }
+
+        $iso = strtoupper($country->iso2 ?? '');
+        $citiesMapAr = [
+            'EG' => ['القاهرة', 'الإسكندرية', 'الجيزة', 'شرم الشيخ', 'الغردقة', 'الأقصر', 'أسوان', 'الجونة', 'مرسى علم', 'الساحل الشمالي', 'بورسعيد', 'المنصورة', 'طنطا', 'الزقازيق', 'الإسماعيلية', 'السويس', 'أسيوط', 'سوهاج'],
+            'SA' => ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الخبر', 'أبها', 'تبوك', 'الطائف', 'القصيم', 'حائل', 'نجران', 'جازان'],
+            'AE' => ['دبي', 'أبوظبي', 'الشارقة', 'عجمان', 'رأس الخيمة', 'العين', 'الفجيرة', 'أم القيوين'],
+            'QA' => ['الدوحة', 'الريان', 'الوكرة', 'الخور', 'لوسيل', 'أم صلال', 'الشمال'],
+            'KW' => ['مدينة الكويت', 'حولي', 'السالمية', 'الأحمدي', 'الفروانية', 'الجهراء', 'مبارك الكبير'],
+            'OM' => ['مسقط', 'صلالة', 'صحار', 'نزوى', 'صور', 'البريمي'],
+            'BH' => ['المنامة', 'المحرق', 'الرفاع', 'سترة', 'مدينة عيسى', 'مدينة حمد'],
+            'JO' => ['عمان', 'العقبة', 'إربد', 'الزرقاء', 'السلط', 'مأدبا'],
+            'LB' => ['بيروت', 'طرابلس', 'صيدا', 'جبيل', 'زحلة', 'صور'],
+            'ES' => ['مدريد', 'برشلونة', 'مالقة', 'فالنسيا', 'إشبيلية', 'بيلباو', 'غرناطة', 'ماربيا'],
+            'TR' => ['إسطنبول', 'أنطاليا', 'أنقرة', 'بورصة', 'إزمير', 'بودروم', 'طرابزون'],
+            'GB' => ['لندن', 'مانشستر', 'ليفربول', 'برمنغهام', 'غلاسكو', 'أدنبرة'],
+            'FR' => ['باريس', 'مارسيليا', 'ليون', 'نيس', 'تولوز', 'بوردو'],
+            'DE' => ['برلين', 'ميونيخ', 'فرانکفورت', 'هامبورغ', 'كولونيا', 'دورتموند'],
+            'IT' => ['روما', 'ميلانو', 'فلورنسا', 'تورينو', 'فينيسيا', 'نابولي'],
+            'NL' => ['أمستردام', 'روتردام', 'لاهاي', 'أوتريخت'],
+            'PT' => ['لشبونة', 'بورتو', 'فارو', 'براغا'],
+            'GR' => ['أثينا', 'سالونيك', 'هركليون', 'رودس'],
+            'US' => ['نيويورك', 'لوس أنجلوس', 'ميامي', 'أورلاندو', 'شيكاغو', 'واشنطن', 'سان فرانسيسكو', 'دالاس'],
+            'CA' => ['تورونتو', 'مونتريال', 'فانكوفر', 'أوتاوا', 'كالغاري'],
+            'RU' => ['موسكو', 'سان بطرسبرغ', 'سوتشي', 'كازان'],
+            'JP' => ['طوكيو', 'أوساكا', 'كيوتو', 'يوكوهاما', 'سابورو'],
+            'BR' => ['ريو دي جانيرو', 'ساو باولو', 'برازيليا', 'سالفادور'],
+            'AR' => ['بوينس آيرس', 'كوردوبا', 'روزاريو'],
+            'MA' => ['الدار البيضاء', 'الرباط', 'مراكش', 'طنجة', 'أغادير', 'فاس'],
+            'TN' => ['تونس العاصمة', 'سوسة', 'الصفاقس', 'الحمامات'],
+            'DZ' => ['الجزائر العاصمة', 'وهران', 'قسنطينة', 'عنابة'],
+            'CY' => ['لارنكا', 'ليماسول', 'نيقوسيا', 'بافوس'],
+            'CH' => ['جنيف', 'زيورخ', 'بازل', 'برن', 'لوزان'],
+            'AT' => ['فيينا', 'سالزبورغ', 'إنسبروك'],
+            'GE' => ['تبليسي', 'باتومي', 'كوبوليتي'],
+            'AU' => ['سيدني', 'ملبورن', 'بريزبن', 'بيرث'],
+        ];
+
+        $citiesMapEn = [
+            'EG' => ['Cairo', 'Alexandria', 'Giza', 'Sharm El Sheikh', 'Hurghada', 'Luxor', 'Aswan', 'El Gouna', 'Marsa Alam', 'North Coast', 'Port Said', 'Mansoura', 'Tanta'],
+            'SA' => ['Riyadh', 'Jeddah', 'Dammam', 'Makkah', 'Madinah', 'Khobar', 'Abha', 'Tabuk', 'Taif', 'Qassim'],
+            'AE' => ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Al Ain', 'Fujairah'],
+            'QA' => ['Doha', 'Al Rayyan', 'Al Wakrah', 'Al Khor', 'Lusail'],
+            'KW' => ['Kuwait City', 'Hawalli', 'Salmiya', 'Ahmadi', 'Farwaniya'],
+            'OM' => ['Muscat', 'Salalah', 'Sohar', 'Nizwa'],
+            'BH' => ['Manama', 'Muharraq', 'Riffa', 'Sitra'],
+            'JO' => ['Amman', 'Aqaba', 'Irbid', 'Zarqa'],
+            'LB' => ['Beirut', 'Tripoli', 'Sidon', 'Byblos'],
+            'ES' => ['Madrid', 'Barcelona', 'Malaga', 'Valencia', 'Seville'],
+            'TR' => ['Istanbul', 'Antalya', 'Ankara', 'Bursa', 'Izmir', 'Bodrum'],
+            'GB' => ['London', 'Manchester', 'Liverpool', 'Birmingham', 'Edinburgh'],
+            'FR' => ['Paris', 'Marseille', 'Lyon', 'Nice', 'Toulouse'],
+            'DE' => ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne'],
+            'IT' => ['Rome', 'Milan', 'Florence', 'Turin', 'Venice'],
+            'US' => ['New York', 'Los Angeles', 'Miami', 'Chicago', 'Washington D.C.', 'San Francisco'],
+            'CA' => ['Toronto', 'Montreal', 'Vancouver', 'Ottawa'],
+            'MA' => ['Casablanca', 'Rabat', 'Marrakech', 'Tangier', 'Agadir'],
+        ];
+
+        $list = $isArabic ? ($citiesMapAr[$iso] ?? []) : ($citiesMapEn[$iso] ?? $citiesMapAr[$iso] ?? []);
+
+        $result = collect($list)->map(function ($cityName) {
+            $existing = City::where('name', 'like', "%{$cityName}%")->first();
             return [
-                'id' => $city->id,
-                'name' => is_array($name) ? ($name[$locale] ?? reset($name)) : (string) $name,
+                'id' => $existing ? $existing->id : $cityName,
+                'name' => $cityName,
             ];
         });
-        return response()->json($cities);
+
+        return response()->json($result->values());
     }
     public function storeBooking(BookingRequest $request)
     {

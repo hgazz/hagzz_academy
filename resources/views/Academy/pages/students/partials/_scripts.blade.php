@@ -100,8 +100,16 @@
         const country = document.getElementById('country'), city = document.getElementById('city'), area = document.getElementById('area');
         const countryCodeInput = document.getElementById('countryCodeInput');
 
+        const codeMap = {
+            'EG': '+20', 'SA': '+966', 'AE': '+971', 'QA': '+974', 'KW': '+965',
+            'OM': '+968', 'BH': '+973', 'JO': '+962', 'LB': '+961', 'IQ': '+964',
+            'LY': '+218', 'SD': '+249', 'TN': '+216', 'MA': '+212', 'DZ': '+213',
+            'YE': '+967', 'SY': '+963', 'PS': '+970', 'TR': '+90', 'GB': '+44',
+            'US': '+1', 'CA': '+1', 'FR': '+33', 'DE': '+49', 'ES': '+34', 'IT': '+39'
+        };
+
         async function loadOptions(url, payload, target, selected) {
-            target.innerHTML = '<option value="">-</option>';
+            target.innerHTML = '<option value="">' + (isArabic ? 'اختر...' : 'Select...') + '</option>';
             if (!Object.values(payload)[0]) return;
             try {
                 const response = await fetch(url, {
@@ -119,7 +127,9 @@
                     if (typeof displayName === 'object' && displayName !== null) {
                         displayName = displayName[isArabic ? 'ar' : 'en'] || Object.values(displayName)[0] || '-';
                     }
-                    target.add(new Option(displayName, item.id, false, String(item.id) === String(selected)));
+                    const optVal = item.id !== undefined && item.id !== null ? item.id : item.name;
+                    const isSel = String(optVal) === String(selected) || String(displayName) === String(selected);
+                    target.add(new Option(displayName, optVal, false, isSel));
                 });
             } catch (e) {
                 console.error('Error loading options:', e);
@@ -135,7 +145,12 @@
             await loadOptions(@json(route('academy.training.getAreaByCity')), { city_id: city.value }, area, area.dataset.selected);
         }
 
-        country.addEventListener('change', () => {
+        country.addEventListener('change', function () {
+            const selectedOpt = country.options[country.selectedIndex];
+            const iso2 = selectedOpt ? selectedOpt.dataset.iso2 : '';
+            if (countryCodeInput && iso2 && codeMap[iso2]) {
+                countryCodeInput.value = codeMap[iso2];
+            }
             city.dataset.selected = '';
             area.dataset.selected = '';
             loadCities();
