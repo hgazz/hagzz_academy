@@ -9,6 +9,8 @@ use App\Models\Academies;
 use App\Models\AcademyStudent;
 use App\Models\AcademyAttendanceRecord;
 use App\Models\Country;
+use App\Models\City;
+use App\Models\Area;
 use App\Models\User;
 use App\Support\MembershipCode;
 use Endroid\QrCode\QrCode;
