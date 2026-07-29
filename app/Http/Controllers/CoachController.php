@@ -32,11 +32,14 @@ class CoachController extends Controller
 
     public function filter(Request $request, CoachDataTable $dataTable)
     {
-        $query = Coach::query()->where('academy_id', auth('academy')->id());
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new \App\Services\PartnerAccessService($authUser);
+        $query = $service->scopeCoaches(Coach::query());
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereDate('created_at', '>=', $request->input('start_date'))
-                ->whereDate('created_at', '<=', $request->input('end_date'));
+            $query->whereDate('coaches.created_at', '>=', $request->input('start_date'))
+                ->whereDate('coaches.created_at', '<=', $request->input('end_date'));
         }
 
         return $dataTable->with('query', $query)->render('Academy.pages.coaches.index');
@@ -44,10 +47,11 @@ class CoachController extends Controller
 
     public function create()
     {
-        $sports = $this->sportModel::whereHas('academies', function ($q){
-            $q->where('academy_id', auth('academy')->id());
-        })->get(['id', 'name']);
-        return view('Academy.pages.coaches.create', get_defined_vars());
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $sports = $authUser->getAccessibleSports();
+
+        return view('Academy.pages.coaches.create', compact('sports'));
     }
 
     public function store(CoachRequest $request)

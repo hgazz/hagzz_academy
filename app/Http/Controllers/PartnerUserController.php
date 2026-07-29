@@ -18,7 +18,7 @@ class PartnerUserController extends Controller
         $authUser = auth('academy')->user();
         $academyId = $authUser->academy_id;
 
-        $users = PartnerUser::with(['roles', 'assignedBranches'])
+        $users = PartnerUser::with(['roles', 'assignedBranches', 'assignedSports'])
             ->where('academy_id', $academyId)
             ->latest()
             ->paginate(15);

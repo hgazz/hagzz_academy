@@ -57,6 +57,7 @@
                                     <th>الهاتف</th>
                                     <th>الدور (Role)</th>
                                     <th>نطاق الفروع</th>
+                                    <th>نطاق الرياضات</th>
                                     <th>الحالة</th>
                                     <th class="text-center">الإجراءات</th>
                                 </tr>
@@ -87,6 +88,15 @@
                                             @else
                                                 <span class="badge bg-secondary" title="{{ $user->assignedBranches->pluck('commercial_name')->join(', ') }}">
                                                     {{ $user->assignedBranches->count() }} فرع مخصص
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($user->is_owner || $user->access_all_sports)
+                                                <span class="badge bg-success">كافة الرياضات</span>
+                                            @else
+                                                <span class="badge bg-info text-dark" title="{{ $user->assignedSports->pluck('name')->join(', ') }}">
+                                                    {{ $user->assignedSports->count() }} رياضة مخصصة
                                                 </span>
                                             @endif
                                         </td>

@@ -41,13 +41,28 @@ class TrainingController extends Controller
    {
         return $dataTable->render('Academy.pages.training.index');
    }
-   public function create()
-   {
-       $sports = auth('academy')->user()->sports;
-       $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())->where('active', 1)->get();
-       $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.create',compact('academyCoaches', 'addresses', 'sports'));
-   }
+    public function create()
+    {
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+
+        $sports = $authUser->getAccessibleSports();
+        $academyCoaches = $service->scopeCoaches(
+            $this->coachModel::where('active', 1)
+        )->get();
+
+        $addressQuery = $this->addressModel::query();
+        if (!$authUser->is_owner && !$authUser->access_all_branches) {
+            $branchIds = $service->accessibleBranchIds() ?? [];
+            $addressQuery->whereIn('academy_id', $branchIds);
+        } else {
+            $addressQuery->where('academy_id', $authUser->academy_id);
+        }
+        $addresses = $addressQuery->get();
+
+        return view('Academy.pages.training.create', compact('academyCoaches', 'addresses', 'sports'));
+    }
 
     public function getCoachesBySports($id)
     {
@@ -69,49 +84,70 @@ class TrainingController extends Controller
             'coaches' => $coaches
         ]);
     }
-   public function store(TrainingRequest $request)
-   {
+    public function store(TrainingRequest $request)
+    {
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        if (!$authUser->canAccessSport($request->sport_id)) {
+            abort(403, 'غير مصرح لك بإضافة تدريب لهذه الرياضة');
+        }
 
-       \DB::transaction(function() use ($request){
-           $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
-           $this->trainingModel->create(array_merge($translatable,[
-               'start_date'=> $request->start_date,
-               'end_date'=> $request->end_date,
-               'start_time' => $request->start_time,
-               'end_time' => $request->end_time,
-               'coach_id'=> $request->coach_id,
-               'price'=> $request->price,
-               'max_players'=> $request->max_players,
-               'level'=> $request->level,
-               'gender' => $request->gender,
-               'age_group' => $request->age_group,
-               'address_id' => $request->address_id,
-               'academy_id' => auth()->id(),
-               'sport_id' => $request->sport_id,
-               'discount_price' => $request->discount_price,
-               'classes_days' => $request->classes_days,
-               'color' => $this->normalizeTrainingColor($request->color),
-              'classes_number' => $request->classes_number
-           ]));
-//           NotificationService::dbNotification(auth('academy')->id(),Academies::class,1,'New Training','New Training has been added to your academy',auth('academy')->user()->image,['training_id'=>$training->id]);
-       });
-       session()->flash('success',trans('admin.training.created_successfully'));
-       return to_route('academy.training.index');
-   }
+        \DB::transaction(function() use ($request){
+            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
+            $this->trainingModel->create(array_merge($translatable,[
+                'start_date'=> $request->start_date,
+                'end_date'=> $request->end_date,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'coach_id'=> $request->coach_id,
+                'price'=> $request->price,
+                'max_players'=> $request->max_players,
+                'level'=> $request->level,
+                'gender' => $request->gender,
+                'age_group' => $request->age_group,
+                'address_id' => $request->address_id,
+                'academy_id' => auth()->id(),
+                'sport_id' => $request->sport_id,
+                'discount_price' => $request->discount_price,
+                'classes_days' => $request->classes_days,
+                'color' => $this->normalizeTrainingColor($request->color),
+               'classes_number' => $request->classes_number
+            ]));
+        });
+        session()->flash('success',trans('admin.training.created_successfully'));
+        return to_route('academy.training.index');
+    }
 
     public function edit(Training $training)
     {
-        abort_unless((int) $training->academy_id === (int) auth('academy')->id(), 404);
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        abort_unless((int) $training->academy_id === (int) $authUser->academy_id, 404);
 
-        $academyCoaches = $this->coachModel::where('academy_id', auth('academy')->id())
-            ->where(function ($query) use ($training) {
+        if (!$authUser->canAccessSport($training->sport_id)) {
+            abort(403, 'غير مصرح لك بالوصول إلى هذه الرياضة');
+        }
+
+        $service = new PartnerAccessService($authUser);
+        $academyCoaches = $service->scopeCoaches(
+            $this->coachModel::where(function ($query) use ($training) {
                 $query->where('active', 1)
                     ->orWhere('id', $training->coach_id);
             })
-            ->get(['id','name']);
-        $sports = auth('academy')->user()->sports;
-        $addresses = $this->addressModel::whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.training.edit',compact('academyCoaches', 'sports','training', 'addresses'));
+        )->get(['coaches.id', 'coaches.name']);
+
+        $sports = $authUser->getAccessibleSports();
+
+        $addressQuery = $this->addressModel::query();
+        if (!$authUser->is_owner && !$authUser->access_all_branches) {
+            $branchIds = $service->accessibleBranchIds() ?? [];
+            $addressQuery->whereIn('academy_id', $branchIds);
+        } else {
+            $addressQuery->where('academy_id', $authUser->academy_id);
+        }
+        $addresses = $addressQuery->get();
+
+        return view('Academy.pages.training.edit', compact('academyCoaches', 'sports', 'training', 'addresses'));
     }
 
     public function update(Training $training , TrainingRequest $request)
