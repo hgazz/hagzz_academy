@@ -5,6 +5,7 @@ namespace App\DataTables;
 use App\Http\Traits\DataTablesTrait;
 use App\Models\Coach;
 use App\Models\Follow;
+use App\Services\PartnerAccessService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use Yajra\DataTables\EloquentDataTable;
@@ -91,7 +92,13 @@ class CoachDataTable extends DataTable
             return $this->query;
         }
 
-        return $model->newQuery()->with(['trainings', 'academy', 'sports'])->whereBelongsTo(auth('academy')->user() , 'academy');
+        /** @var \App\Models\PartnerUser $user */
+        $user    = auth('academy')->user();
+        $service = new PartnerAccessService($user);
+
+        return $service->scopeCoaches(
+            $model->newQuery()->with(['trainings', 'academy', 'sports'])
+        );
     }
 
     /**

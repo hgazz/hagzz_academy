@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Http\Traits\DataTablesTrait;
 use App\Models\Join;
+use App\Services\PartnerAccessService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -50,15 +51,17 @@ class BookingDataTable extends DataTable
      */
     public function query(Join $model): QueryBuilder
     {
-        return $model->newQuery()->with([
-            'user',
-            'training' => function ($query) {
-                $query->with(['academy', 'coach'])
-                    ->where('academy_id', auth('academy')->id());
-            }
-        ])->whereHas('training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        });
+        /** @var \App\Models\PartnerUser $user */
+        $user    = auth('academy')->user();
+        $service = new PartnerAccessService($user);
+
+        return $service->scopeBookings(
+            $model->newQuery()->with([
+                'user',
+                'training.academy',
+                'training.coach',
+            ])
+        );
     }
 
     /**

@@ -3,8 +3,10 @@
 namespace App\DataTables;
 
 
+use App\DataTables\TrainingDataTable;
 use App\Http\Traits\DataTablesTrait;
 use App\Models\Training;
+use App\Services\PartnerAccessService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -57,7 +59,13 @@ class TrainingDataTable extends DataTable
      */
     public function query(Training $model): QueryBuilder
     {
-        return $model->newQuery()->with(['coach', 'sport'])->whereBelongsTo(auth('academy')->user(), 'academy');
+        /** @var \App\Models\PartnerUser $user */
+        $user    = auth('academy')->user();
+        $service = new PartnerAccessService($user);
+
+        return $service->scopeTrainings(
+            $model->newQuery()->with(['coach', 'sport'])
+        );
     }
 
     /**

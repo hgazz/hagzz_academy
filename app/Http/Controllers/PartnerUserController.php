@@ -38,7 +38,10 @@ class PartnerUserController extends Controller
 
         $branches = Academies::where('branch_to', $academyId)->get();
 
-        return view('Academy.pages.team.create', compact('roles', 'branches'));
+        // All sports of the main academy
+        $sports = $authUser->academy?->sports()->get() ?? collect();
+
+        return view('Academy.pages.team.create', compact('roles', 'branches', 'sports'));
     }
 
     public function store(Request $request)
@@ -48,33 +51,42 @@ class PartnerUserController extends Controller
         $academyId = $authUser->academy_id;
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:partner_users,email',
-            'phone' => 'nullable|string|max:50',
-            'password' => 'required|string|min:6',
-            'role_id' => 'required|exists:partner_roles,id',
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:partner_users,email',
+            'phone'               => 'nullable|string|max:50',
+            'password'            => 'required|string|min:6',
+            'role_id'             => 'required|exists:partner_roles,id',
             'access_all_branches' => 'nullable|boolean',
-            'branch_ids' => 'nullable|array',
-            'branch_ids.*' => 'exists:academies,id',
+            'branch_ids'          => 'nullable|array',
+            'branch_ids.*'        => 'exists:academies,id',
+            'access_all_sports'   => 'nullable|boolean',
+            'sport_ids'           => 'nullable|array',
+            'sport_ids.*'         => 'exists:sports,id',
         ]);
 
-        $accessAll = $request->boolean('access_all_branches');
+        $accessAllBranches = $request->boolean('access_all_branches');
+        $accessAllSports   = $request->boolean('access_all_sports');
 
         $user = PartnerUser::create([
-            'academy_id' => $academyId,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-            'is_owner' => false,
-            'access_all_branches' => $accessAll,
-            'status' => 'active',
+            'academy_id'          => $academyId,
+            'name'                => $request->name,
+            'email'               => $request->email,
+            'phone'               => $request->phone,
+            'password'            => Hash::make($request->password),
+            'is_owner'            => false,
+            'access_all_branches' => $accessAllBranches,
+            'access_all_sports'   => $accessAllSports,
+            'status'              => 'active',
         ]);
 
         $user->roles()->sync([$request->role_id]);
 
-        if (!$accessAll && $request->filled('branch_ids')) {
+        if (!$accessAllBranches && $request->filled('branch_ids')) {
             $user->assignedBranches()->sync($request->branch_ids);
+        }
+
+        if (!$accessAllSports && $request->filled('sport_ids')) {
+            $user->assignedSports()->sync($request->sport_ids);
         }
 
         session()->flash('success', trans('admin.users.created_successfully') ?? 'تم إضافة المستخدم بنجاح');
@@ -93,11 +105,18 @@ class PartnerUserController extends Controller
             ->orWhere('academy_id', $authUser->academy_id)
             ->get();
 
-        $branches = Academies::where('branch_to', $authUser->academy_id)->get();
+        $branches       = Academies::where('branch_to', $authUser->academy_id)->get();
         $selectedBranches = $team->assignedBranches->pluck('id')->toArray();
-        $selectedRole = $team->roles->first()?->id;
+        $selectedRole   = $team->roles->first()?->id;
 
-        return view('Academy.pages.team.edit', compact('team', 'roles', 'branches', 'selectedBranches', 'selectedRole'));
+        // Sports
+        $sports          = $authUser->academy?->sports()->get() ?? collect();
+        $selectedSports  = $team->assignedSports->pluck('id')->toArray();
+
+        return view('Academy.pages.team.edit', compact(
+            'team', 'roles', 'branches', 'selectedBranches', 'selectedRole',
+            'sports', 'selectedSports'
+        ));
     }
 
     public function update(Request $request, PartnerUser $team)
@@ -109,23 +128,28 @@ class PartnerUserController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('partner_users', 'email')->ignore($team->id)],
-            'phone' => 'nullable|string|max:50',
-            'password' => 'nullable|string|min:6',
-            'role_id' => 'required|exists:partner_roles,id',
+            'name'                => 'required|string|max:255',
+            'email'               => ['required', 'email', Rule::unique('partner_users', 'email')->ignore($team->id)],
+            'phone'               => 'nullable|string|max:50',
+            'password'            => 'nullable|string|min:6',
+            'role_id'             => 'required|exists:partner_roles,id',
             'access_all_branches' => 'nullable|boolean',
-            'branch_ids' => 'nullable|array',
-            'branch_ids.*' => 'exists:academies,id',
+            'branch_ids'          => 'nullable|array',
+            'branch_ids.*'        => 'exists:academies,id',
+            'access_all_sports'   => 'nullable|boolean',
+            'sport_ids'           => 'nullable|array',
+            'sport_ids.*'         => 'exists:sports,id',
         ]);
 
-        $accessAll = $request->boolean('access_all_branches');
+        $accessAllBranches = $request->boolean('access_all_branches');
+        $accessAllSports   = $request->boolean('access_all_sports');
 
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'access_all_branches' => $accessAll,
+            'name'                => $request->name,
+            'email'               => $request->email,
+            'phone'               => $request->phone,
+            'access_all_branches' => $accessAllBranches,
+            'access_all_sports'   => $accessAllSports,
         ];
 
         if ($request->filled('password')) {
@@ -135,10 +159,16 @@ class PartnerUserController extends Controller
         $team->update($data);
         $team->roles()->sync([$request->role_id]);
 
-        if (!$accessAll && $request->filled('branch_ids')) {
+        if (!$accessAllBranches && $request->filled('branch_ids')) {
             $team->assignedBranches()->sync($request->branch_ids);
         } else {
             $team->assignedBranches()->detach();
+        }
+
+        if (!$accessAllSports && $request->filled('sport_ids')) {
+            $team->assignedSports()->sync($request->sport_ids);
+        } else {
+            $team->assignedSports()->detach();
         }
 
         session()->flash('success', trans('admin.users.updated_successfully') ?? 'تم تحديث بيانات المستخدم بنجاح');

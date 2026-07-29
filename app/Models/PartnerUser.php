@@ -20,6 +20,7 @@ class PartnerUser extends Authenticatable
         'password',
         'is_owner',
         'access_all_branches',
+        'access_all_sports',
         'status',
     ];
 
@@ -29,8 +30,9 @@ class PartnerUser extends Authenticatable
     ];
 
     protected $casts = [
-        'is_owner' => 'boolean',
+        'is_owner'            => 'boolean',
         'access_all_branches' => 'boolean',
+        'access_all_sports'   => 'boolean',
     ];
 
     public function academy()
@@ -38,9 +40,23 @@ class PartnerUser extends Authenticatable
         return $this->belongsTo(Academies::class, 'academy_id');
     }
 
+    /**
+     * All sports belonging to this partner's academy (global — not user-scoped).
+     * Used in dropdowns for creating trainings etc.
+     */
     public function sports()
     {
-        return $this->academy ? $this->academy->sports() : $this->hasMany(Sport::class, 'academy_id');
+        return $this->academy
+            ? $this->academy->sports()
+            : collect();
+    }
+
+    /**
+     * Sports directly assigned to this staff user (many-to-many).
+     */
+    public function assignedSports()
+    {
+        return $this->belongsToMany(Sport::class, 'partner_user_sports', 'user_id', 'sport_id');
     }
 
     public function currentSubscription()
@@ -81,13 +97,16 @@ class PartnerUser extends Authenticatable
         return false;
     }
 
+    // ─────────────────────────────────────────────
+    // Branch Access
+    // ─────────────────────────────────────────────
+
     public function canAccessBranch(int $branchId): bool
     {
         if ($this->is_owner || $this->access_all_branches) {
             return true;
         }
 
-        // Main academy ID check
         if ($this->academy_id == $branchId) {
             return true;
         }
@@ -105,6 +124,35 @@ class PartnerUser extends Authenticatable
         }
 
         return $this->assignedBranches;
+    }
+
+    // ─────────────────────────────────────────────
+    // Sport Access
+    // ─────────────────────────────────────────────
+
+    public function canAccessSport(int $sportId): bool
+    {
+        if ($this->is_owner || $this->access_all_sports) {
+            return true;
+        }
+
+        return $this->assignedSports()->where('sports.id', $sportId)->exists();
+    }
+
+    /**
+     * Returns the collection of sports accessible by this user.
+     * For owners / access_all_sports=true: returns all academy sports.
+     * For staff: returns only assigned sports.
+     */
+    public function getAccessibleSports()
+    {
+        if ($this->is_owner || $this->access_all_sports) {
+            return $this->academy
+                ? $this->academy->sports()->get()
+                : collect();
+        }
+
+        return $this->assignedSports()->get();
     }
 
     public function getCommercialNameAttribute()

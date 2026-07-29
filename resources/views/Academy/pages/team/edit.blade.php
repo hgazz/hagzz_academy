@@ -117,6 +117,47 @@
                                 </div>
                             </div>
 
+                            {{-- ─── Sports Scope ─── --}}
+                            <div class="col-md-12">
+                                <hr class="my-4">
+                                <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-futbol me-2"></i> نطاق الرياضات المتاحة للعمل (Sport Access Scope)</h6>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="access_all_sports" value="1" id="accessAllSportsCheck" {{ old('access_all_sports', $team->access_all_sports) ? 'checked' : '' }} {{ $team->is_owner ? 'disabled' : '' }}>
+                                    <label class="form-check-label fw-bold" for="accessAllSportsCheck">
+                                        منح الصلاحية للوصول لكافة الرياضات
+                                    </label>
+                                </div>
+                                @if($team->is_owner)
+                                    <input type="hidden" name="access_all_sports" value="1">
+                                @endif
+                            </div>
+
+                            <div class="col-md-12" id="sportsSelectContainer" style="{{ old('access_all_sports', $team->access_all_sports) ? 'display: none;' : '' }}">
+                                <label class="form-label fw-bold">حدد الرياضات المسموح للمستخدم برؤيتها وإدارتها:</label>
+                                <div class="row g-2">
+                                    @forelse($sports as $sport)
+                                        <div class="col-md-3">
+                                            <div class="border rounded p-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="sport_ids[]" value="{{ $sport->id }}" id="sport_{{ $sport->id }}" {{ in_array($sport->id, old('sport_ids', $selectedSports)) ? 'checked' : '' }}>
+                                                    <label class="form-check-label d-flex align-items-center gap-2" for="sport_{{ $sport->id }}">
+                                                        @if($sport->getRawOriginal('icon'))
+                                                            <img src="{{ $sport->icon }}" alt="" width="20" height="20" style="object-fit:contain">
+                                                        @endif
+                                                        {{ $sport->name }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="col-12 text-muted">لا توجد رياضات مسجلة في هذه الأكاديمية.</div>
+                                    @endforelse
+                                </div>
+                            </div>
+
                             <div class="col-12 mt-4 text-end">
                                 <a href="{{ route('academy.team.index') }}" class="btn btn-light me-2">إلغاء</a>
                                 <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-check me-1"></i> تحديث البيانات</button>
@@ -132,14 +173,25 @@
 @push('js')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const check = document.getElementById('accessAllCheck');
-        const container = document.getElementById('branchesSelectContainer');
-        if (check && container) {
-            check.addEventListener('change', function() {
-                container.style.display = this.checked ? 'none' : 'block';
+        // Branch toggle
+        const branchCheck = document.getElementById('accessAllCheck');
+        const branchContainer = document.getElementById('branchesSelectContainer');
+        if (branchCheck && branchContainer) {
+            branchCheck.addEventListener('change', function() {
+                branchContainer.style.display = this.checked ? 'none' : 'block';
+            });
+        }
+
+        // Sport toggle
+        const sportCheck = document.getElementById('accessAllSportsCheck');
+        const sportContainer = document.getElementById('sportsSelectContainer');
+        if (sportCheck && sportContainer) {
+            sportCheck.addEventListener('change', function() {
+                sportContainer.style.display = this.checked ? 'none' : 'block';
             });
         }
     });
 </script>
 @endpush
 @endsection
+

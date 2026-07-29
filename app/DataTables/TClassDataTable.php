@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Http\Traits\DataTablesTrait;
 use App\Models\TClass;
+use App\Services\PartnerAccessService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -42,15 +43,17 @@ class TClassDataTable extends DataTable
      */
     public function query(TClass $model): QueryBuilder
     {
-       $query = $model->newQuery()->with('training')
-           ->whereHas('training.academy', function ($query) {
-               $query->where('academy_id', auth('academy')->id());
-           });
+        /** @var \App\Models\PartnerUser $user */
+        $user    = auth('academy')->user();
+        $service = new PartnerAccessService($user);
+
+        $query = $service->scopeClasses(
+            $model->newQuery()->with('training')
+        );
 
         $sport = request()->input('training.name');
         if ($sport) {
             $query->whereHas('training', function ($q) use ($sport) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
                 $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$sport}%"]);
             });
         }
