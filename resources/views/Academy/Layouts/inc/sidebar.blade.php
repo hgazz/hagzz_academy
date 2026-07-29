@@ -4,9 +4,11 @@
     $reportsActive = Request::routeIs('academy.report.*');
     $venueActive = Request::routeIs('academy.venues.*', 'academy.venue-spaces.*', 'academy.venue-bookings.*');
     $whatsappActive = Request::routeIs('academy.whatsapp.*');
-    $hasVenueModule = auth('academy')->user()?->hasVenueModule();
-    $isVenueOnly = auth('academy')->user()?->business_type === 'venue';
+    $authUser = auth('academy')->user();
+    $hasVenueModule = $authUser?->hasVenueModule();
+    $isVenueOnly = $authUser?->business_type === 'venue';
     $isArabic = app()->getLocale() === 'ar';
+    $can = fn(string $permission) => $authUser?->hasPermissionTo($permission) ?? true;
 @endphp
 
 <style>
@@ -82,10 +84,12 @@
         <div class="shadow-bottom"></div>
 
         <ul class="list-unstyled menu-categories" id="accordionExample">
-            <li class="menu {{ Request::routeIs('academy.index') ? 'active' : '' }}"><a href="{{ route('academy.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-pie menu-icon"></i><span>{{ trans('admin.dashboard') }}</span></div></a></li>
+            @if($can('dashboard.view'))
+                <li class="menu {{ Request::routeIs('academy.index') ? 'active' : '' }}"><a href="{{ route('academy.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-pie menu-icon"></i><span>{{ trans('admin.dashboard') }}</span></div></a></li>
+            @endif
 
             <li class="navigation-section"><span>{{ $isArabic ? 'التشغيل اليومي' : 'Daily operations' }}</span></li>
-            @if($hasVenueModule)
+            @if($hasVenueModule && ($can('bookings.view') || $can('bookings.manage')))
                 <li class="menu {{ $venueActive ? 'active' : '' }}">
                     <a href="#venue-management" data-bs-toggle="collapse" aria-expanded="{{ $venueActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $venueActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-futbol menu-icon"></i><span>{{ trans('admin.venues.menu') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
                     <ul class="collapse submenu list-unstyled {{ $venueActive ? 'show' : '' }}" id="venue-management" data-bs-parent="#accordionExample">
@@ -98,63 +102,82 @@
             @endif
 
             @unless($isVenueOnly)
-                <li class="menu {{ Request::routeIs('academy.createBooking') ? 'active' : '' }}"><a href="{{ route('academy.createBooking') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-plus menu-icon"></i><span>{{ $isArabic ? 'إضافة حجز جديد' : 'Add New Booking' }}</span></div></a></li>
-                <li class="menu {{ $servicesActive ? 'active' : '' }}">
-                    <a href="#services" data-bs-toggle="collapse" aria-expanded="{{ $servicesActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $servicesActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-dumbbell menu-icon"></i><span>{{ $isArabic ? 'التدريبات والأنشطة' : 'Trainings & Services' }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
-                    <ul class="collapse submenu list-unstyled {{ $servicesActive ? 'show' : '' }}" id="services" data-bs-parent="#accordionExample">
-                        <li class="menu {{ Request::routeIs('academy.calendar.*') ? 'active' : '' }}"><a href="{{ route('academy.calendar.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-days menu-icon"></i><span>{{ trans('admin.training.calendar') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.training.*') ? 'active' : '' }}"><a href="{{ route('academy.training.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-person-running menu-icon"></i><span>{{ trans('admin.training.training') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.class.*') ? 'active' : '' }}"><a href="{{ route('academy.class.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-roof menu-icon"></i><span>{{ $isArabic ? 'الحصص والمواعيد' : 'Classes & sessions' }}</span></div></a></li>
-                    </ul>
-                </li>
+                @if($can('bookings.manage') || $can('bookings.view'))
+                    <li class="menu {{ Request::routeIs('academy.createBooking') ? 'active' : '' }}"><a href="{{ route('academy.createBooking') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-plus menu-icon"></i><span>{{ $isArabic ? 'إضافة حجز جديد' : 'Add New Booking' }}</span></div></a></li>
+                @endif
 
-                <li class="navigation-section"><span>{{ $isArabic ? 'الأشخاص والفريق' : 'People & team' }}</span></li>
-                <li class="menu {{ $studentsActive ? 'active' : '' }}">
-                    <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ $studentsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $studentsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-graduation-cap menu-icon"></i><span>{{ trans('admin.student_management.menu') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
-                    <ul class="collapse submenu list-unstyled {{ $studentsActive ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
-                        <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}"><a href="{{ route('academy.students.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-graduate menu-icon"></i><span>{{ trans('admin.student_management.students') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.groups.*') ? 'active' : '' }}"><a href="{{ route('academy.groups.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-group menu-icon"></i><span>{{ trans('admin.student_management.groups') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}"><a href="{{ route('academy.subscriptions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-receipt menu-icon"></i><span>{{ trans('admin.student_management.subscriptions') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.attendance.*') && !Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-clipboard-check menu-icon"></i><span>{{ trans('admin.student_management.attendance') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon"></i><span>{{ $isArabic ? 'ماسح الحضور' : 'Attendance scanner' }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.competitions.*') ? 'active' : '' }}"><a href="{{ route('academy.competitions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-trophy menu-icon"></i><span>{{ trans('admin.student_management.competitions') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.camps.*') ? 'active' : '' }}"><a href="{{ route('academy.camps.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-plane-departure menu-icon"></i><span>{{ $isArabic ? 'المعسكرات التدريبية' : 'Training Camps' }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}"><a href="{{ route('academy.student-reports.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ trans('admin.student_management.reports') }}</span></div></a></li>
-                    </ul>
-                </li>
-                <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
-                <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
-                <li class="menu {{ Request::routeIs('academy.team.*') ? 'active' : '' }}"><a href="{{ route('academy.team.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users-gear menu-icon"></i><span>{{ $isArabic ? 'طاقم العمل والصلاحيات' : 'Team & Permissions' }}</span></div></a></li>
+                @if($can('trainings.view') || $can('trainings.manage'))
+                    <li class="menu {{ $servicesActive ? 'active' : '' }}">
+                        <a href="#services" data-bs-toggle="collapse" aria-expanded="{{ $servicesActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $servicesActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-dumbbell menu-icon"></i><span>{{ $isArabic ? 'التدريبات والأنشطة' : 'Trainings & Services' }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
+                        <ul class="collapse submenu list-unstyled {{ $servicesActive ? 'show' : '' }}" id="services" data-bs-parent="#accordionExample">
+                            <li class="menu {{ Request::routeIs('academy.calendar.*') ? 'active' : '' }}"><a href="{{ route('academy.calendar.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-days menu-icon"></i><span>{{ trans('admin.training.calendar') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.training.*') ? 'active' : '' }}"><a href="{{ route('academy.training.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-person-running menu-icon"></i><span>{{ trans('admin.training.training') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.class.*') ? 'active' : '' }}"><a href="{{ route('academy.class.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-roof menu-icon"></i><span>{{ $isArabic ? 'الحصص والمواعيد' : 'Classes & sessions' }}</span></div></a></li>
+                        </ul>
+                    </li>
+                @endif
+
+                @if($can('bookings.view') || $can('bookings.manage') || $can('trainings.view'))
+                    <li class="navigation-section"><span>{{ $isArabic ? 'الأشخاص والفريق' : 'People & team' }}</span></li>
+                    <li class="menu {{ $studentsActive ? 'active' : '' }}">
+                        <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ $studentsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $studentsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-graduation-cap menu-icon"></i><span>{{ trans('admin.student_management.menu') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
+                        <ul class="collapse submenu list-unstyled {{ $studentsActive ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
+                            <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}"><a href="{{ route('academy.students.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-graduate menu-icon"></i><span>{{ trans('admin.student_management.students') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.groups.*') ? 'active' : '' }}"><a href="{{ route('academy.groups.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-group menu-icon"></i><span>{{ trans('admin.student_management.groups') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}"><a href="{{ route('academy.subscriptions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-receipt menu-icon"></i><span>{{ trans('admin.student_management.subscriptions') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.attendance.*') && !Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-clipboard-check menu-icon"></i><span>{{ trans('admin.student_management.attendance') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon"></i><span>{{ $isArabic ? 'ماسح الحضور' : 'Attendance scanner' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.competitions.*') ? 'active' : '' }}"><a href="{{ route('academy.competitions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-trophy menu-icon"></i><span>{{ trans('admin.student_management.competitions') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.camps.*') ? 'active' : '' }}"><a href="{{ route('academy.camps.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-plane-departure menu-icon"></i><span>{{ $isArabic ? 'المعسكرات التدريبية' : 'Training Camps' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}"><a href="{{ route('academy.student-reports.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ trans('admin.student_management.reports') }}</span></div></a></li>
+                        </ul>
+                    </li>
+                @endif
+
+                @if($can('coaches.view') || $can('coaches.manage'))
+                    <li class="menu {{ Request::routeIs('academy.coach') || Request::routeIs('academy.coach.*') ? 'active' : '' }}"><a href="{{ route('academy.coach') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-tie menu-icon"></i><span>{{ trans('admin.coaches.coaches') }}</span></div></a></li>
+                @endif
+
+                @if($can('users.view') || $can('users.manage'))
+                    <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
+                    <li class="menu {{ Request::routeIs('academy.team.*') ? 'active' : '' }}"><a href="{{ route('academy.team.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users-gear menu-icon"></i><span>{{ $isArabic ? 'طاقم العمل والصلاحيات' : 'Team & Permissions' }}</span></div></a></li>
+                @endif
             @endunless
 
             <li class="navigation-section"><span>{{ $isArabic ? 'التواصل والمحتوى' : 'Communication & content' }}</span></li>
             @unless($isVenueOnly)
-                <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'مركز واتساب' : 'WhatsApp centre' }}</span></div></a></li>
-                <li class="menu {{ Request::routeIs('academy.gallery.*') ? 'active' : '' }}"><a href="{{ route('academy.gallery.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-images menu-icon"></i><span>{{ trans('admin.gallery.gallery') }}</span></div></a></li>
+                @if($can('bookings.view') || $can('bookings.manage') || $can('dashboard.view'))
+                    <li class="menu {{ $whatsappActive ? 'active' : '' }}"><a href="{{ route('academy.whatsapp.index') }}" class="dropdown-toggle"><div><i class="fa-brands fa-whatsapp menu-icon"></i><span>{{ $isArabic ? 'مركز واتساب' : 'WhatsApp centre' }}</span></div></a></li>
+                    <li class="menu {{ Request::routeIs('academy.gallery.*') ? 'active' : '' }}"><a href="{{ route('academy.gallery.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-images menu-icon"></i><span>{{ trans('admin.gallery.gallery') }}</span></div></a></li>
+                @endif
             @endunless
             <li class="menu {{ Request::routeIs('academy.notification.*') ? 'active' : '' }}"><a href="{{ route('academy.notification.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-bell menu-icon"></i><span>{{ trans('admin.notifications.notifications') }}</span></div></a></li>
 
-            <li class="navigation-section"><span>{{ $isArabic ? 'المالية والتقارير' : 'Finance & reports' }}</span></li>
-            @unless($isVenueOnly)
-                <li class="menu {{ $reportsActive ? 'active' : '' }}">
-                    <a href="#report" data-bs-toggle="collapse" aria-expanded="{{ $reportsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $reportsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-chart-column menu-icon"></i><span>{{ trans('admin.report') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
-                    <ul class="collapse submenu list-unstyled {{ $reportsActive ? 'show' : '' }}" id="report" data-bs-parent="#accordionExample">
-                        <li class="menu {{ Request::routeIs('academy.report.overview*') ? 'active' : '' }}"><a href="{{ route('academy.report.overview') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ $isArabic ? 'النظرة المالية الشاملة' : 'Financial overview' }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.report.settlement.index') ? 'active' : '' }}"><a href="{{ route('academy.report.settlement.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-scale-balanced menu-icon"></i><span>{{ trans('admin.settlement.Settlements') }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.report.transaction.index') ? 'active' : '' }}"><a href="{{ route('academy.report.transaction.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-money-bill-transfer menu-icon"></i><span>{{ $isArabic ? 'فواتير ومدفوعات الحجوزات' : 'Booking invoices & payments' }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.report.joins') ? 'active' : '' }}"><a href="{{ route('academy.report.joins') }}" class="dropdown-toggle"><div><i class="fa-solid fa-ticket menu-icon"></i><span>{{ $isArabic ? 'تفاصيل حجوزات التدريبات' : 'Training booking details' }}</span></div></a></li>
-                        <li class="menu {{ Request::routeIs('academy.report.offline-joins') ? 'active' : '' }}"><a href="{{ route('academy.report.offline-joins') }}" class="dropdown-toggle"><div><i class="fa-solid fa-cash-register menu-icon"></i><span>{{ $isArabic ? 'الحجوزات المسجلة يدويًا' : 'Manually entered bookings' }}</span></div></a></li>
-                    </ul>
-                </li>
-            @endunless
-            <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
-            <li class="menu {{ Request::routeIs('academy.expenses.*') ? 'active' : '' }}"><a href="{{ route('academy.expenses.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-coins menu-icon"></i><span>{{ $isArabic ? 'إدارة المصروفات والأرباح' : 'Expenses & Net profit' }}</span></div></a></li>
+            @if($can('settlements.view'))
+                <li class="navigation-section"><span>{{ $isArabic ? 'المالية والتقارير' : 'Finance & reports' }}</span></li>
+                @unless($isVenueOnly)
+                    <li class="menu {{ $reportsActive ? 'active' : '' }}">
+                        <a href="#report" data-bs-toggle="collapse" aria-expanded="{{ $reportsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $reportsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-chart-column menu-icon"></i><span>{{ trans('admin.report') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
+                        <ul class="collapse submenu list-unstyled {{ $reportsActive ? 'show' : '' }}" id="report" data-bs-parent="#accordionExample">
+                            <li class="menu {{ Request::routeIs('academy.report.overview*') ? 'active' : '' }}"><a href="{{ route('academy.report.overview') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ $isArabic ? 'النظرة المالية الشاملة' : 'Financial overview' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.report.settlement.index') ? 'active' : '' }}"><a href="{{ route('academy.report.settlement.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-scale-balanced menu-icon"></i><span>{{ trans('admin.settlement.Settlements') }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.report.transaction.index') ? 'active' : '' }}"><a href="{{ route('academy.report.transaction.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-money-bill-transfer menu-icon"></i><span>{{ $isArabic ? 'فواتير ومدفوعات الحجوزات' : 'Booking invoices & payments' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.report.joins') ? 'active' : '' }}"><a href="{{ route('academy.report.joins') }}" class="dropdown-toggle"><div><i class="fa-solid fa-ticket menu-icon"></i><span>{{ $isArabic ? 'تفاصيل حجوزات التدريبات' : 'Training booking details' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.report.offline-joins') ? 'active' : '' }}"><a href="{{ route('academy.report.offline-joins') }}" class="dropdown-toggle"><div><i class="fa-solid fa-cash-register menu-icon"></i><span>{{ $isArabic ? 'الحجوزات المسجلة يدويًا' : 'Manually entered bookings' }}</span></div></a></li>
+                        </ul>
+                    </li>
+                @endunless
+                <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
+                <li class="menu {{ Request::routeIs('academy.expenses.*') ? 'active' : '' }}"><a href="{{ route('academy.expenses.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-coins menu-icon"></i><span>{{ $isArabic ? 'إدارة المصروفات والأرباح' : 'Expenses & Net profit' }}</span></div></a></li>
+            @endif
 
-            <li class="navigation-section"><span>{{ $isArabic ? 'إعدادات المنشأة' : 'Business settings' }}</span></li>
-            @unless($isVenueOnly)
-                <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}"><a href="{{ route('academy.address.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-map-location-dot menu-icon"></i><span>{{ trans('admin.address.address') }}</span></div></a></li>
-            @endunless
-            <li class="menu {{ Request::routeIs('academy.terms.*') ? 'active' : '' }}"><a href="{{ route('academy.terms.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-shield menu-icon"></i><span>{{ trans('admin.terms.terms') }}</span></div></a></li>
+            @if($can('settings.manage') || $authUser?->is_owner)
+                <li class="navigation-section"><span>{{ $isArabic ? 'إعدادات المنشأة' : 'Business settings' }}</span></li>
+                @unless($isVenueOnly)
+                    <li class="menu {{ Request::routeIs('academy.address.*') ? 'active' : '' }}"><a href="{{ route('academy.address.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-map-location-dot menu-icon"></i><span>{{ trans('admin.address.address') }}</span></div></a></li>
+                @endunless
+                <li class="menu {{ Request::routeIs('academy.terms.*') ? 'active' : '' }}"><a href="{{ route('academy.terms.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-shield menu-icon"></i><span>{{ trans('admin.terms.terms') }}</span></div></a></li>
+            @endif
         </ul>
 
         <div class="sidebar-scroll-controls" aria-label="{{ $isArabic ? 'التمرير داخل القائمة' : 'Sidebar scrolling' }}">

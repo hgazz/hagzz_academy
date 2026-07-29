@@ -246,7 +246,7 @@ Route::group(
             Route::get('settlements','index')->name('settlement.index');
         });
 
-        Route::controller(PartnerExpenseController::class)->group(function () {
+        Route::middleware('partner.permission:settlements.view')->controller(PartnerExpenseController::class)->group(function () {
             Route::get('expenses', 'index')->name('expenses.index');
             Route::post('expenses', 'store')->name('expenses.store');
             Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
@@ -269,7 +269,7 @@ Route::group(
             Route::get('camps/{campId}/export-roster', 'exportRoster')->name('camps.export-roster');
         });
 
-        Route::prefix('report')->as('report.')->controller(ReportController::class)
+        Route::middleware('partner.permission:settlements.view')->prefix('report')->as('report.')->controller(ReportController::class)
             ->group(function (){
                 Route::get('settlement','settlement')->name('settlement.index');
                 Route::get('settlement/filter','filter')->name('settlement.filter');
@@ -289,7 +289,7 @@ Route::group(
                 Route::get('coach/export','coachExport')->name('coach.export');
             });
 
-        Route::prefix('report')->as('report.')->group(function () {
+        Route::middleware('partner.permission:settlements.view')->prefix('report')->as('report.')->group(function () {
             Route::get('overview', [AcademyFinancialReportController::class, 'index'])->name('overview');
             Route::get('overview/export/{type}', [AcademyFinancialReportController::class, 'export'])->name('overview.export');
         });
@@ -303,7 +303,7 @@ Route::group(
             Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
         });
 
-        Route::controller(\App\Http\Controllers\PartnerUserController::class)->prefix('team')->as('team.')->group(function () {
+        Route::middleware('partner.permission:users.view')->controller(\App\Http\Controllers\PartnerUserController::class)->prefix('team')->as('team.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
