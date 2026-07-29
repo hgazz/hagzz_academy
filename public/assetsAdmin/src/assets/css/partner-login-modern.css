@@ -388,12 +388,20 @@ body.partner-login-page {
     color: var(--hagzz-ink);
     font: inherit;
     font-size: 14px;
-    text-align: start;
+    direction: ltr !important;
+    text-align: left !important;
     transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+[dir="rtl"] .field-group input {
+    direction: ltr !important;
+    text-align: left !important;
 }
 
 .field-group input::placeholder {
     color: #9aa39f;
+    direction: ltr;
+    text-align: left;
 }
 
 .field-group input:hover {
@@ -421,12 +429,24 @@ body.partner-login-page {
 }
 
 .password-field input {
-    padding-inline-end: 76px;
+    padding-left: 15px !important;
+    padding-right: 76px !important;
+    direction: ltr !important;
+    text-align: left !important;
+}
+
+[dir="rtl"] .password-field input {
+    padding-left: 15px !important;
+    padding-right: 76px !important;
+    direction: ltr !important;
+    text-align: left !important;
 }
 
 .password-field button {
     position: absolute;
     top: 50%;
+    right: 9px !important;
+    left: auto !important;
     inset-inline-end: 9px;
     min-width: 54px;
     padding: 7px 8px;
