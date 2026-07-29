@@ -131,7 +131,7 @@
                             id="partner-email"
                             type="email"
                             name="email"
-                            dir="auto"
+                            dir="ltr"
                             value="{{ old('email') }}"
                             placeholder="{{ $copy['email_placeholder'] }}"
                             autocomplete="email"
@@ -152,7 +152,7 @@
                                 id="partner-password"
                                 type="password"
                                 name="password"
-                                dir="auto"
+                                dir="ltr"
                                 placeholder="{{ $copy['password_placeholder'] }}"
                                 autocomplete="current-password"
                                 required
