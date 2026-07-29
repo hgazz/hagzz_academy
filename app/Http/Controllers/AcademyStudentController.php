@@ -23,8 +23,11 @@ class AcademyStudentController extends Controller
 {
     public function index()
     {
-        $students = AcademyStudent::with('user')
-            ->where('academy_id', auth('academy')->id())
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new \App\Services\PartnerAccessService($authUser);
+
+        $students = $service->scopeStudents(AcademyStudent::with('user'))
             ->latest()
             ->paginate(20);
 

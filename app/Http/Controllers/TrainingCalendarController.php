@@ -9,8 +9,11 @@ class TrainingCalendarController extends Controller
 {
     public function index(Request $request)
     {
-        $academyId = auth('academy')->id();
-        $trainings = Training::query()
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new \App\Services\PartnerAccessService($authUser);
+
+        $trainingsQuery = Training::query()
             ->with([
                 'coach:id,name',
                 'address:id,address',
@@ -20,8 +23,9 @@ class TrainingCalendarController extends Controller
             ->whereNotNull('start_time')
             ->whereNotNull('end_time')
             ->whereNotNull('classes_days')
-            ->where('active', 1)
-            ->where('academy_id', $academyId)
+            ->where('active', 1);
+
+        $trainings = $service->scopeTrainings($trainingsQuery)
             ->orderBy('start_time')
             ->get();
 
