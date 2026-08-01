@@ -12,17 +12,31 @@
     <meta name="lang" content="{{ $__locale }}" />
         @include('Academy.Layouts.inc.head')
     <style>
-        /* ─────────────────────────────────────────────────────────────────
-         * ROOT FIX: The template's .secondary-nav uses position:fixed which
-         * pulls it out of the document flow. Because ALL pages embed their
-         * .secondary-nav INSIDE .layout-px-spacing (not outside it), the
-         * fixed element floats freely while the content below it starts at
-         * the same vertical position → content hidden behind the fixed bar.
+        /* ─── CORE LAYOUT FIX ──────────────────────────────────────────────
+         * The template sets body { height: 100% } which means the body
+         * is capped at the viewport height. Any content taller than the
+         * viewport is clipped (hidden behind the Windows taskbar / browser
+         * chrome bottom edge) unless scrolling is properly set up.
          *
-         * Fix: override to position:relative so it stays in the normal flow
-         * inside .layout-px-spacing where the pages actually place it.
-         * ───────────────────────────────────────────────────────────────── */
+         * Fix: switch body to min-height so it grows with its content,
+         * and make html + body scrollable.
+         * ─────────────────────────────────────────────────────────────────*/
 
+        html, body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+
+        /* The main container must also expand with content */
+        .main-container {
+            min-height: 100vh;
+            height: auto !important;
+        }
+
+        /* .secondary-nav: keep it in the document flow (not fixed)
+           so content below it is NOT hidden behind it */
         .secondary-nav {
             position: relative !important;
             top: auto !important;
@@ -30,7 +44,6 @@
             right: auto !important;
             width: 100% !important;
             z-index: auto !important;
-            /* Keep its visual style */
             background: #fafafa;
             box-shadow: 0 4px 6px -2px rgba(126,142,177,.10);
             min-height: 52px;
@@ -38,29 +51,28 @@
             margin-bottom: 16px;
         }
 
-        /*
-         * Because .secondary-nav is no longer fixed, #content no longer
-         * needs the extra 52 px top-margin that was reserved for the fixed bar.
-         * Bring margin-top down to just the navbar height (55px → 60px safe).
-         */
+        /* #content: was margin-top:107px (navbar+secondary-nav both fixed).
+           Now secondary-nav is in-flow, only need navbar height as offset. */
         #content.main-content {
             margin-top: 60px !important;
+            height: auto !important;
         }
 
-        /* Comfortable bottom padding so the last card/footer is never clipped */
+        /* Remove the forced min-height that was causing overflow */
         .layout-px-spacing {
-            padding-bottom: 40px !important;
             min-height: auto !important;
+            padding-bottom: 48px !important;
         }
 
-        /* Footer always fully visible */
+        /* Footer must always be fully visible */
         .footer-wrapper {
-            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
         }
 
         @media (max-width: 767.98px) {
             .layout-px-spacing {
-                padding-bottom: 56px !important;
+                padding-bottom: 64px !important;
             }
         }
     </style>
