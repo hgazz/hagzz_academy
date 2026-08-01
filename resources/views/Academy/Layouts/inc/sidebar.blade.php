@@ -20,7 +20,7 @@
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        padding: 10px 10px 110px !important;
+        padding: 10px 10px 140px !important;
     }
     #sidebar > .menu-categories::-webkit-scrollbar { width: 5px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }

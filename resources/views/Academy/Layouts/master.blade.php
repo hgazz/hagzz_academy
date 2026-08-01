@@ -12,14 +12,22 @@
     <meta name="lang" content="{{ $__locale }}" />
     @include('Academy.Layouts.inc.head')
     <style>
-        /* Safe-Area Spacing */
-        .layout-px-spacing {
-            padding-bottom: 60px !important;
+        /* 1. Expand container to full width to eliminate white space gap next to sidebar */
+        #content .container-xxl,
+        #content .container-fluid,
+        #content .container {
+            max-width: 100% !important;
         }
 
+        /* 2. Generous safe-area padding above Windows Taskbar */
+        .layout-px-spacing {
+            padding-bottom: 100px !important;
+        }
+
+        /* 3. Footer spacing */
         .footer-wrapper {
-            margin-top: 30px !important;
-            padding-bottom: 25px !important;
+            margin-top: 40px !important;
+            padding-bottom: 50px !important;
         }
     </style>
 </head>
