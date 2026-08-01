@@ -12,7 +12,7 @@
 @endphp
 
 <style>
-    .sidebar-wrapper { height: calc(100vh - 60px - 54px) !important; position: sticky !important; top: 60px !important; border-inline-end: 1px solid rgba(15, 23, 42, .07); z-index: 99; }
+    .sidebar-wrapper { height: 100vh !important; border-inline-end: 1px solid rgba(15, 23, 42, .07); }
     #sidebar { height: 100%; overflow: hidden !important; display: flex; flex-direction: column; position: relative; }
     #sidebar .theme-brand { flex: 0 0 auto; min-height: 68px; z-index: 5; background: inherit; border-bottom: 1px solid rgba(15, 23, 42, .07); }
     #sidebar > .shadow-bottom { display: none; }
@@ -20,8 +20,7 @@
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        /* Always reserve space for the scroll-controls bar (48px) + extra safe area (24px) */
-        padding: 10px 10px 72px !important;
+        padding: 10px 10px 110px !important;
     }
     #sidebar > .menu-categories::-webkit-scrollbar { width: 5px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }
