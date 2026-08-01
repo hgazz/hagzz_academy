@@ -79,15 +79,11 @@
             justify-content: center;
         }
 
-        /* Let the sidebar shrink to content height instead of locking to 100vh */
+        /* Sidebar aligns nicely between header navbar and bottom footer */
         .sidebar-wrapper {
-            height: auto !important;
-            min-height: calc(100vh - 60px);
-        }
-
-        #sidebar {
-            height: auto !important;
-            min-height: calc(100vh - 60px);
+            position: sticky !important;
+            top: 60px !important;
+            height: calc(100vh - 60px - 54px) !important;
         }
 
         @media (max-width: 767.98px) {
