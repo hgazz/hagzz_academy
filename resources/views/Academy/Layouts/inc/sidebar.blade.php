@@ -7,7 +7,7 @@
     $authUser = auth('academy')->user();
     $hasVenueModule = $authUser?->hasVenueModule();
     $isVenueOnly = $authUser?->business_type === 'venue';
-    $isArabic = app()->getLocale() === 'ar';
+    $isArabic = session('locale', app()->getLocale()) === 'ar';
     $can = fn(string $permission) => $authUser?->hasPermissionTo($permission) ?? true;
 @endphp
 
@@ -20,7 +20,8 @@
         flex: 1 1 auto; min-height: 0; overflow-y: auto !important; overflow-x: hidden !important;
         overscroll-behavior: contain; scroll-behavior: smooth; scrollbar-gutter: stable;
         scrollbar-width: thin; scrollbar-color: rgba(27, 85, 226, .45) transparent;
-        padding: 10px 10px 62px !important;
+        /* Always reserve space for the scroll-controls bar (48px) + extra safe area (24px) */
+        padding: 10px 10px 72px !important;
     }
     #sidebar > .menu-categories::-webkit-scrollbar { width: 5px; }
     #sidebar > .menu-categories::-webkit-scrollbar-track { background: transparent; }
@@ -55,7 +56,11 @@
         position: absolute; inset-inline: 0; bottom: 0; z-index: 20; height: 48px; display: flex; align-items: center; justify-content: center; gap: 6px;
         padding: 8px 12px; border-top: 1px solid rgba(15, 23, 42, .07); background: rgba(255, 255, 255, .96); backdrop-filter: blur(12px);
     }
+    /* When scroll controls are hidden, keep bottom safe-area via a pseudo-element on the list instead */
     #sidebar .sidebar-scroll-controls[hidden] { display: none !important; }
+    #sidebar > .menu-categories::after {
+        content: ''; display: block; height: 16px; flex-shrink: 0;
+    }
     #sidebar .sidebar-scroll-button {
         flex: 1 1 50%; max-width: 92px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
         border: 1px solid rgba(27, 85, 226, .12); border-radius: 8px; background: rgba(27, 85, 226, .055); color: #1b55e2; cursor: pointer;

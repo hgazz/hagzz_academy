@@ -72,30 +72,34 @@ Route::get('/login', function () {
 });
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['ar', 'en'])) {
-        session(['locale' => $locale]);
+        session(['locale' => $locale, 'laravel_localization_locale' => $locale]);
+        session()->save();
         app()->setLocale($locale);
+        try {
+            LaravelLocalization::setLocale($locale);
+        } catch (\Throwable $e) {}
     }
     $referer = request()->header('referer');
     if ($referer) {
-        $cleanUrl = preg_replace('#/(ar|en)(?=/|$)#i', '', $referer);
+        $cleanUrl = preg_replace('#/(ar|en)(?=/|\?|$)#i', '', $referer);
         return redirect($cleanUrl);
     }
-    return redirect()->route('academy.loginPage');
+    return redirect()->back();
 })->name('lang.switch');
 
 Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
     if (in_array($locale, ['ar', 'en'])) {
-        session(['locale' => $locale]);
+        session(['locale' => $locale, 'laravel_localization_locale' => $locale]);
+        session()->save();
         app()->setLocale($locale);
+        try {
+            LaravelLocalization::setLocale($locale);
+        } catch (\Throwable $e) {}
     }
-    $target = '/partner' . ($path ? '/' . $path : '');
+    $queryString = request()->getQueryString();
+    $target = '/partner' . ($path ? '/' . $path : '') . ($queryString ? '?' . $queryString : '');
     return redirect($target);
 })->where('locale', 'ar|en')->where('path', '.*');
-
-Route::group(
-    [
-        'middleware' => [ 'localeViewPath' ]
-    ], function(){ //...
 
     Route::group(['prefix' => 'partner', 'as' => 'academy.', 'controller' => AuthController::class], function () {
         Route::group(['middleware' => 'guest:academy'], function () {
@@ -313,5 +317,3 @@ Route::group(
             Route::patch('/{team}/status', 'updateStatus')->name('updateStatus');
         });
     });
-
-});

@@ -1,9 +1,10 @@
+@php $__navLocale = session('locale', app()->getLocale()); @endphp
 <div class="header-container container-xxl">
     <header class="header navbar navbar-expand-sm expand-header justify-content-between">
 
         <button type="button"
                 class="btn btn-icon btn-outline-secondary sidebarCollapse me-2"
-                aria-label="{{ app()->getLocale() === 'ar' ? 'فتح القائمة الجانبية' : 'Open sidebar' }}">
+                aria-label="{{ $__navLocale === 'ar' ? 'فتح القائمة الجانبية' : 'Open sidebar' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -31,24 +32,19 @@
                 <a href="javascript:void(0)" class="nav-link dropdown-toggle" id="language-dropdown" data-bs-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     <img
-                        src="{{ app()->getLocale() === 'en' ? asset('assetsAdmin/language-translation-icon.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
-                        class="flag-width" alt="flag">
-                    {{ LaravelLocalization::getCurrentLocaleNative() }}
+                        src="{{ $__navLocale === 'en' ? asset('assetsAdmin/language-translation-icon.svg') : asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}"
+                        class="flag-width me-1" alt="flag">
+                    <span>{{ $__navLocale === 'en' ? 'English' : 'العربية' }}</span>
                 </a>
                 <div class="dropdown-menu position-absolute" aria-labelledby="language-dropdown">
-                    @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-                        @if($properties['native']==="English")
-                            <a class="dropdown-item d-flex"
-                               href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-                                <img src="{{ asset('assetsAdmin/language-translation-icon.svg') }}" class="flag-width" alt="flag">
-                                <span class="align-self-center">{{ $properties['native'] }}</span></a>
-                        @elseif($properties['native']==="العربية")
-                            <a class="dropdown-item d-flex"
-                               href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-                                <img src="{{ asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}" class="flag-width" alt="flag">
-                                <span class="align-self-center">{{ $properties['native'] }}</span></a>
-                        @endif
-                    @endforeach
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('lang.switch', 'en') }}">
+                        <img src="{{ asset('assetsAdmin/language-translation-icon.svg') }}" class="flag-width" alt="flag">
+                        <span class="align-self-center">English</span>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('lang.switch', 'ar') }}">
+                        <img src="{{ asset('assetsAdmin/src/assets/img/1x1/qa.svg') }}" class="flag-width" alt="flag">
+                        <span class="align-self-center">العربية</span>
+                    </a>
                 </div>
             </li>
 

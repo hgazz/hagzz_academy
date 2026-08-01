@@ -1,16 +1,69 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+@php $__locale = session('locale', app()->getLocale()); @endphp
+<html lang="{{ $__locale }}" dir="{{ $__locale === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <title>@yield('title')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('assetsAdmin/logo/Primary.svg') }}"/>
-    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}; url=partner/logout">
+    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}; url={{ route('academy.logout') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
-    <meta name="lang" content="{{ app()->getLocale() }}" />
+    <meta name="lang" content="{{ $__locale }}" />
         @include('Academy.Layouts.inc.head')
+    <style>
+        /* ─────────────────────────────────────────────────────────────────
+         * ROOT FIX: The template's .secondary-nav uses position:fixed which
+         * pulls it out of the document flow. Because ALL pages embed their
+         * .secondary-nav INSIDE .layout-px-spacing (not outside it), the
+         * fixed element floats freely while the content below it starts at
+         * the same vertical position → content hidden behind the fixed bar.
+         *
+         * Fix: override to position:relative so it stays in the normal flow
+         * inside .layout-px-spacing where the pages actually place it.
+         * ───────────────────────────────────────────────────────────────── */
 
+        .secondary-nav {
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            right: auto !important;
+            width: 100% !important;
+            z-index: auto !important;
+            /* Keep its visual style */
+            background: #fafafa;
+            box-shadow: 0 4px 6px -2px rgba(126,142,177,.10);
+            min-height: 52px;
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        /*
+         * Because .secondary-nav is no longer fixed, #content no longer
+         * needs the extra 52 px top-margin that was reserved for the fixed bar.
+         * Bring margin-top down to just the navbar height (55px → 60px safe).
+         */
+        #content.main-content {
+            margin-top: 60px !important;
+        }
+
+        /* Comfortable bottom padding so the last card/footer is never clipped */
+        .layout-px-spacing {
+            padding-bottom: 40px !important;
+            min-height: auto !important;
+        }
+
+        /* Footer always fully visible */
+        .footer-wrapper {
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 767.98px) {
+            .layout-px-spacing {
+                padding-bottom: 56px !important;
+            }
+        }
+    </style>
 </head>
 <body class="layout-boxed">
 <!-- BEGIN LOADER -->
@@ -26,9 +79,9 @@
                 <div class="hagzz-loader-mark">H</div>
             </div>
             <div class="hagzz-loader-copy">
-                <strong>{{ app()->getLocale() === 'ar' ? 'منظومة حجز الرقمية' : 'Hagzz Digital Platform' }}</strong>
+                <strong>{{ $__locale === 'ar' ? 'منظومة حجز الرقمية' : 'Hagzz Digital Platform' }}</strong>
                 <span>
-                    {{ app()->getLocale() === 'ar' ? 'نجهز لوحة التحكم' : 'Preparing your dashboard' }}
+                    {{ $__locale === 'ar' ? 'نجهز لوحة التحكم' : 'Preparing your dashboard' }}
                     <span class="hagzz-loader-dots"><i></i><i></i><i></i></span>
                 </span>
             </div>

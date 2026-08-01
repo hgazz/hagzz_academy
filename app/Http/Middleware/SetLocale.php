@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class SetLocale
 {
@@ -15,9 +16,14 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = session('locale', 'ar');
+        $locale = session('locale', session('laravel_localization_locale', 'ar'));
         if (in_array($locale, ['ar', 'en'])) {
             app()->setLocale($locale);
+            try {
+                LaravelLocalization::setLocale($locale);
+            } catch (\Throwable $e) {
+                // Fallback gracefully
+            }
         }
 
         return $next($request);

@@ -4,8 +4,9 @@
 <link href="{{ asset('assetsAdmin/src/assets/css/hagzz-loader.css') }}" rel="stylesheet" type="text/css" />
 <script src="{{ asset('assetsAdmin/layouts/vertical-light-menu/loader.js') }}"></script>
 
+@php $__headLocale = session('locale', app()->getLocale()); @endphp
 <!-- BEGIN GLOBAL MANDATORY STYLES -->
-@if (app()->getLocale() == 'ar')
+@if ($__headLocale == 'ar')
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
 
