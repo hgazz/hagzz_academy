@@ -61,18 +61,38 @@
         /* Remove the forced min-height that was causing overflow */
         .layout-px-spacing {
             min-height: auto !important;
-            padding-bottom: 48px !important;
+            padding-bottom: 32px !important;
         }
 
-        /* Footer must always be fully visible */
+        /* ── Full-width footer below sidebar + content ──────────────────
+         * The footer is moved OUTSIDE .main-container so it spans the
+         * full page width – below both the sidebar and the content area.
+         * ────────────────────────────────────────────────────────────── */
         .footer-wrapper {
-            position: relative;
-            z-index: 1;
+            width: 100% !important;
+            margin-top: 0 !important;
+            border-top: 1px solid rgba(15, 23, 42, .07);
+            background: #fafafa;
+            padding: 14px 24px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Let the sidebar shrink to content height instead of locking to 100vh */
+        .sidebar-wrapper {
+            height: auto !important;
+            min-height: calc(100vh - 60px);
+        }
+
+        #sidebar {
+            height: auto !important;
+            min-height: calc(100vh - 60px);
         }
 
         @media (max-width: 767.98px) {
             .layout-px-spacing {
-                padding-bottom: 64px !important;
+                padding-bottom: 48px !important;
             }
         }
     </style>
@@ -121,20 +141,20 @@
         <div class="layout-px-spacing">
             @include('Academy.Layouts.inc.subscription-alert')
             @yield('content')
-
         </div>
-        <!--  BEGIN FOOTER  -->
-        <div class="footer-wrapper">
-            <div class="footer-section f-section-1">
-                <p class="">Copyright © <span class="dynamic-year">2024</span> <a target="_blank" href="https://hagzz.com">Hagzz</a>, All rights reserved.</p>
-            </div>
-        </div>
-        <!--  END FOOTER  -->
     </div>
     <!--  END CONTENT AREA  -->
 
 </div>
 <!-- END MAIN CONTAINER -->
+
+<!--  BEGIN FOOTER (full-width, below sidebar + content)  -->
+<div class="footer-wrapper">
+    <div class="footer-section f-section-1">
+        <p>Copyright &copy; <span class="dynamic-year">{{ date('Y') }}</span> <a target="_blank" href="https://hagzz.com">Hagzz</a>, All rights reserved.</p>
+    </div>
+</div>
+<!--  END FOOTER  -->
 
 <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
 @include('Academy.Layouts.inc.footerJs')
