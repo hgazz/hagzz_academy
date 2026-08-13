@@ -31,18 +31,19 @@ use Maatwebsite\Excel\Facades\Excel;
 class TrainingController extends Controller
 {
     use CoacheTrait;
-   private $trainingModel, $addressModel, $coachModel;
-   public function __construct(Training $training, Address $address, Coach $coach)
-   {
-       $this->trainingModel = $training;
-       $this->addressModel = $address;
-       $this->coachModel = $coach;
-   }
+    private $trainingModel, $addressModel, $coachModel;
+    public function __construct(Training $training, Address $address, Coach $coach)
+    {
+        $this->trainingModel = $training;
+        $this->addressModel = $address;
+        $this->coachModel = $coach;
+    }
 
-   public function index(TrainingDataTable $dataTable)
-   {
+    public function index(TrainingDataTable $dataTable)
+    {
         return $dataTable->render('Academy.pages.training.index');
-   }
+    }
+
     public function create()
     {
         /** @var \App\Models\PartnerUser $authUser */
@@ -68,24 +69,30 @@ class TrainingController extends Controller
 
     public function getCoachesBySports($id)
     {
-        $coaches = CoachSport::where('sport_id', $id)
-            ->whereHas('coach', function ($query)  {
-                // Filter coaches by the academy of the authenticated user
-                $query->select('id', 'name')
-                ->where('academy_id', auth('academy')->id());
-            })
-            ->with(['coach' => function ($query) {
-                $query->select('id', 'name'); // Limit fields to avoid unnecessary data
-            }])
-            ->get()
-            ->pluck('coach')
-            ->unique(); // Remove duplicate coaches (if any)
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        if (!$authUser) {
+            return response()->json(['coaches' => []]);
+        }
 
-        // Return a structured JSON response
+        $service = new PartnerAccessService($authUser);
+        $query = Coach::query()->where('active', 1);
+
+        // Filter coaches strictly to this partner's academy & accessible branches/sports
+        $service->scopeCoaches($query);
+
+        // Filter by the requested sport
+        $query->whereHas('sports', function ($q) use ($id) {
+            $q->where('sports.id', $id);
+        });
+
+        $coaches = $query->get(['coaches.id', 'coaches.name']);
+
         return response()->json([
             'coaches' => $coaches
         ]);
     }
+
     public function store(TrainingRequest $request)
     {
         /** @var \App\Models\PartnerUser $authUser */
@@ -94,29 +101,29 @@ class TrainingController extends Controller
             abort(403, 'غير مصرح لك بإضافة تدريب لهذه الرياضة');
         }
 
-        \DB::transaction(function() use ($request){
-            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields() , $request->validated());
-            $this->trainingModel->create(array_merge($translatable,[
-                'start_date'=> $request->start_date,
-                'end_date'=> $request->end_date,
+        DB::transaction(function () use ($request, $authUser) {
+            $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
+            $this->trainingModel->create(array_merge($translatable, [
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'coach_id'=> $request->coach_id,
-                'price'=> $request->price,
-                'max_players'=> $request->max_players,
-                'level'=> $request->level,
+                'coach_id' => $request->coach_id,
+                'price' => $request->price,
+                'max_players' => $request->max_players,
+                'level' => $request->level,
                 'gender' => $request->gender,
                 'age_group' => $request->age_group,
                 'address_id' => $request->address_id,
-                'academy_id' => auth()->id(),
+                'academy_id' => $authUser->academy_id,
                 'sport_id' => $request->sport_id,
                 'discount_price' => $request->discount_price,
                 'classes_days' => $request->classes_days,
                 'color' => $this->normalizeTrainingColor($request->color),
-               'classes_number' => $request->classes_number
+                'classes_number' => $request->classes_number
             ]));
         });
-        session()->flash('success',trans('admin.training.created_successfully'));
+        session()->flash('success', trans('admin.training.created_successfully'));
         return to_route('academy.training.index');
     }
 
@@ -152,12 +159,14 @@ class TrainingController extends Controller
         return view('Academy.pages.training.edit', compact('academyCoaches', 'sports', 'training', 'addresses'));
     }
 
-    public function update(Training $training , TrainingRequest $request)
+    public function update(Training $training, TrainingRequest $request)
     {
-        abort_unless((int) $training->academy_id === (int) auth('academy')->id(), 404);
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        abort_unless((int) $training->academy_id === (int) $authUser->academy_id, 404);
 
         try {
-            DB::transaction(function () use ($request, $training) {
+            DB::transaction(function () use ($request, $training, $authUser) {
                 $originalStartDate = $training->start_date;
                 $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
                 $training->update(array_merge($translatable, [
@@ -167,22 +176,22 @@ class TrainingController extends Controller
                     'end_time' => $request->end_time,
                     'coach_id' => $request->coach_id,
                     'price' => $request->price,
-                    'max_players'=> $request->max_players,
-                    'level'=> $request->level,
+                    'max_players' => $request->max_players,
+                    'level' => $request->level,
                     'gender' => $request->gender,
                     'age_group' => $request->age_group,
                     'address_id' => $request->address_id,
                     'sport_id' => $request->sport_id,
                     'discount_price' => $request->discount_price,
                     'classes_days' => $request->classes_days,
-               'color' => $this->normalizeTrainingColor($request->color),
-              'classes_number' => $request->classes_number
+                    'color' => $this->normalizeTrainingColor($request->color),
+                    'classes_number' => $request->classes_number
                 ]));
                 $details = [
                     'training_id' => $training->id,
                     'longitude' => $training->longitude,
                     'latitude' => $training->latitude,
-                    'academy_name' => auth('academy')->user()->commercial_name
+                    'academy_name' => $authUser->commercial_name
                 ];
                 //notifications to users
                 if ($originalStartDate != $training->start_date) {
@@ -192,32 +201,32 @@ class TrainingController extends Controller
                     $data = [
                         'title' => $title,
                         'body' => $body,
-                        'image' => auth('academy')->user()->image,
+                        'image' => $authUser->image,
                         'details' => $details,
                         "id" => $training->id,
                         'page' => 'details',
                         'class_id' => null
                     ];
                     $joins->map(function ($join) use ($data) {
-                        NotificationService::firebaseNotification($data,$join->user->fcm_token,);
+                        NotificationService::firebaseNotification($data, $join->user->fcm_token,);
                     });
-
                 }
             });
-            session()->flash('success',trans('admin.training.updated_successfully'));
+            session()->flash('success', trans('admin.training.updated_successfully'));
             return to_route('academy.training.index');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             report($e);
             return back()->withInput()->with('error', $e->getMessage());
         }
-
-
-
     }
 
     public function updateActive(Training $training)
     {
-        if ($training->active){
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        abort_unless((int) $training->academy_id === (int) $authUser->academy_id, 404);
+
+        if ($training->active) {
             $newStatus = 0;
             $successMessage = trans('admin.training.status_inactive_successfully');
         } else {
@@ -233,24 +242,32 @@ class TrainingController extends Controller
         session()->flash('success', $successMessage);
         return redirect()->route('academy.training.index');
     }
+
     public function delete(Request $request)
     {
-       $training = $this->trainingModel->findOrFail($request->id);
-       $training->delete();
-       return response()->json(['data' => [
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $training = $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->id);
+        $training->delete();
+        return response()->json(['data' => [
             'status' => 'success',
             'model'   => trans('admin.training.training'),
             'message' => trans('admin.training.deleted_successfully'),
-       ]]);
+        ]]);
     }
 
     public function createBooking()
     {
-        $data = $this->trainingModel::where('academy_id', auth('academy')->id())->get();
-        $students = AcademyStudent::where('academy_id', auth('academy')->id())
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $data = $service->scopeTrainings($this->trainingModel->newQuery())->get();
+        $students = $service->scopeStudents(AcademyStudent::query())
             ->where('status', 'active')->orderBy('name')->get(['id', 'name', 'phone', 'guardian_name']);
         return view('Academy.pages.training.create_booking', compact('data', 'students'));
     }
+
     public function getAreaByCity(Request $request)
     {
         $cityId = $request->city_id;
@@ -259,7 +276,7 @@ class TrainingController extends Controller
         }
 
         $locale = app()->getLocale();
-        
+
         if (is_numeric($cityId)) {
             try {
                 $areas = Area::where('city_id', $cityId)->get()->map(function ($area) use ($locale) {
@@ -419,14 +436,16 @@ class TrainingController extends Controller
 
         return response()->json($result->values());
     }
+
     public function storeBooking(BookingRequest $request)
     {
         try {
-            $training = $this->trainingModel
-                ->where('academy_id', auth('academy')->id())
-                ->findOrFail($request->training_id);
-            $student = AcademyStudent::where('academy_id', auth('academy')->id())
-                ->findOrFail($request->academy_student_id);
+            /** @var \App\Models\PartnerUser $authUser */
+            $authUser = auth('academy')->user();
+            $service = new PartnerAccessService($authUser);
+            $training = $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
+            $student = $service->scopeStudents(AcademyStudent::query())->findOrFail($request->academy_student_id);
+
             if (blank($student->phone)) {
                 throw ValidationException::withMessages([
                     'academy_student_id' => app()->getLocale() === 'ar'
@@ -452,8 +471,8 @@ class TrainingController extends Controller
                     'gender' => $student->gender, 'country_code' => $student->country_code,
                     'country_id' => $student->country_id, 'city_id' => $student->city_id,
                     'area_id' => $student->area_id,
-                    'user_type'=> 'system',
-                    'birth_date'=> $student->birth_date, 'club_member' => $student->club_member,
+                    'user_type' => 'system',
+                    'birth_date' => $student->birth_date, 'club_member' => $student->club_member,
                     'email' => $student->email, 'child_type' => $student->child_type,
                     'school_name' => $student->school_name, 'parent_name' => $student->guardian_name,
                     'parent_phone' => $student->guardian_phone, 'coach_preference' => $student->coach_preference,
@@ -463,7 +482,8 @@ class TrainingController extends Controller
                     'medical_condition' => $student->medical_condition, 'start_date' => $student->start_date,
                     'medical_condition_details' => $student->medical_notes,
                     'additional_information' => $student->notes,
-                ]);
+                ]
+            );
             if ((int) $student->user_id !== (int) $user->id) $student->update(['user_id' => $user->id]);
             $booking = Invoice::create([
                 'user_id' => $user->id,
@@ -499,7 +519,7 @@ class TrainingController extends Controller
 
     public function export()
     {
-        return Excel::download(new TrainingsExport() ,'training.xlsx');
+        return Excel::download(new TrainingsExport(), 'training.xlsx');
     }
 
     /**
@@ -513,40 +533,42 @@ class TrainingController extends Controller
                 'training_id' => $training->id,
                 'longitude' => $training->longitude,
                 'latitude' => $training->latitude,
-                'academy_name' => auth('academy')->user()->commercial_name
+                'academy_name' => auth('academy')->user()?->commercial_name
             ];
             $AcademyTitle = 'Don’t miss out!';
             $AcademyBody = 'just added a new activity. Check it out!';
             $academyFollows = Follow::where([
                 'followable_type' => Academies::class,
-                'followable_id' => auth('academy')->id(),
+                'followable_id' => $training->academy_id,
             ])->get();
             $academyFollows->map(function ($follow) use ($AcademyTitle, $AcademyBody, $details) {
-                NotificationService::dbNotification($follow->user_id, User::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()->image, $details);
+                NotificationService::dbNotification($follow->user_id, User::class, 1, $AcademyTitle, $AcademyBody, auth('academy')->user()?->image, $details);
             });
 
             $coachTitle = 'Don’t miss out!';
-            $coachBody = $training->coach->name . ' is leading a new training.Tap for details';
+            $coachBody = $training->coach?->name . ' is leading a new training.Tap for details';
             $coachFollows = Follow::where([
                 'followable_type' => Coach::class,
                 'followable_id' => $training->coach_id,
             ])->get();
             $coachFollows->map(function ($follow) use ($coachTitle, $coachBody, $details) {
-                NotificationService::dbNotification($follow->user_id, User::class, 1, $coachTitle, $coachBody, auth('academy')->user()->image, $details);
+                NotificationService::dbNotification($follow->user_id, User::class, 1, $coachTitle, $coachBody, auth('academy')->user()?->image, $details);
             });
         }
     }
 
     public function bulkDelete(Request $request)
     {
-        $trainingIds = json_decode($request->ids);
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $trainingIds = json_decode($request->ids ?? '[]');
 
         foreach ($trainingIds as $trainingId) {
-            $training = $this->trainingModel->findOrFail($trainingId);
-            if ($training->joins()->count() > 0) {
-                continue;
+            $training = $service->scopeTrainings($this->trainingModel->newQuery())->find($trainingId);
+            if ($training && $training->joins()->count() === 0) {
+                $training->delete();
             }
-            $training->delete();
         }
         session()->flash('success', 'Training Deleted Successfully');
         return back();
@@ -554,11 +576,16 @@ class TrainingController extends Controller
 
     public function publish(Request $request)
     {
-        $trainingIds = json_decode($request->pub_ids);
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $trainingIds = json_decode($request->pub_ids ?? '[]');
         foreach ($trainingIds as $trainingId) {
-            $training = $this->trainingModel->findOrFail($trainingId);
-            $status = ($training->active)  ? 0 : 1;
-            $training->update(['active'=>$status]);
+            $training = $service->scopeTrainings($this->trainingModel->newQuery())->find($trainingId);
+            if ($training) {
+                $status = ($training->active) ? 0 : 1;
+                $training->update(['active' => $status]);
+            }
         }
         session()->flash('success', trans('admin.training.status_active_successfully'));
         return back();

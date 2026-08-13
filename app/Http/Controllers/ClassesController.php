@@ -9,8 +9,8 @@ use App\Models\Join;
 use App\Models\Sport;
 use App\Models\TClass;
 use App\Models\Training;
-use App\Models\User;
 use App\Services\Firebase\NotificationService;
+use App\Services\PartnerAccessService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,14 +33,21 @@ class ClassesController extends Controller
 
     public function create()
     {
-        $academyTrainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.clasess.create', compact( 'academyTrainings'));
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $academyTrainings = $service->scopeTrainings($this->trainingModel->newQuery())->get();
+        return view('Academy.pages.clasess.create', compact('academyTrainings'));
     }
 
     public function store(ClassRequest $request)
     {
-        $translatable =  TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(),$request->validated());
-        // Prepare bilingual fields for outcomes and bring_with_me
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
+
+        $translatable = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
         $outcomes = [
             'en' => $request->input('outcomes.en', []),
             'ar' => $request->input('outcomes.ar', [])
@@ -51,7 +58,6 @@ class ClassesController extends Controller
             'ar' => $request->input('bring_with_me.ar', [])
         ];
 
-        // Create the class with merged data
         $this->classModel->create(array_merge($translatable, [
             'date' => $request->date,
             'training_id' => $request->training_id,
@@ -61,22 +67,32 @@ class ClassesController extends Controller
             'bring_with_me' => $bringWithMe
         ]));
 
-        session()->flash('success',trans('admin.clasess.created_successfully'));
-        return redirect(route('academy.class.index'))->withErrors("error");
+        session()->flash('success', trans('admin.clasess.created_successfully'));
+        return redirect(route('academy.class.index'));
     }
 
     public function edit(TClass $class)
     {
-        $academyTrainings = $this->trainingModel->whereBelongsTo(auth('academy')->user(), 'academy')->get();
-        return view('Academy.pages.clasess.edit',compact('class', 'academyTrainings'));
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $class = $service->scopeClasses($this->classModel->newQuery())->findOrFail($class->id);
+        $academyTrainings = $service->scopeTrainings($this->trainingModel->newQuery())->get();
+
+        return view('Academy.pages.clasess.edit', compact('class', 'academyTrainings'));
     }
 
-    public function update(TClass $class , ClassRequest $request)
+    public function update(TClass $class, ClassRequest $request)
     {
-        $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields() , $request->validated());
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $class = $service->scopeClasses($this->classModel->newQuery())->findOrFail($class->id);
+        $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
+
+        $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
         try {
             DB::beginTransaction();
-            // Prepare bilingual fields for outcomes and bring_with_me
             $outcomes = [
                 'en' => $request->input('outcomes.en', []),
                 'ar' => $request->input('outcomes.ar', [])
@@ -87,7 +103,6 @@ class ClassesController extends Controller
                 'ar' => $request->input('bring_with_me.ar', [])
             ];
 
-            // Update the class with merged data
             $class->update(array_merge($translation, [
                 'date' => $request->date,
                 'training_id' => $request->training_id,
@@ -96,21 +111,22 @@ class ClassesController extends Controller
                 'out_comes' => $outcomes,
                 'bring_with_me' => $bringWithMe,
             ]));
+
             $details = [
                 'training_id' => $class->training_id,
-                'longitude' => $class->training->longitude,
-                'latitude' => $class->training->latitude,
-                'academy_name' => auth('academy')->user()->commercial_name
+                'longitude' => $class->training?->longitude,
+                'latitude' => $class->training?->latitude,
+                'academy_name' => $authUser->commercial_name
             ];
-            //notifications to users
+
             if ($class->wasChanged('date')) {
                 $title = 'Session Rescheduled';
-                $body = 'Your Next Session at' . auth('academy')->user()->commercial_name. ' is rescheduled, at ' . $class->date . ' please check the new timings.Apologies for the inconvenience';
+                $body = 'Your Next Session at ' . $authUser->commercial_name . ' is rescheduled, at ' . $class->date . ' please check the new timings. Apologies for the inconvenience';
                 $joins = Join::where('training_id', $class->training_id)->get();
                 $data = [
                     'title' => $title,
                     'body' => $body,
-                    'image' => auth('academy')->user()->image,
+                    'image' => $authUser->image,
                     'details' => $details,
                     "id" => $class->training_id,
                     'page' => 'details',
@@ -122,27 +138,29 @@ class ClassesController extends Controller
             }
 
             DB::commit();
-            session()->flash('success',trans('admin.clasess.updated_successfully'));
+            session()->flash('success', trans('admin.clasess.updated_successfully'));
             return redirect(route('academy.class.index'));
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
+            DB::rollBack();
             session()->flash('error', $e->getMessage());
             return back();
-
         }
-
     }
 
     public function delete(Request $request)
     {
         try {
-             $class = $this->classModel->findOrFail($request->id);
-             $class->delete();
+            /** @var \App\Models\PartnerUser $authUser */
+            $authUser = auth('academy')->user();
+            $service = new PartnerAccessService($authUser);
+            $class = $service->scopeClasses($this->classModel->newQuery())->findOrFail($request->id);
+            $class->delete();
             return response()->json(['data' => [
                 'status' => 'success',
                 'model'   => trans('admin.clasess.clasess'),
                 'message' => trans('admin.clasess.deleted_successfully'),
             ]]);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['data' => [
                 'status' => 'failed',
             ]]);
@@ -151,24 +169,33 @@ class ClassesController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        foreach (json_decode($request->ids) as $id) {
-            $class = $this->classModel->findOrFail($id);
-            $class->delete();
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        foreach (json_decode($request->ids ?? '[]') as $id) {
+            $class = $service->scopeClasses($this->classModel->newQuery())->find($id);
+            if ($class) {
+                $class->delete();
+            }
         }
         session()->flash('success', trans('admin.clasess.deleted_successfully'));
         return to_route('academy.class.index');
     }
+
     public function export()
     {
-        return Excel::download(new clasessExport() , 'classes.xlsx');
+        return Excel::download(new clasessExport(), 'classes.xlsx');
     }
 
     public function checkTrainingDate(Request $request)
     {
-        $training = $this->trainingModel->findOrFail($request->training_id);
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+        $training = $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
         return response()->json([
             'status' => 'success',
-            'data' =>$training
+            'data' => $training
         ]);
     }
 }
