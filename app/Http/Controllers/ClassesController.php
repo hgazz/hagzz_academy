@@ -45,30 +45,39 @@ class ClassesController extends Controller
         /** @var \App\Models\PartnerUser $authUser */
         $authUser = auth('academy')->user();
         $service = new PartnerAccessService($authUser);
-        $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
 
-        $translatable = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
-        $outcomes = [
-            'en' => $request->input('outcomes.en', []),
-            'ar' => $request->input('outcomes.ar', [])
-        ];
+        try {
+            $training = $service->scopeTrainings($this->trainingModel->newQuery())->find($request->training_id);
+            if (!$training) {
+                return back()->withInput()->with('error', trans('admin.clasess.training_not_found'));
+            }
 
-        $bringWithMe = [
-            'en' => $request->input('bring_with_me.en', []),
-            'ar' => $request->input('bring_with_me.ar', [])
-        ];
+            $translatable = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
+            $outcomes = [
+                'en' => array_values(array_filter($request->input('outcomes.en', []))),
+                'ar' => array_values(array_filter($request->input('outcomes.ar', [])))
+            ];
 
-        $this->classModel->create(array_merge($translatable, [
-            'date' => $request->date,
-            'training_id' => $request->training_id,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'out_comes' => $outcomes,
-            'bring_with_me' => $bringWithMe
-        ]));
+            $bringWithMe = [
+                'en' => array_values(array_filter($request->input('bring_with_me.en', []))),
+                'ar' => array_values(array_filter($request->input('bring_with_me.ar', [])))
+            ];
 
-        session()->flash('success', trans('admin.clasess.created_successfully'));
-        return redirect(route('academy.class.index'));
+            $this->classModel->create(array_merge($translatable, [
+                'date' => $request->date,
+                'training_id' => $request->training_id,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'out_comes' => $outcomes,
+                'bring_with_me' => $bringWithMe
+            ]));
+
+            session()->flash('success', trans('admin.clasess.created_successfully'));
+            return redirect(route('academy.class.index'));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     public function edit(TClass $class)
@@ -87,20 +96,22 @@ class ClassesController extends Controller
         /** @var \App\Models\PartnerUser $authUser */
         $authUser = auth('academy')->user();
         $service = new PartnerAccessService($authUser);
-        $class = $service->scopeClasses($this->classModel->newQuery())->findOrFail($class->id);
-        $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
 
-        $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
         try {
+            $class = $service->scopeClasses($this->classModel->newQuery())->findOrFail($class->id);
+            $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
+
+            $translation = TranslatableService::generateTranslatableFields(TClass::getTranslatableFields(), $request->validated());
+
             DB::beginTransaction();
             $outcomes = [
-                'en' => $request->input('outcomes.en', []),
-                'ar' => $request->input('outcomes.ar', [])
+                'en' => array_values(array_filter($request->input('outcomes.en', []))),
+                'ar' => array_values(array_filter($request->input('outcomes.ar', [])))
             ];
 
             $bringWithMe = [
-                'en' => $request->input('bring_with_me.en', []),
-                'ar' => $request->input('bring_with_me.ar', [])
+                'en' => array_values(array_filter($request->input('bring_with_me.en', []))),
+                'ar' => array_values(array_filter($request->input('bring_with_me.ar', [])))
             ];
 
             $class->update(array_merge($translation, [
@@ -140,10 +151,11 @@ class ClassesController extends Controller
             DB::commit();
             session()->flash('success', trans('admin.clasess.updated_successfully'));
             return redirect(route('academy.class.index'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            report($e);
             session()->flash('error', $e->getMessage());
-            return back();
+            return back()->withInput();
         }
     }
 
@@ -160,9 +172,10 @@ class ClassesController extends Controller
                 'model'   => trans('admin.clasess.clasess'),
                 'message' => trans('admin.clasess.deleted_successfully'),
             ]]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['data' => [
                 'status' => 'failed',
+                'message' => $e->getMessage()
             ]]);
         }
     }
@@ -192,7 +205,10 @@ class ClassesController extends Controller
         /** @var \App\Models\PartnerUser $authUser */
         $authUser = auth('academy')->user();
         $service = new PartnerAccessService($authUser);
-        $training = $service->scopeTrainings($this->trainingModel->newQuery())->findOrFail($request->training_id);
+        $training = $service->scopeTrainings($this->trainingModel->newQuery())->find($request->training_id);
+        if (!$training) {
+            return response()->json(['status' => 'failed']);
+        }
         return response()->json([
             'status' => 'success',
             'data' => $training

@@ -9,7 +9,7 @@ use Spatie\Translatable\HasTranslations;
 
 class TClass extends Model
 {
-    use HasFactory , HasTranslations , HasTranslations;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'title',
