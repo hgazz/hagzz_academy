@@ -26,26 +26,26 @@ class ClassRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title_en' => 'required|string|regex:/^[a-zA-Z\s 0-9]*$/',
-            'title_ar' => 'required|string',
-            'date' =>['required',new ValidateDate()],
-            'start_time' => $this->checkStartTime(),
-            'end_time' => $this->checkEndTime(),
-            'training_id'=>'required|exists:trainings,id',
+            'title_en' => 'required|string|max:255',
+            'title_ar' => 'required|string|max:255',
+            'date' => ['required', 'date', new ValidateDate()],
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if ($this->start_time && $value === $this->start_time) {
+                        $fail(app()->getLocale() === 'ar'
+                            ? 'يجب أن يختلف وقت نهاية الحصة عن وقت البداية.'
+                            : 'The session end time must be different from the start time.');
+                    }
+                },
+            ],
+            'training_id' => 'required|exists:trainings,id',
             'outcomes.en.*' => 'nullable|string',
             'outcomes.ar.*' => 'nullable|string',
             'bring_with_me.en.*' => 'nullable|string',
             'bring_with_me.ar.*' => 'nullable|string',
         ];
-    }
-
-    public function checkStartTime()
-    {
-        return request()->isMethod('post') ? 'required|date_format:H:i' : 'required';
-    }
-
-    public function checkEndTime()
-    {
-        return request()->isMethod('post') ? 'required|date_format:H:i|after:start_time' : 'required';
     }
 }

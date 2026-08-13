@@ -15,18 +15,38 @@ class ValidateDate implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $training =  Training::where('id',request('training_id'))->first();
+        if (blank($value)) {
+            return;
+        }
 
-        if (is_null($training)){
+        $trainingId = request('training_id');
+        if (!$trainingId) {
+            return;
+        }
+
+        $training = Training::find($trainingId);
+
+        if (!$training) {
             $fail(trans('admin.clasess.training_not_found'));
-        }else{
-            $startDate = Carbon::parse($training->start_date);
-            $endDate = Carbon::parse($training->end_date);
-            $checkDate = Carbon::parse(request('date'));
+            return;
+        }
 
-            if (!$checkDate->between($startDate, $endDate)) {
-                $fail(trans("admin.clasess.date_outside_range", [ 'startDate' => $startDate, 'endDate' => $endDate]));
+        try {
+            $checkDate = Carbon::parse($value)->startOfDay();
+
+            if (!empty($training->start_date) && !empty($training->end_date)) {
+                $startDate = Carbon::parse($training->start_date)->startOfDay();
+                $endDate = Carbon::parse($training->end_date)->endOfDay();
+
+                if ($checkDate->lt($startDate) || $checkDate->gt($endDate)) {
+                    $fail(trans("admin.clasess.date_outside_range", [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ]));
+                }
             }
+        } catch (\Throwable $e) {
+            // Allow format validation to handle invalid date strings
         }
     }
 

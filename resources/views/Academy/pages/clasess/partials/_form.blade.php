@@ -430,18 +430,33 @@
                         type: 'GET',
                         data: { training_id: trainingId },
                         success: function(response) {
-                            if (response.status === 'success') {
-                                var startDate = response.data.start_date;
-                                console.log(startDate);
-                                var endDate = response.data.end_date;
-                                $('#date-hint').text('({{trans("admin.class_must_be_between")}} ' + startDate + ' & ' + endDate + ')');
+                            if (response.status === 'success' && response.data) {
+                                var t = response.data;
+                                if (t.start_date && t.end_date) {
+                                    $('#date-hint').text('({{trans("admin.class_must_be_between")}} ' + t.start_date + ' & ' + t.end_date + ')');
+                                    $('#date').attr('min', t.start_date).attr('max', t.end_date);
+                                } else {
+                                    $('#date-hint').text('');
+                                    $('#date').removeAttr('min').removeAttr('max');
+                                }
+
+                                if (t.start_time && !$('#start_time').val()) {
+                                    $('#start_time').val(t.start_time.substring(0, 5));
+                                }
+                                if (t.end_time && !$('#end_time').val()) {
+                                    $('#end_time').val(t.end_time.substring(0, 5));
+                                }
                             }
                         }
                     });
                 } else {
                     $('#date-hint').text('');
+                    $('#date').removeAttr('min').removeAttr('max');
                 }
             });
+            if ($('#training_id').val()) {
+                $('#training_id').trigger('change');
+            }
         });
     </script>
 @endpush
