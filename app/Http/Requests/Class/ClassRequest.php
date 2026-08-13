@@ -18,6 +18,20 @@ class ClassRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->start_time && strlen((string)$this->start_time) > 5) {
+            $this->merge([
+                'start_time' => substr((string)$this->start_time, 0, 5),
+            ]);
+        }
+        if ($this->end_time && strlen((string)$this->end_time) > 5) {
+            $this->merge([
+                'end_time' => substr((string)$this->end_time, 0, 5),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

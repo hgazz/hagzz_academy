@@ -6,7 +6,7 @@
         <select id="training_id" class="form-select pt-2" name="training_id" >
             <option value=""> {{trans('admin.clasess.select_training')}} </option>
             @foreach($academyTrainings as $training)
-                <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{$training->name}}</option>
+                <option value="{{$training->id}}" @selected(old('training_id',  (isset($class) ? $class->training_id : '')) == $training->id) >{{ is_array($training->name) ? ($training->name[app()->getLocale()] ?? reset($training->name) ?: '') : $training->name }}</option>
             @endforeach
         </select>
         @error('training_id')
