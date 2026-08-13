@@ -21,10 +21,12 @@ use App\Models\Join;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
+use App\Services\PartnerAccessService;
 use App\Services\TranslatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TrainingController extends Controller
 {
