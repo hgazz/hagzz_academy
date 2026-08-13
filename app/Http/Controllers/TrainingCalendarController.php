@@ -22,8 +22,7 @@ class TrainingCalendarController extends Controller
             ->withCount('joins')
             ->whereNotNull('start_time')
             ->whereNotNull('end_time')
-            ->whereNotNull('classes_days')
-            ->where('active', 1);
+            ->whereNotNull('classes_days');
 
         $trainings = $service->scopeTrainings($trainingsQuery)
             ->orderBy('start_time')

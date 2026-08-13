@@ -120,7 +120,8 @@ class TrainingController extends Controller
                 'discount_price' => $request->discount_price,
                 'classes_days' => $request->classes_days,
                 'color' => $this->normalizeTrainingColor($request->color),
-                'classes_number' => $request->classes_number
+                'classes_number' => $request->classes_number,
+                'active' => 1,
             ]));
         });
         session()->flash('success', trans('admin.training.created_successfully'));
