@@ -20,14 +20,24 @@ class TrainingRequest extends FormRequest
     }
 
     /**
+     * Prepare inputs for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'discount_price' => $this->discount_price !== null && $this->discount_price !== '' ? $this->discount_price : 0,
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
-        return[
-            'name_en' => 'required|string|max:255|regex:/^[a-zA-Z\s 0-9]*$/',
+        return [
+            'name_en' => 'required|string|max:255',
             'name_ar' => 'required|string|max:255',
             'description_en' => 'required|string|max:255',
             'description_ar' => 'required|string|max:255',
@@ -45,20 +55,19 @@ class TrainingRequest extends FormRequest
                         : 'The class end time must be different from the start time.');
                 },
             ],
-            'coach_id'=>'required|integer|exists:coaches,id',
-            'price'=> 'required|integer|min:1',
+            'coach_id' => 'required|integer|exists:coaches,id',
+            'price' => 'required|numeric|min:1',
             'gender' => 'required|in:All,Men,Women',
             'level' => 'required|in:Beginner,Intermediate,Advanced,Any_Level',
             'age_group' => 'required|in:All,Kids,Juniors,Adults',
             'address_id' => 'required|exists:addresses,id',
-            'max_players' => 'required|integer',
+            'max_players' => 'required|integer|min:1',
             'sport_id' => 'required|exists:sports,id',
             'classes_days' => 'required|array|min:1',
             'classes_days.*' => 'in:saturday,sunday,monday,tuesday,wednesday,thursday,friday',
             'classes_number' => 'nullable|integer|min:1',
             'color' => ['nullable', 'regex:/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/'],
-            'discount_price' => ['required','integer','min:0', new checkDiscountValue()],
+            'discount_price' => ['nullable', 'numeric', 'min:0', new checkDiscountValue()],
         ];
-
     }
 }

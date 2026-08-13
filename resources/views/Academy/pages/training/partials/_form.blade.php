@@ -252,7 +252,7 @@
                 data.coaches.forEach(coach => {
                     const option = document.createElement('option');
                     option.value = coach.id;
-                    option.textContent = coach.name?.[locale] || coach.name?.en || coach.name?.ar || '';
+                    option.textContent = typeof coach.name === 'string' ? coach.name : (coach.name?.[locale] || coach.name?.en || coach.name?.ar || '');
                     option.selected = String(coach.id) === selectedCoach;
                     coachSelect.appendChild(option);
                 });
