@@ -27,31 +27,43 @@ class TrainingDataTable extends DataTable
             ->editColumn('description', fn($raw) => $raw->description)
             ->editColumn('active', fn($raw) => $raw->active ? trans('admin.training.Active') : trans('admin.training.InActive'))
             ->editColumn('coach_id', function (Training $training) {
-                return $training->coach->name;
+                if (!$training->coach) {
+                    return '-';
+                }
+                $name = $training->coach->name;
+                if (is_array($name)) {
+                    $locale = app()->getLocale();
+                    return $name[$locale] ?? reset($name) ?: '-';
+                }
+                return (string) $name;
             })
             ->editColumn('sport_id', function (Training $training) {
-                return $training->sport->name;
+                if (!$training->sport) {
+                    return '-';
+                }
+                $name = $training->sport->name;
+                if (is_array($name)) {
+                    $locale = app()->getLocale();
+                    return $name[$locale] ?? reset($name) ?: '-';
+                }
+                return (string) $name;
             })
             ->addColumn('action', function (Training $training) {
                 return view('Academy.pages.training.datatable.actions', compact('training'))->render();
             })
             ->editColumn('classes_days', function (Training $training) {
-                return ! is_null($training->classes_days ) ? $training->classes_days : null;
+                $days = $training->classes_days;
+                if (is_array($days)) {
+                    $translated = array_map(fn($day) => trans('admin.training.' . $day), $days);
+                    return implode(', ', $translated);
+                }
+                return $days ? (string) $days : '-';
             })
             ->editColumn('color', function (Training $training) {
-                return "<div style='background-color: $training->color; width: 20px; height: 20px; border-radius: 2px'></div>";
+                $color = $training->color ?: '#2563eb';
+                return "<div style='background-color: {$color}; width: 20px; height: 20px; border-radius: 2px'></div>";
             })
-//            ->addColumn('classes', function (Training $training) {
-//                return $training->classes->count();
-//            })
-//            ->addColumn('delete', function (Training $training) {
-//                return view('Academy.pages.training.datatable.checkbox', compact('training'));
-//            })
-//            ->addColumn('publish', function (Training $training) {
-//                return view('Academy.pages.training.datatable.publish', compact('training'));
-//            })
-            ->rawColumns(['action', 'coach_id', 'sport_id','image','class', 'active', 'classes_days', 'color']);
-
+            ->rawColumns(['action', 'coach_id', 'sport_id', 'image', 'class', 'active', 'classes_days', 'color']);
     }
 
     /**
