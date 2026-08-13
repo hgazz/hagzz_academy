@@ -21,21 +21,35 @@ class TClassDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('training_id', fn($raw) => $raw->training->name)
-            ->editColumn('title', fn($raw) => $raw->title)
-            ->editColumn('subtitle', fn($raw) => $raw->subtitle)
+            ->editColumn('training_id', function (TClass $class) {
+                if (!$class->training) {
+                    return '-';
+                }
+                $name = $class->training->name;
+                if (is_array($name)) {
+                    $locale = app()->getLocale();
+                    return $name[$locale] ?? reset($name) ?: '-';
+                }
+                return (string) $name;
+            })
+            ->editColumn('title', function (TClass $class) {
+                $title = $class->title;
+                if (is_array($title)) {
+                    $locale = app()->getLocale();
+                    return $title[$locale] ?? reset($title) ?: '-';
+                }
+                return (string) ($title ?: '-');
+            })
+            ->editColumn('subtitle', fn($raw) => $raw->subtitle ?: '-')
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
             })
-//            ->addColumn('checkbox',function (TClass $class){
-//                return view('Academy.pages.clasess.datatable.checkbox',compact('class'));
-//            })
             ->filterColumn('training.name', function ($query, $keyword) {
-                $query->whereHas('training',function ($q) use($keyword){
+                $query->whereHas('training', function ($q) use ($keyword) {
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action',]);
+            ->rawColumns(['action']);
     }
 
     /**
