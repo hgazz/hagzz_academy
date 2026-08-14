@@ -59,18 +59,8 @@ class ClassRequest extends FormRequest
             'title_en' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
             'date' => ['required', 'date', new ValidateDate()],
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => [
-                'required',
-                'date_format:H:i',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    if ($this->start_time && $value === $this->start_time) {
-                        $fail(app()->getLocale() === 'ar'
-                            ? 'يجب أن يختلف وقت نهاية الحصة عن وقت البداية.'
-                            : 'The session end time must be different from the start time.');
-                    }
-                },
-            ],
+            'start_time' => 'required',
+            'end_time' => 'required',
             'training_id' => 'required|exists:trainings,id',
             'outcomes.en.*' => 'nullable|string',
             'outcomes.ar.*' => 'nullable|string',

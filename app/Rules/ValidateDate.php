@@ -15,26 +15,23 @@ class ValidateDate implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (blank($value)) {
-            return;
-        }
-
-        $trainingId = request('training_id');
-        if (!$trainingId) {
-            return;
-        }
-
-        $training = Training::find($trainingId);
-
-        if (!$training) {
-            $fail(trans('admin.clasess.training_not_found'));
-            return;
-        }
-
         try {
-            $checkDate = Carbon::parse($value)->startOfDay();
+            if (blank($value)) {
+                return;
+            }
+
+            $trainingId = request('training_id');
+            if (!$trainingId) {
+                return;
+            }
+
+            $training = Training::find($trainingId);
+            if (!$training) {
+                return;
+            }
 
             if (!empty($training->start_date) && !empty($training->end_date)) {
+                $checkDate = Carbon::parse($value)->startOfDay();
                 $startDate = Carbon::parse($training->start_date)->startOfDay();
                 $endDate = Carbon::parse($training->end_date)->endOfDay();
 
@@ -46,7 +43,7 @@ class ValidateDate implements ValidationRule
                 }
             }
         } catch (\Throwable $e) {
-            // Allow format validation to handle invalid date strings
+            // Never crash validation
         }
     }
 
