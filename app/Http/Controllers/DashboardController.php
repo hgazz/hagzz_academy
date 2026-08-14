@@ -49,8 +49,14 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth('academy')->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
-        $academyId = $user->academy_id ?: $academy->id;
+        if (!$academy) {
+            return redirect()->route('login');
+        }
+        $academyId = (int) ($user->academy_id ?? $academy->id);
         $now = now();
         $monthStart = $now->copy()->subMonths(11)->startOfMonth();
         $venueDashboard = in_array($academy->business_type, ['venue', 'hybrid'], true)
@@ -247,7 +253,7 @@ class DashboardController extends Controller
             'totalTrainings' => $totalTrainings,
             'activeTrainings' => $activeTrainings,
             'totalCoaches' => $totalCoaches,
-            'followers' => $academy->follows()->count(),
+            'followers' => method_exists($academy, 'follows') ? $academy->follows()->count() : 0,
             'activeStudents' => $activeStudents,
             'activeGroups' => $activeGroups,
             'activeSubscriptions' => $activeSubscriptions,
