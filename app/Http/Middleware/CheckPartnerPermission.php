@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Academies;
+use App\Models\PartnerUser;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +20,13 @@ class CheckPartnerPermission
             return redirect()->route('academy.loginPage');
         }
 
-        if ($user->is_owner || $user->hasPermissionTo($permission)) {
+        // If logged in user is the main Academy owner account or has owner flag
+        if ($user instanceof Academies || !($user instanceof PartnerUser) || !empty($user->is_owner)) {
+            return $next($request);
+        }
+
+        // For staff (PartnerUser), check specific permission
+        if (method_exists($user, 'hasPermissionTo') && $user->hasPermissionTo($permission)) {
             return $next($request);
         }
 
