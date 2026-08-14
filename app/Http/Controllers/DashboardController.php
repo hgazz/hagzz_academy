@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\BookingFilterTrait;
 use App\Http\Traits\TrainingsTrait;
 use App\Http\Traits\UsersTrait;
+use App\Models\Academies;
 use App\Models\AcademyAttendanceRecord;
 use App\Models\AcademyAttendanceSession;
 use App\Models\AcademyGroup;
@@ -840,7 +841,8 @@ class DashboardController extends Controller
 
         foreach ($invoices as $inv) {
             $amount = (float) $inv->amount;
-            $paid = (float) ($inv->paid_amount ?? ($inv->status === trans('admin.bookings.paid') ? $amount : 0));
+            $rawStatus = (string) $inv->getRawOriginal('status');
+            $paid = (float) ($inv->paid_amount ?? ($rawStatus === 'paid' ? $amount : 0));
             $remaining = max(0, $amount - $paid);
 
             if ($paid >= $amount && $amount > 0) {
