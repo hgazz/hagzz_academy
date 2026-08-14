@@ -48,6 +48,7 @@ class DashboardController extends Controller
 
     public function index()
     {
+        try {
         $user = auth('academy')->user();
         if (!$user) {
             return redirect()->route('academy.loginPage');
@@ -288,6 +289,20 @@ class DashboardController extends Controller
         ];
 
         return view('Academy.index', compact('dashboard'));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[Dashboard Exception] ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response('<div style="padding:25px;background:#fff5f5;border:1px solid #feb2b2;border-radius:8px;font-family:sans-serif;direction:ltr;">'
+                . '<h3 style="color:#c53030;margin-top:0;">[Hagzz Dashboard Diagnostic Error]</h3>'
+                . '<p><b>Message:</b> ' . e($e->getMessage()) . '</p>'
+                . '<p><b>File:</b> ' . e($e->getFile()) . ':' . e($e->getLine()) . '</p>'
+                . '<details open><summary><b>Stack Trace:</b></summary><pre style="background:#edf2f7;padding:10px;border-radius:4px;max-height:400px;overflow:auto;">' . e($e->getTraceAsString()) . '</pre></details>'
+                . '</div>', 500);
+        }
     }
 
     private function venueDashboardData(int $academyId, Carbon $monthStart): array
