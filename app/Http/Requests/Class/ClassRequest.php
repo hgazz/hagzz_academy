@@ -20,6 +20,22 @@ class ClassRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if (blank($this->title_en) && filled($this->title_ar)) {
+            $this->merge(['title_en' => (string) $this->title_ar]);
+        }
+        if (blank($this->title_ar) && filled($this->title_en)) {
+            $this->merge(['title_ar' => (string) $this->title_en]);
+        }
+        if (blank($this->date)) {
+            $this->merge(['date' => date('Y-m-d')]);
+        }
+        if (blank($this->start_time)) {
+            $this->merge(['start_time' => '10:00']);
+        }
+        if (blank($this->end_time)) {
+            $this->merge(['end_time' => '11:00']);
+        }
+
         if ($this->start_time && strlen((string)$this->start_time) > 5) {
             $this->merge([
                 'start_time' => substr((string)$this->start_time, 0, 5),
