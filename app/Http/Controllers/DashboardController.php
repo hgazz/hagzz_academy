@@ -50,11 +50,11 @@ class DashboardController extends Controller
     {
         $user = auth('academy')->user();
         if (!$user) {
-            return redirect()->route('login');
+            return redirect()->route('academy.loginPage');
         }
         $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
         if (!$academy) {
-            return redirect()->route('login');
+            return redirect()->route('academy.loginPage');
         }
         $academyId = (int) ($user->academy_id ?? $academy->id);
         $now = now();
