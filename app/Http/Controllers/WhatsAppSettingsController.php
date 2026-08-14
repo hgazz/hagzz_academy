@@ -9,10 +9,18 @@ use Illuminate\Support\Str;
 
 class WhatsAppSettingsController extends Controller
 {
+    private function getAcademyId(): int
+    {
+        /** @var \App\Models\PartnerUser $user */
+        $user = auth('academy')->user();
+        return (int) ($user?->academy_id ?? auth('academy')->id());
+    }
+
     public function edit()
     {
+        $academyId = $this->getAcademyId();
         $channel = WhatsAppChannel::firstOrCreate(
-            ['academy_id' => auth('academy')->id()],
+            ['academy_id' => $academyId],
             ['verify_token' => Str::random(48), 'default_country_code' => '20']
         );
 
@@ -21,7 +29,8 @@ class WhatsAppSettingsController extends Controller
 
     public function update(Request $request)
     {
-        $channel = WhatsAppChannel::firstOrNew(['academy_id' => auth('academy')->id()]);
+        $academyId = $this->getAcademyId();
+        $channel = WhatsAppChannel::firstOrNew(['academy_id' => $academyId]);
         $validated = $request->validate([
             'business_account_id' => ['required', 'string', 'max:100'],
             'phone_number_id' => ['required', 'string', 'max:100', Rule::unique('whatsapp_channels', 'phone_number_id')->ignore($channel->id)],

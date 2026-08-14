@@ -15,9 +15,16 @@ use Throwable;
 
 class WhatsAppCenterController extends Controller
 {
+    private function getAcademyId(): int
+    {
+        /** @var \App\Models\PartnerUser $user */
+        $user = auth('academy')->user();
+        return (int) ($user?->academy_id ?? auth('academy')->id());
+    }
+
     public function index(Request $request)
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $search = trim((string) $request->input('search'));
         $conversations = WhatsAppConversation::where('academy_id', $academyId)
             ->with(['messages' => fn ($q) => $q->latest()->limit(1)])
@@ -31,16 +38,17 @@ class WhatsAppCenterController extends Controller
 
     public function show(WhatsAppConversation $conversation)
     {
-        abort_unless($conversation->academy_id === auth('academy')->id(), 404);
+        $academyId = $this->getAcademyId();
+        abort_unless($conversation->academy_id === $academyId, 404);
         $conversation->update(['unread_count' => 0]);
         $messages = $conversation->messages()->latest()->limit(60)->get()->reverse()->values();
-        $channel = WhatsAppChannel::where('academy_id', auth('academy')->id())->first();
+        $channel = WhatsAppChannel::where('academy_id', $academyId)->first();
         return view('Academy.pages.whatsapp.show', compact('conversation', 'messages', 'channel'));
     }
 
     public function compose(Request $request, WhatsAppCloudService $whatsApp)
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $selected = collect((array) $request->input('recipients'))->filter()->unique()->values();
 
         if ($selected->count() === 1) {
@@ -83,7 +91,7 @@ class WhatsAppCenterController extends Controller
             return back()->withInput()->withErrors(['message_type' => app()->getLocale() === 'ar' ? 'الرسائل التسويقية يجب أن تستخدم قالب Meta معتمدًا.' : 'Marketing messages must use an approved Meta template.']);
         }
 
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $channel = WhatsAppChannel::where('academy_id', $academyId)->first();
         if (!$channel?->isReady()) return back()->withInput()->withErrors(['channel' => app()->getLocale() === 'ar' ? 'اربط حساب WhatsApp Business أولًا.' : 'Connect WhatsApp Business first.']);
 
@@ -147,10 +155,11 @@ class WhatsAppCenterController extends Controller
 
     public function reply(Request $request, WhatsAppConversation $conversation, WhatsAppCloudService $whatsApp)
     {
-        abort_unless($conversation->academy_id === auth('academy')->id(), 404);
+        $academyId = $this->getAcademyId();
+        abort_unless($conversation->academy_id === $academyId, 404);
         $validated = $request->validate(['body' => ['required', 'string', 'max:4096']]);
         if (!$conversation->serviceWindowIsOpen()) return back()->withErrors(['body' => app()->getLocale() === 'ar' ? 'انتهت نافذة المحادثة؛ استخدم رسالة قالب معتمدة.' : 'The service window is closed; use an approved template.']);
-        $channel = WhatsAppChannel::where('academy_id', auth('academy')->id())->firstOrFail();
+        $channel = WhatsAppChannel::where('academy_id', $academyId)->firstOrFail();
         $message = WhatsAppMessage::create(['academy_id' => $conversation->academy_id, 'conversation_id' => $conversation->id, 'direction' => 'outbound', 'message_type' => 'text', 'body' => $validated['body'], 'status' => 'queued']);
         try {
             $response = $whatsApp->sendText($channel, $conversation->phone, $validated['body']);
