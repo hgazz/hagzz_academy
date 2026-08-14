@@ -276,6 +276,7 @@ class DashboardController extends Controller
             'hasStudentModule' => $hasStudentModule,
             'venue' => $venueDashboard,
             'dashboardMode' => $academy->business_type === 'hybrid' ? 'hybrid' : 'academy',
+            'paymentBreakdown' => $this->getPaymentMethodBreakdown($academyId),
         ];
 
         return view('Academy.index', compact('dashboard'));
@@ -501,6 +502,257 @@ class DashboardController extends Controller
             ?? $translations['ar']
             ?? reset($translations)
             ?? $value;
+    }
+
+    private function getPaymentMethodBreakdown(int $academyId): array
+    {
+        $isArabic = app()->getLocale() === 'ar';
+
+        $studentPayments = AcademyStudentPayment::query()
+            ->whereHas('subscription.student', fn ($q) => $q->where('academy_id', $academyId))
+            ->select('method', DB::raw('SUM(amount) as total_amount'), DB::raw('COUNT(*) as total_count'))
+            ->groupBy('method')
+            ->get();
+
+        $invoicePayments = Invoice::query()
+            ->whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
+            ->select(
+                DB::raw("COALESCE(payment_method, 'cash') as method"),
+                DB::raw("SUM(COALESCE(paid_amount, amount)) as total_amount"),
+                DB::raw("COUNT(*) as total_count")
+            )
+            ->groupBy(DB::raw("COALESCE(payment_method, 'cash')"))
+            ->get();
+
+        $aggregatedMethods = [];
+        foreach ($studentPayments as $p) {
+            $m = strtolower(trim((string)$p->method)) ?: 'cash';
+            $aggregatedMethods[$m]['amount'] = ($aggregatedMethods[$m]['amount'] ?? 0) + (float)$p->total_amount;
+            $aggregatedMethods[$m]['count'] = ($aggregatedMethods[$m]['count'] ?? 0) + (int)$p->total_count;
+        }
+        foreach ($invoicePayments as $p) {
+            $m = strtolower(trim((string)$p->method)) ?: 'cash';
+            $aggregatedMethods[$m]['amount'] = ($aggregatedMethods[$m]['amount'] ?? 0) + (float)$p->total_amount;
+            $aggregatedMethods[$m]['count'] = ($aggregatedMethods[$m]['count'] ?? 0) + (int)$p->total_count;
+        }
+
+        $getAmount = function($keys) use ($aggregatedMethods) {
+            $total = 0.0;
+            foreach ((array)$keys as $k) {
+                if (isset($aggregatedMethods[$k])) {
+                    $total += $aggregatedMethods[$k]['amount'];
+                }
+            }
+            return round($total, 2);
+        };
+
+        $getCount = function($keys) use ($aggregatedMethods) {
+            $total = 0;
+            foreach ((array)$keys as $k) {
+                if (isset($aggregatedMethods[$k])) {
+                    $total += $aggregatedMethods[$k]['count'];
+                }
+            }
+            return $total;
+        };
+
+        $egData = [
+            'country_code' => 'EG',
+            'country_name' => $isArabic ? 'مصر' : 'Egypt',
+            'flag' => '🇪🇬',
+            'currency' => $isArabic ? 'ج.م' : 'EGP',
+            'methods' => [
+                [
+                    'key' => 'instapay',
+                    'name' => $isArabic ? 'إنستا باي (InstaPay)' : 'InstaPay',
+                    'amount' => $getAmount(['instapay']),
+                    'count' => $getCount(['instapay']),
+                    'color' => '#8b5cf6',
+                    'icon' => 'zap',
+                ],
+                [
+                    'key' => 'fawry',
+                    'name' => $isArabic ? 'فوري (Fawry)' : 'Fawry',
+                    'amount' => $getAmount(['fawry']),
+                    'count' => $getCount(['fawry']),
+                    'color' => '#f59e0b',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'card',
+                    'name' => $isArabic ? 'كارت / فيزا (Card)' : 'Card / Visa',
+                    'amount' => $getAmount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'count' => $getCount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'color' => '#3b82f6',
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'cash',
+                    'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
+                    'amount' => $getAmount(['cash']),
+                    'count' => $getCount(['cash']),
+                    'color' => '#10b981',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'bank_transfer',
+                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
+                    'amount' => $getAmount(['bank_transfer', 'bank']),
+                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'color' => '#06b6d4',
+                    'icon' => 'send',
+                ],
+            ],
+        ];
+
+        $saData = [
+            'country_code' => 'SA',
+            'country_name' => $isArabic ? 'السعودية' : 'Saudi Arabia',
+            'flag' => '🇸🇦',
+            'currency' => $isArabic ? 'ر.س' : 'SAR',
+            'methods' => [
+                [
+                    'key' => 'mada',
+                    'name' => $isArabic ? 'مدى / بطاقات (Mada/Card)' : 'Mada / Card',
+                    'amount' => $getAmount(['mada', 'card', 'visa', 'online']),
+                    'count' => $getCount(['mada', 'card', 'visa', 'online']),
+                    'color' => '#059669',
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'stc_pay',
+                    'name' => $isArabic ? 'سداد / STC Pay / Apple Pay' : 'Sadad / STC Pay / Apple Pay',
+                    'amount' => $getAmount(['stc_pay', 'apple_pay', 'sadad']),
+                    'count' => $getCount(['stc_pay', 'apple_pay', 'sadad']),
+                    'color' => '#7c3aed',
+                    'icon' => 'smartphone',
+                ],
+                [
+                    'key' => 'cash',
+                    'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
+                    'amount' => $getAmount(['cash']),
+                    'count' => $getCount(['cash']),
+                    'color' => '#10b981',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'bank_transfer',
+                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
+                    'amount' => $getAmount(['bank_transfer', 'bank']),
+                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'color' => '#06b6d4',
+                    'icon' => 'send',
+                ],
+            ],
+        ];
+
+        $qaData = [
+            'country_code' => 'QA',
+            'country_name' => $isArabic ? 'قطر' : 'Qatar',
+            'flag' => '🇶🇦',
+            'currency' => $isArabic ? 'ر.ق' : 'QAR',
+            'methods' => [
+                [
+                    'key' => 'card',
+                    'name' => $isArabic ? 'كارت محلي / بطاقات (Card)' : 'Card / Visa',
+                    'amount' => $getAmount(['card', 'visa', 'online']),
+                    'count' => $getCount(['card', 'visa', 'online']),
+                    'color' => '#3b82f6',
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'naps',
+                    'name' => $isArabic ? 'NAPS / سداد قطر' : 'NAPS / Sadad Qatar',
+                    'amount' => $getAmount(['naps', 'sadad']),
+                    'count' => $getCount(['naps', 'sadad']),
+                    'color' => '#800020',
+                    'icon' => 'shield',
+                ],
+                [
+                    'key' => 'cash',
+                    'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
+                    'amount' => $getAmount(['cash']),
+                    'count' => $getCount(['cash']),
+                    'color' => '#10b981',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'bank_transfer',
+                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
+                    'amount' => $getAmount(['bank_transfer', 'bank']),
+                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'color' => '#06b6d4',
+                    'icon' => 'send',
+                ],
+            ],
+        ];
+
+        $allData = [
+            'country_code' => 'ALL',
+            'country_name' => $isArabic ? 'جميع الدول' : 'All Countries',
+            'flag' => '🌐',
+            'currency' => '',
+            'methods' => [
+                [
+                    'key' => 'cash',
+                    'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
+                    'amount' => $getAmount(['cash']),
+                    'count' => $getCount(['cash']),
+                    'color' => '#10b981',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'card',
+                    'name' => $isArabic ? 'كارت / بطاقات أونلاين' : 'Card / Online',
+                    'amount' => $getAmount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'count' => $getCount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'color' => '#3b82f6',
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'instapay',
+                    'name' => $isArabic ? 'إنستا باي (InstaPay)' : 'InstaPay',
+                    'amount' => $getAmount(['instapay']),
+                    'count' => $getCount(['instapay']),
+                    'color' => '#8b5cf6',
+                    'icon' => 'zap',
+                ],
+                [
+                    'key' => 'fawry',
+                    'name' => $isArabic ? 'فوري (Fawry)' : 'Fawry',
+                    'amount' => $getAmount(['fawry']),
+                    'count' => $getCount(['fawry']),
+                    'color' => '#f59e0b',
+                    'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'sadad',
+                    'name' => $isArabic ? 'مدى / سداد / NAPS' : 'Mada / Sadad / NAPS',
+                    'amount' => $getAmount(['mada', 'sadad', 'naps', 'stc_pay', 'apple_pay']),
+                    'count' => $getCount(['mada', 'sadad', 'naps', 'stc_pay', 'apple_pay']),
+                    'color' => '#7c3aed',
+                    'icon' => 'smartphone',
+                ],
+                [
+                    'key' => 'bank_transfer',
+                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
+                    'amount' => $getAmount(['bank_transfer', 'bank']),
+                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'color' => '#06b6d4',
+                    'icon' => 'send',
+                ],
+            ],
+        ];
+
+        return [
+            'countries' => [
+                'ALL' => $allData,
+                'EG' => $egData,
+                'SA' => $saData,
+                'QA' => $qaData,
+            ],
+            'defaultCountry' => 'ALL',
+        ];
     }
 
 }

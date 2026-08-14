@@ -148,7 +148,38 @@
                     <div><h3>{{ $copy['attendanceBreakdown'] }}</h3><p>{{ $copy['last30'] }}</p></div>
                 </header>
                 <div id="attendanceChart" class="chart-slot chart-slot-large"></div>
-            </article>
+        </section>
+
+        <section class="dashboard-panel dashboard-panel-wide mt-4 mb-4" id="paymentMethodsSection">
+            <header class="panel-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 class="m-0"><i class="fa-solid fa-credit-card text-primary me-2"></i>{{ $isArabic ? 'توزيع تحصيل الإيرادات حسب وسيلة الدفع والدولة' : 'Revenue Collection by Payment Method & Country' }}</h3>
+                    <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? 'تفاصيل تحصيل الاشتراكات والحجوزات مقسمة حسب الوسائل والدول (مصر 🇪🇬، السعودية 🇸🇦، قطر 🇶🇦)' : 'Subscriptions and bookings collected by country-specific payment types (Egypt 🇪🇬, KSA 🇸🇦, Qatar 🇶🇦)' }}</p>
+                </div>
+                <div class="country-tabs-nav" style="display: flex; gap: 6px; background: #f1f5f9; padding: 4px; border-radius: 10px;">
+                    <button type="button" class="country-tab-btn active" data-country="ALL" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: #3b82f6; color: #fff; transition: all 0.2s;">
+                        🌐 {{ $isArabic ? 'جميع الدول' : 'All' }}
+                    </button>
+                    <button type="button" class="country-tab-btn" data-country="EG" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                        🇪🇬 {{ $isArabic ? 'مصر' : 'Egypt' }}
+                    </button>
+                    <button type="button" class="country-tab-btn" data-country="SA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                        🇸🇦 {{ $isArabic ? 'السعودية' : 'KSA' }}
+                    </button>
+                    <button type="button" class="country-tab-btn" data-country="QA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                        🇶🇦 {{ $isArabic ? 'قطر' : 'Qatar' }}
+                    </button>
+                </div>
+            </header>
+
+            <div class="payment-methods-content mt-3" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: center;">
+                <div class="chart-container" style="min-height: 280px; display: flex; align-items: center; justify-content: center;">
+                    <div id="paymentMethodsChart" style="width: 100%;"></div>
+                </div>
+
+                <div id="paymentMethodsCards" class="payment-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+                </div>
+            </div>
         </section>
 
         <section class="dashboard-grid dashboard-grid-secondary">
@@ -455,6 +486,105 @@
                     countdownElement.textContent = @json($copy['noData']);
                 }
             }
+
+            // Payment Method Breakdown Chart by Country
+            const paymentBreakdownData = @json($dashboard['paymentBreakdown'] ?? []);
+            let paymentChart = null;
+
+            function renderPaymentBreakdown(countryCode) {
+                const countryInfo = paymentBreakdownData.countries?.[countryCode] || paymentBreakdownData.countries?.['ALL'];
+                if (!countryInfo) return;
+
+                const methods = countryInfo.methods || [];
+                const labelsList = methods.map(m => m.name);
+                const seriesList = methods.map(m => parseFloat(m.amount) || 0);
+                const colorsList = methods.map(m => m.color);
+
+                // Update Metric Cards
+                const cardsContainer = document.getElementById('paymentMethodsCards');
+                if (cardsContainer) {
+                    cardsContainer.innerHTML = methods.map(m => `
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; border-top: 4px solid ${m.color}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <div style="color: ${m.color}; font-size: 13px; font-weight: 700; margin-bottom: 4px;">${m.name}</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #1e293b;">${Number(m.amount).toLocaleString()} <small style="font-size: 11px; color: #64748b;">${countryInfo.currency}</small></div>
+                            <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">${m.count} ${@json($isArabic ? 'عملية' : 'transactions')}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Render Donut Chart
+                const chartSlot = document.getElementById('paymentMethodsChart');
+                if (!chartSlot) return;
+
+                const hasData = seriesList.some(val => val > 0);
+
+                const options = {
+                    series: hasData ? seriesList : [1],
+                    labels: hasData ? labelsList : [@json($isArabic ? 'لا توجد عمليات بعد' : 'No transactions')],
+                    colors: hasData ? colorsList : ['#cbd5e1'],
+                    chart: {
+                        type: 'donut',
+                        height: 280,
+                        fontFamily: 'Cairo, sans-serif'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '68%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        label: countryInfo.country_name,
+                                        formatter: function () {
+                                            if (!hasData) return '0';
+                                            const total = seriesList.reduce((a, b) => a + b, 0);
+                                            return total.toLocaleString() + ' ' + countryInfo.currency;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        horizontalAlign: 'center'
+                    },
+                    dataLabels: {
+                        enabled: hasData
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val.toLocaleString() + ' ' + countryInfo.currency;
+                            }
+                        }
+                    }
+                };
+
+                if (paymentChart) {
+                    paymentChart.destroy();
+                }
+                paymentChart = new ApexCharts(chartSlot, options);
+                paymentChart.render();
+            }
+
+            document.querySelectorAll('.country-tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.country-tab-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'transparent';
+                        b.style.color = '#475569';
+                    });
+                    this.classList.add('active');
+                    this.style.background = '#3b82f6';
+                    this.style.color = '#ffffff';
+
+                    renderPaymentBreakdown(this.dataset.country);
+                });
+            });
+
+            renderPaymentBreakdown('ALL');
 
             flatpickr('#start_date', { dateFormat: 'Y-m-d' });
             flatpickr('#end_date', { dateFormat: 'Y-m-d' });
