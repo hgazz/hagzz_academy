@@ -277,6 +277,7 @@ class DashboardController extends Controller
             'venue' => $venueDashboard,
             'dashboardMode' => $academy->business_type === 'hybrid' ? 'hybrid' : 'academy',
             'paymentBreakdown' => $this->getPaymentMethodBreakdown($academyId),
+            'partialPayments' => $this->getStudentPartialPaymentsSummary($academyId),
         ];
 
         return view('Academy.index', compact('dashboard'));
@@ -744,6 +745,19 @@ class DashboardController extends Controller
             ],
         ];
 
+        $academy = Academies::with('country')->find($academyId);
+        $iso2 = strtoupper((string) ($academy?->country?->iso2 ?? ''));
+        if (!$iso2 && $academy) {
+            $curr = $academy->currency_code;
+            $iso2 = match ($curr) {
+                'EGP' => 'EG',
+                'SAR' => 'SA',
+                'QAR' => 'QA',
+                default => 'EG',
+            };
+        }
+        $defaultCountry = in_array($iso2, ['EG', 'SA', 'QA'], true) ? $iso2 : 'ALL';
+
         return [
             'countries' => [
                 'ALL' => $allData,
@@ -751,7 +765,124 @@ class DashboardController extends Controller
                 'SA' => $saData,
                 'QA' => $qaData,
             ],
-            'defaultCountry' => 'ALL',
+            'defaultCountry' => $defaultCountry,
+        ];
+    }
+
+    private function getStudentPartialPaymentsSummary(int $academyId): array
+    {
+        $isArabic = app()->getLocale() === 'ar';
+        $academy = Academies::with('country')->find($academyId);
+        $currency = $academy ? $academy->currency_symbol : ($isArabic ? 'ج.م' : 'EGP');
+
+        $subscriptions = AcademyStudentSubscription::with(['student', 'group.training'])
+            ->withSum('payments', 'amount')
+            ->whereHas('student', fn ($q) => $q->where('academy_id', $academyId))
+            ->where('status', '!=', 'cancelled')
+            ->get();
+
+        $fullyPaidSubCount = 0;
+        $fullyPaidSubAmount = 0.0;
+        $partialSubCount = 0;
+        $partialSubCollected = 0.0;
+        $partialSubRemaining = 0.0;
+        $unpaidSubCount = 0;
+        $unpaidSubRemaining = 0.0;
+
+        $partialStudents = [];
+
+        foreach ($subscriptions as $sub) {
+            $amount = (float) $sub->amount;
+            $paid = (float) ($sub->payments_sum_amount ?? 0);
+            $remaining = max(0, $amount - $paid);
+
+            if ($paid >= $amount && $amount > 0) {
+                $fullyPaidSubCount++;
+                $fullyPaidSubAmount += $paid;
+            } elseif ($paid > 0 && $remaining > 0) {
+                $partialSubCount++;
+                $partialSubCollected += $paid;
+                $partialSubRemaining += $remaining;
+
+                $partialStudents[] = [
+                    'type' => 'subscription',
+                    'student_name' => $sub->student?->name ?? ($isArabic ? 'لاعب غير محدد' : 'Unknown Player'),
+                    'phone' => $sub->student?->phone ?: $sub->student?->guardian_phone ?: '',
+                    'service_name' => $sub->group?->name ?: ($sub->group?->training?->name ?: ($isArabic ? 'اشتراك تدريب' : 'Training Subscription')),
+                    'amount' => $amount,
+                    'paid_amount' => $paid,
+                    'remaining_amount' => $remaining,
+                    'currency' => $currency,
+                ];
+            } else {
+                $unpaidSubCount++;
+                $unpaidSubRemaining += $amount;
+
+                if ($amount > 0) {
+                    $partialStudents[] = [
+                        'type' => 'subscription',
+                        'student_name' => $sub->student?->name ?? ($isArabic ? 'لاعب غير محدد' : 'Unknown Player'),
+                        'phone' => $sub->student?->phone ?: $sub->student?->guardian_phone ?: '',
+                        'service_name' => $sub->group?->name ?: ($sub->group?->training?->name ?: ($isArabic ? 'اشتراك تدريب' : 'Training Subscription')),
+                        'amount' => $amount,
+                        'paid_amount' => $paid,
+                        'remaining_amount' => $remaining,
+                        'currency' => $currency,
+                    ];
+                }
+            }
+        }
+
+        $invoices = Invoice::with(['user', 'training'])
+            ->whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
+            ->where('is_canceled', false)
+            ->get();
+
+        foreach ($invoices as $inv) {
+            $amount = (float) $inv->amount;
+            $paid = (float) ($inv->paid_amount ?? ($inv->status === trans('admin.bookings.paid') ? $amount : 0));
+            $remaining = max(0, $amount - $paid);
+
+            if ($paid >= $amount && $amount > 0) {
+                $fullyPaidSubCount++;
+                $fullyPaidSubAmount += $paid;
+            } elseif ($paid > 0 && $remaining > 0) {
+                $partialSubCount++;
+                $partialSubCollected += $paid;
+                $partialSubRemaining += $remaining;
+
+                $partialStudents[] = [
+                    'type' => 'invoice',
+                    'student_name' => $inv->user?->name ?? ($isArabic ? 'طالب/عميل' : 'Customer'),
+                    'phone' => $inv->user?->phone ?: '',
+                    'service_name' => $inv->training?->name ?: ($isArabic ? 'حجز تدريب' : 'Training Booking'),
+                    'amount' => $amount,
+                    'paid_amount' => $paid,
+                    'remaining_amount' => $remaining,
+                    'currency' => $currency,
+                ];
+            } else {
+                $unpaidSubCount++;
+                $unpaidSubRemaining += $amount;
+            }
+        }
+
+        usort($partialStudents, fn ($a, $b) => $b['remaining_amount'] <=> $a['remaining_amount']);
+        $topPartialStudents = array_slice($partialStudents, 0, 6);
+
+        $totalRemaining = $partialSubRemaining + $unpaidSubRemaining;
+
+        return [
+            'fullyPaidCount' => $fullyPaidSubCount,
+            'fullyPaidAmount' => round($fullyPaidSubAmount, 2),
+            'partialCount' => $partialSubCount,
+            'partialCollected' => round($partialSubCollected, 2),
+            'partialRemaining' => round($partialSubRemaining, 2),
+            'unpaidCount' => $unpaidSubCount,
+            'unpaidRemaining' => round($unpaidSubRemaining, 2),
+            'totalRemaining' => round($totalRemaining, 2),
+            'currency' => $currency,
+            'topStudents' => $topPartialStudents,
         ];
     }
 

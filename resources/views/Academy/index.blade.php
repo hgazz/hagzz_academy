@@ -182,6 +182,86 @@
             </div>
         </section>
 
+        <section class="dashboard-panel dashboard-panel-wide mt-4 mb-4" id="partialPaymentsSection">
+            <header class="panel-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 class="m-0"><i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i>{{ $isArabic ? 'المدفوعات الجزئية والمبالغ المتبقية على الطلاب' : 'Partial Payments & Student Outstanding Dues' }}</h3>
+                    <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? 'تتبع الطلاب الذين قاموا بالسداد الجزئي، والماليات المتبقية والمستحقة على الطلاب' : 'Track students with partial payments and remaining balances' }}</p>
+                </div>
+                <a href="{{ route('academy.financial-reports.index') }}" class="panel-link">
+                    <i class="fa-solid fa-chart-line me-1"></i> {{ $isArabic ? 'تقرير المستحقات التفصيلي' : 'Detailed Dues Report' }}
+                </a>
+            </header>
+
+            <div class="partial-payments-grid mt-3" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;">
+                    <h5 class="fw-bold text-dark mb-3" style="font-size: 14px;">{{ $isArabic ? 'حالة السداد والتحصيل' : 'Payment Collection Status' }}</h5>
+                    <div id="partialPaymentsChart" style="min-height: 240px;"></div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top" style="border-color: #cbd5e1 !important;">
+                        <div>
+                            <small class="text-muted d-block">{{ $isArabic ? 'إجمالي المتبقي على الطلاب' : 'Total Remaining Dues' }}</small>
+                            <strong class="text-danger" style="font-size: 18px;">{{ number_format($dashboard['partialPayments']['totalRemaining'] ?? 0, 2) }} {{ $dashboard['partialPayments']['currency'] ?? '' }}</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">{{ $isArabic ? 'اشتراكات مدفوعة جزئياً' : 'Partially Paid Subscriptions' }}</small>
+                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 13px;">{{ number_format($dashboard['partialPayments']['partialCount'] ?? 0) }} {{ $isArabic ? 'طالب' : 'students' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+                        <h6 class="fw-bold m-0 text-dark"><i class="fa-solid fa-users text-primary me-2"></i>{{ $isArabic ? 'أبرز الطلاب أصحاب المدفوعات الجزئية والمتبقي' : 'Top Students with Remaining Balances' }}</h6>
+                        <small class="text-muted">{{ count($dashboard['partialPayments']['topStudents'] ?? []) }} {{ $isArabic ? 'طالب' : 'students' }}</small>
+                    </div>
+
+                    @if(count($dashboard['partialPayments']['topStudents'] ?? []) > 0)
+                        <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                            <thead style="background: #f1f5f9; color: #475569;">
+                                <tr>
+                                    <th>{{ $isArabic ? 'اسم الطالب' : 'Student Name' }}</th>
+                                    <th>{{ $isArabic ? 'الخدمة / المجموعة' : 'Service' }}</th>
+                                    <th>{{ $isArabic ? 'المدفوع' : 'Paid' }}</th>
+                                    <th>{{ $isArabic ? 'المتبقي' : 'Remaining' }}</th>
+                                    <th class="text-end">{{ $isArabic ? 'مراسلة' : 'Contact' }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($dashboard['partialPayments']['topStudents'] as $st)
+                                    <tr>
+                                        <td class="fw-bold text-dark">
+                                            {{ $st['student_name'] }}
+                                            @if($st['phone'])
+                                                <small class="d-block text-muted font-monospace" dir="ltr" style="font-size: 11px;">{{ $st['phone'] }}</small>
+                                            @endif
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">{{ $st['service_name'] }}</span></td>
+                                        <td class="text-success font-monospace fw-bold">{{ number_format($st['paid_amount'], 2) }}</td>
+                                        <td class="text-danger font-monospace fw-bold">{{ number_format($st['remaining_amount'], 2) }} {{ $st['currency'] }}</td>
+                                        <td class="text-end">
+                                            @if($st['phone'])
+                                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $st['phone']) }}?text={{ rawurlencode($isArabic ? 'مرحباً '.$st['student_name'].'، نود تذكيرك بالمبلغ المتبقي للاشتراك وقدره '.$st['remaining_amount'].' '.$st['currency'] : 'Hello '.$st['student_name'].', reminder for remaining balance '.$st['remaining_amount'].' '.$st['currency']) }}" target="_blank" class="btn btn-sm btn-outline-success px-2 py-1" style="font-size: 11px;" title="{{ $isArabic ? 'مراسلة تذكير عبر الواتساب' : 'WhatsApp Reminder' }}">
+                                                    <i class="fa-brands fa-whatsapp me-1"></i>{{ $isArabic ? 'تذكير' : 'Remind' }}
+                                                </a>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa-solid fa-check-circle fa-2x text-success mb-2 d-block"></i>
+                            {{ $isArabic ? 'لا يوجد طلاب عليهم مدفوعات جزئية أو مبالغ متبقية حالياً' : 'No students with outstanding partial payments currently' }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </section>
+
         <section class="dashboard-grid dashboard-grid-secondary">
             <article class="dashboard-panel">
                 <header class="panel-header">
@@ -569,6 +649,19 @@
                 paymentChart.render();
             }
 
+            const defaultCountry = paymentBreakdownData.defaultCountry || 'ALL';
+            const defaultBtn = document.querySelector(`.country-tab-btn[data-country="${defaultCountry}"]`) || document.querySelector('.country-tab-btn[data-country="ALL"]');
+            if (defaultBtn) {
+                document.querySelectorAll('.country-tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                    b.style.color = '#475569';
+                });
+                defaultBtn.classList.add('active');
+                defaultBtn.style.background = '#3b82f6';
+                defaultBtn.style.color = '#ffffff';
+            }
+
             document.querySelectorAll('.country-tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.country-tab-btn').forEach(b => {
@@ -584,7 +677,59 @@
                 });
             });
 
-            renderPaymentBreakdown('ALL');
+            renderPaymentBreakdown(defaultCountry);
+
+            // Partial Payments & Student Outstanding Dues Chart
+            const partialData = @json($dashboard['partialPayments'] ?? []);
+            const partialChartSlot = document.getElementById('partialPaymentsChart');
+            if (partialChartSlot && partialData) {
+                const series = [
+                    parseFloat(partialData.fullyPaidAmount || 0),
+                    parseFloat(partialData.partialCollected || 0),
+                    parseFloat(partialData.totalRemaining || 0)
+                ];
+                const labels = [
+                    @json($isArabic ? 'مدفوع بالكامل' : 'Fully Paid'),
+                    @json($isArabic ? 'مُحصّل (مدفوع جزئياً)' : 'Collected (Partial)'),
+                    @json($isArabic ? 'متبقي ومستحق على الطلاب' : 'Remaining Outstanding')
+                ];
+                const colors = ['#10b981', '#f59e0b', '#ef4444'];
+                const hasData = series.some(v => v > 0);
+
+                new ApexCharts(partialChartSlot, {
+                    series: hasData ? series : [1],
+                    labels: hasData ? labels : [@json($isArabic ? 'لا توجد بيانات' : 'No data')],
+                    colors: hasData ? colors : ['#cbd5e1'],
+                    chart: { type: 'donut', height: 240, fontFamily: 'Cairo, sans-serif' },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        label: @json($isArabic ? 'إجمالي المستحقات' : 'Total Billed'),
+                                        formatter: function () {
+                                            const total = (partialData.fullyPaidAmount || 0) + (partialData.partialCollected || 0) + (partialData.totalRemaining || 0);
+                                            return total.toLocaleString() + ' ' + (partialData.currency || '');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    legend: { position: 'bottom' },
+                    dataLabels: { enabled: hasData },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val.toLocaleString() + ' ' + (partialData.currency || '');
+                            }
+                        }
+                    }
+                }).render();
+            }
 
             flatpickr('#start_date', { dateFormat: 'Y-m-d' });
             flatpickr('#end_date', { dateFormat: 'Y-m-d' });
