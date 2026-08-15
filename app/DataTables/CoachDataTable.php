@@ -160,21 +160,12 @@ class CoachDataTable extends DataTable
     {
         return [
             ['name' => 'id', 'data' => 'id', 'title' => trans('admin.id')],
-            ['name' => 'name->en', 'data' => 'name_en', 'title' => trans('admin.area.name_en')],
             ['name' => 'name->ar', 'data' => 'name_ar', 'title' => trans('admin.area.name_ar')],
+            ['name' => 'name->en', 'data' => 'name_en', 'title' => trans('admin.area.name_en')],
             ['name' => 'phone', 'data' => 'phone', 'title' => trans('admin.coaches.phone')],
-            ['name' => 'gender', 'data' => 'gender', 'title' => trans('admin.training.gender')],
-            ['name' => 'birth_date', 'data' => 'birth_date', 'title' => trans('admin.training.birth_date')],
-            ['name' => 'description->en', 'data' => 'description_en', 'title' => trans('admin.training.description_en')],
-            ['name' => 'description->ar', 'data' => 'description_ar', 'title' => trans('admin.training.description_ar')],
-            ['name' => 'image', 'data' => 'image', 'title' => trans('admin.coaches.image')],
-            ['name' => 'license', 'data' => 'license', 'title' => trans('admin.coaches.is_licensed'), 'orderable' => false, 'searchable' => false],
-            ['name' => 'license_type', 'data' => 'license_type', 'title' => trans('admin.coaches.license_type'), 'orderable' => false, 'searchable' => false],
-            ['name' => 'academy.commercial_name', 'data' => 'academy_id', 'title' => trans('admin.coaches.academy_id')],
-            ['name' => 'training_count', 'data' => 'training_count', 'title' => trans('admin.training_count')],
-            ['name' => 'follow_count', 'data' => 'follow_count', 'title' => trans('admin.follow_count')],
             ['name' => 'sports', 'data' => 'sports', 'title' => trans('admin.user.Sports'), 'orderable' => false, 'searchable' => false],
             ['name' => 'compensation', 'data' => 'compensation', 'title' => trans('admin.coaches.compensation_type'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'training_count', 'data' => 'training_count', 'title' => trans('admin.training_count')],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active'), 'orderable' => false, 'searchable' => false],
             ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'orderable' => false, 'searchable' => false],
         ];

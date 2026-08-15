@@ -50,17 +50,22 @@
     </div>
 
     <!-- Compensation Type -->
+    @php
+        $currentComp = old('compensation_type', isset($coach) && $coach->compensation_type ? $coach->compensation_type : 'session');
+        $currentVal = old('compensation_value', isset($coach) ? (float)$coach->compensation_value : '0.00');
+        $isArLocale = app()->getLocale() === 'ar';
+    @endphp
     <div class="col-md-6 mb-3">
         <label for="compensation_type" class="form-label fw-bold text-primary">{{ trans('admin.coaches.compensation_type') }} <span class="text-danger">*</span></label>
         <select class="form-select border-primary" name="compensation_type" id="compensation_type" onchange="updateCompensationLabel()" required>
-            <option value="session" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : 'session') == 'session')>
-                {{ app()->getLocale() === 'ar' ? '⚽ نظام الحصة التدريبية (لكل تمرين)' : '⚽ Per Session / Class' }}
+            <option value="session" @selected($currentComp === 'session')>
+                {{ $isArLocale ? '⚽ نظام الحصة التدريبية (لكل تمرين)' : '⚽ Per Session / Class' }}
             </option>
-            <option value="percentage" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : '') == 'percentage')>
-                {{ app()->getLocale() === 'ar' ? '📊 نظام النسبة المئوية من التدريبات (%)' : '📊 Percentage of Training Revenue (%)' }}
+            <option value="percentage" @selected($currentComp === 'percentage')>
+                {{ $isArLocale ? '📊 نظام النسبة المئوية من التدريبات (%)' : '📊 Percentage of Training Revenue (%)' }}
             </option>
-            <option value="salary" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : '') == 'salary')>
-                {{ app()->getLocale() === 'ar' ? '💵 نظام المرتب الشهري الثابت' : '💵 Fixed Monthly Salary' }}
+            <option value="salary" @selected($currentComp === 'salary')>
+                {{ $isArLocale ? '💵 نظام المرتب الشهري الثابت' : '💵 Fixed Monthly Salary' }}
             </option>
         </select>
         @error('compensation_type')
@@ -71,10 +76,6 @@
     <!-- Compensation Value -->
     <div class="col-md-6 mb-3">
         <label for="compensation_value" class="form-label fw-bold text-primary" id="compensation_value_label">
-            @php
-                $currentComp = old('compensation_type', isset($coach) ? $coach->compensation_type : 'session');
-                $isArLocale = app()->getLocale() === 'ar';
-            @endphp
             @if($currentComp === 'session')
                 {{ $isArLocale ? 'سعر الحصة للمدرب (ج.م)' : 'Rate per session (EGP)' }}
             @elseif($currentComp === 'percentage')
@@ -85,7 +86,7 @@
             <span class="text-danger">*</span>
         </label>
         <input class="form-control border-primary" type="number" step="0.01" min="0" 
-               value="{{ old('compensation_value', isset($coach) ? (float)$coach->compensation_value : '0.00') }}" 
+               value="{{ $currentVal }}" 
                id="compensation_value" name="compensation_value" 
                placeholder="0.00" required>
         <small class="text-muted d-block mt-1" id="compensation_help_text">
