@@ -599,7 +599,7 @@ class DashboardController extends Controller
 
         $invoicePayments = Invoice::query()
             ->whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
-            ->with(['training.city.country', 'user.country'])
+            ->with(['training.address.country', 'user.country'])
             ->get();
 
         $countryMethods = [
@@ -629,7 +629,7 @@ class DashboardController extends Controller
             $m = strtolower(trim((string)$p->payment_method)) ?: 'cash';
             $amount = (float) ($p->paid_amount ?? $p->amount);
 
-            $cIso = strtoupper((string) ($p->training?->city?->country?->iso2 ?? ($p->user?->country?->iso2 ?? '')));
+            $cIso = strtoupper((string) ($p->training?->address?->country?->iso2 ?? ($p->user?->country?->iso2 ?? '')));
             if (!in_array($cIso, ['EG', 'SA', 'QA'], true)) {
                 $cIso = $academyIso2;
             }
