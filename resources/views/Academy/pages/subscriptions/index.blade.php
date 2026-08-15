@@ -175,6 +175,25 @@
                                                     </form>
                                                 @endif
 
+                                                @php
+                                                    $sPhone = preg_replace('/\D+/', '', (string) ($subscription->student?->phone ?: $subscription->student?->guardian_phone));
+                                                    if ($sPhone && str_starts_with($sPhone, '0')) $sPhone = '2' . $sPhone;
+                                                    $subPublicUrl = route('invoices.public.view', ['type' => 'student_subscription', 'id' => $subscription->id]);
+                                                    $subRemText = "مرحباً بك ولي أمر الطالب " . ($subscription->student?->name ?: '') . " 👋\n"
+                                                        . "نود تذكيركم ببيانات اشتراك الطالب:\n"
+                                                        . "🏅 المجموعة: " . ($subscription->group?->name ?: '-') . "\n"
+                                                        . "📅 فترة الاشتراك: " . optional($subscription->starts_on)->format('Y-m-d') . " إلى " . optional($subscription->ends_on)->format('Y-m-d') . "\n"
+                                                        . ($remaining > 0 ? "💰 المبلغ المتبقي المطلوب: " . number_format($remaining, 2) . " EGP\n" : "✅ الاشتراك مسدد بالكامل\n")
+                                                        . "📄 رابط الفاتورة الإلكترونية والتفاصيل:\n" . $subPublicUrl . "\n\nشكراً لثقتكم بنا! 🌟";
+                                                    $subRemWaLink = 'https://api.whatsapp.com/send?phone=' . $sPhone . '&text=' . urlencode($subRemText);
+                                                @endphp
+
+                                                @if($sPhone && $subscription->status !== 'cancelled')
+                                                    <a class="btn btn-sm btn-outline-success" target="_blank" href="{{ $subRemWaLink }}" title="{{ app()->getLocale() === 'ar' ? 'إرسال تذكير بالاشتراك عبر واتساب' : 'Send WhatsApp Reminder' }}">
+                                                        <i class="fa-brands fa-whatsapp"></i>
+                                                    </a>
+                                                @endif
+
                                                 <a href="{{ route('academy.invoices.students.print', ['subscription' => $subscription, 'paper' => 'a4']) }}" 
                                                    target="_blank" 
                                                    class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1" 

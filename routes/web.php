@@ -298,9 +298,12 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
                 Route::get('coach/export','coachExport')->name('coach.export');
             });
 
-        Route::middleware('partner.permission:settlements.view')->prefix('report')->as('report.')->group(function () {
-            Route::get('overview', [AcademyFinancialReportController::class, 'index'])->name('overview');
-            Route::get('overview/export/{type}', [AcademyFinancialReportController::class, 'export'])->name('overview.export');
+        Route::middleware('partner.permission:settlements.view')->group(function () {
+            Route::prefix('report')->as('report.')->group(function () {
+                Route::get('overview', [AcademyFinancialReportController::class, 'index'])->name('overview');
+                Route::get('overview/export/{type}', [AcademyFinancialReportController::class, 'export'])->name('overview.export');
+            });
+            Route::resource('shift-closings', PartnerShiftClosingController::class)->only(['index', 'create', 'store', 'show']);
         });
 
         Route::get('/calendar', [TrainingCalendarController::class, 'index'])->name('calendar.index');

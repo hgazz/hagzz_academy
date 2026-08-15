@@ -171,6 +171,7 @@
                         </ul>
                     </li>
                 @endunless
+                <li class="menu {{ Request::routeIs('academy.shift-closings.*') ? 'active' : '' }}"><a href="{{ route('academy.shift-closings.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-cash-register menu-icon"></i><span>{{ $isArabic ? 'تقفيل الوردية والكاش (Z-Report)' : 'Shift closings (Z-Report)' }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.billing-invoices.*') ? 'active' : '' }}"><a href="{{ route('academy.billing-invoices.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-file-invoice-dollar menu-icon"></i><span>{{ $isArabic ? 'فواتير اشتراك Hagzz' : 'Hagzz invoices' }}</span></div></a></li>
                 <li class="menu {{ Request::routeIs('academy.expenses.*') ? 'active' : '' }}"><a href="{{ route('academy.expenses.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-coins menu-icon"></i><span>{{ $isArabic ? 'إدارة المصروفات والأرباح' : 'Expenses & Net profit' }}</span></div></a></li>
             @endif

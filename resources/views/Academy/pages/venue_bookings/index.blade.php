@@ -192,6 +192,26 @@
                                     </form>
                                 @endif
 
+                                @php
+                                    $cPhone = preg_replace('/\D+/', '', (string) ($booking->customer?->phone));
+                                    if ($cPhone && str_starts_with($cPhone, '0')) $cPhone = '2' . $cPhone;
+                                    $publicInvUrl = route('invoices.public.view', ['type' => 'venue_booking', 'id' => $booking->id]);
+                                    $remText = "مرحباً بك " . ($booking->customer?->name ?: 'عميلنا العزيز') . " 👋\n"
+                                        . "نود تذكيرك بموعد حجزك:\n"
+                                        . "📍 الملعب: " . ($booking->space?->name ?: '-') . "\n"
+                                        . "📅 التاريخ: " . optional($booking->starts_at)->format('Y-m-d') . "\n"
+                                        . "⏰ التوقيت: " . optional($booking->starts_at)->format('H:i') . " إلى " . optional($booking->ends_at)->format('H:i') . "\n"
+                                        . ($remaining > 0 ? "💰 المبلغ المتبقي للسداد: " . number_format($remaining, 2) . " EGP\n" : "✅ الحجز مسدد بالكامل\n")
+                                        . "📄 رابط الفاتورة والتفاصيل:\n" . $publicInvUrl . "\n\nنتمنى لك وقتاً ممتعاً! ⚽";
+                                    $remWaLink = 'https://api.whatsapp.com/send?phone=' . $cPhone . '&text=' . urlencode($remText);
+                                @endphp
+
+                                @if($cPhone && $booking->status !== 'cancelled')
+                                    <a class="btn btn-sm btn-outline-success" target="_blank" href="{{ $remWaLink }}" title="{{ app()->getLocale() === 'ar' ? 'إرسال تذكير بالموعد عبر واتساب' : 'Send WhatsApp Reminder' }}">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                @endif
+
                                 <a class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1" 
                                    target="_blank" 
                                    href="{{ route('academy.invoices.venues.print', ['booking' => $booking, 'paper' => 'a4']) }}" 
