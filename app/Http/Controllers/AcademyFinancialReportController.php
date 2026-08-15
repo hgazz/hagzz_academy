@@ -313,8 +313,8 @@ class AcademyFinancialReportController extends Controller
 
     private function queries(array $filters): array
     {
-        $academyId = auth('academy')->id();
-        $search = trim((string) $filters['search']);
+        $academyId = $this->getAcademyId();
+        $search = trim((string) ($filters['search'] ?? ''));
 
         $subscriptions = AcademyStudentSubscription::query()
             ->with(['student', 'group.training.address', 'group.sport'])
@@ -516,9 +516,11 @@ class AcademyFinancialReportController extends Controller
 
         foreach ($coaches as $coach) {
             $assignedTrainings = Training::where('coach_id', $coach->id)->with('joins')->get();
-            $assignedGroupsCount = DB::table('academy_groups')->where('coach_id', $coach->id)->count();
+            $assignedGroups = \App\Models\AcademyGroup::where('coach_id', $coach->id)
+                ->with(['subscriptions' => fn ($q) => $q->where('status', '!=', 'cancelled')->with('payments')])
+                ->get();
 
-            $capacitySum = $assignedTrainings->sum('max_players');
+            $capacitySum = $assignedTrainings->sum('max_players') + $assignedGroups->sum('capacity');
             $enrolledCount = 0;
             $totalCollected = 0;
             $totalBilled = 0;
@@ -526,8 +528,16 @@ class AcademyFinancialReportController extends Controller
             foreach ($assignedTrainings as $tr) {
                 $joins = $tr->joins->where('is_canceled', false);
                 $enrolledCount += $joins->count();
-                $totalBilled += $joins->sum('price');
-                $totalCollected += $joins->sum('net_amount');
+                $totalBilled += (float) $joins->sum('price');
+                $totalCollected += (float) $joins->sum('net_amount');
+            }
+
+            foreach ($assignedGroups as $group) {
+                foreach ($group->subscriptions as $sub) {
+                    $enrolledCount++;
+                    $totalBilled += (float) $sub->amount;
+                    $totalCollected += (float) $sub->payments->sum('amount');
+                }
             }
 
             $utilizationRate = $capacitySum > 0 ? round(($enrolledCount / $capacitySum) * 100, 1) : 0;
@@ -552,7 +562,7 @@ class AcademyFinancialReportController extends Controller
                 'name' => $coach->name,
                 'phone' => $coach->phone,
                 'sports_list' => $coach->sports->pluck('name')->implode(', '),
-                'assigned_groups_count' => $assignedGroupsCount + $assignedTrainings->count(),
+                'assigned_groups_count' => $assignedGroups->count() + $assignedTrainings->count(),
                 'capacity_sum' => $capacitySum,
                 'enrolled_students_count' => $enrolledCount,
                 'utilization_rate' => $utilizationRate,
@@ -686,14 +696,31 @@ class AcademyFinancialReportController extends Controller
             foreach ($trainings as $tr) {
                 $joins = $tr->joins->where('is_canceled', false);
                 $studentsCount += $joins->count();
-                $totalBilled += $joins->sum('price');
-                $totalCollected += $joins->sum('net_amount');
+                $totalBilled += (float) $joins->sum('price');
+                $totalCollected += (float) $joins->sum('net_amount');
+            }
+
+            // Include Student Subscriptions in this sport
+            $groups = \App\Models\AcademyGroup::where('academy_id', $academyId)
+                ->where(function ($q) use ($sport) {
+                    $q->where('sport_id', $sport->id)
+                        ->orWhereHas('training', fn ($tr) => $tr->where('sport_id', $sport->id));
+                })
+                ->with(['subscriptions' => fn ($q) => $q->where('status', '!=', 'cancelled')->with('payments')])
+                ->get();
+
+            foreach ($groups as $group) {
+                foreach ($group->subscriptions as $sub) {
+                    $studentsCount++;
+                    $totalBilled += (float) $sub->amount;
+                    $totalCollected += (float) $sub->payments->sum('amount');
+                }
             }
 
             $items[] = [
                 'id' => $sport->id,
                 'name' => $sport->name,
-                'trainings_count' => $trainingsCount,
+                'trainings_count' => $trainingsCount + $groups->count(),
                 'students_count' => $studentsCount,
                 'total_billed' => $totalBilled,
                 'total_collected' => $totalCollected,
@@ -713,22 +740,61 @@ class AcademyFinancialReportController extends Controller
     {
         $isAr = app()->getLocale() === 'ar';
         $methods = [
-            'cash' => ['label' => $isAr ? 'نقداً (كاش)' : 'Cash', 'icon' => 'fa-money-bill-wave', 'color' => '#10b981'],
-            'card' => ['label' => $isAr ? 'بطاقة بنكية / فيزا' : 'Card / POS', 'icon' => 'fa-credit-card', 'color' => '#3b82f6'],
-            'bank_transfer' => ['label' => $isAr ? 'تحويل بنكي' : 'Bank Transfer', 'icon' => 'fa-building-columns', 'color' => '#8b5cf6'],
-            'online' => ['label' => $isAr ? 'دفع إلكتروني (أونلاين)' : 'Online Payment', 'icon' => 'fa-globe', 'color' => '#6366f1'],
-            'other' => ['label' => $isAr ? 'وسائل أخرى' : 'Other Methods', 'icon' => 'fa-receipt', 'color' => '#6b7280'],
+            'cash' => [
+                'label' => $isAr ? 'نقداً (كاش)' : 'Cash',
+                'icon' => 'fa-money-bill-wave',
+                'color' => '#10b981',
+                'keys' => ['cash'],
+            ],
+            'card' => [
+                'label' => $isAr ? 'بطاقة بنكية / فيزا / مدى' : 'Card / POS / Mada',
+                'icon' => 'fa-credit-card',
+                'color' => '#3b82f6',
+                'keys' => ['card', 'visa', 'mastercard', 'online', 'app_online', 'mada'],
+            ],
+            'instapay' => [
+                'label' => $isAr ? 'إنستا باي (InstaPay)' : 'InstaPay',
+                'icon' => 'fa-bolt',
+                'color' => '#8b5cf6',
+                'keys' => ['instapay'],
+            ],
+            'fawry' => [
+                'label' => $isAr ? 'فوري (Fawry)' : 'Fawry',
+                'icon' => 'fa-receipt',
+                'color' => '#f59e0b',
+                'keys' => ['fawry'],
+            ],
+            'sadad' => [
+                'label' => $isAr ? 'سداد / STC Pay / NAPS' : 'Sadad / STC Pay / NAPS',
+                'icon' => 'fa-mobile-screen-button',
+                'color' => '#7c3aed',
+                'keys' => ['sadad', 'stc_pay', 'apple_pay', 'naps'],
+            ],
+            'bank_transfer' => [
+                'label' => $isAr ? 'تحويل بنكي' : 'Bank Transfer',
+                'icon' => 'fa-building-columns',
+                'color' => '#06b6d4',
+                'keys' => ['bank_transfer', 'bank'],
+            ],
+            'other' => [
+                'label' => $isAr ? 'وسائل أخرى' : 'Other Methods',
+                'icon' => 'fa-wallet',
+                'color' => '#6b7280',
+                'keys' => ['other'],
+            ],
         ];
 
         $breakdown = [];
 
-        foreach ($methods as $key => $meta) {
+        foreach ($methods as $methodKey => $meta) {
+            $keys = $meta['keys'];
+
             // Subscription Payments
             $subPaid = (float) DB::table('academy_student_payments')
                 ->join('academy_student_subscriptions', 'academy_student_payments.academy_student_subscription_id', '=', 'academy_student_subscriptions.id')
                 ->join('academy_students', 'academy_student_subscriptions.academy_student_id', '=', 'academy_students.id')
                 ->where('academy_students.academy_id', $academyId)
-                ->where('academy_student_payments.method', $key)
+                ->whereIn('academy_student_payments.method', $keys)
                 ->sum('academy_student_payments.amount');
 
             // Training Invoices
@@ -736,19 +802,19 @@ class AcademyFinancialReportController extends Controller
                 ->join('trainings', 'invoices.training_id', '=', 'trainings.id')
                 ->where('trainings.academy_id', $academyId)
                 ->where('invoices.is_canceled', false)
-                ->where('invoices.payment_method', $key)
+                ->whereIn('invoices.payment_method', $keys)
                 ->sum(DB::raw('COALESCE(paid_amount, amount)'));
 
             // Venue Bookings
             $venuePaid = (float) DB::table('venue_bookings')
                 ->where('academy_id', $academyId)
                 ->where('status', '!=', 'cancelled')
-                ->where('payment_method', $key)
+                ->whereIn('payment_method', $keys)
                 ->sum('paid_amount');
 
             $totalCollected = $subPaid + $invPaid + $venuePaid;
 
-            $breakdown[$key] = array_merge($meta, [
+            $breakdown[$methodKey] = array_merge($meta, [
                 'sub_paid' => $subPaid,
                 'inv_paid' => $invPaid,
                 'venue_paid' => $venuePaid,
