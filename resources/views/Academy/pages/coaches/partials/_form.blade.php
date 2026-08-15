@@ -79,6 +79,57 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
+        <label for="compensation_type" class="form-label fw-bold">{{ trans('admin.coaches.compensation_type') }} <span class="text-danger">*</span></label>
+        <select class="form-select" name="compensation_type" id="compensation_type" onchange="updateCompensationLabel()">
+            <option value="session" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : 'session') == 'session')>
+                {{ app()->getLocale() === 'ar' ? '⚽ نظام الحصة التدريبية (لكل تمرين)' : '⚽ Per Session / Class' }}
+            </option>
+            <option value="percentage" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : '') == 'percentage')>
+                {{ app()->getLocale() === 'ar' ? '📊 نظام النسبة المئوية من التدريبات (%)' : '📊 Percentage of Training Revenue (%)' }}
+            </option>
+            <option value="salary" @selected(old('compensation_type', isset($coach) ? $coach->compensation_type : '') == 'salary')>
+                {{ app()->getLocale() === 'ar' ? '💵 نظام المرتب الشهري الثابت' : '💵 Fixed Monthly Salary' }}
+            </option>
+        </select>
+        @error('compensation_type')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label for="compensation_value" class="form-label fw-bold" id="compensation_value_label">
+            @php
+                $currentComp = old('compensation_type', isset($coach) ? $coach->compensation_type : 'session');
+                $isArLocale = app()->getLocale() === 'ar';
+            @endphp
+            @if($currentComp === 'session')
+                {{ $isArLocale ? 'سعر الحصة للمدرب (ج.م)' : 'Rate per session (EGP)' }}
+            @elseif($currentComp === 'percentage')
+                {{ $isArLocale ? 'النسبة المئوية للمدرب (%)' : 'Percentage Value (%)' }}
+            @else
+                {{ $isArLocale ? 'قيمة المرتب الشهري (ج.م)' : 'Monthly Salary (EGP)' }}
+            @endif
+            <span class="text-danger">*</span>
+        </label>
+        <input class="form-control" type="number" step="0.01" min="0" 
+               value="{{ old('compensation_value', isset($coach) ? $coach->compensation_value : '0.00') }}" 
+               id="compensation_value" name="compensation_value" 
+               placeholder="0.00">
+        <small class="text-muted d-block mt-1" id="compensation_help_text">
+            @if($currentComp === 'session')
+                {{ $isArLocale ? 'المبلغ الذي يتقاضاه المدرب عن كل حصة أو تمرينة يدربها.' : 'Amount paid to coach per conducted training session.' }}
+            @elseif($currentComp === 'percentage')
+                {{ $isArLocale ? 'النسبة المئوية من إجمالي رسوم واشتراكات التدريب.' : 'Percentage of training revenue.' }}
+            @else
+                {{ $isArLocale ? 'المرتب الشهري الثابت الذي يُصرف للمدرب شهرياً.' : 'Fixed monthly salary for the coach.' }}
+            @endif
+        </small>
+        @error('compensation_value')
+        <span class="text-danger">*{{$message}}</span>
+        @enderror
+    </div>
+
+    <div class="col-md-6 mb-3">
         <label for="active">{{ trans('admin.address.active') }}</label>
         <input class="form-check" id="active" name="active" @checked(old('active', (isset($coach) ? $coach->getRawOriginal('active') : ''))) type="checkbox">
         @error('active')
@@ -86,6 +137,29 @@
         @enderror
     </div>
 </div>
+
+@push('js')
+    <script>
+        function updateCompensationLabel() {
+            const select = document.getElementById('compensation_type');
+            const label = document.getElementById('compensation_value_label');
+            const help = document.getElementById('compensation_help_text');
+            const isAr = "{{ app()->getLocale() }}" === 'ar';
+            if (select && label) {
+                if (select.value === 'session') {
+                    label.innerHTML = (isAr ? 'سعر الحصة للمدرب (ج.م)' : 'Rate per session (EGP)') + ' <span class="text-danger">*</span>';
+                    if (help) help.textContent = isAr ? 'المبلغ الذي يتقاضاه المدرب عن كل حصة أو تمرينة يدربها.' : 'Amount paid to coach per conducted training session.';
+                } else if (select.value === 'percentage') {
+                    label.innerHTML = (isAr ? 'النسبة المئوية للمدرب (%)' : 'Percentage Value (%)') + ' <span class="text-danger">*</span>';
+                    if (help) help.textContent = isAr ? 'النسبة المئوية من إجمالي رسوم واشتراكات التدريب.' : 'Percentage of training revenue.';
+                } else {
+                    label.innerHTML = (isAr ? 'قيمة المرتب الشهري (ج.م)' : 'Monthly Salary (EGP)') + ' <span class="text-danger">*</span>';
+                    if (help) help.textContent = isAr ? 'المرتب الشهري الثابت الذي يُصرف للمدرب شهرياً.' : 'Fixed monthly salary for the coach.';
+                }
+            }
+        }
+    </script>
+@endpush
 
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

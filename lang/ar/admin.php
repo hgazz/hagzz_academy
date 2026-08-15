@@ -282,7 +282,12 @@ return [
         'no_licensed' => 'غير مرخص',
         'total_bookings' => 'إجمالي الحجوزات',
         'active_bookings' => 'الحجوزات النشطة',
-        'total_hours' => 'إجمالي الساعات',
+        'compensation_type' => 'نظام التعامل والاستحقاق المالي',
+        'compensation_value' => 'قيمة الاستحقاق / الراتب',
+        'salary' => 'مرتب شهري ثابت (ج.م)',
+        'percentage' => 'نسبة مئوية من التدريبات (%)',
+        'session' => 'نظام الحصة التدريبية (لكل تمرين)',
+        'session_rate' => 'سعر الحصة للمدرب (ج.م)',
     ],
     'profile' => [
         'profile' => 'الملف الشخصي',

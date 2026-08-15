@@ -299,7 +299,12 @@ return [
         'no_licensed' => 'No Licensed',
         'total_bookings' => 'Total Bookings',
         'active_bookings' => 'Active Bookings',
-        'total_hours' => 'Total Hours',
+        'compensation_type' => 'Compensation & Contract System',
+        'compensation_value' => 'Rate / Value',
+        'salary' => 'Fixed Monthly Salary (EGP)',
+        'percentage' => 'Percentage of Training Revenue (%)',
+        'session' => 'Per Session / Class (EGP)',
+        'session_rate' => 'Rate per Session (EGP)',
     ],
     'profile'=>[
         'profile'=>'Profile',

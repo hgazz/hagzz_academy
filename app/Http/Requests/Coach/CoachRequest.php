@@ -41,6 +41,8 @@ class CoachRequest extends FormRequest
             'gender' => 'required|in:male,female',
             'sport_id' => 'required|array|min:1',
             'sport_id.*' => 'integer|distinct|exists:sports,id',
+            'compensation_type' => 'required|in:salary,percentage,session',
+            'compensation_value' => 'required|numeric|min:0',
         ];
     }
 

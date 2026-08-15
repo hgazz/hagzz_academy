@@ -563,21 +563,29 @@ class AcademyFinancialReportController extends Controller
 
             $utilizationRate = $capacitySum > 0 ? round(($enrolledCount / $capacitySum) * 100, 1) : 0;
 
-            // Calculate Coach Expense based on compensation_type & compensation_value
-            $compType = $coach->compensation_type ?? 'salary';
+            // Calculate Coach Expense based on compensation_type & compensation_value (session, percentage, salary)
+            $compType = $coach->compensation_type ?? 'session';
             $compVal = (float) ($coach->compensation_value ?? 0);
             $coachCost = 0;
+            $isAr = app()->getLocale() === 'ar';
 
-            if ($compType === 'percentage') {
+            $conductedSessions = \App\Models\AcademyAttendanceSession::whereHas('group', fn ($q) => $q->where('coach_id', $coach->id))->count();
+
+            if ($compType === 'session') {
+                $sessionCount = $conductedSessions > 0 ? $conductedSessions : max(1, ($assignedGroups->count() + $assignedTrainings->count()) * 4);
+                $coachCost = $sessionCount * $compVal;
+                $compLabel = number_format($compVal, 2) . ($isAr ? ' ج.م / للحصة' : ' EGP / Session');
+            } elseif ($compType === 'percentage') {
                 $coachCost = ($totalCollected * $compVal) / 100;
+                $compLabel = $compVal . ($isAr ? '% من التدريبات' : '% of Revenue');
             } else {
-                $coachCost = $compVal; // fixed salary
+                $coachCost = $compVal; // fixed monthly salary
+                $compLabel = number_format($compVal, 2) . ($isAr ? ' ج.م مرتب شهري' : ' EGP Salary');
             }
 
             $netRevenue = $totalCollected - $coachCost;
             $totalCoachExpenses += $coachCost;
 
-            $isAr = app()->getLocale() === 'ar';
             $items[] = [
                 'id' => $coach->id,
                 'name' => $coach->name,
@@ -591,9 +599,7 @@ class AcademyFinancialReportController extends Controller
                 'total_collected' => $totalCollected,
                 'compensation_type' => $compType,
                 'compensation_value' => $compVal,
-                'compensation_label' => $compType === 'percentage' 
-                    ? ($compVal . ($isAr ? '% من الإيراد' : '% of Revenue')) 
-                    : (number_format($compVal, 2) . ($isAr ? ' ج.م مرتب' : ' EGP Salary')),
+                'compensation_label' => $compLabel,
                 'coach_cost' => $coachCost,
                 'net_revenue' => $netRevenue,
             ];

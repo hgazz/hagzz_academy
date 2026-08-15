@@ -77,10 +77,26 @@ class CoachDataTable extends DataTable
                     return STR::limit($sport->name, 20, '...');
                 })->implode(', ');
             })
+            ->addColumn('compensation', function (Coach $coach) {
+                $type = $coach->compensation_type ?? 'salary';
+                $val = (float) ($coach->compensation_value ?? 0);
+                $isAr = app()->getLocale() === 'ar';
+
+                if ($type === 'session') {
+                    return '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:700; font-size:12px;">'
+                        . '<i class="fa-solid fa-futbol me-1"></i> ' . ($isAr ? 'حصة: ' : 'Session: ') . number_format($val, 2) . ' EGP</span>';
+                } elseif ($type === 'percentage') {
+                    return '<span class="badge" style="background:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-weight:700; font-size:12px;">'
+                        . '<i class="fa-solid fa-percent me-1"></i> ' . ($isAr ? 'نسبة: ' : 'Ratio: ') . $val . '%</span>';
+                } else {
+                    return '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:700; font-size:12px;">'
+                        . '<i class="fa-solid fa-money-bill me-1"></i> ' . ($isAr ? 'مرتب: ' : 'Salary: ') . number_format($val, 2) . ' EGP</span>';
+                }
+            })
             ->addColumn('actions', function (Coach $coach) {
                 return view('Academy.pages.coaches.datatable.actions', compact('coach'));
             })
-            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports', 'actions', 'name_en', 'name_ar']);
+            ->rawColumns(['image', 'academy_id','training_count','follow_count', 'sports', 'compensation', 'actions', 'name_en', 'name_ar']);
     }
 
     /**
@@ -158,6 +174,7 @@ class CoachDataTable extends DataTable
             ['name' => 'training_count', 'data' => 'training_count', 'title' => trans('admin.training_count')],
             ['name' => 'follow_count', 'data' => 'follow_count', 'title' => trans('admin.follow_count')],
             ['name' => 'sports', 'data' => 'sports', 'title' => trans('admin.user.Sports'), 'orderable' => false, 'searchable' => false],
+            ['name' => 'compensation', 'data' => 'compensation', 'title' => trans('admin.coaches.compensation_type'), 'orderable' => false, 'searchable' => false],
             ['name' => 'active', 'data' => 'active', 'title' => trans('admin.coaches.active'), 'orderable' => false, 'searchable' => false],
             ['name' => 'actions', 'data' => 'actions', 'title' => trans('admin.actions'), 'orderable' => false, 'searchable' => false],
         ];
