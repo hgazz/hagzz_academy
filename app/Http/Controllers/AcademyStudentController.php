@@ -11,6 +11,7 @@ use App\Models\AcademyAttendanceRecord;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\PartnerUser;
 use App\Models\User;
 use App\Support\MembershipCode;
 use Endroid\QrCode\QrCode;
@@ -21,6 +22,15 @@ use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class AcademyStudentController extends Controller
 {
+    private function getAcademyId(): int
+    {
+        $user = auth('academy')->user();
+        if ($user instanceof PartnerUser) {
+            return (int) $user->academy_id;
+        }
+        return (int) ($user?->id ?? auth('academy')->id());
+    }
+
     public function index()
     {
         /** @var \App\Models\PartnerUser $authUser */
@@ -47,13 +57,46 @@ class AcademyStudentController extends Controller
             'country', 'city', 'area', 'user.country', 'user.city', 'user.area', 'groups',
             'subscriptions.group', 'subscriptions.payments', 'attendanceRecords.session.group',
         ]);
-        $subscription = $student->subscriptions->sortByDesc('starts_on')->first();
+        $subscriptions = $student->subscriptions->sortByDesc('starts_on');
+        $subscription = $subscriptions->first();
         $attendance = $student->attendanceRecords->groupBy('status')->map->count();
         $totalPaid = (float) $student->subscriptions->sum(fn ($item) => $item->payments->sum('amount'));
         $totalDue = (float) $student->subscriptions->sum('amount');
+        $totalDiscount = (float) $student->subscriptions->sum('discount_amount');
+        $totalRemaining = max(0, round($totalDue - $totalPaid - $totalDiscount, 2));
         $remainingDays = $subscription?->ends_on && $subscription->ends_on->isFuture()
             ? now()->startOfDay()->diffInDays($subscription->ends_on)
             : 0;
+
+        $subscriptionsList = $subscriptions->map(function ($sub) {
+            $subPaid = (float) $sub->payments->sum('amount');
+            $subDisc = (float) ($sub->discount_amount ?? 0);
+            $subTotal = (float) $sub->amount;
+            $subRem = max(0, round($subTotal - $subPaid - $subDisc, 2));
+
+            return [
+                'id' => $sub->id,
+                'group' => $sub->group?->name ?: '-',
+                'starts_on' => $sub->starts_on?->format('Y-m-d'),
+                'ends_on' => $sub->ends_on?->format('Y-m-d'),
+                'amount' => $subTotal,
+                'paid' => $subPaid,
+                'discount' => $subDisc,
+                'discount_reason' => $sub->discount_reason,
+                'discount_approved_by' => $sub->discount_approved_by,
+                'remaining' => $subRem,
+                'status' => $sub->status,
+                'payment_status' => $sub->payment_status,
+                'invoice_url' => route('academy.invoices.students.print', ['subscription' => $sub, 'paper' => 'a4']),
+                'payments' => $sub->payments->sortByDesc('paid_at')->map(fn ($p) => [
+                    'amount' => (float) $p->amount,
+                    'paid_at' => optional($p->paid_at)->format('Y-m-d'),
+                    'method' => $p->method_label ?: $p->method,
+                    'reference' => $p->reference,
+                    'notes' => $p->notes,
+                ])->values(),
+            ];
+        })->values();
 
         return response()->json([
             'id' => $student->id,
@@ -69,8 +112,10 @@ class AcademyStudentController extends Controller
             'guardian_name' => $student->guardian_name ?: $student->user?->parent_name,
             'guardian_phone' => $student->guardian_phone ?: $student->user?->parent_phone,
             'location' => collect([$student->area?->name ?: $student->user?->area?->name, $student->city?->name ?: $student->user?->city?->name, $student->country?->name ?: $student->user?->country?->name])->filter()->join(' - '),
-            'school_name' => $student->school_name, 'club_member' => $student->club_member,
-            'child_type' => $student->child_type, 'referral_source' => $student->referral_source,
+            'school_name' => $student->school_name,
+            'club_member' => $student->club_member,
+            'child_type' => $student->child_type,
+            'referral_source' => $student->referral_source,
             'groups' => $student->groups->pluck('name')->filter()->values(),
             'medical_notes' => $student->medical_notes ?: $student->user?->medical_condition_details,
             'notes' => $student->notes ?: $student->user?->additional_information,
@@ -83,22 +128,36 @@ class AcademyStudentController extends Controller
                 'remaining_days' => $remainingDays,
                 'amount' => (float) $subscription->amount,
                 'paid' => $subscription->paid_amount,
+                'discount' => (float) ($subscription->discount_amount ?? 0),
+                'discount_reason' => $subscription->discount_reason,
+                'discount_approved_by' => $subscription->discount_approved_by,
                 'remaining' => $subscription->remaining_amount,
                 'status' => $subscription->status,
                 'payment_status' => $subscription->payment_status,
                 'last_payment_method' => $subscription->payments->sortByDesc('paid_at')->first()?->method_label,
             ] : null,
-            'financials' => ['total_due' => $totalDue, 'total_paid' => $totalPaid, 'total_remaining' => max(0, $totalDue - $totalPaid)],
+            'all_subscriptions' => $subscriptionsList,
+            'financials' => [
+                'total_due' => $totalDue,
+                'total_paid' => $totalPaid,
+                'total_discount' => $totalDiscount,
+                'total_remaining' => $totalRemaining,
+            ],
             'attendance' => [
-                'present' => (int) $attendance->get('present', 0), 'late' => (int) $attendance->get('late', 0),
-                'absent' => (int) $attendance->get('absent', 0), 'excused' => (int) $attendance->get('excused', 0),
+                'present' => (int) $attendance->get('present', 0),
+                'late' => (int) $attendance->get('late', 0),
+                'absent' => (int) $attendance->get('absent', 0),
+                'excused' => (int) $attendance->get('excused', 0),
                 'total' => $student->attendanceRecords->count(),
             ],
             'recent_attendance' => $student->attendanceRecords->sortByDesc(fn ($record) => $record->session?->session_date)->take(8)->map(fn ($record) => [
-                'date' => $record->session?->session_date?->format('Y-m-d'), 'group' => $record->session?->group?->name,
-                'status' => $record->status, 'check_in' => $record->check_in_at,
+                'date' => $record->session?->session_date?->format('Y-m-d'),
+                'group' => $record->session?->group?->name,
+                'status' => $record->status,
+                'check_in' => $record->check_in_at,
             ])->values(),
             'edit_url' => route('academy.students.edit', $student),
+            'card_url' => route('academy.students.card', $student),
         ]);
     }
 
@@ -113,7 +172,7 @@ class AcademyStudentController extends Controller
 
         return view('Academy.pages.students.card', [
             'student' => $student,
-            'academy' => $student->academy,
+            'academy' => $student->academy ?: Academies::find($this->getAcademyId()),
             'subscription' => $subscription,
             'membershipCode' => $membershipCode,
             'qrDataUri' => $qrResult->getDataUri(),
@@ -123,7 +182,7 @@ class AcademyStudentController extends Controller
 
     public function export()
     {
-        $academy = Academies::find(auth('academy')->id());
+        $academy = Academies::find($this->getAcademyId());
         $students = $this->studentsQuery()->get();
 
         return Excel::download(new AcademyStudentsExport($students, $academy), 'academy-students.xlsx');
@@ -140,12 +199,12 @@ class AcademyStudentController extends Controller
             'students_file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $import = new AcademyStudentsImport(auth('academy')->id());
+        $import = new AcademyStudentsImport($this->getAcademyId());
         Excel::import($import, $request->file('students_file'));
 
         session()->flash(
             'success',
-            trans('admin.student_management.students_imported', [
+            trans('admin.student_management.import_summary', [
                 'created' => $import->created,
                 'updated' => $import->updated,
                 'skipped' => $import->skipped,
@@ -157,7 +216,7 @@ class AcademyStudentController extends Controller
 
     public function print()
     {
-        $academy = Academies::find(auth('academy')->id());
+        $academy = Academies::find($this->getAcademyId());
         $students = $this->studentsQuery()->get();
 
         return view('Academy.pages.students.print', compact('academy', 'students'));
@@ -167,7 +226,7 @@ class AcademyStudentController extends Controller
     {
         $data = $this->validated($request);
         $this->processLocationData($data, $request);
-        $data['academy_id'] = auth('academy')->id();
+        $data['academy_id'] = $this->getAcademyId();
 
         if ($request->hasFile('medical_certificate')) {
             $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
@@ -229,31 +288,33 @@ class AcademyStudentController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'country_code' => ['nullable', 'string', 'max:10'],
-            'country_id' => ['nullable'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'gender' => ['nullable', 'in:male,female'],
+            'birth_date' => ['nullable', 'date'],
+            'status' => ['required', 'in:active,inactive,lead,suspended'],
+            'country_id' => ['nullable', 'exists:countries,id'],
             'city_id' => ['nullable'],
             'area_id' => ['nullable'],
             'custom_city_name' => ['nullable', 'string', 'max:255'],
             'custom_area_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'gender' => ['nullable', 'in:male,female'],
-            'birth_date' => ['nullable', 'date'],
-            'child_type' => ['nullable', 'in:parent,child,athlete'], 'school_name' => ['nullable', 'string', 'max:255'],
-            'club_member' => ['nullable', 'in:yes,no'],
-            'club_card_number' => ['nullable', 'string', 'max:100'],
-            'club_card_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
-            'coach_preference' => ['nullable', 'in:male,female,not_important'],
-            'frequent_attendance' => ['nullable', 'in:daily,weekly,monthly'],
+            'country_code' => ['nullable', 'string', 'max:10'],
             'guardian_name' => ['nullable', 'string', 'max:255'],
             'guardian_phone' => ['nullable', 'string', 'max:30'],
-            'relation_with_child' => ['nullable', 'in:father,mother,brother,sister,guardian'],
-            'referral_source' => ['nullable', 'in:friends,facebook,hagzz_app'],
-            'delivery_service' => ['nullable', 'in:yes,no'],
-            'status' => ['required', 'in:active,inactive,suspended'],
+            'child_type' => ['nullable', 'string', 'max:100'],
+            'school_name' => ['nullable', 'string', 'max:255'],
+            'club_member' => ['nullable', 'string', 'max:100'],
+            'club_card_number' => ['nullable', 'string', 'max:100'],
+            'coach_preference' => ['nullable', 'string', 'max:255'],
+            'frequent_attendance' => ['nullable', 'string', 'max:255'],
+            'relation_with_child' => ['nullable', 'string', 'max:100'],
+            'referral_source' => ['nullable', 'string', 'max:255'],
+            'delivery_service' => ['nullable', 'string', 'max:255'],
+            'medical_condition' => ['nullable', 'string', 'max:255'],
+            'start_date' => ['nullable', 'date'],
             'medical_notes' => ['nullable', 'string'],
-            'medical_certificate' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
-            'medical_condition' => ['nullable', 'in:yes,no'], 'start_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
+            'medical_certificate' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'club_card_file' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ]);
 
         return $validated;
@@ -261,36 +322,10 @@ class AcademyStudentController extends Controller
 
     private function processLocationData(array &$data, Request $request): void
     {
-        // Auto-assign country_code if missing
-        if (empty($data['country_code']) && !empty($data['country_id'])) {
-            $country = Country::find($data['country_id']);
-            if ($country && !empty($country->iso2)) {
-                $codeMap = [
-                    'EG' => '+20', 'SA' => '+966', 'AE' => '+971', 'QA' => '+974', 'KW' => '+965',
-                    'OM' => '+968', 'BH' => '+973', 'JO' => '+962', 'LB' => '+961', 'IQ' => '+964',
-                    'LY' => '+218', 'SD' => '+249', 'TN' => '+216', 'MA' => '+212', 'DZ' => '+213',
-                    'YE' => '+967', 'SY' => '+963', 'PS' => '+970', 'TR' => '+90', 'GB' => '+44',
-                    'US' => '+1', 'CA' => '+1', 'FR' => '+33', 'DE' => '+49', 'ES' => '+34',
-                ];
-                $data['country_code'] = $codeMap[strtoupper($country->iso2)] ?? null;
-            }
-        }
+        $cityId = $request->input('city_id');
+        $areaId = $request->input('area_id');
 
-        // Process City
-        $cityId = $data['city_id'] ?? null;
-        $customCityName = trim((string) ($request->input('custom_city_name') ?? ''));
-
-        if ($cityId === '__custom__' || $customCityName !== '') {
-            if ($customCityName !== '') {
-                $city = City::firstOrCreate(
-                    ['name' => $customCityName],
-                    ['country_id' => $data['country_id'] ?? null]
-                );
-                $data['city_id'] = $city->id;
-            } else {
-                $data['city_id'] = null;
-            }
-        } elseif (is_numeric($cityId)) {
+        if (is_numeric($cityId)) {
             $data['city_id'] = (int) $cityId;
         } elseif (!empty($cityId)) {
             $city = City::firstOrCreate(
@@ -302,21 +337,7 @@ class AcademyStudentController extends Controller
             $data['city_id'] = null;
         }
 
-        // Process Area
-        $areaId = $data['area_id'] ?? null;
-        $customAreaName = trim((string) ($request->input('custom_area_name') ?? ''));
-
-        if ($areaId === '__custom__' || $customAreaName !== '') {
-            if ($customAreaName !== '') {
-                $area = Area::firstOrCreate(
-                    ['name' => $customAreaName],
-                    ['city_id' => $data['city_id'] ?? null]
-                );
-                $data['area_id'] = $area->id;
-            } else {
-                $data['area_id'] = null;
-            }
-        } elseif (is_numeric($areaId)) {
+        if (is_numeric($areaId)) {
             $data['area_id'] = (int) $areaId;
         } elseif (!empty($areaId)) {
             $area = Area::firstOrCreate(
@@ -335,31 +356,44 @@ class AcademyStudentController extends Controller
     {
         if (! $student->user_id) return;
         $student->user()->update([
-            'name' => $student->name, 'phone' => $student->phone, 'email' => $student->email,
-            'gender' => $student->gender, 'birth_date' => $student->birth_date,
-            'country_code' => $student->country_code, 'country_id' => $student->country_id,
-            'city_id' => $student->city_id, 'area_id' => $student->area_id,
-            'child_type' => $student->child_type, 'school_name' => $student->school_name,
-            'club_member' => $student->club_member, 'club_card_number' => $student->club_card_number,
-            'club_card_file' => $student->club_card_file, 'medical_certificate' => $student->medical_certificate,
-            'parent_name' => $student->guardian_name, 'parent_phone' => $student->guardian_phone,
-            'coach_preference' => $student->coach_preference, 'frequent_attendance' => $student->frequent_attendance,
-            'relation_with_child' => $student->relation_with_child, 'referral_source' => $student->referral_source,
-            'delivery_service' => $student->delivery_service, 'medical_condition' => $student->medical_condition,
-            'start_date' => $student->start_date, 'medical_condition_details' => $student->medical_notes,
+            'name' => $student->name,
+            'phone' => $student->phone,
+            'email' => $student->email,
+            'gender' => $student->gender,
+            'birth_date' => $student->birth_date,
+            'country_code' => $student->country_code,
+            'country_id' => $student->country_id,
+            'city_id' => $student->city_id,
+            'area_id' => $student->area_id,
+            'child_type' => $student->child_type,
+            'school_name' => $student->school_name,
+            'club_member' => $student->club_member,
+            'club_card_number' => $student->club_card_number,
+            'club_card_file' => $student->club_card_file,
+            'medical_certificate' => $student->medical_certificate,
+            'parent_name' => $student->guardian_name,
+            'parent_phone' => $student->guardian_phone,
+            'coach_preference' => $student->coach_preference,
+            'frequent_attendance' => $student->frequent_attendance,
+            'relation_with_child' => $student->relation_with_child,
+            'referral_source' => $student->referral_source,
+            'delivery_service' => $student->delivery_service,
+            'medical_condition' => $student->medical_condition,
+            'start_date' => $student->start_date,
+            'medical_condition_details' => $student->medical_notes,
             'additional_information' => $student->notes,
         ]);
     }
 
     private function authorizeStudent(AcademyStudent $student): void
     {
-        abort_unless($student->academy_id === auth('academy')->id(), 404);
+        abort_unless((int) $student->academy_id === $this->getAcademyId(), 404);
     }
 
     private function studentsQuery()
     {
         return AcademyStudent::with('user')
-            ->where('academy_id', auth('academy')->id())
+            ->where('academy_id', $this->getAcademyId())
             ->orderBy('name');
     }
 }
