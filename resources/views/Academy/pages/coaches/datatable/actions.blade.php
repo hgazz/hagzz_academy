@@ -1,13 +1,23 @@
-<td>
-    <div class="btn-group  mb-2 me-4" role="group">
-        <button id="btndefault" type="button" class="btn btn-dark dropdown-toggle d-flex align-items-center justify-content-between" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('admin.actions') }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-        <div class="dropdown-menu" aria-labelledby="btndefault">
-            @if($coach->phone)
-                <a class="dropdown-item text-success js-whatsapp-direct" href="#" data-phone="{{ $coach->phone }}" data-name="{{ $coach->name }}"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-            @endif
-            <a class="dropdown-item" href="{{route('academy.coach.edit', $coach)}}">{{ trans('admin.edit') }}</a>
-{{--            <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">--}}
-{{--            <a class="dropdown-item show_confirm_two" href="javascript:void(0);" data-href="{{ route('academy.coach.delete') }}"  data-id="{{ $coach->id }}" data-name="Coach">{{ trans('admin.delete') }}</a>--}}
-        </div>
-    </div>
-</td>
+<div class="d-inline-flex gap-1 align-items-center">
+    <a href="{{ route('academy.coach.edit', $coach) }}" class="btn btn-sm btn-outline-primary" title="{{ trans('admin.edit') }}">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+
+    @if($coach->phone)
+        @php
+            $cPhone = preg_replace('/\D+/', '', (string) $coach->phone);
+            if ($cPhone && str_starts_with($cPhone, '0')) $cPhone = '2' . $cPhone;
+        @endphp
+        <a href="https://api.whatsapp.com/send?phone={{ $cPhone }}" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+    @endif
+
+    <form action="{{ route('academy.coach.delete') }}" method="POST" class="d-inline" onsubmit="return confirm('{{ trans('admin.coaches.delete_confirm') ?: (app()->getLocale() === 'ar' ? 'هل أنت متأكد من حذف هذا المدرب؟' : 'Are you sure you want to delete this coach?') }}')">
+        @csrf
+        <input type="hidden" name="id" value="{{ $coach->id }}">
+        <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ trans('admin.delete') }}">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </form>
+</div>
