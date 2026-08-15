@@ -105,53 +105,107 @@ class PartnerShiftClosingController extends Controller
     private function calculateShiftMetrics(int $academyId, Carbon $startedAt, Carbon $closedAt): array
     {
         $cash = 0; $card = 0; $instapay = 0; $fawry = 0; $bank = 0; $other = 0; $discounts = 0;
+        $transactions = collect();
 
         // 1. Venue Bookings in this time window
-        $venueBookings = VenueBooking::where('academy_id', $academyId)
+        $venueBookings = VenueBooking::with(['customer', 'space'])
+            ->where('academy_id', $academyId)
             ->whereBetween('updated_at', [$startedAt, $closedAt])
             ->where('status', '!=', 'cancelled')
             ->get();
 
         foreach ($venueBookings as $vb) {
             $amt = (float) $vb->paid_amount;
+            $disc = (float) ($vb->discount_amount ?? 0);
             $method = strtolower((string) $vb->payment_method);
+            $mKey = 'other';
+            $mLabel = $vb->payment_method ?: 'طريقة أخرى';
+
             if ($amt > 0) {
-                if (in_array($method, ['cash', 'نقداً', 'كاش'])) $cash += $amt;
-                elseif (in_array($method, ['card', 'pos', 'visa', 'mastercard', 'بطاقة'])) $card += $amt;
-                elseif (in_array($method, ['instapay', 'إنستاباي'])) $instapay += $amt;
-                elseif (in_array($method, ['fawry', 'فوري'])) $fawry += $amt;
-                elseif (in_array($method, ['bank_transfer', 'تحويل بنكي'])) $bank += $amt;
-                else $other += $amt;
+                if (in_array($method, ['cash', 'نقداً', 'كاش'])) { $cash += $amt; $mKey = 'cash'; $mLabel = 'كاش (نقداً)'; }
+                elseif (in_array($method, ['card', 'pos', 'visa', 'mastercard', 'بطاقة'])) { $card += $amt; $mKey = 'card'; $mLabel = 'بطاقة / POS'; }
+                elseif (in_array($method, ['instapay', 'إنستاباي'])) { $instapay += $amt; $mKey = 'instapay'; $mLabel = 'إنستا باي'; }
+                elseif (in_array($method, ['fawry', 'فوري'])) { $fawry += $amt; $mKey = 'fawry'; $mLabel = 'فوري'; }
+                elseif (in_array($method, ['bank_transfer', 'تحويل بنكي'])) { $bank += $amt; $mKey = 'bank_transfer'; $mLabel = 'تحويل بنكي'; }
+                else { $other += $amt; }
             }
-            $discounts += (float) ($vb->discount_amount ?? 0);
+            $discounts += $disc;
+
+            if ($amt > 0 || $disc > 0) {
+                $transactions->push([
+                    'time' => $vb->updated_at,
+                    'type_label' => 'حجز ملعب (' . ($vb->space?->name ?: '-') . ')',
+                    'type_code' => 'venue',
+                    'ref' => $vb->reference,
+                    'customer' => $vb->customer?->name ?: '-',
+                    'method_key' => $mKey,
+                    'method_label' => $mLabel,
+                    'amount' => $amt,
+                    'discount' => $disc,
+                ]);
+            }
         }
 
         // 2. Student Subscription Payments in this time window
-        $studentPayments = AcademyStudentPayment::whereHas('subscription.student', fn ($q) => $q->where('academy_id', $academyId))
+        $studentPayments = AcademyStudentPayment::with(['subscription.student', 'subscription.group'])
+            ->whereHas('subscription.student', fn ($q) => $q->where('academy_id', $academyId))
             ->whereBetween('paid_at', [$startedAt->toDateString(), $closedAt->toDateString()])
             ->get();
 
         foreach ($studentPayments as $sp) {
             $amt = (float) $sp->amount;
             $method = strtolower((string) $sp->method);
+            $mKey = 'other';
+            $mLabel = $sp->method_label ?: $sp->method;
+
             if ($amt > 0) {
-                if ($method === 'cash') $cash += $amt;
-                elseif (in_array($method, ['card', 'app_online'])) $card += $amt;
-                elseif ($method === 'instapay') $instapay += $amt;
-                elseif ($method === 'fawry') $fawry += $amt;
-                elseif ($method === 'bank_transfer') $bank += $amt;
-                else $other += $amt;
+                if ($method === 'cash') { $cash += $amt; $mKey = 'cash'; $mLabel = 'كاش (نقداً)'; }
+                elseif (in_array($method, ['card', 'app_online'])) { $card += $amt; $mKey = 'card'; $mLabel = 'بطاقة / فيزا'; }
+                elseif ($method === 'instapay') { $instapay += $amt; $mKey = 'instapay'; $mLabel = 'إنستا باي'; }
+                elseif ($method === 'fawry') { $fawry += $amt; $mKey = 'fawry'; $mLabel = 'فوري'; }
+                elseif ($method === 'bank_transfer') { $bank += $amt; $mKey = 'bank_transfer'; $mLabel = 'تحويل بنكي'; }
+                else { $other += $amt; }
+
+                $transactions->push([
+                    'time' => $sp->paid_at ? Carbon::parse($sp->paid_at) : $sp->created_at,
+                    'type_label' => 'اشتراك طالب (' . ($sp->subscription?->group?->name ?: '-') . ')',
+                    'type_code' => 'student',
+                    'ref' => '#' . $sp->subscription_id,
+                    'customer' => $sp->subscription?->student?->name ?: '-',
+                    'method_key' => $mKey,
+                    'method_label' => $mLabel,
+                    'amount' => $amt,
+                    'discount' => 0,
+                ]);
             }
         }
 
         // Student subscription discounts
-        $studentDiscounts = AcademyStudentSubscription::whereHas('student', fn ($q) => $q->where('academy_id', $academyId))
+        $studentSubs = AcademyStudentSubscription::with(['student', 'group'])
+            ->whereHas('student', fn ($q) => $q->where('academy_id', $academyId))
             ->whereBetween('discount_approved_at', [$startedAt, $closedAt])
-            ->sum('discount_amount');
-        $discounts += (float) $studentDiscounts;
+            ->where('discount_amount', '>', 0)
+            ->get();
+
+        foreach ($studentSubs as $sub) {
+            $disc = (float) $sub->discount_amount;
+            $discounts += $disc;
+            $transactions->push([
+                'time' => $sub->discount_approved_at ?: $sub->updated_at,
+                'type_label' => 'خصم اشتراك (' . ($sub->group?->name ?: '-') . ')',
+                'type_code' => 'discount',
+                'ref' => '#' . $sub->id,
+                'customer' => $sub->student?->name ?: '-',
+                'method_key' => 'discount',
+                'method_label' => 'خصم معتمد: ' . ($sub->discount_reason ?: '-'),
+                'amount' => 0,
+                'discount' => $disc,
+            ]);
+        }
 
         // 3. Training Booking Invoices
-        $trainingInvoices = Invoice::whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
+        $trainingInvoices = Invoice::with(['user', 'training'])
+            ->whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
             ->whereBetween('updated_at', [$startedAt, $closedAt])
             ->where('is_canceled', false)
             ->get();
@@ -159,12 +213,27 @@ class PartnerShiftClosingController extends Controller
         foreach ($trainingInvoices as $inv) {
             $amt = (float) ($inv->collected_amount ?? $inv->paid_amount ?? 0);
             $method = strtolower((string) $inv->payment_method);
+            $mKey = 'other';
+            $mLabel = 'أخرى';
+
             if ($amt > 0) {
-                if (in_array($method, ['cash', 'كاش', '1'])) $cash += $amt;
-                elseif (in_array($method, ['card', 'visa', '2', 'online'])) $card += $amt;
-                elseif (in_array($method, ['instapay'])) $instapay += $amt;
-                elseif (in_array($method, ['fawry'])) $fawry += $amt;
-                else $other += $amt;
+                if (in_array($method, ['cash', 'كاش', '1'])) { $cash += $amt; $mKey = 'cash'; $mLabel = 'كاش (نقداً)'; }
+                elseif (in_array($method, ['card', 'visa', '2', 'online'])) { $card += $amt; $mKey = 'card'; $mLabel = 'بطاقة / فيزا'; }
+                elseif (in_array($method, ['instapay'])) { $instapay += $amt; $mKey = 'instapay'; $mLabel = 'إنستا باي'; }
+                elseif (in_array($method, ['fawry'])) { $fawry += $amt; $mKey = 'fawry'; $mLabel = 'فوري'; }
+                else { $other += $amt; }
+
+                $transactions->push([
+                    'time' => $inv->updated_at,
+                    'type_label' => 'فاتورة تدريب (' . ($inv->training?->name ?: '-') . ')',
+                    'type_code' => 'training',
+                    'ref' => '#' . $inv->id,
+                    'customer' => $inv->user?->name ?: '-',
+                    'method_key' => $mKey,
+                    'method_label' => $mLabel,
+                    'amount' => $amt,
+                    'discount' => 0,
+                ]);
             }
         }
 
@@ -179,6 +248,7 @@ class PartnerShiftClosingController extends Controller
             'other' => round($other, 2),
             'discounts' => round($discounts, 2),
             'total_collected' => round($totalCollected, 2),
+            'transactions' => $transactions->sortByDesc('time')->values(),
         ];
     }
 }
