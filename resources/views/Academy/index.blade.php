@@ -156,18 +156,21 @@
                     <h3 class="m-0"><i class="fa-solid fa-credit-card text-primary me-2"></i>{{ $isArabic ? 'توزيع تحصيل الإيرادات حسب وسيلة الدفع والدولة' : 'Revenue Collection by Payment Method & Country' }}</h3>
                     <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? 'تفاصيل تحصيل الاشتراكات والحجوزات مقسمة حسب الوسائل والدول (مصر 🇪🇬، السعودية 🇸🇦، قطر 🇶🇦)' : 'Subscriptions and bookings collected by country-specific payment types (Egypt 🇪🇬, KSA 🇸🇦, Qatar 🇶🇦)' }}</p>
                 </div>
+                @php
+                    $defC = $dashboard['paymentBreakdown']['defaultCountry'] ?? 'EG';
+                @endphp
                 <div class="country-tabs-nav" style="display: flex; gap: 6px; background: #f1f5f9; padding: 4px; border-radius: 10px;">
-                    <button type="button" class="country-tab-btn active" data-country="ALL" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: #3b82f6; color: #fff; transition: all 0.2s;">
-                        🌐 {{ $isArabic ? 'جميع الدول' : 'All' }}
-                    </button>
-                    <button type="button" class="country-tab-btn" data-country="EG" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                    <button type="button" class="country-tab-btn {{ $defC === 'EG' ? 'active' : '' }}" data-country="EG" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ $defC === 'EG' ? '#3b82f6' : 'transparent' }}; color: {{ $defC === 'EG' ? '#fff' : '#475569' }}; transition: all 0.2s;">
                         🇪🇬 {{ $isArabic ? 'مصر' : 'Egypt' }}
                     </button>
-                    <button type="button" class="country-tab-btn" data-country="SA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                    <button type="button" class="country-tab-btn {{ $defC === 'SA' ? 'active' : '' }}" data-country="SA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ $defC === 'SA' ? '#3b82f6' : 'transparent' }}; color: {{ $defC === 'SA' ? '#fff' : '#475569' }}; transition: all 0.2s;">
                         🇸🇦 {{ $isArabic ? 'السعودية' : 'KSA' }}
                     </button>
-                    <button type="button" class="country-tab-btn" data-country="QA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+                    <button type="button" class="country-tab-btn {{ $defC === 'QA' ? 'active' : '' }}" data-country="QA" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ $defC === 'QA' ? '#3b82f6' : 'transparent' }}; color: {{ $defC === 'QA' ? '#fff' : '#475569' }}; transition: all 0.2s;">
                         🇶🇦 {{ $isArabic ? 'قطر' : 'Qatar' }}
+                    </button>
+                    <button type="button" class="country-tab-btn {{ $defC === 'ALL' ? 'active' : '' }}" data-country="ALL" style="border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ $defC === 'ALL' ? '#3b82f6' : 'transparent' }}; color: {{ $defC === 'ALL' ? '#fff' : '#475569' }}; transition: all 0.2s;">
+                        🌐 {{ $isArabic ? 'جميع الدول' : 'All' }}
                     </button>
                 </div>
             </header>

@@ -578,49 +578,104 @@ class DashboardController extends Controller
     {
         $isArabic = app()->getLocale() === 'ar';
 
+        $academy = Academies::with('country')->find($academyId);
+        $iso2 = strtoupper((string) ($academy?->country?->iso2 ?? ''));
+        if (!$iso2 && $academy) {
+            $curr = $academy->currency_code;
+            $iso2 = match ($curr) {
+                'EGP' => 'EG',
+                'SAR' => 'SA',
+                'QAR' => 'QA',
+                default => 'EG',
+            };
+        }
+        $academyIso2 = in_array($iso2, ['EG', 'SA', 'QA'], true) ? $iso2 : 'EG';
+        $academyCurrency = $academy?->currency_symbol ?: ($isArabic ? 'ج.م' : 'EGP');
+
         $studentPayments = AcademyStudentPayment::query()
             ->whereHas('subscription.student', fn ($q) => $q->where('academy_id', $academyId))
-            ->select('method', DB::raw('SUM(amount) as total_amount'), DB::raw('COUNT(*) as total_count'))
-            ->groupBy('method')
+            ->with(['subscription.student.country'])
             ->get();
 
         $invoicePayments = Invoice::query()
             ->whereHas('training', fn ($q) => $q->where('academy_id', $academyId))
-            ->select(
-                DB::raw("COALESCE(payment_method, 'cash') as method"),
-                DB::raw("SUM(COALESCE(paid_amount, amount)) as total_amount"),
-                DB::raw("COUNT(*) as total_count")
-            )
-            ->groupBy(DB::raw("COALESCE(payment_method, 'cash')"))
+            ->with(['training.city.country', 'user.country'])
             ->get();
 
-        $aggregatedMethods = [];
+        $countryMethods = [
+            'EG' => [],
+            'SA' => [],
+            'QA' => [],
+        ];
+        $allMethods = [];
+
         foreach ($studentPayments as $p) {
             $m = strtolower(trim((string)$p->method)) ?: 'cash';
-            $aggregatedMethods[$m]['amount'] = ($aggregatedMethods[$m]['amount'] ?? 0) + (float)$p->total_amount;
-            $aggregatedMethods[$m]['count'] = ($aggregatedMethods[$m]['count'] ?? 0) + (int)$p->total_count;
-        }
-        foreach ($invoicePayments as $p) {
-            $m = strtolower(trim((string)$p->method)) ?: 'cash';
-            $aggregatedMethods[$m]['amount'] = ($aggregatedMethods[$m]['amount'] ?? 0) + (float)$p->total_amount;
-            $aggregatedMethods[$m]['count'] = ($aggregatedMethods[$m]['count'] ?? 0) + (int)$p->total_count;
+            $amount = (float) $p->amount;
+
+            $cIso = strtoupper((string) ($p->subscription?->student?->country?->iso2 ?? ''));
+            if (!in_array($cIso, ['EG', 'SA', 'QA'], true)) {
+                $cIso = $academyIso2;
+            }
+
+            $countryMethods[$cIso][$m]['amount'] = ($countryMethods[$cIso][$m]['amount'] ?? 0) + $amount;
+            $countryMethods[$cIso][$m]['count'] = ($countryMethods[$cIso][$m]['count'] ?? 0) + 1;
+
+            $allMethods[$m]['amount'] = ($allMethods[$m]['amount'] ?? 0) + $amount;
+            $allMethods[$m]['count'] = ($allMethods[$m]['count'] ?? 0) + 1;
         }
 
-        $getAmount = function($keys) use ($aggregatedMethods) {
+        foreach ($invoicePayments as $p) {
+            $m = strtolower(trim((string)$p->payment_method)) ?: 'cash';
+            $amount = (float) ($p->paid_amount ?? $p->amount);
+
+            $cIso = strtoupper((string) ($p->training?->city?->country?->iso2 ?? ($p->user?->country?->iso2 ?? '')));
+            if (!in_array($cIso, ['EG', 'SA', 'QA'], true)) {
+                $cIso = $academyIso2;
+            }
+
+            $countryMethods[$cIso][$m]['amount'] = ($countryMethods[$cIso][$m]['amount'] ?? 0) + $amount;
+            $countryMethods[$cIso][$m]['count'] = ($countryMethods[$cIso][$m]['count'] ?? 0) + 1;
+
+            $allMethods[$m]['amount'] = ($allMethods[$m]['amount'] ?? 0) + $amount;
+            $allMethods[$m]['count'] = ($allMethods[$m]['count'] ?? 0) + 1;
+        }
+
+        $getCountryAmount = function(string $country, $keys) use (&$countryMethods) {
             $total = 0.0;
             foreach ((array)$keys as $k) {
-                if (isset($aggregatedMethods[$k])) {
-                    $total += $aggregatedMethods[$k]['amount'];
+                if (isset($countryMethods[$country][$k])) {
+                    $total += $countryMethods[$country][$k]['amount'];
                 }
             }
             return round($total, 2);
         };
 
-        $getCount = function($keys) use ($aggregatedMethods) {
+        $getCountryCount = function(string $country, $keys) use (&$countryMethods) {
             $total = 0;
             foreach ((array)$keys as $k) {
-                if (isset($aggregatedMethods[$k])) {
-                    $total += $aggregatedMethods[$k]['count'];
+                if (isset($countryMethods[$country][$k])) {
+                    $total += $countryMethods[$country][$k]['count'];
+                }
+            }
+            return $total;
+        };
+
+        $getAllAmount = function($keys) use (&$allMethods) {
+            $total = 0.0;
+            foreach ((array)$keys as $k) {
+                if (isset($allMethods[$k])) {
+                    $total += $allMethods[$k]['amount'];
+                }
+            }
+            return round($total, 2);
+        };
+
+        $getAllCount = function($keys) use (&$allMethods) {
+            $total = 0;
+            foreach ((array)$keys as $k) {
+                if (isset($allMethods[$k])) {
+                    $total += $allMethods[$k]['count'];
                 }
             }
             return $total;
@@ -635,40 +690,40 @@ class DashboardController extends Controller
                 [
                     'key' => 'instapay',
                     'name' => $isArabic ? 'إنستا باي (InstaPay)' : 'InstaPay',
-                    'amount' => $getAmount(['instapay']),
-                    'count' => $getCount(['instapay']),
+                    'amount' => $getCountryAmount('EG', ['instapay']),
+                    'count' => $getCountryCount('EG', ['instapay']),
                     'color' => '#8b5cf6',
                     'icon' => 'zap',
                 ],
                 [
                     'key' => 'fawry',
                     'name' => $isArabic ? 'فوري (Fawry)' : 'Fawry',
-                    'amount' => $getAmount(['fawry']),
-                    'count' => $getCount(['fawry']),
+                    'amount' => $getCountryAmount('EG', ['fawry']),
+                    'count' => $getCountryCount('EG', ['fawry']),
                     'color' => '#f59e0b',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'card',
                     'name' => $isArabic ? 'كارت / فيزا (Card)' : 'Card / Visa',
-                    'amount' => $getAmount(['card', 'visa', 'mastercard', 'online', 'app_online']),
-                    'count' => $getCount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'amount' => $getCountryAmount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'count' => $getCountryCount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online']),
                     'color' => '#3b82f6',
                     'icon' => 'credit-card',
                 ],
                 [
                     'key' => 'cash',
                     'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
-                    'amount' => $getAmount(['cash']),
-                    'count' => $getCount(['cash']),
+                    'amount' => $getCountryAmount('EG', ['cash']),
+                    'count' => $getCountryCount('EG', ['cash']),
                     'color' => '#10b981',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'bank_transfer',
                     'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
-                    'amount' => $getAmount(['bank_transfer', 'bank']),
-                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'amount' => $getCountryAmount('EG', ['bank_transfer', 'bank']),
+                    'count' => $getCountryCount('EG', ['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
                     'icon' => 'send',
                 ],
@@ -684,32 +739,32 @@ class DashboardController extends Controller
                 [
                     'key' => 'mada',
                     'name' => $isArabic ? 'مدى / بطاقات (Mada/Card)' : 'Mada / Card',
-                    'amount' => $getAmount(['mada', 'card', 'visa', 'online']),
-                    'count' => $getCount(['mada', 'card', 'visa', 'online']),
+                    'amount' => $getCountryAmount('SA', ['mada', 'card', 'visa', 'online']),
+                    'count' => $getCountryCount('SA', ['mada', 'card', 'visa', 'online']),
                     'color' => '#059669',
                     'icon' => 'credit-card',
                 ],
                 [
                     'key' => 'stc_pay',
                     'name' => $isArabic ? 'سداد / STC Pay / Apple Pay' : 'Sadad / STC Pay / Apple Pay',
-                    'amount' => $getAmount(['stc_pay', 'apple_pay', 'sadad']),
-                    'count' => $getCount(['stc_pay', 'apple_pay', 'sadad']),
+                    'amount' => $getCountryAmount('SA', ['stc_pay', 'apple_pay', 'sadad']),
+                    'count' => $getCountryCount('SA', ['stc_pay', 'apple_pay', 'sadad']),
                     'color' => '#7c3aed',
                     'icon' => 'smartphone',
                 ],
                 [
                     'key' => 'cash',
                     'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
-                    'amount' => $getAmount(['cash']),
-                    'count' => $getCount(['cash']),
+                    'amount' => $getCountryAmount('SA', ['cash']),
+                    'count' => $getCountryCount('SA', ['cash']),
                     'color' => '#10b981',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'bank_transfer',
                     'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
-                    'amount' => $getAmount(['bank_transfer', 'bank']),
-                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'amount' => $getCountryAmount('SA', ['bank_transfer', 'bank']),
+                    'count' => $getCountryCount('SA', ['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
                     'icon' => 'send',
                 ],
@@ -725,32 +780,32 @@ class DashboardController extends Controller
                 [
                     'key' => 'card',
                     'name' => $isArabic ? 'كارت محلي / بطاقات (Card)' : 'Card / Visa',
-                    'amount' => $getAmount(['card', 'visa', 'online']),
-                    'count' => $getCount(['card', 'visa', 'online']),
+                    'amount' => $getCountryAmount('QA', ['card', 'visa', 'online']),
+                    'count' => $getCountryCount('QA', ['card', 'visa', 'online']),
                     'color' => '#3b82f6',
                     'icon' => 'credit-card',
                 ],
                 [
                     'key' => 'naps',
                     'name' => $isArabic ? 'NAPS / سداد قطر' : 'NAPS / Sadad Qatar',
-                    'amount' => $getAmount(['naps', 'sadad']),
-                    'count' => $getCount(['naps', 'sadad']),
+                    'amount' => $getCountryAmount('QA', ['naps', 'sadad']),
+                    'count' => $getCountryCount('QA', ['naps', 'sadad']),
                     'color' => '#800020',
                     'icon' => 'shield',
                 ],
                 [
                     'key' => 'cash',
                     'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
-                    'amount' => $getAmount(['cash']),
-                    'count' => $getCount(['cash']),
+                    'amount' => $getCountryAmount('QA', ['cash']),
+                    'count' => $getCountryCount('QA', ['cash']),
                     'color' => '#10b981',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'bank_transfer',
                     'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
-                    'amount' => $getAmount(['bank_transfer', 'bank']),
-                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'amount' => $getCountryAmount('QA', ['bank_transfer', 'bank']),
+                    'count' => $getCountryCount('QA', ['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
                     'icon' => 'send',
                 ],
@@ -761,71 +816,58 @@ class DashboardController extends Controller
             'country_code' => 'ALL',
             'country_name' => $isArabic ? 'جميع الدول' : 'All Countries',
             'flag' => '🌐',
-            'currency' => '',
+            'currency' => $academyCurrency,
             'methods' => [
                 [
                     'key' => 'cash',
                     'name' => $isArabic ? 'كاش ونقدي (Cash)' : 'Cash',
-                    'amount' => $getAmount(['cash']),
-                    'count' => $getCount(['cash']),
+                    'amount' => $getAllAmount(['cash']),
+                    'count' => $getAllCount(['cash']),
                     'color' => '#10b981',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'card',
                     'name' => $isArabic ? 'كارت / بطاقات أونلاين' : 'Card / Online',
-                    'amount' => $getAmount(['card', 'visa', 'mastercard', 'online', 'app_online']),
-                    'count' => $getCount(['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'amount' => $getAllAmount(['card', 'visa', 'mastercard', 'online', 'app_online', 'mada']),
+                    'count' => $getAllCount(['card', 'visa', 'mastercard', 'online', 'app_online', 'mada']),
                     'color' => '#3b82f6',
                     'icon' => 'credit-card',
                 ],
                 [
                     'key' => 'instapay',
                     'name' => $isArabic ? 'إنستا باي (InstaPay)' : 'InstaPay',
-                    'amount' => $getAmount(['instapay']),
-                    'count' => $getCount(['instapay']),
+                    'amount' => $getAllAmount(['instapay']),
+                    'count' => $getAllCount(['instapay']),
                     'color' => '#8b5cf6',
                     'icon' => 'zap',
                 ],
                 [
                     'key' => 'fawry',
                     'name' => $isArabic ? 'فوري (Fawry)' : 'Fawry',
-                    'amount' => $getAmount(['fawry']),
-                    'count' => $getCount(['fawry']),
+                    'amount' => $getAllAmount(['fawry']),
+                    'count' => $getAllCount(['fawry']),
                     'color' => '#f59e0b',
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'sadad',
                     'name' => $isArabic ? 'مدى / سداد / NAPS' : 'Mada / Sadad / NAPS',
-                    'amount' => $getAmount(['mada', 'sadad', 'naps', 'stc_pay', 'apple_pay']),
-                    'count' => $getCount(['mada', 'sadad', 'naps', 'stc_pay', 'apple_pay']),
+                    'amount' => $getAllAmount(['sadad', 'naps', 'stc_pay', 'apple_pay']),
+                    'count' => $getAllCount(['sadad', 'naps', 'stc_pay', 'apple_pay']),
                     'color' => '#7c3aed',
                     'icon' => 'smartphone',
                 ],
                 [
                     'key' => 'bank_transfer',
                     'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
-                    'amount' => $getAmount(['bank_transfer', 'bank']),
-                    'count' => $getCount(['bank_transfer', 'bank']),
+                    'amount' => $getAllAmount(['bank_transfer', 'bank']),
+                    'count' => $getAllCount(['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
                     'icon' => 'send',
                 ],
             ],
         ];
-
-        $academy = Academies::with('country')->find($academyId);
-        $iso2 = strtoupper((string) ($academy?->country?->iso2 ?? ''));
-        if (!$iso2 && $academy) {
-            $curr = $academy->currency_code;
-            $iso2 = match ($curr) {
-                'EGP' => 'EG',
-                'SAR' => 'SA',
-                'QAR' => 'QA',
-                default => 'EG',
-            };
-        }
-        $defaultCountry = in_array($iso2, ['EG', 'SA', 'QA'], true) ? $iso2 : 'ALL';
 
         return [
             'countries' => [
@@ -834,7 +876,7 @@ class DashboardController extends Controller
                 'SA' => $saData,
                 'QA' => $qaData,
             ],
-            'defaultCountry' => $defaultCountry,
+            'defaultCountry' => $academyIso2,
         ];
     }
 
