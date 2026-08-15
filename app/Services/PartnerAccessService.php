@@ -83,23 +83,28 @@ class PartnerAccessService
     {
         $query->where('coaches.academy_id', $this->user->academy_id);
 
-        // Sport filter — coach must teach at least one of the allowed sports
+        // Sport filter — coach teaches allowed sports or has no sports attached yet
         $sportIds = $this->accessibleSportIds();
         if ($sportIds !== null) {
-            $query->whereHas('sports', fn (Builder $q) =>
-                $q->whereIn('sports.id', $sportIds)
-            );
+            $query->where(function (Builder $sub) use ($sportIds) {
+                $sub->doesntHave('sports')
+                    ->orWhereHas('sports', fn (Builder $q) =>
+                        $q->whereIn('sports.id', $sportIds)
+                    );
+            });
         }
 
-        // Branches: coaches don't have a direct branch_id,
-        // so we limit via trainings they are assigned to in accessible branches
+        // Branches: coaches without trainings or assigned to accessible branch trainings
         $branchIds = $this->accessibleBranchIds();
         if ($branchIds !== null) {
-            $query->whereHas('trainings', fn (Builder $q) =>
-                $q->whereHas('address', fn (Builder $a) =>
-                    $a->whereIn('academy_id', $branchIds)
-                )
-            );
+            $query->where(function (Builder $sub) use ($branchIds) {
+                $sub->doesntHave('trainings')
+                    ->orWhereHas('trainings', fn (Builder $q) =>
+                        $q->whereHas('address', fn (Builder $a) =>
+                            $a->whereIn('academy_id', $branchIds)
+                        )
+                    );
+            });
         }
 
         return $query;
