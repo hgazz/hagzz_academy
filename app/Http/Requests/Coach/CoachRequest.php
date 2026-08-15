@@ -29,15 +29,15 @@ class CoachRequest extends FormRequest
         return [
             'name_en' => 'required|string|max:255',
             'name_ar' => 'required|string|max:255',
-            'description_en' => 'required|string|max:255',
-            'description_ar' => 'required|string|max:255',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'license_en' => 'string|nullable',
             'license_ar' => 'string|nullable',
             'license_type_en' => 'string|nullable',
             'license_type_ar' => 'string|nullable',
             'phone' => 'required|string|max:20',
             'image' => $this->checkImage(),
-            'birth_date' => 'required|date|before:' . Carbon::now()->subYears(10)->format('Y-m-d'),
+            'birth_date' => 'nullable|date|before:' . Carbon::now()->subYears(10)->format('Y-m-d'),
             'gender' => 'required|in:male,female',
             'sport_id' => 'required|array|min:1',
             'sport_id.*' => 'integer|distinct|exists:sports,id',
@@ -48,7 +48,7 @@ class CoachRequest extends FormRequest
 
     protected function checkImage()
     {
-        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,jpg,svg|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096' : 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096';
     }
 
     protected function failedValidation(Validator $validator)

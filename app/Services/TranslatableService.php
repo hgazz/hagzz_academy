@@ -14,8 +14,8 @@ class TranslatableService
 
         foreach ($columns as $column) {
             $langs = ['en', 'ar'];
-            foreach ( $langs as $lang) {
-                $fields[$column][$lang] = $validatedData[$column . '_' . $lang];
+            foreach ($langs as $lang) {
+                $fields[$column][$lang] = $validatedData[$column . '_' . $lang] ?? '';
             }
         }
 
