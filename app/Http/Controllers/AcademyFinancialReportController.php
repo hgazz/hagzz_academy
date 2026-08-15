@@ -288,27 +288,45 @@ class AcademyFinancialReportController extends Controller
 
     private function filters(Request $request): array
     {
-        $validated = $request->validate([
-            'start_date' => ['nullable', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-            'source' => ['nullable', 'in:all,subscriptions,training,venues,camps'],
-            'payment_status' => ['nullable', 'in:all,paid,partial,unpaid'],
-            'branch_id' => ['nullable', 'integer'],
-            'sport_id' => ['nullable', 'integer'],
-            'payment_method' => ['nullable', 'string'],
-            'search' => ['nullable', 'string', 'max:100'],
-        ]);
+        $startDate = $request->filled('start_date') ? (string) $request->input('start_date') : null;
+        $endDate = $request->filled('end_date') ? (string) $request->input('end_date') : null;
 
-        return array_merge([
-            'start_date' => null,
-            'end_date' => null,
-            'source' => 'all',
-            'payment_status' => 'all',
-            'branch_id' => null,
-            'sport_id' => null,
-            'payment_method' => null,
-            'search' => null,
-        ], $validated);
+        // If end_date is before start_date, swap or normalize safely without throwing 422
+        if ($startDate && $endDate && strtotime($endDate) < strtotime($startDate)) {
+            $temp = $startDate;
+            $startDate = $endDate;
+            $endDate = $temp;
+        }
+
+        $source = in_array($request->input('source'), ['all', 'subscriptions', 'training', 'venues', 'camps'], true)
+            ? (string) $request->input('source')
+            : 'all';
+
+        $paymentStatus = in_array($request->input('payment_status'), ['all', 'paid', 'partial', 'unpaid'], true)
+            ? (string) $request->input('payment_status')
+            : 'all';
+
+        $branchId = $request->filled('branch_id') && is_numeric($request->input('branch_id'))
+            ? (int) $request->input('branch_id')
+            : null;
+
+        $sportId = $request->filled('sport_id') && is_numeric($request->input('sport_id'))
+            ? (int) $request->input('sport_id')
+            : null;
+
+        $paymentMethod = $request->filled('payment_method') ? (string) $request->input('payment_method') : null;
+        $search = $request->filled('search') ? trim((string) $request->input('search')) : null;
+
+        return [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'source' => $source,
+            'payment_status' => $paymentStatus,
+            'branch_id' => $branchId,
+            'sport_id' => $sportId,
+            'payment_method' => $paymentMethod,
+            'search' => $search,
+        ];
     }
 
     private function queries(array $filters): array
