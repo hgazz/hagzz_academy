@@ -19,6 +19,7 @@ use App\Http\Controllers\InvoicePrintController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerExpenseController;
 use App\Http\Controllers\PartnerCampController;
+use App\Http\Controllers\PartnerShiftClosingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
