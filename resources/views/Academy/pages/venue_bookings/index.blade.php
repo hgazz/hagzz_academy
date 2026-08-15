@@ -153,6 +153,7 @@
                                 @if($remaining > 0 && $booking->status !== 'cancelled')
                                     <button type="button" 
                                             class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 fw-bold"
+                                            onclick="openCollectModal(this)"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#collectPaymentModal"
                                             data-action="{{ route('academy.venue-bookings.collect-payment', $booking) }}"
@@ -167,8 +168,9 @@
                                     </button>
 
                                     <button type="button" 
-                                            class="btn btn-sm btn-purple d-inline-flex align-items-center gap-1 fw-bold"
+                                            class="btn btn-sm d-inline-flex align-items-center gap-1 fw-bold"
                                             style="background:#7e22ce; color:#fff; border-color:#7e22ce;"
+                                            onclick="openDiscountModal(this)"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#discountModal"
                                             data-action="{{ route('academy.venue-bookings.apply-discount', $booking) }}"
@@ -243,7 +245,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" id="collectPaymentForm" action="">
+            <form method="POST" id="collectPaymentForm" action="#">
                 @csrf
                 <div class="modal-body p-4">
                     <div class="bg-light p-3 rounded mb-3">
@@ -317,7 +319,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" id="discountForm" action="">
+            <form method="POST" id="discountForm" action="#">
                 @csrf
                 <div class="modal-body p-4">
                     <div class="bg-light p-3 rounded mb-3">
@@ -338,7 +340,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'قيمة الخصم المعتمد:' : 'Discount Amount:' }} <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <input type="number" step="0.01" min="0.01" class="form-control form-control-lg fw-bold text-purple" style="color:#7e22ce;" name="discount_amount" id="discModalAmountInput" required>
+                            <input type="number" step="0.01" min="0.01" class="form-control form-control-lg fw-bold" style="color:#7e22ce;" name="discount_amount" id="discModalAmountInput" required>
                             <span class="input-group-text fw-bold">EGP</span>
                         </div>
                         <small class="text-muted">{{ app()->getLocale() === 'ar' ? 'يمكنك خصم كامل المتبقي أو جزء منه.' : 'You can discount full or partial remaining.' }}</small>
@@ -372,53 +374,57 @@
     </div>
 </div>
 
-@push('scripts')
+@push('js')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const collectModal = document.getElementById('collectPaymentModal');
-        if (collectModal) {
-            collectModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const action = button.getAttribute('data-action');
-                const ref = button.getAttribute('data-ref');
-                const customer = button.getAttribute('data-customer');
-                const total = button.getAttribute('data-total');
-                const paid = button.getAttribute('data-paid');
-                const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+    function openCollectModal(button) {
+        const action = button.getAttribute('data-action');
+        const ref = button.getAttribute('data-ref');
+        const customer = button.getAttribute('data-customer');
+        const total = button.getAttribute('data-total');
+        const paid = button.getAttribute('data-paid');
+        const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-                document.getElementById('collectPaymentForm').action = action;
-                document.getElementById('modalRef').textContent = ref;
-                document.getElementById('modalCustomer').textContent = customer || '-';
-                document.getElementById('modalTotal').textContent = total;
-                document.getElementById('modalPaid').textContent = paid;
-                document.getElementById('modalRemaining').textContent = remaining.toFixed(2);
+        const form = document.getElementById('collectPaymentForm');
+        if (form) form.action = action;
+        const modalRef = document.getElementById('modalRef');
+        if (modalRef) modalRef.textContent = ref;
+        const modalCust = document.getElementById('modalCustomer');
+        if (modalCust) modalCust.textContent = customer || '-';
+        const modalTot = document.getElementById('modalTotal');
+        if (modalTot) modalTot.textContent = total;
+        const modalP = document.getElementById('modalPaid');
+        if (modalP) modalP.textContent = paid;
+        const modalRem = document.getElementById('modalRemaining');
+        if (modalRem) modalRem.textContent = remaining.toFixed(2);
 
-                const input = document.getElementById('modalAmountInput');
-                input.value = remaining.toFixed(2);
-                input.max = remaining;
-            });
+        const input = document.getElementById('modalAmountInput');
+        if (input) {
+            input.value = remaining.toFixed(2);
+            input.max = remaining;
         }
+    }
 
-        const discModal = document.getElementById('discountModal');
-        if (discModal) {
-            discModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const action = button.getAttribute('data-action');
-                const ref = button.getAttribute('data-ref');
-                const customer = button.getAttribute('data-customer');
-                const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+    function openDiscountModal(button) {
+        const action = button.getAttribute('data-action');
+        const ref = button.getAttribute('data-ref');
+        const customer = button.getAttribute('data-customer');
+        const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-                document.getElementById('discountForm').action = action;
-                document.getElementById('discModalRef').textContent = ref;
-                document.getElementById('discModalCustomer').textContent = customer || '-';
-                document.getElementById('discModalRemaining').textContent = remaining.toFixed(2);
+        const form = document.getElementById('discountForm');
+        if (form) form.action = action;
+        const discRef = document.getElementById('discModalRef');
+        if (discRef) discRef.textContent = ref;
+        const discCust = document.getElementById('discModalCustomer');
+        if (discCust) discCust.textContent = customer || '-';
+        const discRem = document.getElementById('discModalRemaining');
+        if (discRem) discRem.textContent = remaining.toFixed(2);
 
-                const input = document.getElementById('discModalAmountInput');
-                input.value = remaining.toFixed(2);
-                input.max = remaining;
-            });
+        const input = document.getElementById('discModalAmountInput');
+        if (input) {
+            input.value = remaining.toFixed(2);
+            input.max = remaining;
         }
-    });
+    }
 </script>
 @endpush
 @endsection

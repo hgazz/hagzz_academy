@@ -135,6 +135,7 @@
                                                 @if($remaining > 0 && $subscription->status !== 'cancelled')
                                                     <button type="button" 
                                                             class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 fw-bold"
+                                                            onclick="openSubCollectModal(this)"
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#collectSubPaymentModal"
                                                             data-action="{{ route('academy.subscriptions.payments.store', $subscription) }}"
@@ -152,6 +153,7 @@
                                                     <button type="button" 
                                                             class="btn btn-sm d-inline-flex align-items-center gap-1 fw-bold"
                                                             style="background:#7e22ce; color:#fff; border-color:#7e22ce;"
+                                                            onclick="openSubDiscountModal(this)"
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#subDiscountModal"
                                                             data-action="{{ route('academy.subscriptions.apply-discount', $subscription) }}"
@@ -220,7 +222,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" id="collectSubPaymentForm" action="">
+                <form method="POST" id="collectSubPaymentForm" action="#">
                     @csrf
                     <div class="modal-body p-4">
                         <div class="bg-light p-3 rounded mb-3">
@@ -299,7 +301,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" id="subDiscountForm" action="">
+                <form method="POST" id="subDiscountForm" action="#">
                     @csrf
                     <div class="modal-body p-4">
                         <div class="bg-light p-3 rounded mb-3">
@@ -355,53 +357,57 @@
 
     @include('Academy.pages.students._profile_modal')
 
-    @push('scripts')
+    @push('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const collectModal = document.getElementById('collectSubPaymentModal');
-            if (collectModal) {
-                collectModal.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    const action = button.getAttribute('data-action');
-                    const student = button.getAttribute('data-student');
-                    const group = button.getAttribute('data-group');
-                    const total = button.getAttribute('data-total');
-                    const paid = button.getAttribute('data-paid');
-                    const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+        function openSubCollectModal(button) {
+            const action = button.getAttribute('data-action');
+            const student = button.getAttribute('data-student');
+            const group = button.getAttribute('data-group');
+            const total = button.getAttribute('data-total');
+            const paid = button.getAttribute('data-paid');
+            const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-                    document.getElementById('collectSubPaymentForm').action = action;
-                    document.getElementById('subModalStudent').textContent = student || '-';
-                    document.getElementById('subModalGroup').textContent = group || '-';
-                    document.getElementById('subModalTotal').textContent = total;
-                    document.getElementById('subModalPaid').textContent = paid;
-                    document.getElementById('subModalRemaining').textContent = remaining.toFixed(2);
+            const form = document.getElementById('collectSubPaymentForm');
+            if (form) form.action = action;
+            const subStud = document.getElementById('subModalStudent');
+            if (subStud) subStud.textContent = student || '-';
+            const subGrp = document.getElementById('subModalGroup');
+            if (subGrp) subGrp.textContent = group || '-';
+            const subTot = document.getElementById('subModalTotal');
+            if (subTot) subTot.textContent = total;
+            const subP = document.getElementById('subModalPaid');
+            if (subP) subP.textContent = paid;
+            const subRem = document.getElementById('subModalRemaining');
+            if (subRem) subRem.textContent = remaining.toFixed(2);
 
-                    const input = document.getElementById('subModalAmountInput');
-                    input.value = remaining.toFixed(2);
-                    input.max = remaining;
-                });
+            const input = document.getElementById('subModalAmountInput');
+            if (input) {
+                input.value = remaining.toFixed(2);
+                input.max = remaining;
             }
+        }
 
-            const discModal = document.getElementById('subDiscountModal');
-            if (discModal) {
-                discModal.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    const action = button.getAttribute('data-action');
-                    const student = button.getAttribute('data-student');
-                    const group = button.getAttribute('data-group');
-                    const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+        function openSubDiscountModal(button) {
+            const action = button.getAttribute('data-action');
+            const student = button.getAttribute('data-student');
+            const group = button.getAttribute('data-group');
+            const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-                    document.getElementById('subDiscountForm').action = action;
-                    document.getElementById('discSubModalStudent').textContent = student || '-';
-                    document.getElementById('discSubModalGroup').textContent = group || '-';
-                    document.getElementById('discSubModalRemaining').textContent = remaining.toFixed(2);
+            const form = document.getElementById('subDiscountForm');
+            if (form) form.action = action;
+            const discStud = document.getElementById('discSubModalStudent');
+            if (discStud) discStud.textContent = student || '-';
+            const discGrp = document.getElementById('discSubModalGroup');
+            if (discGrp) discGrp.textContent = group || '-';
+            const discRem = document.getElementById('discSubModalRemaining');
+            if (discRem) discRem.textContent = remaining.toFixed(2);
 
-                    const input = document.getElementById('discSubModalAmountInput');
-                    input.value = remaining.toFixed(2);
-                    input.max = remaining;
-                });
+            const input = document.getElementById('discSubModalAmountInput');
+            if (input) {
+                input.value = remaining.toFixed(2);
+                input.max = remaining;
             }
-        });
+        }
     </script>
     @endpush
 @endsection
