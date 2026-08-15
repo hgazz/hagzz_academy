@@ -39,12 +39,12 @@
                                     <th>{{ trans('admin.student_management.student') }}</th>
                                     <th>{{ trans('admin.student_management.group') }}</th>
                                     <th>{{ trans('admin.student_management.period') }}</th>
-                                    <th>{{ trans('admin.student_management.amount') }}</th>
-                                    <th>{{ trans('admin.student_management.paid') }}</th>
-                                    <th>{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
+                                    <th class="text-nowrap">{{ trans('admin.student_management.amount') }}</th>
+                                    <th class="text-nowrap">{{ trans('admin.student_management.paid') }}</th>
+                                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
                                     <th>{{ trans('admin.student_management.method') }}</th>
                                     <th>{{ trans('admin.student_management.status') }}</th>
-                                    <th class="text-center">{{ trans('admin.student_management.actions') }}</th>
+                                    <th class="text-center text-nowrap">{{ trans('admin.student_management.actions') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -54,18 +54,12 @@
                                         $total = (float) $subscription->amount;
                                         $remaining = max(0, $total - $paid);
                                         $pStatus = $subscription->payment_status;
-                                        $paymentBadge = match($pStatus) {
-                                            'paid' => 'badge bg-success',
-                                            'partial' => 'badge bg-warning text-dark',
-                                            'unpaid' => 'badge bg-danger',
-                                            default => 'badge bg-secondary',
-                                        };
                                     @endphp
                                     <tr>
                                         <td>{{ $subscription->id }}</td>
                                         <td>
                                             @if($subscription->student)
-                                                <button type="button" class="student-profile-trigger fw-bold btn btn-link text-decoration-none p-0 text-start" data-student-profile-url="{{ route('academy.students.profile', $subscription->student) }}">
+                                                <button type="button" class="student-profile-trigger fw-bold btn btn-link text-decoration-none p-0 text-start text-dark" data-student-profile-url="{{ route('academy.students.profile', $subscription->student) }}">
                                                     {{ $subscription->student->name }}
                                                 </button>
                                                 <small class="d-block text-muted">{{ $subscription->student->phone ?: '-' }}</small>
@@ -74,33 +68,53 @@
                                             @endif
                                         </td>
                                         <td>{{ $subscription->group?->name ?? '-' }}</td>
-                                        <td>
+                                        <td class="text-nowrap">
                                             <div>{{ $subscription->starts_on?->format('Y-m-d') }}</div>
                                             <small class="text-muted">{{ $subscription->ends_on?->format('Y-m-d') }}</small>
                                         </td>
-                                        <td class="fw-bold">{{ number_format($total, 2) }}</td>
-                                        <td class="text-success fw-bold">{{ number_format($paid, 2) }}</td>
-                                        <td>
+                                        <td class="fw-bold text-dark text-nowrap">{{ number_format($total, 2) }}</td>
+                                        <td class="text-nowrap">
+                                            <span style="color:#047857; font-weight:700; font-size:13px;">
+                                                {{ number_format($paid, 2) }}
+                                            </span>
+                                        </td>
+                                        <td class="text-nowrap">
                                             @if($remaining > 0)
-                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6 fw-bold">
+                                                <span style="display:inline-block; padding: 4px 10px; font-size: 13px; font-weight: 800; border-radius: 6px; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;">
                                                     {{ number_format($remaining, 2) }}
                                                 </span>
                                             @else
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fw-bold">
+                                                <span style="display:inline-block; padding: 4px 8px; font-size: 12px; font-weight: 700; color: #059669;">
                                                     0.00
                                                 </span>
                                             @endif
                                         </td>
-                                        <td>{{ $subscription->payments->sortByDesc('paid_at')->first()?->method_label ?? '-' }}</td>
-                                        <td>
-                                            <span class="badge bg-info text-white mb-1 d-block">{{ trans('admin.student_management.' . $subscription->status) }}</span>
-                                            <span class="{{ $paymentBadge }}">{{ trans('admin.student_management.' . $pStatus) }}</span>
+                                        <td class="text-nowrap">{{ $subscription->payments->sortByDesc('paid_at')->first()?->method_label ?? '-' }}</td>
+                                        <td class="text-nowrap">
+                                            <span style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px;">
+                                                {{ trans('admin.student_management.' . $subscription->status) }}
+                                            </span>
+                                            <div>
+                                                @if($pStatus === 'paid')
+                                                    <span style="display:inline-block; background-color: #d1fae5; color: #065f46; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border:1px solid #a7f3d0;">
+                                                        {{ app()->getLocale() === 'ar' ? 'مدفوع' : 'Paid' }}
+                                                    </span>
+                                                @elseif($pStatus === 'partial')
+                                                    <span style="display:inline-block; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border:1px solid #fde68a;">
+                                                        {{ app()->getLocale() === 'ar' ? 'مدفوع جزئياً' : 'Partial' }}
+                                                    </span>
+                                                @else
+                                                    <span style="display:inline-block; background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border:1px solid #fca5a5;">
+                                                        {{ app()->getLocale() === 'ar' ? 'غير مدفوع' : 'Unpaid' }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center text-nowrap">
                                             <div class="d-inline-flex gap-1 align-items-center">
                                                 @if($remaining > 0 && $subscription->status !== 'cancelled')
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+                                                            class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 fw-bold"
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#collectSubPaymentModal"
                                                             data-action="{{ route('academy.subscriptions.payments.store', $subscription) }}"

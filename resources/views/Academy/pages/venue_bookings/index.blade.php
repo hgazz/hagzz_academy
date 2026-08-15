@@ -46,15 +46,15 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>{{ trans('admin.venues.reference') }}</th>
-                    <th>{{ trans('admin.venues.customer') }}</th>
-                    <th>{{ trans('admin.venues.space') }}</th>
-                    <th>{{ trans('admin.venues.time') }} & {{ trans('admin.status') }}</th>
-                    <th>{{ trans('admin.venues.total') }}</th>
-                    <th>{{ trans('admin.venues.paid') ?? 'المدفوع' }}</th>
-                    <th>{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
-                    <th>{{ trans('admin.venues.payment') }}</th>
-                    <th class="text-center">{{ trans('admin.actions') }}</th>
+                    <th>{{ app()->getLocale() === 'ar' ? 'المرجع' : 'Reference' }}</th>
+                    <th>{{ app()->getLocale() === 'ar' ? 'العميل' : 'Customer' }}</th>
+                    <th>{{ app()->getLocale() === 'ar' ? 'الملعب أو المساحة' : 'Space' }}</th>
+                    <th>{{ app()->getLocale() === 'ar' ? 'التوقيت & الحالة' : 'Time & Status' }}</th>
+                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}</th>
+                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المدفوع' : 'Paid' }}</th>
+                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
+                    <th>{{ app()->getLocale() === 'ar' ? 'السداد' : 'Payment' }}</th>
+                    <th class="text-center">{{ app()->getLocale() === 'ar' ? 'الإجراءات' : 'Actions' }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,75 +65,80 @@
                         $bStatus = $booking->status;
 
                         $statusBadgeClass = match($bStatus) {
-                            'confirmed' => 'bg-primary text-white',
-                            'checked_in', 'completed' => 'bg-success text-white',
-                            'pending' => 'bg-warning text-dark',
-                            'cancelled' => 'bg-danger text-white',
-                            'no_show' => 'bg-secondary text-white',
-                            default => 'bg-light text-dark',
-                        };
-
-                        $paymentBadgeClass = match($pStatus) {
-                            'paid' => 'badge bg-success',
-                            'partial' => 'badge bg-warning text-dark',
-                            'unpaid' => 'badge bg-danger',
-                            default => 'badge bg-secondary',
+                            'confirmed' => 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;',
+                            'checked_in', 'completed' => 'background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;',
+                            'pending' => 'background:#fef3c7; color:#b45309; border:1px solid #fde68a;',
+                            'cancelled' => 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;',
+                            'no_show' => 'background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;',
+                            default => 'background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;',
                         };
                     @endphp
                     <tr>
-                        <td class="fw-bold text-dark">
+                        <td class="fw-bold text-dark text-nowrap">
                             {{ $booking->reference }}
                             @if($booking->title)
-                                <small class="d-block text-muted">{{ $booking->title }}</small>
+                                <small class="d-block text-muted fw-normal">{{ $booking->title }}</small>
                             @endif
                         </td>
                         <td>
-                            <strong class="d-block">{{ $booking->customer?->name ?: '-' }}</strong>
+                            <strong class="d-block text-dark">{{ $booking->customer?->name ?: '-' }}</strong>
                             <small class="text-muted"><i class="fa-solid fa-phone me-1" style="font-size:10px;"></i>{{ $booking->customer?->phone ?: '-' }}</small>
                         </td>
                         <td>
-                            <span class="fw-semibold">{{ $booking->space?->name ?: '-' }}</span>
+                            <span class="fw-semibold text-dark">{{ $booking->space?->name ?: '-' }}</span>
                             <small class="d-block text-muted">{{ $booking->space?->venue?->name ?: '-' }}</small>
                         </td>
-                        <td>
-                            <div>{{ $booking->starts_at?->format('Y-m-d') }}</div>
+                        <td class="text-nowrap">
+                            <div class="fw-semibold text-dark">{{ $booking->starts_at?->format('Y-m-d') }}</div>
                             <small class="text-muted">{{ $booking->starts_at?->format('H:i') }} - {{ $booking->ends_at?->format('H:i') }}</small>
                             <div class="mt-1">
-                                <span class="badge {{ $statusBadgeClass }}" style="font-size: 11px;">
+                                <span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; {{ $statusBadgeClass }}">
                                     {{ trans('admin.venues.statuses.'.$bStatus) ?: $bStatus }}
                                 </span>
                             </div>
                         </td>
-                        <td class="fw-bold">
+                        <td class="fw-bold text-dark text-nowrap">
                             {{ number_format($booking->total_amount, 2) }}
                         </td>
-                        <td class="text-success fw-bold">
-                            {{ number_format($booking->paid_amount, 2) }}
+                        <td class="text-nowrap">
+                            <span style="color:#047857; font-weight:700; font-size:13px;">
+                                {{ number_format($booking->paid_amount, 2) }}
+                            </span>
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             @if($remaining > 0)
-                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6 fw-bold">
+                                <span style="display:inline-block; padding: 4px 10px; font-size: 13px; font-weight: 800; border-radius: 6px; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;">
                                     {{ number_format($remaining, 2) }}
                                 </span>
                             @else
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fw-bold">
+                                <span style="display:inline-block; padding: 4px 8px; font-size: 12px; font-weight: 700; color: #059669;">
                                     0.00
                                 </span>
                             @endif
                         </td>
-                        <td>
-                            <span class="{{ $paymentBadgeClass }}">
-                                {{ trans('admin.venues.payment_states.'.$pStatus) ?: ($pStatus === 'paid' ? 'مدفوع' : ($pStatus === 'partial' ? 'مدفوع جزئياً' : 'غير مدفوع')) }}
-                            </span>
+                        <td class="text-nowrap">
+                            @if($pStatus === 'paid')
+                                <span style="display:inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; border:1px solid #a7f3d0;">
+                                    {{ app()->getLocale() === 'ar' ? 'مدفوع' : 'Paid' }}
+                                </span>
+                            @elseif($pStatus === 'partial')
+                                <span style="display:inline-block; background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; border:1px solid #fde68a;">
+                                    {{ app()->getLocale() === 'ar' ? 'مدفوع جزئياً' : 'Partial' }}
+                                </span>
+                            @else
+                                <span style="display:inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; border:1px solid #fca5a5;">
+                                    {{ app()->getLocale() === 'ar' ? 'غير مدفوع' : 'Unpaid' }}
+                                </span>
+                            @endif
                             @if($booking->payment_method)
                                 <small class="d-block text-muted mt-1">{{ $booking->payment_method }}</small>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td class="text-center text-nowrap">
                             <div class="d-inline-flex gap-1 align-items-center">
                                 @if($remaining > 0 && $booking->status !== 'cancelled')
                                     <button type="button" 
-                                            class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+                                            class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 fw-bold"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#collectPaymentModal"
                                             data-action="{{ route('academy.venue-bookings.collect-payment', $booking) }}"
