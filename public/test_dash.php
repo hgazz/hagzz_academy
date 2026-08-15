@@ -6,15 +6,28 @@ $kernel->bootstrap();
 
 header('Content-Type: text/plain; charset=utf-8');
 
-try {
-    $user = \App\Models\Academies::first() ?: \App\Models\PartnerUser::first();
-    if (!$user) {
-        die("NO_USER_FOUND");
+$controller = app(\App\Http\Controllers\DashboardController::class);
+
+echo "=== TESTING ALL ACADEMIES ===\n";
+$academies = \App\Models\Academies::all();
+foreach ($academies as $academy) {
+    try {
+        auth('academy')->login($academy);
+        $res = $controller->index();
+        echo "ACADEMY ID {$academy->id} ('{$academy->name}'): SUCCESS\n";
+    } catch (\Throwable $e) {
+        echo "ACADEMY ID {$academy->id} ('{$academy->name}'): ERROR -> " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n";
     }
-    auth('academy')->login($user);
-    $controller = app(\App\Http\Controllers\DashboardController::class);
-    $response = $controller->index();
-    echo "RENDER_SUCCESS: " . (is_object($response) ? get_class($response) : gettype($response));
-} catch (\Throwable $e) {
-    echo "DASHBOARD_ERROR: " . $e->getMessage() . "\nFILE: " . $e->getFile() . ":" . $e->getLine() . "\n\nTRACE:\n" . $e->getTraceAsString();
+}
+
+echo "\n=== TESTING ALL PARTNER USERS ===\n";
+$partnerUsers = \App\Models\PartnerUser::all();
+foreach ($partnerUsers as $user) {
+    try {
+        auth('academy')->login($user);
+        $res = $controller->index();
+        echo "PARTNER_USER ID {$user->id} ('{$user->name}', academy_id: {$user->academy_id}): SUCCESS\n";
+    } catch (\Throwable $e) {
+        echo "PARTNER_USER ID {$user->id} ('{$user->name}', academy_id: {$user->academy_id}): ERROR -> " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n";
+    }
 }
