@@ -413,90 +413,137 @@ class DashboardController extends Controller
         return Response::json(['maleUsersByYear' => $maleUsersByYear, 'femaleUsersByYear' => $femaleUsersByYear]);
     }
 
+    private function getAcademyId(): int
+    {
+        $user = auth('academy')->user();
+        if (!$user) {
+            return 0;
+        }
+        $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
+        return (int) ($user->academy_id ?? $academy->id ?? 0);
+    }
+
     public function getBeginnerSportsCount()
     {
-        $academyId = Auth::id(); // Assuming the authenticated user is an academy
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
-            ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
-            ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
-            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
-            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
-            ->where('user_sport.level', 'Beginner')
-            ->where('academy_sport.academy_id', $academyId)
-            ->where('trainings.academy_id', $academyId)
-            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
-            ->count();
+        try {
+            $academyId = $this->getAcademyId();
+            return Sport::select('sports.id')
+                ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
+                ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+                ->join('trainings', 'trainings.sport_id', '=', 'sports.id')
+                ->join('joins', 'joins.training_id', '=', 'trainings.id')
+                ->where('user_sport.level', 'Beginner')
+                ->where('academy_sport.academy_id', $academyId)
+                ->where('trainings.academy_id', $academyId)
+                ->whereColumn('joins.user_id', 'user_sport.user_id')
+                ->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     public function getIntermediateSportsCount()
     {
-        $academyId = Auth::id(); // Assuming the authenticated user is an academy
-
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
-            ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
-            ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
-            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
-            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
-            ->where('user_sport.level', 'Intermediate')
-            ->where('academy_sport.academy_id', $academyId)
-            ->where('trainings.academy_id', $academyId)
-            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
-            ->count();
+        try {
+            $academyId = $this->getAcademyId();
+            return Sport::select('sports.id')
+                ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
+                ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+                ->join('trainings', 'trainings.sport_id', '=', 'sports.id')
+                ->join('joins', 'joins.training_id', '=', 'trainings.id')
+                ->where('user_sport.level', 'Intermediate')
+                ->where('academy_sport.academy_id', $academyId)
+                ->where('trainings.academy_id', $academyId)
+                ->whereColumn('joins.user_id', 'user_sport.user_id')
+                ->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     public function getAdvancedSportsCount()
     {
-        $academyId = Auth::id(); // Assuming the authenticated user is an academy
-
-        return Sport::select('sports.id', 'sports.name', 'user_sport.level', 'user_sport.user_id')
-            ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
-            ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
-            ->join('trainings', 'trainings.sport_id', '=', 'sports.id')  // Assuming there is a sport_id in the training table
-            ->join('joins', 'joins.training_id', '=', 'trainings.id')  // Assuming there is a sport_id in the training table
-            ->where('user_sport.level', 'Advanced')
-            ->where('academy_sport.academy_id', $academyId)
-            ->where('trainings.academy_id', $academyId)
-            ->whereColumn('joins.user_id', 'user_sport.user_id')  // Ensures the user_id matches
-            ->count();
+        try {
+            $academyId = $this->getAcademyId();
+            return Sport::select('sports.id')
+                ->join('academy_sport', 'sports.id', '=', 'academy_sport.sport_id')
+                ->join('user_sport', 'sports.id', '=', 'user_sport.sport_id')
+                ->join('trainings', 'trainings.sport_id', '=', 'sports.id')
+                ->join('joins', 'joins.training_id', '=', 'trainings.id')
+                ->where('user_sport.level', 'Advanced')
+                ->where('academy_sport.academy_id', $academyId)
+                ->where('trainings.academy_id', $academyId)
+                ->whereColumn('joins.user_id', 'user_sport.user_id')
+                ->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
+
     private function getAllMaleUsersCount()
     {
-        return User::whereHas('joins.training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        })->select('id')->whereGender('male')->count();
+        try {
+            $academyId = $this->getAcademyId();
+            return User::whereHas('joins.training', function ($query) use ($academyId) {
+                $query->where('academy_id', $academyId);
+            })->select('id')->whereGender('male')->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     private function getAllFemaleUsersCount()
     {
-        return User::whereHas('joins.training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        })->select('id')->whereGender('female')->count();
+        try {
+            $academyId = $this->getAcademyId();
+            return User::whereHas('joins.training', function ($query) use ($academyId) {
+                $query->where('academy_id', $academyId);
+            })->select('id')->whereGender('female')->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
-    /**
-     * @return mixed
-     */
     public function getUsersBooking()
     {
-        return Join::whereHas('training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        })->get()->unique('user_id');
+        try {
+            $academyId = $this->getAcademyId();
+            return Join::whereHas('training', function ($query) use ($academyId) {
+                $query->where('academy_id', $academyId);
+            })->get()->unique('user_id');
+        } catch (\Throwable $e) {
+            return collect();
+        }
     }
 
     private function getUserBookingLast7Days()
     {
-        return Join::whereHas('training', function ($query) {
-            $query->where('academy_id', auth('academy')->id());
-        })
-            ->where('created_at', '>=', Carbon::now()->subDays(7))
-            ->get()
-            ->unique('user_id');
+        try {
+            $academyId = $this->getAcademyId();
+            return Join::whereHas('training', function ($query) use ($academyId) {
+                $query->where('academy_id', $academyId);
+            })
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->get()
+                ->unique('user_id');
+        } catch (\Throwable $e) {
+            return collect();
+        }
     }
 
     public function getUnreadNotificationCount()
     {
+        $user = auth('academy')->user();
+        $count = 0;
+        if ($user) {
+            try {
+                $count = $user->unreadNotifications()->count();
+            } catch (\Throwable $e) {
+                $count = 0;
+            }
+        }
         return response()->json([
-            'unread_count' => auth('academy')->user()->unreadNotifications->count()
+            'unread_count' => $count
         ]);
     }
 
