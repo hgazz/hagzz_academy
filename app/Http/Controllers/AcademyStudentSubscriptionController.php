@@ -5,15 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\AcademyGroup;
 use App\Models\AcademyStudent;
 use App\Models\AcademyStudentSubscription;
+use App\Models\PartnerUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AcademyStudentSubscriptionController extends Controller
 {
+    private function getAcademyId(): int
+    {
+        $user = auth('academy')->user();
+        if ($user instanceof PartnerUser) {
+            return (int) $user->academy_id;
+        }
+        return (int) ($user?->id ?? auth('academy')->id());
+    }
+
     public function index()
     {
+        $academyId = $this->getAcademyId();
         $subscriptions = AcademyStudentSubscription::with(['student', 'group', 'payments'])
-            ->whereHas('student', fn($query) => $query->where('academy_id', auth('academy')->id()))
+            ->whereHas('student', fn($query) => $query->where('academy_id', $academyId))
             ->latest()
             ->paginate(20);
 
@@ -72,7 +83,7 @@ class AcademyStudentSubscriptionController extends Controller
         $data = $request->validate([
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paid_at' => ['required', 'date'],
-            'method' => ['required', 'in:cash,instapay,fawry,app_online,other'],
+            'method' => ['required', 'in:cash,card,instapay,fawry,bank_transfer,sadad,stc_pay,app_online,other'],
             'method_other' => ['required_if:method,other', 'nullable', 'string', 'max:255'],
             'reference' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -85,19 +96,19 @@ class AcademyStudentSubscriptionController extends Controller
         DB::transaction(function () use ($subscription, $data) {
             $subscription->payments()->create($data);
 
-            $paid = $subscription->payments()->sum('amount');
+            $paid = (float) $subscription->payments()->sum('amount');
             $subscription->update([
-                'payment_status' => $paid >= $subscription->amount ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid'),
+                'payment_status' => $paid >= (float) $subscription->amount ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid'),
             ]);
         });
 
-        session()->flash('success', trans('admin.student_management.payment_recorded'));
+        session()->flash('success', trans('admin.student_management.payment_recorded') ?: 'تم تسجيل تحصيل الدفعة بنجاح وتحديث الاشتراك.');
         return back();
     }
 
     private function formData(): array
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
 
         return [
             'students' => AcademyStudent::where('academy_id', $academyId)->orderBy('name')->get(),
@@ -121,13 +132,13 @@ class AcademyStudentSubscriptionController extends Controller
 
     private function authorizeSubscription(AcademyStudentSubscription $subscription): void
     {
-        abort_unless($subscription->student?->academy_id === auth('academy')->id(), 404);
+        abort_unless($subscription->student?->academy_id === $this->getAcademyId(), 404);
     }
 
     private function authorizeStudent(int $studentId): void
     {
         abort_unless(
-            AcademyStudent::where('academy_id', auth('academy')->id())->whereKey($studentId)->exists(),
+            AcademyStudent::where('academy_id', $this->getAcademyId())->whereKey($studentId)->exists(),
             404
         );
     }
@@ -139,7 +150,7 @@ class AcademyStudentSubscriptionController extends Controller
         }
 
         abort_unless(
-            AcademyGroup::where('academy_id', auth('academy')->id())->whereKey($groupId)->exists(),
+            AcademyGroup::where('academy_id', $this->getAcademyId())->whereKey($groupId)->exists(),
             404
         );
     }

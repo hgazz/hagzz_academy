@@ -305,6 +305,7 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
             Route::resource('venues', VenueController::class)->except(['show']);
             Route::resource('venue-spaces', VenueSpaceController::class)->except(['show']);
             Route::get('venue-bookings-calendar', [VenueBookingController::class, 'calendar'])->name('venue-bookings.calendar');
+            Route::post('venue-bookings/{venueBooking}/collect-payment', [VenueBookingController::class, 'collectPayment'])->name('venue-bookings.collect-payment');
             Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
         });
 

@@ -104,6 +104,38 @@ class VenueBookingController extends Controller
         return to_route('academy.venue-bookings.index')->with('success', trans('admin.venues.booking_saved') ?: 'تم تحديث بيانات الحجز بنجاح.');
     }
 
+    public function collectPayment(Request $request, VenueBooking $venueBooking)
+    {
+        $this->authorizeTenant($venueBooking);
+
+        $remaining = $venueBooking->remaining_amount;
+        if ($remaining <= 0) {
+            return back()->with('info', trans('admin.venues.already_fully_paid') ?: 'هذا الحجز مسدد بالكامل بالفعل.');
+        }
+
+        $data = $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01', 'max:' . $remaining],
+            'payment_method' => ['required', 'in:cash,card,instapay,fawry,bank_transfer,sadad,stc_pay,apple_pay,other'],
+            'payment_method_other' => ['required_if:payment_method,other', 'nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $newPaid = (float) $venueBooking->paid_amount + (float) $data['amount'];
+        $notes = $venueBooking->notes;
+        if (!empty($data['notes'])) {
+            $notes = trim(($notes ? $notes . ' | ' : '') . 'دفعة محصلة: ' . number_format($data['amount'], 2) . ' عبر ' . $data['payment_method'] . ' (' . $data['notes'] . ')');
+        }
+
+        $venueBooking->update([
+            'paid_amount' => $newPaid,
+            'payment_method' => $data['payment_method'],
+            'payment_method_other' => $data['payment_method_other'] ?? null,
+            'notes' => $notes,
+        ]);
+
+        return back()->with('success', trans('admin.venues.payment_collected') ?: 'تم تسجيل تحصيل الدفعة بنجاح وتحديث الفاتورة.');
+    }
+
     public function destroy(VenueBooking $venueBooking)
     {
         $this->authorizeTenant($venueBooking);
