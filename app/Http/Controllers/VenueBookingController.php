@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PartnerUser;
 use App\Models\VenueBooking;
 use App\Models\VenueCustomer;
 use App\Models\VenueSpace;
@@ -12,16 +13,26 @@ use Illuminate\Validation\ValidationException;
 
 class VenueBookingController extends Controller
 {
+    private function getAcademyId(): int
+    {
+        $user = auth('academy')->user();
+        if ($user instanceof PartnerUser) {
+            return (int) $user->academy_id;
+        }
+        return (int) ($user?->id ?? auth('academy')->id());
+    }
+
     public function index()
     {
-        $bookings = VenueBooking::where('academy_id', auth('academy')->id())
+        $academyId = $this->getAcademyId();
+        $bookings = VenueBooking::where('academy_id', $academyId)
             ->with(['space.venue', 'customer'])->orderByDesc('starts_at')->paginate(20);
         return view('Academy.pages.venue_bookings.index', compact('bookings'));
     }
 
     public function calendar()
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $bookings = VenueBooking::where('academy_id', $academyId)
             ->with(['space.venue', 'customer'])
             ->where('starts_at', '>=', now()->subMonths(3)->startOfMonth())
@@ -69,12 +80,15 @@ class VenueBookingController extends Controller
         return view('Academy.pages.venue_bookings.calendar', compact('events', 'spaces', 'summary', 'todayBookings'));
     }
 
-    public function create() { return view('Academy.pages.venue_bookings.form', $this->formData(new VenueBooking())); }
+    public function create()
+    {
+        return view('Academy.pages.venue_bookings.form', $this->formData(new VenueBooking()));
+    }
 
     public function store(Request $request)
     {
         $this->persist($request);
-        return to_route('academy.venue-bookings.index')->with('success', trans('admin.venues.booking_saved'));
+        return to_route('academy.venue-bookings.index')->with('success', trans('admin.venues.booking_saved') ?: 'تم حفظ الحجز بنجاح.');
     }
 
     public function edit(VenueBooking $venueBooking)
@@ -87,69 +101,104 @@ class VenueBookingController extends Controller
     {
         $this->authorizeTenant($venueBooking);
         $this->persist($request, $venueBooking);
-        return to_route('academy.venue-bookings.index')->with('success', trans('admin.venues.booking_saved'));
+        return to_route('academy.venue-bookings.index')->with('success', trans('admin.venues.booking_saved') ?: 'تم تحديث بيانات الحجز بنجاح.');
     }
 
     public function destroy(VenueBooking $venueBooking)
     {
         $this->authorizeTenant($venueBooking);
         $venueBooking->update(['status' => 'cancelled']);
-        return back()->with('success', trans('admin.venues.booking_cancelled'));
+        return back()->with('success', trans('admin.venues.booking_cancelled') ?: 'تم إلغاء الحجز بنجاح.');
     }
 
     private function persist(Request $request, ?VenueBooking $booking = null): VenueBooking
     {
+        $academyId = $this->getAcademyId();
         $data = $request->validate([
-            'venue_space_id' => ['required', 'integer'], 'customer_name' => ['required', 'string', 'max:255'],
-            'customer_phone' => ['required', 'string', 'max:30'], 'customer_email' => ['nullable', 'email', 'max:255'],
-            'booking_type' => ['required', 'in:individual,tournament,event'], 'title' => ['nullable', 'string', 'max:255'],
-            'date' => ['required', 'date'], 'start_time' => ['required', 'date_format:H:i'], 'end_time' => ['required', 'date_format:H:i'],
+            'venue_space_id' => ['required', 'integer'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_phone' => ['required', 'string', 'max:30'],
+            'customer_email' => ['nullable', 'email', 'max:255'],
+            'booking_type' => ['required', 'in:individual,tournament,event'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'date' => ['required', 'date'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i'],
             'status' => ['required', 'in:pending,confirmed,checked_in,completed,cancelled,no_show'],
-            'paid_amount' => ['required', 'numeric', 'min:0'], 'payment_method' => ['required', 'in:cash,instapay,fawry,app_online,bank_transfer,card,other'],
-            'payment_method_other' => ['required_if:payment_method,other', 'nullable', 'string', 'max:255'], 'notes' => ['nullable', 'string'],
+            'paid_amount' => ['required', 'numeric', 'min:0'],
+            'payment_method' => ['required', 'in:cash,instapay,fawry,app_online,bank_transfer,card,other'],
+            'payment_method_other' => ['required_if:payment_method,other', 'nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string'],
         ]);
 
-        return DB::transaction(function () use ($data, $booking) {
-            $space = VenueSpace::whereHas('venue', fn ($q) => $q->where('academy_id', auth('academy')->id()))->lockForUpdate()->findOrFail($data['venue_space_id']);
+        return DB::transaction(function () use ($data, $booking, $academyId) {
+            $space = VenueSpace::whereHas('venue', fn ($q) => $q->where('academy_id', $academyId))->lockForUpdate()->findOrFail($data['venue_space_id']);
             $startsAt = Carbon::parse($data['date'].' '.$data['start_time']);
             $endsAt = Carbon::parse($data['date'].' '.$data['end_time']);
-            if ($endsAt->lessThanOrEqualTo($startsAt)) $endsAt->addDay();
+            if ($endsAt->lessThanOrEqualTo($startsAt)) {
+                $endsAt->addDay();
+            }
             $openMinutes = ((int) substr($space->opens_at, 0, 2) * 60) + (int) substr($space->opens_at, 3, 2);
             $closeMinutes = ((int) substr($space->closes_at, 0, 2) * 60) + (int) substr($space->closes_at, 3, 2);
-            if ($closeMinutes <= $openMinutes) $closeMinutes += 1440;
+            if ($closeMinutes <= $openMinutes) {
+                $closeMinutes += 1440;
+            }
             $bookingStartMinutes = ((int) $startsAt->format('H') * 60) + (int) $startsAt->format('i');
             $durationMinutes = (int) $startsAt->diffInMinutes($endsAt);
             if ($bookingStartMinutes < $openMinutes || ($bookingStartMinutes + $durationMinutes) > $closeMinutes) {
-                throw ValidationException::withMessages(['start_time' => trans('admin.venues.outside_hours')]);
+                throw ValidationException::withMessages(['start_time' => trans('admin.venues.outside_hours') ?: 'وقت الحجز يقع خارج أوقات العمل المحددة للملعب/المساحة.']);
             }
             if ($durationMinutes < $space->slot_minutes || $durationMinutes % $space->slot_minutes !== 0) {
-                throw ValidationException::withMessages(['end_time' => trans('admin.venues.invalid_slot', ['minutes' => $space->slot_minutes])]);
+                throw ValidationException::withMessages(['end_time' => trans('admin.venues.invalid_slot', ['minutes' => $space->slot_minutes]) ?: "مدة الحجز يجب أن تكون من مضاعفات {$space->slot_minutes} دقيقة."]);
             }
             $overlap = VenueBooking::where('venue_space_id', $space->id)->where('id', '!=', $booking?->id ?? 0)
                 ->whereNotIn('status', ['cancelled'])->where('starts_at', '<', $endsAt)->where('ends_at', '>', $startsAt)->exists();
-            if ($overlap) throw ValidationException::withMessages(['start_time' => trans('admin.venues.overlap')]);
+            if ($overlap) {
+                throw ValidationException::withMessages(['start_time' => trans('admin.venues.overlap') ?: 'يوجد حجز آخر متعارض في هذا الوقت.']);
+            }
 
             $total = round(($durationMinutes / 60) * (float) $space->hourly_price, 2);
-            if ((float) $data['paid_amount'] > $total) throw ValidationException::withMessages(['paid_amount' => trans('admin.bookings.paid_amount_exceeds_total')]);
+            if ((float) $data['paid_amount'] > $total) {
+                throw ValidationException::withMessages(['paid_amount' => trans('admin.bookings.paid_amount_exceeds_total') ?: 'المبلغ المدفوع لا يمكن أن يتجاوز إجمالي قيمة الحجز.']);
+            }
             $customer = VenueCustomer::updateOrCreate(
-                ['academy_id' => auth('academy')->id(), 'phone' => $data['customer_phone']],
+                ['academy_id' => $academyId, 'phone' => $data['customer_phone']],
                 ['name' => $data['customer_name'], 'email' => $data['customer_email'] ?? null]
             );
             $values = [
-                'academy_id' => auth('academy')->id(), 'venue_space_id' => $space->id, 'venue_customer_id' => $customer->id,
-                'booking_type' => $data['booking_type'], 'title' => $data['title'] ?? null, 'starts_at' => $startsAt, 'ends_at' => $endsAt,
-                'status' => $data['status'], 'total_amount' => $total, 'paid_amount' => $data['paid_amount'],
-                'payment_method' => $data['payment_method'], 'payment_method_other' => $data['payment_method_other'] ?? null,
+                'academy_id' => $academyId,
+                'venue_space_id' => $space->id,
+                'venue_customer_id' => $customer->id,
+                'booking_type' => $data['booking_type'],
+                'title' => $data['title'] ?? null,
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+                'status' => $data['status'],
+                'total_amount' => $total,
+                'paid_amount' => $data['paid_amount'],
+                'payment_method' => $data['payment_method'],
+                'payment_method_other' => $data['payment_method_other'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ];
-            if ($booking) { $booking->update($values); return $booking; }
+            if ($booking) {
+                $booking->update($values);
+                return $booking;
+            }
             return VenueBooking::create($values + ['reference' => 'V-'.now()->format('ymd').'-'.strtoupper(substr(uniqid(), -6))]);
         });
     }
 
     private function formData(VenueBooking $booking): array
     {
-        return ['venueBooking' => $booking, 'spaces' => VenueSpace::whereHas('venue', fn ($q) => $q->where('academy_id', auth('academy')->id()))->with('venue')->where('active', true)->get()];
+        $academyId = $this->getAcademyId();
+        return [
+            'venueBooking' => $booking,
+            'spaces' => VenueSpace::whereHas('venue', fn ($q) => $q->where('academy_id', $academyId))->with('venue')->where('active', true)->get(),
+        ];
     }
-    private function authorizeTenant(VenueBooking $booking): void { abort_unless($booking->academy_id === auth('academy')->id(), 404); }
+
+    private function authorizeTenant(VenueBooking $booking): void
+    {
+        abort_unless($booking->academy_id === $this->getAcademyId(), 404);
+    }
 }
