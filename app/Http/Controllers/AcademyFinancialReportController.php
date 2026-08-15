@@ -707,6 +707,8 @@ class AcademyFinancialReportController extends Controller
     }
 
     /**
+     * 5. Payment Methods Report Data
+     */
     private function getPaymentMethodReportData(int $academyId, array $filters): array
     {
         $isAr = app()->getLocale() === 'ar';
