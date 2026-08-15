@@ -199,7 +199,7 @@
             <div class="partial-payments-grid mt-3" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start;">
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;">
                     <h5 class="fw-bold text-dark mb-3" style="font-size: 14px;">{{ $isArabic ? 'حالة السداد والتحصيل' : 'Payment Collection Status' }}</h5>
-                    <div id="partialPaymentsChart" style="min-height: 240px;"></div>
+                    <div id="partialPaymentsChart" style="min-height: 310px;"></div>
                     
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top" style="border-color: #cbd5e1 !important;">
                         <div>
@@ -703,31 +703,36 @@
                     series: hasData ? series : [1],
                     labels: hasData ? labels : [@json($isArabic ? 'لا توجد بيانات' : 'No data')],
                     colors: hasData ? colors : ['#cbd5e1'],
-                    chart: { type: 'donut', height: 240, fontFamily: 'Cairo, sans-serif' },
+                    chart: { 
+                        type: 'donut', 
+                        height: 310, 
+                        fontFamily: 'Cairo, sans-serif',
+                        animations: { enabled: true, easing: 'easeinout', speed: 500 }
+                    },
                     plotOptions: {
                         pie: {
                             donut: {
-                                size: '65%',
+                                size: '72%',
                                 labels: {
-                                    show: true,
-                                    total: {
-                                        show: true,
-                                        label: @json($isArabic ? 'إجمالي المستحقات' : 'Total Billed'),
-                                        formatter: function () {
-                                            const total = (partialData.fullyPaidAmount || 0) + (partialData.partialCollected || 0) + (partialData.totalRemaining || 0);
-                                            return total.toLocaleString() + ' ' + (partialData.currency || '');
-                                        }
-                                    }
+                                    show: false
                                 }
                             }
                         }
                     },
-                    legend: { position: 'bottom' },
-                    dataLabels: { enabled: hasData },
+                    stroke: { width: 3, colors: ['#ffffff'] },
+                    dataLabels: { enabled: false },
+                    legend: { 
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        itemMargin: { horizontal: 10, vertical: 6 }
+                    },
                     tooltip: {
+                        theme: 'dark',
                         y: {
                             formatter: function (val) {
-                                return val.toLocaleString() + ' ' + (partialData.currency || '');
+                                return Number(val).toLocaleString() + ' ' + (partialData.currency || '');
                             }
                         }
                     }
