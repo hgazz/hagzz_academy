@@ -105,7 +105,7 @@ class AcademyFinancialReportController extends Controller
     {
         abort_unless(in_array($type, ['subscriptions', 'training', 'venues', 'camps', 'student_dues', 'coaches', 'groups', 'camps_report', 'competitions'], true), 404);
         $filters = $this->filters($request);
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
 
         if ($type === 'camps_report') {
             $campsData = $this->getCampsReportData($academyId, $filters);
@@ -159,7 +159,7 @@ class AcademyFinancialReportController extends Controller
             }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
         }
         $filters = $this->filters($request);
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
 
         if ($type === 'groups') {
             $groupsData = $this->getGroupsReportData($academyId, $filters);
@@ -187,7 +187,7 @@ class AcademyFinancialReportController extends Controller
             }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
         }
         $filters = $this->filters($request);
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
 
         if ($type === 'student_dues') {
             $duesData = $this->getStudentDuesReportData($academyId, $filters);

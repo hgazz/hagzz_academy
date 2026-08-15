@@ -6,6 +6,7 @@ use App\Support\StorageUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class Sport extends Model
@@ -33,5 +34,10 @@ class Sport extends Model
     public function coaches(): BelongsToMany
     {
         return $this->belongsToMany(Coach::class, 'coach_sports');
+    }
+
+    public function trainings(): HasMany
+    {
+        return $this->hasMany(Training::class, 'sport_id');
     }
 }
