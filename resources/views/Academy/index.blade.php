@@ -188,7 +188,7 @@
                     <h3 class="m-0"><i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i>{{ $isArabic ? 'المدفوعات الجزئية والمبالغ المتبقية على الطلاب' : 'Partial Payments & Student Outstanding Dues' }}</h3>
                     <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? 'تتبع الطلاب الذين قاموا بالسداد الجزئي، والماليات المتبقية والمستحقة على الطلاب' : 'Track students with partial payments and remaining balances' }}</p>
                 </div>
-                <a href="{{ route('academy.financial-reports.index') }}" class="panel-link">
+                <a href="{{ route('academy.report.overview') }}" class="panel-link">
                     <i class="fa-solid fa-chart-line me-1"></i> {{ $isArabic ? 'تقرير المستحقات التفصيلي' : 'Detailed Dues Report' }}
                 </a>
             </header>
