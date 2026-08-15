@@ -20,6 +20,12 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         @endif
+                        @if(session('info'))
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fa-solid fa-circle-info me-2"></i> {{ session('info') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
                         @if($errors->any())
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <ul class="mb-0">
@@ -41,6 +47,7 @@
                                     <th>{{ trans('admin.student_management.period') }}</th>
                                     <th class="text-nowrap">{{ trans('admin.student_management.amount') }}</th>
                                     <th class="text-nowrap">{{ trans('admin.student_management.paid') }}</th>
+                                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'الخصم' : 'Discount' }}</th>
                                     <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
                                     <th>{{ trans('admin.student_management.method') }}</th>
                                     <th>{{ trans('admin.student_management.status') }}</th>
@@ -52,7 +59,8 @@
                                     @php
                                         $paid = (float) $subscription->payments->sum('amount');
                                         $total = (float) $subscription->amount;
-                                        $remaining = max(0, $total - $paid);
+                                        $discount = (float) ($subscription->discount_amount ?? 0);
+                                        $remaining = $subscription->remaining_amount;
                                         $pStatus = $subscription->payment_status;
                                     @endphp
                                     <tr>
@@ -77,6 +85,18 @@
                                             <span style="color:#047857; font-weight:700; font-size:13px;">
                                                 {{ number_format($paid, 2) }}
                                             </span>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            @if($discount > 0)
+                                                <span style="display:inline-block; padding: 3px 8px; font-size: 12px; font-weight: 700; border-radius: 6px; background-color: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe;" title="{{ $subscription->discount_reason }} (اعتماد: {{ $subscription->discount_approved_by }})">
+                                                    <i class="fa-solid fa-tag me-1" style="font-size: 10px;"></i>{{ number_format($discount, 2) }}
+                                                </span>
+                                                @if($subscription->discount_reason)
+                                                    <small class="d-block text-muted" style="font-size:10px;">{{ Str::limit($subscription->discount_reason, 15) }}</small>
+                                                @endif
+                                            @else
+                                                <span class="text-muted" style="font-size: 12px;">-</span>
+                                            @endif
                                         </td>
                                         <td class="text-nowrap">
                                             @if($remaining > 0)
@@ -128,6 +148,29 @@
                                                         <i class="fa-solid fa-hand-holding-dollar"></i>
                                                         <span>{{ app()->getLocale() === 'ar' ? 'تحصيل' : 'Collect' }}</span>
                                                     </button>
+
+                                                    <button type="button" 
+                                                            class="btn btn-sm d-inline-flex align-items-center gap-1 fw-bold"
+                                                            style="background:#7e22ce; color:#fff; border-color:#7e22ce;"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#subDiscountModal"
+                                                            data-action="{{ route('academy.subscriptions.apply-discount', $subscription) }}"
+                                                            data-student="{{ $subscription->student?->name }}"
+                                                            data-group="{{ $subscription->group?->name }}"
+                                                            data-remaining="{{ $remaining }}"
+                                                            title="{{ app()->getLocale() === 'ar' ? 'اعتماد خصم للاشتراك' : 'Apply Discount' }}">
+                                                        <i class="fa-solid fa-percent"></i>
+                                                        <span>{{ app()->getLocale() === 'ar' ? 'خصم' : 'Discount' }}</span>
+                                                    </button>
+                                                @endif
+
+                                                @if($discount > 0 && $subscription->status !== 'cancelled')
+                                                    <form method="POST" action="{{ route('academy.subscriptions.remove-discount', $subscription) }}" class="d-inline" onsubmit="return confirm('{{ app()->getLocale() === 'ar' ? 'هل أنت متأكد من إلغاء واسترداد الخصم وإعادة المبلغ إلى المتبقي على الطالب؟' : 'Are you sure you want to reverse/refund this discount?' }}')">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ app()->getLocale() === 'ar' ? 'استرداد / إلغاء الخصم' : 'Reverse Discount' }}">
+                                                            <i class="fa-solid fa-rotate-left"></i>
+                                                        </button>
+                                                    </form>
                                                 @endif
 
                                                 <a href="{{ route('academy.invoices.students.print', ['subscription' => $subscription, 'paper' => 'a4']) }}" 
@@ -153,7 +196,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="10" class="text-center py-5 text-muted">{{ trans('admin.student_management.no_subscriptions_yet') }}</td></tr>
+                                    <tr><td colspan="11" class="text-center py-5 text-muted">{{ trans('admin.student_management.no_subscriptions_yet') }}</td></tr>
                                 @endforelse
                                 </tbody>
                             </table>
@@ -246,34 +289,118 @@
         </div>
     </div>
 
+    <!-- Modal: Apply Student Subscription Discount -->
+    <div class="modal fade" id="subDiscountModal" tabindex="-1" aria-labelledby="subDiscountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background:#7e22ce; color:#fff;">
+                    <h5 class="modal-title fw-bold" id="subDiscountModalLabel">
+                        <i class="fa-solid fa-percent me-2"></i> {{ app()->getLocale() === 'ar' ? 'اعتماد خصم لاشتراك الطالب' : 'Apply Student Subscription Discount' }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" id="subDiscountForm" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="bg-light p-3 rounded mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">{{ app()->getLocale() === 'ar' ? 'الطالب:' : 'Student:' }}</span>
+                                <strong id="discSubModalStudent">-</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">{{ app()->getLocale() === 'ar' ? 'المجموعة:' : 'Group:' }}</span>
+                                <strong id="discSubModalGroup">-</strong>
+                            </div>
+                            <div class="d-flex justify-content-between text-danger fw-bold">
+                                <span>{{ app()->getLocale() === 'ar' ? 'المبلغ المتبقي المطلوب:' : 'Current Remaining:' }}</span>
+                                <span id="discSubModalRemaining">0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'قيمة الخصم المعتمد:' : 'Discount Amount:' }} <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" min="0.01" class="form-control form-control-lg fw-bold" style="color:#7e22ce;" name="discount_amount" id="discSubModalAmountInput" required>
+                                <span class="input-group-text fw-bold">EGP</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'سبب الخصم:' : 'Discount Reason:' }} <span class="text-danger">*</span></label>
+                            <select class="form-select mb-2" onchange="if(this.value){ document.getElementById('discSubReasonInput').value = this.value; }">
+                                <option value="">{{ app()->getLocale() === 'ar' ? '-- اختر سبباً سريعاً أو اكتب بالأسفل --' : '-- Quick reason --' }}</option>
+                                <option value="خصم إخوة / أقارب">{{ app()->getLocale() === 'ar' ? 'خصم إخوة / أقارب' : 'Siblings discount' }}</option>
+                                <option value="خصم تفوق رياضي">{{ app()->getLocale() === 'ar' ? 'خصم تفوق رياضي' : 'Athletic excellence' }}</option>
+                                <option value="منحة / تخفيض إداري">{{ app()->getLocale() === 'ar' ? 'منحة / تخفيض إداري' : 'Scholarship / Management waiver' }}</option>
+                                <option value="عرض تجديد سنوي">{{ app()->getLocale() === 'ar' ? 'عرض تجديد سنوي' : 'Annual renewal offer' }}</option>
+                            </select>
+                            <input type="text" class="form-control" name="discount_reason" id="discSubReasonInput" placeholder="{{ app()->getLocale() === 'ar' ? 'اكتب سبب اعتماد الخصم بالتفصيل...' : 'Reason for discount...' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'اعتماد بواسطة (المسؤول):' : 'Approved By:' }}</label>
+                            <input type="text" class="form-control" name="discount_approved_by" value="{{ auth('academy')->user()?->name ?: 'الإدارة' }}" placeholder="{{ app()->getLocale() === 'ar' ? 'اسم المسؤول المعتمد للخصم' : 'Approver name' }}">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ trans('admin.cancel') }}</button>
+                        <button type="submit" class="btn fw-bold" style="background:#7e22ce; color:#fff;">
+                            <i class="fa-solid fa-check me-1"></i> {{ app()->getLocale() === 'ar' ? 'اعتماد الخصم وتحديث الاشتراك' : 'Approve Discount' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @include('Academy.pages.students._profile_modal')
 
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('collectSubPaymentModal');
-            if (!modal) return;
+            const collectModal = document.getElementById('collectSubPaymentModal');
+            if (collectModal) {
+                collectModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const action = button.getAttribute('data-action');
+                    const student = button.getAttribute('data-student');
+                    const group = button.getAttribute('data-group');
+                    const total = button.getAttribute('data-total');
+                    const paid = button.getAttribute('data-paid');
+                    const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-            modal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const action = button.getAttribute('data-action');
-                const student = button.getAttribute('data-student');
-                const group = button.getAttribute('data-group');
-                const total = button.getAttribute('data-total');
-                const paid = button.getAttribute('data-paid');
-                const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+                    document.getElementById('collectSubPaymentForm').action = action;
+                    document.getElementById('subModalStudent').textContent = student || '-';
+                    document.getElementById('subModalGroup').textContent = group || '-';
+                    document.getElementById('subModalTotal').textContent = total;
+                    document.getElementById('subModalPaid').textContent = paid;
+                    document.getElementById('subModalRemaining').textContent = remaining.toFixed(2);
 
-                document.getElementById('collectSubPaymentForm').action = action;
-                document.getElementById('subModalStudent').textContent = student || '-';
-                document.getElementById('subModalGroup').textContent = group || '-';
-                document.getElementById('subModalTotal').textContent = total;
-                document.getElementById('subModalPaid').textContent = paid;
-                document.getElementById('subModalRemaining').textContent = remaining.toFixed(2);
+                    const input = document.getElementById('subModalAmountInput');
+                    input.value = remaining.toFixed(2);
+                    input.max = remaining;
+                });
+            }
 
-                const input = document.getElementById('subModalAmountInput');
-                input.value = remaining.toFixed(2);
-                input.max = remaining;
-            });
+            const discModal = document.getElementById('subDiscountModal');
+            if (discModal) {
+                discModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const action = button.getAttribute('data-action');
+                    const student = button.getAttribute('data-student');
+                    const group = button.getAttribute('data-group');
+                    const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+
+                    document.getElementById('subDiscountForm').action = action;
+                    document.getElementById('discSubModalStudent').textContent = student || '-';
+                    document.getElementById('discSubModalGroup').textContent = group || '-';
+                    document.getElementById('discSubModalRemaining').textContent = remaining.toFixed(2);
+
+                    const input = document.getElementById('discSubModalAmountInput');
+                    input.value = remaining.toFixed(2);
+                    input.max = remaining;
+                });
+            }
         });
     </script>
     @endpush

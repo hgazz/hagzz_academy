@@ -96,7 +96,9 @@ class InvoicePrintController extends Controller
 
     private function buildStudentDocument(Request $request, AcademyStudentSubscription $subscription, bool $isPublic = false)
     {
-        $total = (float) $subscription->amount;
+        $subtotal = (float) $subscription->amount;
+        $discount = (float) ($subscription->discount_amount ?? 0);
+        $total = max(0, $subtotal - $discount);
 
         return $this->render($request, [
             'id' => $subscription->id,
@@ -106,9 +108,11 @@ class InvoicePrintController extends Controller
             'due_at' => $subscription->starts_on,
             'seller' => $this->academyParty($subscription->student?->academy),
             'buyer' => $this->party($subscription->student?->name, $subscription->student?->phone, $subscription->student?->email, null, $subscription->student?->guardian_name),
-            'lines' => [['description' => trim(($subscription->group?->name ?: 'Student subscription') . ' · ' . optional($subscription->starts_on)->format('Y-m-d') . ' — ' . optional($subscription->ends_on)->format('Y-m-d')), 'quantity' => 1, 'unit_price' => $total, 'total' => $total]],
-            'subtotal' => $total,
-            'discount' => 0,
+            'lines' => [['description' => trim(($subscription->group?->name ?: 'Student subscription') . ' · ' . optional($subscription->starts_on)->format('Y-m-d') . ' — ' . optional($subscription->ends_on)->format('Y-m-d')), 'quantity' => 1, 'unit_price' => $subtotal, 'total' => $subtotal]],
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'discount_reason' => $subscription->discount_reason,
+            'discount_approved_by' => $subscription->discount_approved_by,
             'tax' => 0,
             'total' => $total,
             'paid' => $subscription->paid_amount,
@@ -135,7 +139,9 @@ class InvoicePrintController extends Controller
 
     private function buildVenueDocument(Request $request, VenueBooking $booking, bool $isPublic = false)
     {
-        $total = (float) $booking->total_amount;
+        $subtotal = (float) $booking->total_amount;
+        $discount = (float) ($booking->discount_amount ?? 0);
+        $total = max(0, $subtotal - $discount);
         $description = trim(($booking->space?->venue?->name ?? '') . ' - ' . ($booking->space?->name ?? ''), ' -');
 
         return $this->render($request, [
@@ -145,9 +151,11 @@ class InvoicePrintController extends Controller
             'issued_at' => $booking->created_at,
             'seller' => $this->academyParty($booking->space?->venue?->academy),
             'buyer' => $this->party($booking->customer?->name, $booking->customer?->phone, $booking->customer?->email),
-            'lines' => [['description' => $description . ' · ' . optional($booking->starts_at)->format('Y-m-d H:i') . ' — ' . optional($booking->ends_at)->format('H:i'), 'quantity' => 1, 'unit_price' => $total, 'total' => $total]],
-            'subtotal' => $total,
-            'discount' => 0,
+            'lines' => [['description' => $description . ' · ' . optional($booking->starts_at)->format('Y-m-d H:i') . ' — ' . optional($booking->ends_at)->format('H:i'), 'quantity' => 1, 'unit_price' => $subtotal, 'total' => $subtotal]],
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'discount_reason' => $booking->discount_reason,
+            'discount_approved_by' => $booking->discount_approved_by,
             'tax' => 0,
             'total' => $total,
             'paid' => (float) $booking->paid_amount,

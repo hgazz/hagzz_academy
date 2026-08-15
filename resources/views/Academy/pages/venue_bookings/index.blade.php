@@ -52,6 +52,7 @@
                     <th>{{ app()->getLocale() === 'ar' ? 'التوقيت & الحالة' : 'Time & Status' }}</th>
                     <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}</th>
                     <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المدفوع' : 'Paid' }}</th>
+                    <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'الخصم' : 'Discount' }}</th>
                     <th class="text-nowrap">{{ app()->getLocale() === 'ar' ? 'المتبقي' : 'Remaining' }}</th>
                     <th>{{ app()->getLocale() === 'ar' ? 'السداد' : 'Payment' }}</th>
                     <th class="text-center">{{ app()->getLocale() === 'ar' ? 'الإجراءات' : 'Actions' }}</th>
@@ -61,6 +62,7 @@
                 @forelse($bookings as $booking)
                     @php
                         $remaining = $booking->remaining_amount;
+                        $discount = (float) ($booking->discount_amount ?? 0);
                         $pStatus = $booking->payment_status;
                         $bStatus = $booking->status;
 
@@ -104,6 +106,18 @@
                             <span style="color:#047857; font-weight:700; font-size:13px;">
                                 {{ number_format($booking->paid_amount, 2) }}
                             </span>
+                        </td>
+                        <td class="text-nowrap">
+                            @if($discount > 0)
+                                <span style="display:inline-block; padding: 3px 8px; font-size: 12px; font-weight: 700; border-radius: 6px; background-color: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe;" title="{{ $booking->discount_reason }} (اعتماد: {{ $booking->discount_approved_by }})">
+                                    <i class="fa-solid fa-tag me-1" style="font-size: 10px;"></i>{{ number_format($discount, 2) }}
+                                </span>
+                                @if($booking->discount_reason)
+                                    <small class="d-block text-muted" style="font-size:10px;">{{ Str::limit($booking->discount_reason, 15) }}</small>
+                                @endif
+                            @else
+                                <span class="text-muted" style="font-size: 12px;">-</span>
+                            @endif
                         </td>
                         <td class="text-nowrap">
                             @if($remaining > 0)
@@ -151,6 +165,29 @@
                                         <i class="fa-solid fa-hand-holding-dollar"></i>
                                         <span>{{ app()->getLocale() === 'ar' ? 'تحصيل' : 'Collect' }}</span>
                                     </button>
+
+                                    <button type="button" 
+                                            class="btn btn-sm btn-purple d-inline-flex align-items-center gap-1 fw-bold"
+                                            style="background:#7e22ce; color:#fff; border-color:#7e22ce;"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#discountModal"
+                                            data-action="{{ route('academy.venue-bookings.apply-discount', $booking) }}"
+                                            data-ref="{{ $booking->reference }}"
+                                            data-customer="{{ $booking->customer?->name }}"
+                                            data-remaining="{{ $remaining }}"
+                                            title="{{ app()->getLocale() === 'ar' ? 'اعتماد خصم / تسوية' : 'Apply Discount' }}">
+                                        <i class="fa-solid fa-percent"></i>
+                                        <span>{{ app()->getLocale() === 'ar' ? 'خصم' : 'Discount' }}</span>
+                                    </button>
+                                @endif
+
+                                @if($discount > 0 && $booking->status !== 'cancelled')
+                                    <form method="POST" action="{{ route('academy.venue-bookings.remove-discount', $booking) }}" class="d-inline" onsubmit="return confirm('{{ app()->getLocale() === 'ar' ? 'هل أنت متأكد من إلغاء واسترداد الخصم وإعادة المبلغ إلى المتبقي على العميل؟' : 'Are you sure you want to reverse/refund this discount?' }}')">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ app()->getLocale() === 'ar' ? 'استرداد / إلغاء الخصم' : 'Reverse Discount' }}">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                    </form>
                                 @endif
 
                                 <a class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1" 
@@ -181,7 +218,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center py-5 text-muted">
+                        <td colspan="10" class="text-center py-5 text-muted">
                             <i class="fa-solid fa-calendar-xmark fa-2x mb-2 d-block text-secondary"></i>
                             {{ trans('admin.venues.empty_bookings') }}
                         </td>
@@ -270,32 +307,117 @@
     </div>
 </div>
 
+<!-- Modal: Apply Discount -->
+<div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header" style="background:#7e22ce; color:#fff;">
+                <h5 class="modal-title fw-bold" id="discountModalLabel">
+                    <i class="fa-solid fa-percent me-2"></i> {{ app()->getLocale() === 'ar' ? 'اعتماد خصم / تسوية للحجز' : 'Apply Approved Discount' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="discountForm" action="">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="bg-light p-3 rounded mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">{{ app()->getLocale() === 'ar' ? 'رقم الحجز:' : 'Reference:' }}</span>
+                            <strong id="discModalRef">-</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">{{ app()->getLocale() === 'ar' ? 'العميل:' : 'Customer:' }}</span>
+                            <strong id="discModalCustomer">-</strong>
+                        </div>
+                        <div class="d-flex justify-content-between text-danger fw-bold">
+                            <span>{{ app()->getLocale() === 'ar' ? 'المبلغ المتبقي الحالي:' : 'Current Remaining:' }}</span>
+                            <span id="discModalRemaining">0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'قيمة الخصم المعتمد:' : 'Discount Amount:' }} <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" class="form-control form-control-lg fw-bold text-purple" style="color:#7e22ce;" name="discount_amount" id="discModalAmountInput" required>
+                            <span class="input-group-text fw-bold">EGP</span>
+                        </div>
+                        <small class="text-muted">{{ app()->getLocale() === 'ar' ? 'يمكنك خصم كامل المتبقي أو جزء منه.' : 'You can discount full or partial remaining.' }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'سبب الخصم:' : 'Discount Reason:' }} <span class="text-danger">*</span></label>
+                        <select class="form-select mb-2" onchange="if(this.value){ document.getElementById('discReasonInput').value = this.value; }">
+                            <option value="">{{ app()->getLocale() === 'ar' ? '-- اختر سبباً سريعاً أو اكتب بالأسفل --' : '-- Quick reason --' }}</option>
+                            <option value="خصم ولاء عميل دائم">{{ app()->getLocale() === 'ar' ? 'خصم ولاء عميل دائم' : 'Loyalty discount' }}</option>
+                            <option value="تخفيض إداري معتمد">{{ app()->getLocale() === 'ar' ? 'تخفيض إداري معتمد' : 'Management waiver' }}</option>
+                            <option value="تعويض عن تأخير أو عطل">{{ app()->getLocale() === 'ar' ? 'تعويض عن تأخير أو عطل' : 'Compensation' }}</option>
+                            <option value="عرض ترويجي / اتفاق خاص">{{ app()->getLocale() === 'ar' ? 'عرض ترويجي / اتفاق خاص' : 'Promotional agreement' }}</option>
+                        </select>
+                        <input type="text" class="form-control" name="discount_reason" id="discReasonInput" placeholder="{{ app()->getLocale() === 'ar' ? 'اكتب سبب اعتماد الخصم بالتفصيل...' : 'Reason for discount...' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ app()->getLocale() === 'ar' ? 'اعتماد بواسطة (المسؤول):' : 'Approved By:' }}</label>
+                        <input type="text" class="form-control" name="discount_approved_by" value="{{ auth('academy')->user()?->name ?: 'الإدارة' }}" placeholder="{{ app()->getLocale() === 'ar' ? 'اسم المسؤول المعتمد للخصم' : 'Approver name' }}">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ trans('admin.cancel') }}</button>
+                    <button type="submit" class="btn fw-bold" style="background:#7e22ce; color:#fff;">
+                        <i class="fa-solid fa-check me-1"></i> {{ app()->getLocale() === 'ar' ? 'اعتماد الخصم وتحديث الفاتورة' : 'Approve Discount' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const modal = document.getElementById('collectPaymentModal');
-        if (!modal) return;
+        const collectModal = document.getElementById('collectPaymentModal');
+        if (collectModal) {
+            collectModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const action = button.getAttribute('data-action');
+                const ref = button.getAttribute('data-ref');
+                const customer = button.getAttribute('data-customer');
+                const total = button.getAttribute('data-total');
+                const paid = button.getAttribute('data-paid');
+                const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
 
-        modal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const action = button.getAttribute('data-action');
-            const ref = button.getAttribute('data-ref');
-            const customer = button.getAttribute('data-customer');
-            const total = button.getAttribute('data-total');
-            const paid = button.getAttribute('data-paid');
-            const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+                document.getElementById('collectPaymentForm').action = action;
+                document.getElementById('modalRef').textContent = ref;
+                document.getElementById('modalCustomer').textContent = customer || '-';
+                document.getElementById('modalTotal').textContent = total;
+                document.getElementById('modalPaid').textContent = paid;
+                document.getElementById('modalRemaining').textContent = remaining.toFixed(2);
 
-            document.getElementById('collectPaymentForm').action = action;
-            document.getElementById('modalRef').textContent = ref;
-            document.getElementById('modalCustomer').textContent = customer || '-';
-            document.getElementById('modalTotal').textContent = total;
-            document.getElementById('modalPaid').textContent = paid;
-            document.getElementById('modalRemaining').textContent = remaining.toFixed(2);
+                const input = document.getElementById('modalAmountInput');
+                input.value = remaining.toFixed(2);
+                input.max = remaining;
+            });
+        }
 
-            const input = document.getElementById('modalAmountInput');
-            input.value = remaining.toFixed(2);
-            input.max = remaining;
-        });
+        const discModal = document.getElementById('discountModal');
+        if (discModal) {
+            discModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const action = button.getAttribute('data-action');
+                const ref = button.getAttribute('data-ref');
+                const customer = button.getAttribute('data-customer');
+                const remaining = parseFloat(button.getAttribute('data-remaining') || '0');
+
+                document.getElementById('discountForm').action = action;
+                document.getElementById('discModalRef').textContent = ref;
+                document.getElementById('discModalCustomer').textContent = customer || '-';
+                document.getElementById('discModalRemaining').textContent = remaining.toFixed(2);
+
+                const input = document.getElementById('discModalAmountInput');
+                input.value = remaining.toFixed(2);
+                input.max = remaining;
+            });
+        }
     });
 </script>
 @endpush

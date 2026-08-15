@@ -17,6 +17,10 @@ class AcademyStudentSubscription extends Model
         'starts_on',
         'ends_on',
         'amount',
+        'discount_amount',
+        'discount_reason',
+        'discount_approved_by',
+        'discount_approved_at',
         'status',
         'payment_status',
         'notes',
@@ -26,6 +30,8 @@ class AcademyStudentSubscription extends Model
         'starts_on' => 'date',
         'ends_on' => 'date',
         'amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'discount_approved_at' => 'datetime',
     ];
 
     public function student(): BelongsTo
@@ -54,6 +60,9 @@ class AcademyStudentSubscription extends Model
 
     public function getRemainingAmountAttribute(): float
     {
-        return max(0, (float) $this->amount - $this->paid_amount);
+        $total = (float) $this->amount;
+        $paid = $this->paid_amount;
+        $discount = (float) ($this->discount_amount ?? 0);
+        return max(0, round($total - $paid - $discount, 2));
     }
 }

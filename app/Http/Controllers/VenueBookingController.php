@@ -136,6 +136,58 @@ class VenueBookingController extends Controller
         return back()->with('success', trans('admin.venues.payment_collected') ?: 'تم تسجيل تحصيل الدفعة بنجاح وتحديث الفاتورة.');
     }
 
+    public function applyDiscount(Request $request, VenueBooking $venueBooking)
+    {
+        $this->authorizeTenant($venueBooking);
+
+        $maxDiscount = (float) $venueBooking->total_amount - (float) $venueBooking->paid_amount;
+        $data = $request->validate([
+            'discount_amount' => ['required', 'numeric', 'min:0.01', 'max:' . max(0.01, $maxDiscount)],
+            'discount_reason' => ['required', 'string', 'max:255'],
+            'discount_approved_by' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $approver = $data['discount_approved_by'] ?: (auth('academy')->user()?->name ?: 'الإدارة');
+
+        $notes = $venueBooking->notes;
+        $noteEntry = 'خصم معتمد بقيمة: ' . number_format($data['discount_amount'], 2) . ' ج.م (السبب: ' . $data['discount_reason'] . ' - اعتماد: ' . $approver . ')';
+        $notes = trim(($notes ? $notes . ' | ' : '') . $noteEntry);
+
+        $venueBooking->update([
+            'discount_amount' => $data['discount_amount'],
+            'discount_reason' => $data['discount_reason'],
+            'discount_approved_by' => $approver,
+            'discount_approved_at' => now(),
+            'notes' => $notes,
+        ]);
+
+        return back()->with('success', 'تم اعتماد وتطبيق الخصم بنجاح وتحديث الفاتورة والمتبقي.');
+    }
+
+    public function removeDiscount(Request $request, VenueBooking $venueBooking)
+    {
+        $this->authorizeTenant($venueBooking);
+
+        if ((float) $venueBooking->discount_amount <= 0) {
+            return back()->with('info', 'لا يوجد خصم مسجل على هذا الحجز.');
+        }
+
+        $prevDiscount = number_format((float) $venueBooking->discount_amount, 2);
+        $reverser = auth('academy')->user()?->name ?: 'الإدارة';
+        $notes = $venueBooking->notes;
+        $notes = trim(($notes ? $notes . ' | ' : '') . 'تم استرداد وإلغاء خصم سابق بقيمة: ' . $prevDiscount . ' ج.م بواسطة: ' . $reverser);
+
+        $venueBooking->update([
+            'discount_amount' => 0,
+            'discount_reason' => null,
+            'discount_approved_by' => null,
+            'discount_approved_at' => null,
+            'notes' => $notes,
+        ]);
+
+        return back()->with('success', 'تم إلغاء واسترداد الخصم وإعادة المبلغ لرصيد المتبقي.');
+    }
+
     public function destroy(VenueBooking $venueBooking)
     {
         $this->authorizeTenant($venueBooking);

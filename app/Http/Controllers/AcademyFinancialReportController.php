@@ -422,45 +422,48 @@ class AcademyFinancialReportController extends Controller
     {
         $filteredSubscriptions = (clone $query)->reorder()->toBase();
         $totals = DB::query()->fromSub($filteredSubscriptions, 'filtered_subscriptions')
-            ->selectRaw('COALESCE(SUM(amount), 0) AS billed, COALESCE(SUM(payments_sum_amount), 0) AS collected')
+            ->selectRaw('COALESCE(SUM(amount), 0) AS billed, COALESCE(SUM(payments_sum_amount), 0) AS collected, COALESCE(SUM(discount_amount), 0) AS discount')
             ->first();
         $billed = (float) ($totals->billed ?? 0);
         $collected = (float) ($totals->collected ?? 0);
+        $discount = (float) ($totals->discount ?? 0);
 
-        return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
+        return ['billed' => $billed, 'collected' => $collected, 'discount' => $discount, 'remaining' => max(0, $billed - $collected - $discount), 'records' => (clone $query)->count()];
     }
 
     private function invoiceTotals(Builder $query): array
     {
         $totals = (clone $query)->reorder()->toBase()->selectRaw(
-            'COALESCE(SUM(amount), 0) AS billed, COALESCE(SUM(COALESCE(paid_amount, amount)), 0) AS collected'
+            'COALESCE(SUM(amount), 0) AS billed, COALESCE(SUM(COALESCE(paid_amount, amount)), 0) AS collected, COALESCE(SUM(COALESCE(discount_amount, 0)), 0) AS discount'
         )->first();
         $billed = (float) ($totals->billed ?? 0);
         $collected = (float) ($totals->collected ?? 0);
+        $discount = (float) ($totals->discount ?? 0);
 
-        return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
+        return ['billed' => $billed, 'collected' => $collected, 'discount' => $discount, 'remaining' => max(0, $billed - $collected - $discount), 'records' => (clone $query)->count()];
     }
 
     private function venueTotals(Builder $query): array
     {
         $totals = (clone $query)->reorder()->toBase()->selectRaw(
-            'COALESCE(SUM(total_amount), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected'
+            'COALESCE(SUM(total_amount), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected, COALESCE(SUM(discount_amount), 0) AS discount'
         )->first();
         $billed = (float) ($totals->billed ?? 0);
         $collected = (float) ($totals->collected ?? 0);
+        $discount = (float) ($totals->discount ?? 0);
 
-        return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
+        return ['billed' => $billed, 'collected' => $collected, 'discount' => $discount, 'remaining' => max(0, $billed - $collected - $discount), 'records' => (clone $query)->count()];
     }
 
     private function campTotals(Builder $query): array
     {
         $totals = (clone $query)->reorder()->toBase()->selectRaw(
-            'COALESCE(SUM(total_fee), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected'
+            'COALESCE(SUM(total_fee), 0) AS billed, COALESCE(SUM(paid_amount), 0) AS collected, 0 AS discount'
         )->first();
         $billed = (float) ($totals->billed ?? 0);
         $collected = (float) ($totals->collected ?? 0);
 
-        return ['billed' => $billed, 'collected' => $collected, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
+        return ['billed' => $billed, 'collected' => $collected, 'discount' => 0, 'remaining' => max(0, $billed - $collected), 'records' => (clone $query)->count()];
     }
 
     /**

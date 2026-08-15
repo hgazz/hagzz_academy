@@ -106,6 +106,65 @@ class AcademyStudentSubscriptionController extends Controller
         return back();
     }
 
+    public function applyDiscount(Request $request, AcademyStudentSubscription $subscription)
+    {
+        $this->authorizeSubscription($subscription);
+
+        $paid = (float) $subscription->payments()->sum('amount');
+        $maxDiscount = (float) $subscription->amount - $paid;
+
+        $data = $request->validate([
+            'discount_amount' => ['required', 'numeric', 'min:0.01', 'max:' . max(0.01, $maxDiscount)],
+            'discount_reason' => ['required', 'string', 'max:255'],
+            'discount_approved_by' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $approver = $data['discount_approved_by'] ?: (auth('academy')->user()?->name ?: 'الإدارة');
+
+        $notes = $subscription->notes;
+        $noteEntry = 'خصم معتمد بقيمة: ' . number_format($data['discount_amount'], 2) . ' ج.م (السبب: ' . $data['discount_reason'] . ' - اعتماد: ' . $approver . ')';
+        $notes = trim(($notes ? $notes . ' | ' : '') . $noteEntry);
+
+        $subscription->update([
+            'discount_amount' => $data['discount_amount'],
+            'discount_reason' => $data['discount_reason'],
+            'discount_approved_by' => $approver,
+            'discount_approved_at' => now(),
+            'notes' => $notes,
+            'payment_status' => ($paid + (float) $data['discount_amount'] >= (float) $subscription->amount) ? 'paid' : ($paid > 0 || (float) $data['discount_amount'] > 0 ? 'partial' : 'unpaid'),
+        ]);
+
+        session()->flash('success', 'تم اعتماد وتطبيق الخصم بنجاح وتحديث الاشتراك.');
+        return back();
+    }
+
+    public function removeDiscount(Request $request, AcademyStudentSubscription $subscription)
+    {
+        $this->authorizeSubscription($subscription);
+
+        if ((float) $subscription->discount_amount <= 0) {
+            return back()->with('info', 'لا يوجد خصم مسجل على هذا الاشتراك.');
+        }
+
+        $prevDiscount = number_format((float) $subscription->discount_amount, 2);
+        $reverser = auth('academy')->user()?->name ?: 'الإدارة';
+        $notes = $subscription->notes;
+        $notes = trim(($notes ? $notes . ' | ' : '') . 'تم استرداد وإلغاء خصم سابق بقيمة: ' . $prevDiscount . ' ج.م بواسطة: ' . $reverser);
+
+        $paid = (float) $subscription->payments()->sum('amount');
+        $subscription->update([
+            'discount_amount' => 0,
+            'discount_reason' => null,
+            'discount_approved_by' => null,
+            'discount_approved_at' => null,
+            'notes' => $notes,
+            'payment_status' => $paid >= (float) $subscription->amount ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid'),
+        ]);
+
+        session()->flash('success', 'تم إلغاء واسترداد الخصم وإعادة المبلغ لرصيد المتبقي.');
+        return back();
+    }
+
     private function formData(): array
     {
         $academyId = $this->getAcademyId();

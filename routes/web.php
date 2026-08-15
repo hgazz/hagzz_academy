@@ -234,6 +234,10 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
         Route::resource('subscriptions', AcademyStudentSubscriptionController::class)->except(['show']);
         Route::post('subscriptions/{subscription}/payments', [AcademyStudentSubscriptionController::class, 'storePayment'])
             ->name('subscriptions.payments.store');
+        Route::post('subscriptions/{subscription}/apply-discount', [AcademyStudentSubscriptionController::class, 'applyDiscount'])
+            ->name('subscriptions.apply-discount');
+        Route::post('subscriptions/{subscription}/remove-discount', [AcademyStudentSubscriptionController::class, 'removeDiscount'])
+            ->name('subscriptions.remove-discount');
         Route::get('attendance', [AcademyAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('attendance/create', [AcademyAttendanceController::class, 'create'])->name('attendance.create');
         Route::get('attendance/scanner', [AcademyAttendanceController::class, 'scanner'])->name('attendance.scanner');
@@ -306,6 +310,8 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
             Route::resource('venue-spaces', VenueSpaceController::class)->except(['show']);
             Route::get('venue-bookings-calendar', [VenueBookingController::class, 'calendar'])->name('venue-bookings.calendar');
             Route::post('venue-bookings/{venueBooking}/collect-payment', [VenueBookingController::class, 'collectPayment'])->name('venue-bookings.collect-payment');
+            Route::post('venue-bookings/{venueBooking}/apply-discount', [VenueBookingController::class, 'applyDiscount'])->name('venue-bookings.apply-discount');
+            Route::post('venue-bookings/{venueBooking}/remove-discount', [VenueBookingController::class, 'removeDiscount'])->name('venue-bookings.remove-discount');
             Route::resource('venue-bookings', VenueBookingController::class)->except(['show']);
         });
 
