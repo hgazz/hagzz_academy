@@ -31,15 +31,38 @@ class InvoicePrintController extends Controller
         return view('Academy.pages.billing_invoices.index', compact('invoices'));
     }
 
+    public function publicView(Request $request, string $type, int $id)
+    {
+        return match($type) {
+            'booking' => $this->publicBooking($request, $id),
+            'student', 'student_subscription' => $this->publicStudent($request, $id),
+            'venue', 'venue_booking' => $this->publicVenue($request, $id),
+            'platform', 'platform_subscription' => $this->publicPlatform($request, $id),
+            default => abort(404),
+        };
+    }
+
     public function booking(Request $request, Invoice $invoice)
     {
         $invoice->loadMissing(['user', 'training.academy']);
         $this->owns($invoice->training?->academy_id);
-        $academy = $invoice->training->academy;
+        return $this->buildBookingDocument($request, $invoice);
+    }
+
+    private function publicBooking(Request $request, int $id)
+    {
+        $invoice = Invoice::with(['user', 'training.academy'])->findOrFail($id);
+        return $this->buildBookingDocument($request, $invoice, true);
+    }
+
+    private function buildBookingDocument(Request $request, Invoice $invoice, bool $isPublic = false)
+    {
+        $academy = $invoice->training?->academy;
         $total = (float) $invoice->amount;
         $paid = $invoice->collected_amount;
 
         return $this->render($request, [
+            'id' => $invoice->id,
             'type' => 'booking',
             'number' => $invoice->order_number ?: 'BK-' . $invoice->id,
             'issued_at' => $invoice->created_at,
@@ -55,16 +78,28 @@ class InvoicePrintController extends Controller
             'currency' => 'EGP',
             'status' => $invoice->is_canceled ? 'cancelled' : $invoice->payment_state,
             'payment_method' => $invoice->payment_method_label,
-        ]);
+        ], $isPublic);
     }
 
     public function student(Request $request, AcademyStudentSubscription $subscription)
     {
         $subscription->loadMissing(['student.academy', 'group', 'payments']);
         $this->owns($subscription->student?->academy_id);
+        return $this->buildStudentDocument($request, $subscription);
+    }
+
+    private function publicStudent(Request $request, int $id)
+    {
+        $subscription = AcademyStudentSubscription::with(['student.academy', 'group', 'payments'])->findOrFail($id);
+        return $this->buildStudentDocument($request, $subscription, true);
+    }
+
+    private function buildStudentDocument(Request $request, AcademyStudentSubscription $subscription, bool $isPublic = false)
+    {
         $total = (float) $subscription->amount;
 
         return $this->render($request, [
+            'id' => $subscription->id,
             'type' => 'student_subscription',
             'number' => 'STU-' . str_pad((string) $subscription->id, 6, '0', STR_PAD_LEFT),
             'issued_at' => $subscription->created_at,
@@ -82,17 +117,29 @@ class InvoicePrintController extends Controller
             'status' => $subscription->status === 'cancelled' ? 'cancelled' : $subscription->payment_status,
             'payment_method' => $subscription->payments->sortByDesc('paid_at')->first()?->method_label,
             'notes' => $subscription->notes,
-        ]);
+        ], $isPublic);
     }
 
     public function venue(Request $request, VenueBooking $booking)
     {
         $booking->loadMissing(['customer', 'space.venue.academy']);
         $this->owns($booking->academy_id);
+        return $this->buildVenueDocument($request, $booking);
+    }
+
+    private function publicVenue(Request $request, int $id)
+    {
+        $booking = VenueBooking::with(['customer', 'space.venue.academy'])->findOrFail($id);
+        return $this->buildVenueDocument($request, $booking, true);
+    }
+
+    private function buildVenueDocument(Request $request, VenueBooking $booking, bool $isPublic = false)
+    {
         $total = (float) $booking->total_amount;
         $description = trim(($booking->space?->venue?->name ?? '') . ' - ' . ($booking->space?->name ?? ''), ' -');
 
         return $this->render($request, [
+            'id' => $booking->id,
             'type' => 'venue_booking',
             'number' => $booking->reference ?: 'VEN-' . $booking->id,
             'issued_at' => $booking->created_at,
@@ -109,16 +156,28 @@ class InvoicePrintController extends Controller
             'status' => $booking->status === 'cancelled' ? 'cancelled' : $booking->payment_status,
             'payment_method' => $booking->payment_method,
             'notes' => $booking->notes,
-        ]);
+        ], $isPublic);
     }
 
     public function platform(Request $request, TenantSubscriptionInvoice $invoice)
     {
         $invoice->loadMissing(['academy', 'subscription.plan', 'payments']);
         $this->owns($invoice->academy_id);
+        return $this->buildPlatformDocument($request, $invoice);
+    }
+
+    private function publicPlatform(Request $request, int $id)
+    {
+        $invoice = TenantSubscriptionInvoice::with(['academy', 'subscription.plan', 'payments'])->findOrFail($id);
+        return $this->buildPlatformDocument($request, $invoice, true);
+    }
+
+    private function buildPlatformDocument(Request $request, TenantSubscriptionInvoice $invoice, bool $isPublic = false)
+    {
         $plan = $invoice->subscription?->plan?->name;
 
         return $this->render($request, [
+            'id' => $invoice->id,
             'type' => 'platform_subscription',
             'number' => $invoice->invoice_number,
             'issued_at' => $invoice->issued_at,
@@ -137,10 +196,10 @@ class InvoicePrintController extends Controller
             'status' => $invoice->status,
             'payment_method' => $invoice->payments->sortByDesc('paid_at')->first()?->payment_method,
             'notes' => $invoice->notes,
-        ]);
+        ], $isPublic);
     }
 
-    private function render(Request $request, array $document)
+    private function render(Request $request, array $document, bool $isPublic = false)
     {
         $paper = $request->input('paper');
         if (!in_array($paper, ['a4', 'a5', 'pos'], true)) {
@@ -150,6 +209,9 @@ class InvoicePrintController extends Controller
         $document['printed_at'] = now();
         $document['signature_reference'] = strtoupper(substr(hash_hmac('sha256', $signaturePayload, (string) config('app.key')), 0, 20));
         $document['platform_logo'] = asset('assetsAdmin/logo/Primary.svg');
+        $document['public_url'] = route('invoices.public.view', ['type' => $document['type'], 'id' => $document['id'] ?? 1]);
+        $document['is_public'] = $isPublic;
+
         return view('Academy.pages.invoice_print.show', compact('document', 'paper'));
     }
 

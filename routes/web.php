@@ -52,6 +52,7 @@ Route::get('/uploads/{path}', function ($path) {
 
 Route::get('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'verify'])->name('whatsapp.webhook.verify');
 Route::post('/webhooks/whatsapp', [WhatsAppWebhookController::class, 'receive'])->name('whatsapp.webhook.receive');
+Route::get('/invoice/{type}/{id}', [InvoicePrintController::class, 'publicView'])->name('invoices.public.view');
 
 /*
 |--------------------------------------------------------------------------

@@ -6,6 +6,7 @@
         'desc'=>'البيان','qty'=>'الكمية','price'=>'السعر','subtotal'=>'قبل الخصم','discount'=>'الخصم','tax'=>'الضريبة','total'=>'الإجمالي',
         'paid'=>'المدفوع','balance'=>'المتبقي','status'=>'حالة الدفع','method'=>'طريقة الدفع','notes'=>'ملاحظات','print'=>'طباعة / حفظ PDF',
         'send_whatsapp'=>'إرسال عبر واتساب',
+        'save_image'=>'حفظ كصورة (PNG)',
         'signed'=>'صادرة وموقعة إلكترونيًا عبر منصة حجز الرقمية للتكنولوجيا الرياضية','sigref'=>'مرجع التوقيع الرقمي','footer'=>'تم إنشاء هذه الفاتورة واعتمادها إلكترونيًا بواسطة منصة حجز.',
     ] : [
         'title'=>'Electronic Invoice','copy'=>'Customer copy','no'=>'Invoice no.','date'=>'Issue date','due'=>'Due date','printed'=>'Printed at',
@@ -13,6 +14,7 @@
         'desc'=>'Description','qty'=>'Qty','price'=>'Price','subtotal'=>'Subtotal','discount'=>'Discount','tax'=>'Tax','total'=>'Total',
         'paid'=>'Paid','balance'=>'Balance','status'=>'Payment status','method'=>'Payment method','notes'=>'Notes','print'=>'Print / Save PDF',
         'send_whatsapp'=>'Send via WhatsApp',
+        'save_image'=>'Save as Image (PNG)',
         'signed'=>'Digitally issued and signed through Hagzz Digital Sports Technology Platform','sigref'=>'Digital signature reference','footer'=>'This invoice was electronically generated and approved by Hagzz Platform.',
     ];
     $types = $ar ? ['booking'=>'فاتورة حجز تدريب','student_subscription'=>'فاتورة اشتراك طالب','venue_booking'=>'فاتورة حجز ملعب','platform_subscription'=>'فاتورة اشتراك منصة Hagzz'] : ['booking'=>'Training booking invoice','student_subscription'=>'Student subscription invoice','venue_booking'=>'Venue booking invoice','platform_subscription'=>'Hagzz platform subscription invoice'];
@@ -43,7 +45,7 @@
     $totalFormatted = $money($document['total']) . ' ' . $document['currency'];
     $paidFormatted = $money($document['paid']) . ' ' . $document['currency'];
     $balanceFormatted = $money($document['balance']) . ' ' . $document['currency'];
-    $currentInvoiceUrl = request()->fullUrl();
+    $publicInvoiceUrl = $document['public_url'] ?? request()->fullUrl();
     $lineSummary = collect($document['lines'])->pluck('description')->implode(' | ');
 
     if ($ar) {
@@ -55,7 +57,7 @@
             . "💰 *الإجمالي:* {$totalFormatted}\n"
             . "✅ *المدفوع:* {$paidFormatted}\n"
             . "⏳ *المتبقي:* {$balanceFormatted}\n\n"
-            . "🔗 *رابط عرض وتحميل الفاتورة:* \n{$currentInvoiceUrl}\n\n"
+            . "🔗 *رابط عرض وتحميل الفاتورة مباشرة:* \n{$publicInvoiceUrl}\n\n"
             . "شكراً لاختياركم لنا! 🌟";
     } else {
         $waMessage = "Hello *{$buyerName}*,\n"
@@ -66,7 +68,7 @@
             . "💰 *Total:* {$totalFormatted}\n"
             . "✅ *Paid:* {$paidFormatted}\n"
             . "⏳ *Balance:* {$balanceFormatted}\n\n"
-            . "🔗 *View & Download Invoice:* \n{$currentInvoiceUrl}\n\n"
+            . "🔗 *View & Download Invoice:* \n{$publicInvoiceUrl}\n\n"
             . "Thank you for choosing us! 🌟";
     }
 
@@ -87,6 +89,8 @@
         .toolbar .active { background: #19a974; color: #fff; border-color: #19a974; }
         .toolbar .btn-wa { background: #25D366; color: #fff; border-color: #25D366; }
         .toolbar .btn-wa:hover { background: #1eb956; border-color: #1eb956; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); }
+        .toolbar .btn-image { background: #0284c7; color: #fff; border-color: #0284c7; }
+        .toolbar .btn-image:hover { background: #0369a1; border-color: #0369a1; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); }
         .toolbar .btn-print { background: #0e5a3f; color: #fff; border-color: #0e5a3f; }
         .toolbar .btn-print:hover { background: #0b402f; color: #fff; }
         .sheet { width: 210mm; min-height: 277mm; margin: 18px auto; padding: 12mm; background: #fff; box-shadow: 0 8px 30px #19233a24; }
@@ -149,6 +153,7 @@
         }
         .issuer-logo, .party-logo, .signature img { border-radius: 50%; border: 1px solid #dfe5ee; background: #fff; padding: 3px; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="paper-{{ $paper }}">
     <nav class="toolbar">
@@ -163,10 +168,17 @@
             {{ $l['send_whatsapp'] }}
         </a>
 
+        <button type="button" class="btn-image" onclick="saveAsImage()" title="{{ $l['save_image'] }}">
+            <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 512 512">
+                <path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l336 0c8.9 0 17.1-4.9 21.3-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/>
+            </svg>
+            {{ $l['save_image'] }}
+        </button>
+
         <button onclick="window.print()" class="btn-print">{{ $l['print'] }}</button>
     </nav>
 
-    <main class="sheet">
+    <main class="sheet" id="invoiceSheet">
         <header class="head">
             <div class="head-brand">
                 @if(!empty($document['seller']['logo']))
@@ -289,5 +301,37 @@
 
         <footer class="footer">{{ $l['footer'] }}</footer>
     </main>
+
+    <script>
+        function saveAsImage() {
+            const sheet = document.getElementById('invoiceSheet');
+            const btn = document.querySelector('.btn-image');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '⏳ {{ $ar ? "جاري التجهيز..." : "Generating..." }}';
+            btn.disabled = true;
+
+            html2canvas(sheet, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Invoice-{{ $document['number'] }}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                btn.innerHTML = '✅ {{ $ar ? "تم التنزيل!" : "Downloaded!" }}';
+                setTimeout(() => {
+                    btn.innerHTML = origHtml;
+                    btn.disabled = false;
+                }, 2500);
+            }).catch(err => {
+                console.error('html2canvas error:', err);
+                alert('{{ $ar ? "حدث خطأ أثناء تنزيل الصورة، يرجى استخدام زر الطباعة وحفظها كملف PDF." : "Error generating image. Please use Print to save as PDF." }}');
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
