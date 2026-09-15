@@ -20,7 +20,6 @@ class TClass extends Model
         'training_id',
         'out_comes',
         'bring_with_me',
-        'sport_id'
     ];
     public $translatable = ['title'];
 
@@ -49,12 +48,12 @@ class TClass extends Model
 
     public function academy()
     {
-        return $this->belongsTo(Academies::class, 'academy_id', 'id');
+        return $this->hasOneThrough(Academies::class, Training::class, 'id', 'id', 'training_id', 'academy_id');
     }
 
     public function sport()
     {
-        return $this->belongsTo(Sport::class, 'sport_id', 'id');
+        return $this->hasOneThrough(Sport::class, Training::class, 'id', 'id', 'training_id', 'sport_id');
     }
 
 //    public function getOutComesAttribute($value)

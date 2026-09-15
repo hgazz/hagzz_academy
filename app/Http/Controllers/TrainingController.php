@@ -174,7 +174,6 @@ class TrainingController extends Controller
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'training_id' => $training->id,
-                    'sport_id' => $training->sport_id,
                     'out_comes' => ['ar' => [], 'en' => []],
                     'bring_with_me' => ['ar' => [], 'en' => []],
                 ]);
