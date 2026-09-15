@@ -13,6 +13,11 @@ class PartnerExpense extends Model
     protected $fillable = [
         'academy_id',
         'category_id',
+        'coach_id',
+        'is_external_coach',
+        'branch_id',
+        'expense_type',
+        'payment_method',
         'title',
         'amount',
         'currency',
@@ -32,6 +37,7 @@ class PartnerExpense extends Model
         'amount' => 'decimal:2',
         'exchange_rate' => 'decimal:4',
         'base_amount' => 'decimal:2',
+        'is_external_coach' => 'boolean',
     ];
 
     public function academy(): BelongsTo
@@ -44,8 +50,19 @@ class PartnerExpense extends Model
         return $this->belongsTo(PartnerExpenseCategory::class, 'category_id');
     }
 
+    public function coach(): BelongsTo
+    {
+        return $this->belongsTo(Coach::class, 'coach_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'branch_id');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(PartnerUser::class, 'created_by_user_id');
     }
 }
+

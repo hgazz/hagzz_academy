@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
+use App\Models\Coach;
 use App\Models\Invoice;
 use App\Models\PartnerActivityLog;
 use App\Models\PartnerExpense;
 use App\Models\PartnerExpenseCategory;
+use App\Services\AcademyFinancialEngine;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PartnerExpenseController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, AcademyFinancialEngine $financialEngine)
     {
         $user = auth('academy')->user();
         $academy = ($user instanceof \App\Models\PartnerUser && $user->academy) ? $user->academy : $user;
         $academyId = $user->academy_id ?: $academy->id;
         $academyCurrencyCode = $academy->currency_code ?: 'SAR';
         $academyCurrencySymbol = $academy->currency_symbol ?: (app()->getLocale() === 'ar' ? 'ر.س' : 'SAR');
+
+        // Coaches & Branches for this academy
+        $coaches = Coach::where('academy_id', $academyId)->orderBy('name')->get();
+        $branches = Address::where('academy_id', $academyId)->get();
 
         // Categories available (System + Partner Custom)
         $categories = PartnerExpenseCategory::whereNull('academy_id')
@@ -28,7 +35,7 @@ class PartnerExpenseController extends Controller
             ->get();
 
         // Expenses Query
-        $query = PartnerExpense::with(['category', 'creator'])
+        $query = PartnerExpense::with(['category', 'creator', 'coach', 'branch'])
             ->where('academy_id', $academyId);
 
         if ($request->filled('period_type')) {
@@ -37,6 +44,22 @@ class PartnerExpenseController extends Controller
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('coach_id')) {
+            if ($request->coach_id === 'external') {
+                $query->where('is_external_coach', true);
+            } else {
+                $query->where('coach_id', $request->coach_id);
+            }
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('expense_type')) {
+            $query->where('expense_type', $request->expense_type);
         }
 
         if ($request->filled('from_date')) {
@@ -49,30 +72,33 @@ class PartnerExpenseController extends Controller
 
         $expenses = $query->orderBy('expense_date', 'desc')->paginate(20);
 
-        // Financial Summary Calculations in Base Currency
-        $totalExpenses = (float) (clone $query)->sum(\Illuminate\Support\Facades\DB::raw('COALESCE(base_amount, amount)'));
+        // Unified financial summary using AcademyFinancialEngine
+        $filterParams = [
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'branch_id' => $request->filled('branch_id') ? (int) $request->branch_id : null,
+            'coach_id' => ($request->filled('coach_id') && $request->coach_id !== 'external') ? (int) $request->coach_id : null,
+            'category_id' => $request->filled('category_id') ? (int) $request->category_id : null,
+            'expense_type' => $request->expense_type,
+        ];
 
-        // Revenue query in matching period
-        $revenueQuery = Invoice::whereHas('training', function ($q) use ($academyId) {
-            $q->where('academy_id', $academyId);
-        });
-
-        if ($request->filled('from_date')) {
-            $revenueQuery->whereDate('created_at', '>=', $request->from_date);
-        }
-        if ($request->filled('to_date')) {
-            $revenueQuery->whereDate('created_at', '<=', $request->to_date);
-        }
-
-        $totalRevenue = (float) $revenueQuery->sum('amount');
-        $netProfit = $totalRevenue - $totalExpenses;
+        $profitSummary = $financialEngine->getNetProfitSummary($academyId, $filterParams);
+        $totalRevenue = $profitSummary['total_revenue'];
+        $totalExpenses = $profitSummary['total_expenses'];
+        $netProfit = $profitSummary['net_profit'];
+        $profitMargin = $profitSummary['profit_margin'];
+        $revenueStreams = $profitSummary['revenue']['streams'];
 
         return view('Academy.pages.expenses.index', compact(
             'expenses',
             'categories',
+            'coaches',
+            'branches',
             'totalRevenue',
             'totalExpenses',
             'netProfit',
+            'profitMargin',
+            'revenueStreams',
             'academyCurrencyCode',
             'academyCurrencySymbol'
         ));
@@ -92,6 +118,10 @@ class PartnerExpenseController extends Controller
             'approved_by' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'coach_id' => 'nullable|string',
+            'branch_id' => 'nullable|exists:addresses,id',
+            'expense_type' => 'nullable|string|max:40',
+            'payment_method' => 'nullable|string|max:40',
         ]);
 
         $user = auth('academy')->user();
@@ -118,9 +148,27 @@ class PartnerExpenseController extends Controller
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
         }
 
+        $coachId = null;
+        $isExternalCoach = false;
+        if ($request->filled('coach_id')) {
+            if ($request->coach_id === 'external') {
+                $isExternalCoach = true;
+            } elseif (is_numeric($request->coach_id)) {
+                $coachId = (int) $request->coach_id;
+            }
+        }
+
+        $expenseType = $request->expense_type ?: ($coachId || $isExternalCoach ? 'coach' : 'general');
+        $paymentMethod = $request->payment_method ?: 'cash';
+
         $expense = PartnerExpense::create([
             'academy_id' => $academyId,
             'category_id' => $request->category_id,
+            'coach_id' => $coachId,
+            'is_external_coach' => $isExternalCoach,
+            'branch_id' => $request->filled('branch_id') ? (int) $request->branch_id : null,
+            'expense_type' => $expenseType,
+            'payment_method' => $paymentMethod,
             'title' => $request->title,
             'amount' => $amount,
             'currency' => $currency,
@@ -140,8 +188,9 @@ class PartnerExpenseController extends Controller
             "تم تسجيل مصروف جديد بقيمة {$expense->amount} ({$expense->title}) بواسطة {$user->name}"
         );
 
-        return redirect()->back()->with('success', app()->getLocale() === 'ar' ? 'تم تسجيل المصروف بنجاح' : 'Expense recorded successfully');
+        return redirect()->back()->with('success', app()->getLocale() === 'ar' ? 'تم تسجيل المصروف والقيد المحاسبي بنجاح' : 'Expense & journal entry recorded successfully');
     }
+
 
     public function destroy($id)
     {

@@ -475,7 +475,12 @@ class AcademyFinancialReportController extends Controller
         $combinedBilled = 0;
         $combinedCollected = 0;
         $combinedRemaining = 0;
-        $combinedExpenses = 0;
+        $sumDirectExpenses = 0;
+
+        $totalAcademyExpenses = (float) PartnerExpense::where('academy_id', $academyId)
+            ->when($filters['start_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '>=', $d))
+            ->when($filters['end_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '<=', $d))
+            ->sum(DB::raw('COALESCE(base_amount, amount)'));
 
         foreach ($branches as $branch) {
             $branchFilters = array_merge($filters, ['branch_id' => $branch->id]);
@@ -488,10 +493,14 @@ class AcademyFinancialReportController extends Controller
             $collected = $subTotals['collected'] + $trTotals['collected'];
             $remaining = $subTotals['remaining'] + $trTotals['remaining'];
 
-            // Expenses allocated if applicable or general branch expenses
-            $expenses = (float) PartnerExpense::where('academy_id', $academyId)->sum('base_amount');
+            // Direct expenses specifically tagged to this branch
+            $directExpenses = (float) PartnerExpense::where('academy_id', $academyId)
+                ->where('branch_id', $branch->id)
+                ->when($filters['start_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '>=', $d))
+                ->when($filters['end_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '<=', $d))
+                ->sum(DB::raw('COALESCE(base_amount, amount)'));
 
-            $netIncome = $collected - $expenses;
+            $netIncome = $collected - $directExpenses;
 
             $branchItems[] = [
                 'id' => $branch->id,
@@ -501,24 +510,28 @@ class AcademyFinancialReportController extends Controller
                 'billed' => $billed,
                 'collected' => $collected,
                 'remaining' => $remaining,
-                'expenses' => $expenses,
+                'expenses' => $directExpenses,
                 'net_income' => $netIncome,
             ];
 
             $combinedBilled += $billed;
             $combinedCollected += $collected;
             $combinedRemaining += $remaining;
-            $combinedExpenses += $expenses;
+            $sumDirectExpenses += $directExpenses;
         }
+
+        // Unallocated general expenses (not tied to a specific branch)
+        $unallocatedExpenses = max(0, $totalAcademyExpenses - $sumDirectExpenses);
 
         return [
             'items' => $branchItems,
+            'unallocated_expenses' => $unallocatedExpenses,
             'combined' => [
                 'billed' => $combinedBilled,
                 'collected' => $combinedCollected,
                 'remaining' => $combinedRemaining,
-                'expenses' => $combinedExpenses,
-                'net_income' => $combinedCollected - $combinedExpenses,
+                'expenses' => $totalAcademyExpenses,
+                'net_income' => $combinedCollected - $totalAcademyExpenses,
             ],
         ];
     }
@@ -533,7 +546,8 @@ class AcademyFinancialReportController extends Controller
             ->get();
 
         $items = [];
-        $totalCoachExpenses = 0;
+        $totalCoachTheoreticalCost = 0;
+        $totalCoachActualPaid = 0;
 
         foreach ($coaches as $coach) {
             $assignedTrainings = Training::where('coach_id', $coach->id)->with('joins')->get();
@@ -583,8 +597,16 @@ class AcademyFinancialReportController extends Controller
                 $compLabel = number_format($compVal, 2) . ($isAr ? ' ج.م مرتب شهري' : ' EGP Salary');
             }
 
-            $netRevenue = $totalCollected - $coachCost;
-            $totalCoachExpenses += $coachCost;
+            // Actual payments disbursed to this coach recorded in PartnerExpense
+            $actualPaid = (float) PartnerExpense::where('academy_id', $academyId)
+                ->where('coach_id', $coach->id)
+                ->when($filters['start_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '>=', $d))
+                ->when($filters['end_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '<=', $d))
+                ->sum(DB::raw('COALESCE(base_amount, amount)'));
+
+            $netRevenue = $totalCollected - $actualPaid;
+            $totalCoachTheoreticalCost += $coachCost;
+            $totalCoachActualPaid += $actualPaid;
 
             $items[] = [
                 'id' => $coach->id,
@@ -601,13 +623,17 @@ class AcademyFinancialReportController extends Controller
                 'compensation_value' => $compVal,
                 'compensation_label' => $compLabel,
                 'coach_cost' => $coachCost,
+                'actual_paid' => $actualPaid,
+                'dues_remaining' => max(0, $coachCost - $actualPaid),
                 'net_revenue' => $netRevenue,
             ];
         }
 
         return [
             'items' => $items,
-            'total_coach_expenses' => $totalCoachExpenses,
+            'total_coach_expenses' => $totalCoachActualPaid,
+            'total_coach_theoretical_cost' => $totalCoachTheoreticalCost,
+            'total_coach_actual_paid' => $totalCoachActualPaid,
         ];
     }
 

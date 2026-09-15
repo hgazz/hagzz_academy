@@ -83,6 +83,12 @@ class Coach extends Model
         return $this->belongsToMany(Sport::class, 'coach_sports');
     }
 
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(PartnerExpense::class, 'coach_id');
+    }
+
+
     public function getGenderAttribute($value)
     {
         return $value == 'male' ? trans('admin.coaches.male') : trans('admin.coaches.female');

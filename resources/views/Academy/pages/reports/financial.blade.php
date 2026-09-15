@@ -642,7 +642,9 @@
                                     <th>{{ $copy['fill_rate'] }}</th>
                                     <th>{{ $copy['collected'] }}</th>
                                     <th>{{ $copy['comp_system'] }}</th>
-                                    <th>{{ $copy['coach_cost'] }}</th>
+                                    <th>{{ $ar ? 'المستحق التعاقدي' : 'Contract Cost' }}</th>
+                                    <th>{{ $ar ? 'المسدد الفعلي (مصروفات)' : 'Actual Paid (Expenses)' }}</th>
+                                    <th>{{ $ar ? 'المتبقي للمدرب' : 'Dues Balance' }}</th>
                                     <th>{{ $copy['net_profit'] }}</th>
                                 </tr>
                             </thead>
@@ -670,7 +672,9 @@
                                                 {{ $coach['compensation_label'] }}
                                             </span>
                                         </td>
-                                        <td class="text-danger fw-bold">{{ $money($coach['coach_cost']) }} {{ $copy['currency'] }}</td>
+                                        <td class="text-muted fw-bold">{{ $money($coach['coach_cost']) }} {{ $copy['currency'] }}</td>
+                                        <td class="text-danger fw-bold">{{ $money($coach['actual_paid']) }} {{ $copy['currency'] }}</td>
+                                        <td class="{{ $coach['dues_remaining'] > 0 ? 'text-warning' : 'text-success' }} fw-bold">{{ $money($coach['dues_remaining']) }} {{ $copy['currency'] }}</td>
                                         <td>
                                             <strong class="{{ $coach['net_revenue'] >= 0 ? 'text-success' : 'text-danger' }}">
                                                 {{ $money($coach['net_revenue']) }} {{ $copy['currency'] }}
@@ -679,10 +683,11 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="fr-empty">{{ $copy['noData'] }}</td>
+                                        <td colspan="11" class="fr-empty">{{ $copy['noData'] }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
+
                         </table>
                     </div>
                 </article>
