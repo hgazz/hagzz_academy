@@ -26,19 +26,18 @@ class TClassDataTable extends DataTable
                     return '-';
                 }
                 $name = $class->training->name;
-                if (is_array($name)) {
-                    $locale = app()->getLocale();
-                    return $name[$locale] ?? reset($name) ?: '-';
-                }
-                return (string) $name;
+                $tName = is_array($name) ? ($name[app()->getLocale()] ?? reset($name) ?: '-') : (string) $name;
+                return '<span class="training-name-tag">' . e($tName) . '</span>';
             })
             ->editColumn('title', function (TClass $class) {
                 $title = $class->title;
                 if (is_array($title)) {
                     $locale = app()->getLocale();
-                    return $title[$locale] ?? reset($title) ?: '-';
+                    $titleText = $title[$locale] ?? reset($title) ?: '-';
+                } else {
+                    $titleText = (string) ($title ?: '-');
                 }
-                return (string) ($title ?: '-');
+                return '<span class="fw-bold" style="color: var(--heroui-text);">' . e($titleText) . '</span>';
             })
             ->editColumn('subtitle', fn($raw) => $raw->subtitle ?: '-')
             ->editColumn('date', function (TClass $class) {
@@ -46,23 +45,23 @@ class TClassDataTable extends DataTable
                 if (!$dateStr) return '-';
                 $today = now()->toDateString();
                 if ($dateStr === $today) {
-                    $badge = '<span class="badge badge-light-success fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'اليوم' : 'Today') . '</span>';
+                    $badge = '<span class="heroui-chip heroui-chip-success"><span class="chip-dot pulse"></span>' . (app()->getLocale() === 'ar' ? 'اليوم' : 'Today') . '</span>';
                 } elseif ($dateStr > $today) {
-                    $badge = '<span class="badge badge-light-primary fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'قادمة' : 'Upcoming') . '</span>';
+                    $badge = '<span class="heroui-chip heroui-chip-primary"><span class="chip-dot"></span>' . (app()->getLocale() === 'ar' ? 'قادمة' : 'Upcoming') . '</span>';
                 } else {
-                    $badge = '<span class="badge badge-light-secondary fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'منتهية' : 'Completed') . '</span>';
+                    $badge = '<span class="heroui-chip heroui-chip-default">' . (app()->getLocale() === 'ar' ? 'منتهية' : 'Completed') . '</span>';
                 }
-                return '<div class="d-inline-flex align-items-center gap-1">' . $badge . '<span class="fw-semibold">' . e($dateStr) . '</span></div>';
+                return '<div class="d-inline-flex align-items-center gap-2">' . $badge . '<span class="heroui-date-text">' . e($dateStr) . '</span></div>';
             })
             ->editColumn('start_time', function (TClass $class) {
                 if (!$class->start_time) return '-';
                 $time = substr((string) $class->start_time, 0, 5);
-                return '<span class="badge badge-light-dark font-monospace px-2 py-1">' . e($time) . '</span>';
+                return '<span class="heroui-time-chip"><i class="far fa-clock me-1"></i> ' . e($time) . '</span>';
             })
             ->editColumn('end_time', function (TClass $class) {
                 if (!$class->end_time) return '-';
                 $time = substr((string) $class->end_time, 0, 5);
-                return '<span class="badge badge-light-dark font-monospace px-2 py-1">' . e($time) . '</span>';
+                return '<span class="heroui-time-chip"><i class="far fa-clock me-1"></i> ' . e($time) . '</span>';
             })
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
@@ -72,7 +71,7 @@ class TClassDataTable extends DataTable
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['date', 'start_time', 'end_time', 'action']);
+            ->rawColumns(['training_id', 'title', 'date', 'start_time', 'end_time', 'action']);
     }
 
     /**
@@ -121,7 +120,7 @@ class TClassDataTable extends DataTable
         return $this->builder()
                     ->setTableId('tclass-table')
                     ->columns($this->getColumns())
-                    ->minifiedAjax('', 'data.training_id = $("#filter_training_id").val(); data.timeframe = $("input[name=\'timeframe_filter\']:checked").val() || "all";')
+                    ->minifiedAjax('', 'data.training_id = $("#filter_training_id").val(); data.timeframe = $("#selected_timeframe").val() || "all";')
                     ->dom('Bfltip')
                     ->selectStyleSingle()
                     ->scrollX()

@@ -1,0 +1,520 @@
+/* ==========================================================================
+   HeroUI Inspired Design System for Hagzz Classes Management
+   Designed for High-End UX, Clean Geometry, and Glassmorphic Surfaces
+   ========================================================================== */
+
+:root {
+    --heroui-font: 'Cairo', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --heroui-radius-sm: 8px;
+    --heroui-radius-md: 12px;
+    --heroui-radius-lg: 18px;
+    --heroui-radius-xl: 24px;
+    --heroui-radius-full: 9999px;
+
+    /* Light Theme */
+    --heroui-bg: #f8fafc;
+    --heroui-surface: #ffffff;
+    --heroui-surface-hover: #f1f5f9;
+    --heroui-border: #e2e8f0;
+    --heroui-border-light: rgba(226, 232, 240, 0.7);
+    --heroui-text: #0f172a;
+    --heroui-text-muted: #64748b;
+    --heroui-text-subtle: #94a3b8;
+
+    /* Colors */
+    --heroui-primary: #6366f1;
+    --heroui-primary-hover: #4f46e5;
+    --heroui-primary-light: rgba(99, 102, 241, 0.1);
+    --heroui-primary-border: rgba(99, 102, 241, 0.2);
+
+    --heroui-success: #10b981;
+    --heroui-success-light: rgba(16, 185, 129, 0.12);
+    --heroui-success-border: rgba(16, 185, 129, 0.25);
+
+    --heroui-info: #06b6d4;
+    --heroui-info-light: rgba(6, 182, 212, 0.12);
+    --heroui-info-border: rgba(6, 182, 212, 0.25);
+
+    --heroui-warning: #f59e0b;
+    --heroui-warning-light: rgba(245, 158, 11, 0.12);
+
+    --heroui-danger: #ef4444;
+    --heroui-danger-light: rgba(239, 68, 68, 0.1);
+
+    --heroui-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --heroui-shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    --heroui-shadow-lg: 0 20px 35px -8px rgba(0, 0, 0, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.03);
+    --heroui-shadow-primary: 0 6px 20px -3px rgba(99, 102, 241, 0.35);
+}
+
+/* Dark Theme Overrides */
+body.dark,
+.dark-mode,
+[data-theme="dark"] {
+    --heroui-bg: #090d16;
+    --heroui-surface: #111827;
+    --heroui-surface-hover: #1f2937;
+    --heroui-border: #1f2937;
+    --heroui-border-light: rgba(31, 41, 55, 0.8);
+    --heroui-text: #f8fafc;
+    --heroui-text-muted: #94a3b8;
+    --heroui-text-subtle: #64748b;
+    --heroui-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --heroui-shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+    --heroui-shadow-lg: 0 20px 35px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Base Wrapper */
+.heroui-wrapper {
+    font-family: var(--heroui-font);
+    color: var(--heroui-text);
+}
+
+/* ==========================================================================
+   Header Hero Banner
+   ========================================================================== */
+.heroui-header-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+    border: 1px solid var(--heroui-border);
+    border-radius: var(--heroui-radius-xl);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--heroui-shadow-sm);
+}
+
+.heroui-header-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--heroui-text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.heroui-header-title .title-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--heroui-radius-md);
+    background: linear-gradient(135deg, var(--heroui-primary) 0%, #4338ca 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--heroui-shadow-primary);
+    font-size: 20px;
+}
+
+.heroui-header-subtitle {
+    font-size: 14px;
+    color: var(--heroui-text-muted);
+    margin: 4px 0 0 0;
+}
+
+/* ==========================================================================
+   Metric Stat Cards (HeroUI Inspired)
+   ========================================================================== */
+.heroui-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.heroui-stat-card {
+    background: var(--heroui-surface);
+    border: 1px solid var(--heroui-border);
+    border-radius: var(--heroui-radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--heroui-shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.heroui-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+.heroui-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--heroui-shadow-lg);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.heroui-stat-card.primary:hover::before { background: var(--heroui-primary); }
+.heroui-stat-card.success:hover::before { background: var(--heroui-success); }
+.heroui-stat-card.info:hover::before { background: var(--heroui-info); }
+.heroui-stat-card.secondary:hover::before { background: var(--heroui-text-subtle); }
+
+.heroui-stat-content .stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--heroui-text-muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.heroui-stat-content .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: var(--heroui-text);
+    line-height: 1.1;
+}
+
+.heroui-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--heroui-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: transform 0.25s ease;
+}
+
+.heroui-stat-card:hover .heroui-stat-icon {
+    transform: scale(1.08);
+}
+
+.heroui-stat-icon.primary { background: var(--heroui-primary-light); color: var(--heroui-primary); }
+.heroui-stat-icon.success { background: var(--heroui-success-light); color: var(--heroui-success); }
+.heroui-stat-icon.info { background: var(--heroui-info-light); color: var(--heroui-info); }
+.heroui-stat-icon.secondary { background: rgba(100, 116, 139, 0.12); color: #64748b; }
+
+/* ==========================================================================
+   HeroUI Filter Toolbar
+   ========================================================================== */
+.heroui-filter-panel {
+    background: var(--heroui-surface);
+    border: 1px solid var(--heroui-border);
+    border-radius: var(--heroui-radius-xl);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--heroui-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.heroui-filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--heroui-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.heroui-select-wrap {
+    position: relative;
+}
+
+.heroui-select {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--heroui-radius-md);
+    border: 1.5px solid var(--heroui-border);
+    background: var(--heroui-bg);
+    color: var(--heroui-text);
+    outline: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.heroui-select:focus {
+    border-color: var(--heroui-primary);
+    background: var(--heroui-surface);
+    box-shadow: 0 0 0 4px var(--heroui-primary-light);
+}
+
+/* HeroUI Segmented Tabs */
+.heroui-tabs-container {
+    display: inline-flex;
+    background: var(--heroui-bg);
+    border: 1px solid var(--heroui-border);
+    border-radius: var(--heroui-radius-lg);
+    padding: 4px;
+    gap: 4px;
+    width: 100%;
+    max-width: 540px;
+}
+
+.heroui-tab-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--heroui-radius-md);
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--heroui-text-muted);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.heroui-tab-btn:hover {
+    color: var(--heroui-text);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.heroui-tab-btn.active {
+    background: var(--heroui-surface);
+    color: var(--heroui-primary);
+    box-shadow: var(--heroui-shadow-sm);
+}
+
+.heroui-tab-badge {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: var(--heroui-radius-full);
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+}
+
+.heroui-tab-btn.active .heroui-tab-badge {
+    background: var(--heroui-primary-light);
+    color: var(--heroui-primary);
+}
+
+/* Action Buttons */
+.heroui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--heroui-radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.heroui-btn-primary {
+    background: linear-gradient(135deg, var(--heroui-primary) 0%, #4f46e5 100%);
+    color: #ffffff !important;
+    box-shadow: var(--heroui-shadow-primary);
+}
+
+.heroui-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -2px rgba(99, 102, 241, 0.5);
+    color: #ffffff !important;
+}
+
+.heroui-btn-light {
+    background: var(--heroui-bg);
+    color: var(--heroui-text);
+    border: 1px solid var(--heroui-border);
+}
+
+.heroui-btn-light:hover {
+    background: var(--heroui-surface-hover);
+    color: var(--heroui-text);
+}
+
+.heroui-btn-reset {
+    background: var(--heroui-danger-light);
+    color: var(--heroui-danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 9px 16px;
+    border-radius: var(--heroui-radius-md);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.heroui-btn-reset:hover {
+    background: var(--heroui-danger);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   HeroUI Table Box & Chips
+   ========================================================================== */
+.heroui-card-table {
+    background: var(--heroui-surface);
+    border: 1px solid var(--heroui-border);
+    border-radius: var(--heroui-radius-xl);
+    box-shadow: var(--heroui-shadow-lg);
+    overflow: hidden;
+    padding: 24px;
+}
+
+/* HeroUI Chips */
+.heroui-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: var(--heroui-radius-full);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.heroui-chip .chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.heroui-chip.heroui-chip-success {
+    background: var(--heroui-success-light);
+    color: #059669;
+    border: 1px solid var(--heroui-success-border);
+}
+.heroui-chip.heroui-chip-success .chip-dot {
+    background: var(--heroui-success);
+    box-shadow: 0 0 8px var(--heroui-success);
+}
+
+.heroui-chip.heroui-chip-primary {
+    background: var(--heroui-primary-light);
+    color: var(--heroui-primary);
+    border: 1px solid var(--heroui-primary-border);
+}
+.heroui-chip.heroui-chip-primary .chip-dot {
+    background: var(--heroui-primary);
+}
+
+.heroui-chip.heroui-chip-default {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.heroui-time-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--heroui-bg);
+    border: 1px solid var(--heroui-border);
+    color: var(--heroui-text);
+    padding: 4px 10px;
+    border-radius: var(--heroui-radius-md);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.heroui-date-text {
+    font-weight: 700;
+    color: var(--heroui-text);
+    font-size: 13px;
+}
+
+.training-name-tag {
+    font-weight: 800;
+    color: var(--heroui-text);
+    font-size: 14px;
+}
+
+.heroui-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--heroui-radius-md);
+    background: var(--heroui-primary-light);
+    color: var(--heroui-primary);
+    border: 1px solid var(--heroui-primary-border);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.heroui-btn-action:hover {
+    background: var(--heroui-primary);
+    color: #ffffff;
+    box-shadow: var(--heroui-shadow-primary);
+    transform: translateY(-1px);
+}
+
+/* Custom Table Polish */
+#tclass-table {
+    border-collapse: separate;
+    border-spacing: 0 4px;
+}
+
+#tclass-table thead th {
+    background: var(--heroui-bg);
+    color: var(--heroui-text-muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 14px 16px;
+}
+
+#tclass-table tbody tr {
+    background: var(--heroui-surface);
+    transition: all 0.2s ease;
+    border-radius: var(--heroui-radius-md);
+}
+
+#tclass-table tbody tr:hover {
+    background: var(--heroui-surface-hover) !important;
+    transform: scale(1.002);
+}
+
+#tclass-table tbody td {
+    border-top: 1px solid var(--heroui-border-light);
+    border-bottom: 1px solid var(--heroui-border-light);
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+#tclass-table tbody tr td:first-child {
+    border-left: 1px solid var(--heroui-border-light);
+    border-top-left-radius: var(--heroui-radius-md);
+    border-bottom-left-radius: var(--heroui-radius-md);
+}
+
+#tclass-table tbody tr td:last-child {
+    border-right: 1px solid var(--heroui-border-light);
+    border-top-right-radius: var(--heroui-radius-md);
+    border-bottom-right-radius: var(--heroui-radius-md);
+}
+
+@keyframes pulse-dot {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.pulse {
+    animation: pulse-dot 2s infinite;
+}

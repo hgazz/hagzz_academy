@@ -8,58 +8,14 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/src/table/datatable/datatables.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/dt-global_style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/custom_dt_miscellaneous.css') }}">
-    <style>
-        .metric-card {
-            border-radius: 12px;
-            padding: 16px 20px;
-            background: #fff;
-            border: 1px solid #e0e6ed;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-        .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.07);
-        }
-        .metric-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .filter-container {
-            background: #ffffff;
-            border: 1px solid #e0e6ed;
-            border-radius: 12px;
-            padding: 18px 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .dark-mode .metric-card,
-        .dark-mode .filter-container {
-            background: #0e1726;
-            border-color: #1b2e4b;
-        }
-        .timeframe-pill-btn {
-            padding: 6px 14px;
-            border-radius: 8px !important;
-            font-size: 13px;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/assets/css/heroui-theme.css') }}">
 @endpush
 
 @section('content')
-    <div class="middle-content container-xxl p-0">
+    <div class="middle-content container-xxl p-0 heroui-wrapper">
 
         <!--  BEGIN BREADCRUMBS  -->
-        <div class="secondary-nav">
+        <div class="secondary-nav mb-4">
             <div class="breadcrumbs-container" data-page-heading="Analytics">
                 <header class="header navbar navbar-expand-sm">
                     <a href="javascript:void(0);" class="btn-toggle sidebarCollapse" data-placement="bottom">
@@ -68,7 +24,7 @@
                     <div class="d-flex breadcrumb-content">
                         <div class="page-header">
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                                <ol class="breadcrumb">
+                                <ol class="breadcrumb mb-0">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.clasess.clasess') }}</li>
                                 </ol>
@@ -80,155 +36,135 @@
         </div>
         <!--  END BREADCRUMBS  -->
 
-        <div class="row layout-top-spacing">
-            <!-- Metric Cards -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                <div class="metric-card">
-                    <div>
-                        <span class="text-muted d-block mb-1" style="font-size: 13px;">{{ app()->getLocale() === 'ar' ? 'إجمالي الحصص' : 'Total Sessions' }}</span>
-                        <h3 class="fw-bold mb-0 text-dark">{{ number_format($metrics['total'] ?? 0) }}</h3>
-                    </div>
-                    <div class="metric-icon bg-light-primary text-primary">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                </div>
+        <!-- HeroUI Header Banner -->
+        <div class="heroui-header-banner">
+            <div>
+                <h1 class="heroui-header-title">
+                    <span class="title-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+                    {{ trans('admin.clasess.clasess') }}
+                </h1>
+                <p class="heroui-header-subtitle">
+                    {{ app()->getLocale() === 'ar' ? 'إدارة ومتابعة الحصص التدريبية المنظمة، التوقيت، وجداول الحضور' : 'Organize and track scheduled training sessions, timing, and attendance' }}
+                </p>
             </div>
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                <div class="metric-card">
-                    <div>
-                        <span class="text-muted d-block mb-1" style="font-size: 13px;">{{ app()->getLocale() === 'ar' ? 'حصص اليوم' : "Today's Sessions" }}</span>
-                        <h3 class="fw-bold mb-0 text-success">{{ number_format($metrics['today'] ?? 0) }}</h3>
-                    </div>
-                    <div class="metric-icon bg-light-success text-success">
-                        <i class="fas fa-calendar-day"></i>
-                    </div>
-                </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('academy.training.create') }}" class="heroui-btn heroui-btn-light">
+                    <i class="fas fa-plus-circle text-primary"></i>
+                    <span>{{ app()->getLocale() === 'ar' ? 'تدريب جديد' : 'New Training' }}</span>
+                </a>
+                <a href="{{ route('academy.class.create') }}" class="heroui-btn heroui-btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span>{{ trans('admin.clasess.create') }}</span>
+                </a>
             </div>
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                <div class="metric-card">
-                    <div>
-                        <span class="text-muted d-block mb-1" style="font-size: 13px;">{{ app()->getLocale() === 'ar' ? 'الحصص القادمة' : 'Upcoming Sessions' }}</span>
-                        <h3 class="fw-bold mb-0 text-info">{{ number_format($metrics['upcoming'] ?? 0) }}</h3>
-                    </div>
-                    <div class="metric-icon bg-light-info text-info">
-                        <i class="fas fa-clock"></i>
-                    </div>
+        </div>
+
+        <!-- HeroUI Metric Stat Cards -->
+        <div class="heroui-stat-grid">
+            <div class="heroui-stat-card primary">
+                <div class="heroui-stat-content">
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي الحصص' : 'Total Sessions' }}</span>
+                    <h2 class="stat-value">{{ number_format($metrics['total'] ?? 0) }}</h2>
                 </div>
-            </div>
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                <div class="metric-card">
-                    <div>
-                        <span class="text-muted d-block mb-1" style="font-size: 13px;">{{ app()->getLocale() === 'ar' ? 'الحصص المنتهية' : 'Completed Sessions' }}</span>
-                        <h3 class="fw-bold mb-0 text-secondary">{{ number_format($metrics['past'] ?? 0) }}</h3>
-                    </div>
-                    <div class="metric-icon bg-light-dark text-secondary">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
+                <div class="heroui-stat-icon primary">
+                    <i class="fas fa-layer-group"></i>
                 </div>
             </div>
 
-            <div class="col-12">
-                <!-- Smart Filter Bar -->
-                <div class="filter-container">
-                    <div class="row align-items-center g-3">
-                        <div class="col-lg-5 col-md-6 col-12">
-                            <label for="filter_training_id" class="form-label fw-bold mb-1" style="font-size: 13px;">
-                                <i class="fas fa-filter text-primary me-1"></i> {{ app()->getLocale() === 'ar' ? 'تصفية حسب البرنامج التدريبي:' : 'Filter by Training Program:' }}
-                            </label>
-                            <select id="filter_training_id" class="form-select">
-                                <option value="">{{ app()->getLocale() === 'ar' ? '-- جميع البرامج التدريبية --' : '-- All Training Programs --' }}</option>
-                                @foreach($trainings as $training)
-                                    @php
-                                        $tName = is_array($training->name) ? ($training->name[app()->getLocale()] ?? reset($training->name)) : $training->name;
-                                    @endphp
-                                    <option value="{{ $training->id }}">{{ $tName }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-lg-5 col-md-6 col-12">
-                            <label class="form-label fw-bold mb-1 d-block" style="font-size: 13px;">
-                                <i class="fas fa-calendar-alt text-primary me-1"></i> {{ app()->getLocale() === 'ar' ? 'الفترة الزمنية:' : 'Timeframe Filter:' }}
-                            </label>
-                            <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="timeframe_filter" id="tf_all" value="all" checked autocomplete="off">
-                                <label class="btn btn-outline-primary timeframe-pill-btn" for="tf_all">
-                                    {{ app()->getLocale() === 'ar' ? 'الكل' : 'All' }}
-                                </label>
-
-                                <input type="radio" class="btn-check" name="timeframe_filter" id="tf_today" value="today" autocomplete="off">
-                                <label class="btn btn-outline-success timeframe-pill-btn" for="tf_today">
-                                    {{ app()->getLocale() === 'ar' ? 'اليوم' : 'Today' }} ({{ $metrics['today'] ?? 0 }})
-                                </label>
-
-                                <input type="radio" class="btn-check" name="timeframe_filter" id="tf_upcoming" value="upcoming" autocomplete="off">
-                                <label class="btn btn-outline-info timeframe-pill-btn" for="tf_upcoming">
-                                    {{ app()->getLocale() === 'ar' ? 'القادمة' : 'Upcoming' }}
-                                </label>
-
-                                <input type="radio" class="btn-check" name="timeframe_filter" id="tf_past" value="past" autocomplete="off">
-                                <label class="btn btn-outline-secondary timeframe-pill-btn" for="tf_past">
-                                    {{ app()->getLocale() === 'ar' ? 'المنتهية' : 'Completed' }}
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-2 col-12 d-flex align-items-end justify-content-lg-end gap-2">
-                            <button type="button" id="btn_reset_filters" class="btn btn-outline-danger btn-sm w-100 py-2">
-                                <i class="fas fa-redo-alt me-1"></i> {{ app()->getLocale() === 'ar' ? 'إعادة ضبط' : 'Reset' }}
-                            </button>
-                        </div>
-                    </div>
+            <div class="heroui-stat-card success">
+                <div class="heroui-stat-content">
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'حصص اليوم' : "Today's Sessions" }}</span>
+                    <h2 class="stat-value text-success">{{ number_format($metrics['today'] ?? 0) }}</h2>
                 </div>
+                <div class="heroui-stat-icon success">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
 
-                <!-- DataTable Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="mb-0 fw-bold">{{ trans('admin.clasess.clasess') }}</h4>
-                                <span class="text-muted font-sm">{{ app()->getLocale() === 'ar' ? 'إدارة ومتابعة الحصص التدريبية المنظمة' : 'Manage scheduled training sessions' }}</span>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('academy.training.create') }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-plus-circle me-1"></i> {{ app()->getLocale() === 'ar' ? 'برنامج تدريبي جديد' : 'New Training' }}
-                                </a>
-                                <a href="{{ route('academy.class.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus me-1"></i> {{ trans('admin.clasess.create') }}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="heroui-stat-card info">
+                <div class="heroui-stat-content">
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'الحصص القادمة' : 'Upcoming Sessions' }}</span>
+                    <h2 class="stat-value text-info">{{ number_format($metrics['upcoming'] ?? 0) }}</h2>
+                </div>
+                <div class="heroui-stat-icon info">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
 
-                    <!-- Modal Delete -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">{{ app()->getLocale() === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    {{ app()->getLocale() === 'ar' ? 'هل أنت متأكد من حذف هذه الحصص المحددة؟' : 'Are you sure you want to delete the selected items?' }}
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ app()->getLocale() === 'ar' ? 'إلغاء' : 'Cancel' }}</button>
-                                    <form action="{{ route('academy.class.bulkDelete') }}" method="post">
-                                        @csrf @method('DELETE')
-                                        <input type="hidden" name="ids" id="ids">
-                                        <button class="btn btn-danger">{{ app()->getLocale() === 'ar' ? 'حذف' : 'Delete' }}</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        {!! $dataTable->table(['class' => 'table table-striped dt-table-hover dataTable w-100', 'id' => 'tclass-table']) !!}
-                    </div>
+            <div class="heroui-stat-card secondary">
+                <div class="heroui-stat-content">
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'الحصص المنتهية' : 'Completed Sessions' }}</span>
+                    <h2 class="stat-value text-muted">{{ number_format($metrics['past'] ?? 0) }}</h2>
+                </div>
+                <div class="heroui-stat-icon secondary">
+                    <i class="fas fa-check-double"></i>
                 </div>
             </div>
         </div>
+
+        <!-- HeroUI Smart Filter Panel -->
+        <div class="heroui-filter-panel">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-5 col-md-12 col-12">
+                    <label for="filter_training_id" class="heroui-filter-label">
+                        <i class="fas fa-filter text-primary"></i>
+                        <span>{{ app()->getLocale() === 'ar' ? 'تصفية حسب البرنامج التدريبي:' : 'Filter by Training Program:' }}</span>
+                    </label>
+                    <div class="heroui-select-wrap">
+                        <select id="filter_training_id" class="heroui-select">
+                            <option value="">{{ app()->getLocale() === 'ar' ? '✨ جميع البرامج التدريبية (الكل)' : '✨ All Training Programs' }}</option>
+                            @foreach($trainings as $training)
+                                @php
+                                    $tName = is_array($training->name) ? ($training->name[app()->getLocale()] ?? reset($training->name)) : $training->name;
+                                @endphp
+                                <option value="{{ $training->id }}">{{ $tName }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-12 col-12">
+                    <label class="heroui-filter-label">
+                        <i class="fas fa-calendar-alt text-primary"></i>
+                        <span>{{ app()->getLocale() === 'ar' ? 'الفترة الزمنية للحصص:' : 'Session Timeframe:' }}</span>
+                    </label>
+                    <div class="heroui-tabs-container">
+                        <button type="button" class="heroui-tab-btn active" data-timeframe="all">
+                            <span>{{ app()->getLocale() === 'ar' ? 'الكل' : 'All' }}</span>
+                            <span class="heroui-tab-badge">{{ $metrics['total'] ?? 0 }}</span>
+                        </button>
+                        <button type="button" class="heroui-tab-btn" data-timeframe="today">
+                            <span>{{ app()->getLocale() === 'ar' ? 'اليوم' : 'Today' }}</span>
+                            <span class="heroui-tab-badge">{{ $metrics['today'] ?? 0 }}</span>
+                        </button>
+                        <button type="button" class="heroui-tab-btn" data-timeframe="upcoming">
+                            <span>{{ app()->getLocale() === 'ar' ? 'القادمة' : 'Upcoming' }}</span>
+                            <span class="heroui-tab-badge">{{ $metrics['upcoming'] ?? 0 }}</span>
+                        </button>
+                        <button type="button" class="heroui-tab-btn" data-timeframe="past">
+                            <span>{{ app()->getLocale() === 'ar' ? 'المنتهية' : 'Completed' }}</span>
+                            <span class="heroui-tab-badge">{{ $metrics['past'] ?? 0 }}</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="selected_timeframe" value="all">
+                </div>
+
+                <div class="col-lg-2 col-md-12 col-12 d-flex align-items-end justify-content-lg-end">
+                    <button type="button" id="btn_reset_filters" class="heroui-btn heroui-btn-reset w-100">
+                        <i class="fas fa-rotate-left"></i>
+                        <span>{{ app()->getLocale() === 'ar' ? 'إعادة ضبط' : 'Reset Filters' }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HeroUI Table Card -->
+        <div class="heroui-card-table">
+            <div class="table-responsive">
+                {!! $dataTable->table(['class' => 'table table-hover w-100', 'id' => 'tclass-table']) !!}
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -249,17 +185,28 @@
                 }
             }
 
+            // Training Filter Change
             $('#filter_training_id').on('change', function() {
                 reloadTable();
             });
 
-            $('input[name="timeframe_filter"]').on('change', function() {
+            // HeroUI Segmented Tabs Click
+            $('.heroui-tab-btn').on('click', function(e) {
+                e.preventDefault();
+                $('.heroui-tab-btn').removeClass('active');
+                $(this).addClass('active');
+
+                var tf = $(this).data('timeframe');
+                $('#selected_timeframe').val(tf);
                 reloadTable();
             });
 
+            // Reset Button
             $('#btn_reset_filters').on('click', function() {
                 $('#filter_training_id').val('');
-                $('#tf_all').prop('checked', true);
+                $('.heroui-tab-btn').removeClass('active');
+                $('.heroui-tab-btn[data-timeframe="all"]').addClass('active');
+                $('#selected_timeframe').val('all');
                 reloadTable();
             });
         });
