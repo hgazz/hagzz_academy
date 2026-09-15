@@ -73,7 +73,16 @@ class AcademyStudentController extends Controller
 
         $students = $query->paginate($perPage)->withQueryString();
 
-        return view('Academy.pages.students.index', compact('students'));
+        $baseQuery = $service->scopeStudents(AcademyStudent::query());
+        $metrics = [
+            'total' => (clone $baseQuery)->count(),
+            'active' => (clone $baseQuery)->where('status', 'active')->count(),
+            'inactive' => (clone $baseQuery)->where('status', 'inactive')->count(),
+            'male' => (clone $baseQuery)->where('gender', 'male')->count(),
+            'female' => (clone $baseQuery)->where('gender', 'female')->count(),
+        ];
+
+        return view('Academy.pages.students.index', compact('students', 'metrics'));
     }
 
     public function create()

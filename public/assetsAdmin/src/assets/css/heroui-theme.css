@@ -463,12 +463,17 @@ body.dark,
 }
 
 /* Custom Table Polish */
-#tclass-table {
+#tclass-table,
+#join-table,
+.heroui-table {
     border-collapse: separate;
-    border-spacing: 0 4px;
+    border-spacing: 0 6px;
+    width: 100%;
 }
 
-#tclass-table thead th {
+#tclass-table thead th,
+#join-table thead th,
+.heroui-table thead th {
     background: var(--heroui-bg);
     color: var(--heroui-text-muted);
     font-size: 12px;
@@ -479,31 +484,42 @@ body.dark,
     padding: 14px 16px;
 }
 
-#tclass-table tbody tr {
+#tclass-table tbody tr,
+#join-table tbody tr,
+.heroui-table tbody tr {
     background: var(--heroui-surface);
     transition: all 0.2s ease;
     border-radius: var(--heroui-radius-md);
 }
 
-#tclass-table tbody tr:hover {
+#tclass-table tbody tr:hover,
+#join-table tbody tr:hover,
+.heroui-table tbody tr:hover {
     background: var(--heroui-surface-hover) !important;
-    transform: scale(1.002);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-#tclass-table tbody td {
+#tclass-table tbody td,
+#join-table tbody td,
+.heroui-table tbody td {
     border-top: 1px solid var(--heroui-border-light);
     border-bottom: 1px solid var(--heroui-border-light);
     padding: 14px 16px;
     vertical-align: middle;
 }
 
-#tclass-table tbody tr td:first-child {
+#tclass-table tbody tr td:first-child,
+#join-table tbody tr td:first-child,
+.heroui-table tbody tr td:first-child {
     border-left: 1px solid var(--heroui-border-light);
     border-top-left-radius: var(--heroui-radius-md);
     border-bottom-left-radius: var(--heroui-radius-md);
 }
 
-#tclass-table tbody tr td:last-child {
+#tclass-table tbody tr td:last-child,
+#join-table tbody tr td:last-child,
+.heroui-table tbody tr td:last-child {
     border-right: 1px solid var(--heroui-border-light);
     border-top-right-radius: var(--heroui-radius-md);
     border-bottom-right-radius: var(--heroui-radius-md);

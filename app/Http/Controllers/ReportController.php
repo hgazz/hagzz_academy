@@ -63,16 +63,19 @@ class ReportController extends Controller
 
     public function joins(JoinDataTable $dataTable)
     {
-        return $dataTable->render('Academy.pages.joins.index');
+        $metrics = $this->getJoinMetrics();
+        return $dataTable->render('Academy.pages.joins.index', compact('metrics'));
     }
 
     public function offlineJoins(OfflineJoinDataTable $dataTable)
     {
-        return $dataTable->render('Academy.pages.joinsOffline.index');
+        $metrics = $this->getOfflineJoinMetrics();
+        return $dataTable->render('Academy.pages.joinsOffline.index', compact('metrics'));
     }
 
     public function joinFilter(Request $request , JoinDataTable $dataTable)
     {
+        $metrics = $this->getJoinMetrics();
         if ($request->has('start_date') && $request->has('end_date')) {
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
@@ -88,14 +91,15 @@ class ReportController extends Controller
 
             $joinsData = $joins->get();
             session(['joinsData' => $joinsData]);
-            return $dataTable->with('query', $joins)->render('Academy.pages.joins.index');
+            return $dataTable->with('query', $joins)->render('Academy.pages.joins.index', compact('metrics'));
         }
 
-        return $dataTable->render('Academy.pages.joins.index');
+        return $dataTable->render('Academy.pages.joins.index', compact('metrics'));
     }
 
     public function offlineJoinFilter(Request $request , OfflineJoinDataTable $dataTable)
     {
+        $metrics = $this->getOfflineJoinMetrics();
         if ($request->has('start_date') && $request->has('end_date')) {
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
@@ -112,10 +116,35 @@ class ReportController extends Controller
             $joinsData = $joins->get();
 
             session(['joinsData' => $joinsData]);
-            return $dataTable->with('query', $joins)->render('Academy.pages.joinsOffline.index');
+            return $dataTable->with('query', $joins)->render('Academy.pages.joinsOffline.index', compact('metrics'));
         }
 
-        return $dataTable->render('Academy.pages.joinsOffline.index');
+        return $dataTable->render('Academy.pages.joinsOffline.index', compact('metrics'));
+    }
+
+    private function getJoinMetrics(): array
+    {
+        $academyId = auth('academy')->id();
+        $base = Join::whereHas('training', fn($q) => $q->where('academy_id', $academyId));
+        return [
+            'total' => (clone $base)->count(),
+            'today' => (clone $base)->whereDate('created_at', today())->count(),
+            'online' => (clone $base)->whereDoesntHave('invoice', fn($q) => $q->where('user_type', 'offline'))->count(),
+            'offline' => (clone $base)->whereHas('invoice', fn($q) => $q->where('user_type', 'offline'))->count(),
+        ];
+    }
+
+    private function getOfflineJoinMetrics(): array
+    {
+        $academyId = auth('academy')->id();
+        $base = Join::whereHas('training', fn($q) => $q->where('academy_id', $academyId))
+            ->whereHas('invoice', fn($q) => $q->where('user_type', 'offline'));
+        return [
+            'total' => (clone $base)->count(),
+            'today' => (clone $base)->whereDate('created_at', today())->count(),
+            'with_user' => (clone $base)->whereNotNull('user_id')->count(),
+            'guest' => (clone $base)->whereNull('user_id')->count(),
+        ];
     }
 
     public function joinExport()
