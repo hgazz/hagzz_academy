@@ -8,7 +8,7 @@
             if (loader && loader.parentNode) {
                 loader.parentNode.removeChild(loader);
             }
-        }, 260);
+        }, 120);
     }
 
     function getOverlay() {
@@ -74,16 +74,21 @@
             );
         }, true);
 
+        var navTimer = null;
         document.addEventListener('click', function (event) {
             var link = event.target.closest && event.target.closest('a');
             if (!isPlainNavigationLink(link)) return;
             if (link.dataset.noLoader === 'true') return;
             if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
-            showTransition(
-                document.documentElement.lang === 'ar' ? 'جار فتح الصفحة' : 'Opening page',
-                document.documentElement.lang === 'ar' ? 'لحظة واحدة فقط' : 'Just a moment'
-            );
+            clearTimeout(navTimer);
+            // Only show loader overlay if navigation takes longer than 350ms to avoid jarring flashes
+            navTimer = setTimeout(function () {
+                showTransition(
+                    document.documentElement.lang === 'ar' ? 'جار فتح الصفحة' : 'Opening page',
+                    document.documentElement.lang === 'ar' ? 'لحظة واحدة فقط' : 'Just a moment'
+                );
+            }, 350);
         }, true);
     }
 
@@ -95,8 +100,13 @@
         }
     };
 
-    window.addEventListener('load', hideInitialLoader);
-    window.setTimeout(hideInitialLoader, 2200);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        hideInitialLoader();
+    } else {
+        document.addEventListener('DOMContentLoaded', hideInitialLoader);
+        window.addEventListener('load', hideInitialLoader);
+        window.setTimeout(hideInitialLoader, 600);
+    }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bindNavigationFeedback);

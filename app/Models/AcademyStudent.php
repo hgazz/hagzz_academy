@@ -15,6 +15,7 @@ class AcademyStudent extends Model
     protected $fillable = [
         'academy_id',
         'user_id',
+        'image',
         'name',
         'phone',
         'country_code', 'country_id', 'city_id', 'area_id',
@@ -83,6 +84,14 @@ class AcademyStudent extends Model
 
     public function avatarUrl(): string
     {
-        return $this->user?->image ?? $this->defaultImageUrl();
+        if ($this->image) {
+            return str_starts_with($this->image, 'http') ? $this->image : asset($this->image);
+        }
+
+        if ($this->user?->image) {
+            return str_starts_with($this->user->image, 'http') ? $this->user->image : asset($this->user->image);
+        }
+
+        return $this->defaultImageUrl();
     }
 }

@@ -2,6 +2,54 @@
 
 @section('title', app()->getLocale() === 'ar' ? 'إضافة حجز أوفلاين' : 'Create offline booking')
 
+@push('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 46px;
+        border: 1px solid #bfc9d4;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        background-color: #fff;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 44px;
+        padding: 0;
+        color: #3b3f5c;
+        font-size: 14px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 44px;
+        right: 10px;
+    }
+    [dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+    .select2-dropdown {
+        border: 1px solid #bfc9d4;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.1);
+        z-index: 1060;
+    }
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #bfc9d4;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    .select2-results__option {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
+@endpush
+
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <div class="middle-content container-xxl p-0">
@@ -24,23 +72,39 @@
             @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
             <form method="POST" action="{{ route('academy.storeBooking') }}">@csrf
                 <div class="row g-4">
-                    <div class="col-lg-6">
+                    <div class="col-lg-{{ isset($sports) && $sports->count() > 1 ? '4' : '6' }}">
                         <label class="form-label fw-bold" for="academy_student_id">{{ $ar ? 'الطالب أو العضو' : 'Student or member' }} <span class="text-danger">*</span></label>
                         <select class="form-select" id="academy_student_id" name="academy_student_id" required>
-                            <option value="">{{ $ar ? 'اختر من الطلاب المسجلين' : 'Select a registered student' }}</option>
+                            <option value="">{{ $ar ? 'اختر أو ابحث عن الطالب...' : 'Select or search student...' }}</option>
                             @foreach($students as $student)
                                 <option value="{{ $student->id }}" @selected(old('academy_student_id') == $student->id)>{{ $student->name }}{{ $student->phone ? ' — '.$student->phone : '' }}{{ $student->guardian_name ? ' — '.$student->guardian_name : '' }}</option>
                             @endforeach
                         </select>
                         @if($students->isEmpty())<small class="text-danger">{{ $ar ? 'لا يوجد طلاب نشطون. أضف الطالب أولًا.' : 'No active students. Add a student first.' }}</small>@endif
                     </div>
-                    <div class="col-lg-6">
+
+                    @if(isset($sports) && $sports->count() > 1)
+                    <div class="col-lg-4" id="sport_wrap">
+                        <label class="form-label fw-bold" for="sport_id"><i class="fa-solid fa-trophy text-warning me-1"></i> {{ $ar ? 'نوع الرياضة' : 'Sport Type' }}</label>
+                        <select class="form-select" id="sport_id">
+                            <option value="">{{ $ar ? 'جميع الرياضات' : 'All sports' }}</option>
+                            @foreach($sports as $sport)
+                                <option value="{{ $sport->id }}">{{ $sport->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
+                    <div class="col-lg-{{ isset($sports) && $sports->count() > 1 ? '4' : '6' }}">
                         <label class="form-label fw-bold" for="training_id">{{ trans('admin.training.training_name') }} <span class="text-danger">*</span></label>
                         <select class="form-select" id="training_id" name="training_id" required>
                             <option value="">{{ trans('admin.academies.select_training') }}</option>
-                            @foreach($data as $training)<option value="{{ $training->id }}" data-price="{{ number_format((float)$training->price, 2, '.', '') }}" @selected(old('training_id') == $training->id)>{{ $training->name }}</option>@endforeach
+                            @foreach($data as $training)
+                                <option value="{{ $training->id }}" data-sport="{{ $training->sport_id }}" data-price="{{ number_format((float)$training->price, 2, '.', '') }}" @selected(old('training_id') == $training->id)>{{ $training->name }}</option>
+                            @endforeach
                         </select>
                     </div>
+
                     <div class="col-md-4"><label class="form-label fw-bold">{{ $ar ? 'قيمة الحجز' : 'Booking total' }}</label><input id="price" class="form-control" type="number" step="0.01" readonly></div>
                     <div class="col-md-4"><label class="form-label fw-bold" for="paid_amount">{{ $ar ? 'المبلغ المدفوع' : 'Paid Amount' }} <span class="text-danger">*</span></label><input id="paid_amount" name="paid_amount" class="form-control" type="number" min="0" step="0.01" value="{{ old('paid_amount', 0) }}" required></div>
                     <div class="col-md-4"><label class="form-label fw-bold">{{ $ar ? 'المبلغ المتبقي' : 'Remaining Amount' }}</label><input id="remaining_amount" class="form-control" type="number" step="0.01" readonly></div>
@@ -65,14 +129,76 @@
 @endsection
 
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const training = document.getElementById('training_id'), paid = document.getElementById('paid_amount');
-    const price = document.getElementById('price'), remaining = document.getElementById('remaining_amount');
-    const method = document.getElementById('payment_method'), other = document.getElementById('other_wrap');
-    function totals(){ const total = Number(training.selectedOptions[0]?.dataset.price || 0); price.value=total.toFixed(2); remaining.value=Math.max(0,total-Number(paid.value||0)).toFixed(2); }
-    function methodState(){ other.classList.toggle('d-none', method.value !== 'other'); document.getElementById('payment_method_other').required = method.value === 'other'; }
-    training.addEventListener('change', totals); paid.addEventListener('input', totals); method.addEventListener('change', methodState); totals(); methodState();
+    // 1. Initialize Select2 on Student Select for quick search
+    if (window.jQuery && $('#academy_student_id').length) {
+        $('#academy_student_id').select2({
+            placeholder: "{{ $ar ? 'اختر أو ابحث عن الطالب بالاسم أو الهاتف...' : 'Select or search student by name or phone...' }}",
+            allowClear: true,
+            width: '100%',
+            dir: "{{ $ar ? 'rtl' : 'ltr' }}"
+        });
+    }
+
+    const sport = document.getElementById('sport_id');
+    const training = document.getElementById('training_id');
+    const paid = document.getElementById('paid_amount');
+    const price = document.getElementById('price');
+    const remaining = document.getElementById('remaining_amount');
+    const otherWrap = document.getElementById('other_wrap');
+    const otherInput = document.getElementById('payment_method_other');
+    const methodRadios = document.querySelectorAll('input[name="payment_method"]');
+
+    // Filter trainings by sport if multiple sports exist
+    if (sport && training) {
+        const trainingOptions = Array.from(training.querySelectorAll('option[data-sport]'));
+
+        sport.addEventListener('change', () => {
+            const selectedSport = sport.value;
+            const currentSelected = training.value;
+            let currentValid = false;
+
+            trainingOptions.forEach(opt => {
+                const optSport = opt.dataset.sport;
+                const match = !selectedSport || optSport === selectedSport;
+                opt.hidden = !match;
+                if (!match && opt.value === currentSelected) {
+                    currentValid = false;
+                } else if (match && opt.value === currentSelected) {
+                    currentValid = true;
+                }
+            });
+
+            if (!currentValid && currentSelected) {
+                training.value = '';
+                totals();
+            }
+        });
+    }
+
+    function totals() {
+        const total = Number(training?.selectedOptions?.[0]?.dataset?.price || 0);
+        if (price) price.value = total.toFixed(2);
+        if (remaining) remaining.value = Math.max(0, total - Number(paid?.value || 0)).toFixed(2);
+    }
+
+    function methodState() {
+        const selected = document.querySelector('input[name="payment_method"]:checked')?.value;
+        if (otherWrap) {
+            const isOther = selected === 'other';
+            otherWrap.classList.toggle('d-none', !isOther);
+            if (otherInput) otherInput.required = isOther;
+        }
+    }
+
+    if (training) training.addEventListener('change', totals);
+    if (paid) paid.addEventListener('input', totals);
+    methodRadios.forEach(r => r.addEventListener('change', methodState));
+
+    totals();
+    methodState();
 });
 </script>
 @endpush

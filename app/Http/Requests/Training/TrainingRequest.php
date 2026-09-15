@@ -66,6 +66,8 @@ class TrainingRequest extends FormRequest
             'classes_days' => 'required|array|min:1',
             'classes_days.*' => 'in:saturday,sunday,monday,tuesday,wednesday,thursday,friday',
             'classes_number' => 'nullable|integer|min:1',
+            'classes_start_date' => 'nullable|date',
+            'auto_generate_classes' => 'nullable|boolean',
             'color' => ['nullable', 'regex:/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/'],
             'discount_price' => ['nullable', 'numeric', 'min:0', new checkDiscountValue()],
         ];

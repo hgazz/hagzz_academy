@@ -145,6 +145,21 @@
                 </select>
                 @error('classes_days')<span class="field-error"><i data-feather="alert-circle"></i>{{ $message }}</span>@enderror
             </div>
+
+            @if(!isset($training))
+            <div class="modern-field field-half">
+                <label for="classes_start_date"><span>{{ $isArabic ? 'تاريخ بداية أول حصة' : 'First session start date' }}</span></label>
+                <div class="input-shell"><i data-feather="calendar"></i><input type="date" value="{{ old('classes_start_date', now()->toDateString()) }}" id="classes_start_date" name="classes_start_date"></div>
+                <small class="field-help">{{ $isArabic ? 'سيتم توليد الحصص المجدولة تلقائياً بدءاً من هذا التاريخ.' : 'Sessions will be generated automatically starting from this date.' }}</small>
+                @error('classes_start_date')<span class="field-error"><i data-feather="alert-circle"></i>{{ $message }}</span>@enderror
+            </div>
+            <div class="modern-field field-half d-flex align-items-center pt-lg-4">
+                <label class="d-flex align-items-center gap-2 cursor-pointer mb-0">
+                    <input type="checkbox" name="auto_generate_classes" value="1" @checked(old('auto_generate_classes', true)) style="width: 20px; height: 20px; accent-color: #0984e3;">
+                    <span class="fw-bold fs-6 text-dark">{{ $isArabic ? 'توليد جدول الحصص تلقائياً في التقويم فور الحفظ' : 'Auto-generate sessions into calendar upon save' }}</span>
+                </label>
+            </div>
+            @endif
         </div>
     </div>
 </section>

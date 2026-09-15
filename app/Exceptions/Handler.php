@@ -26,5 +26,18 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Your session has expired. Please refresh the page and try again.',
+                ], 419);
+            }
+
+            return redirect()->route('academy.loginPage')
+                ->with('error', app()->getLocale() === 'ar' 
+                    ? 'انتهت صلاحية الجلسة، تم تحديث الصفحة تلقائياً. يُرجى إعادة تسجيل الدخول.' 
+                    : 'Your session expired. The page has been refreshed, please log in again.');
+        });
     }
 }

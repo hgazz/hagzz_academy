@@ -26,6 +26,24 @@
             'suspended': isArabic ? 'موقوف' : 'Suspended'
         };
 
+        window.hasCustomAvatar = @json(isset($student) && $student->image ? true : false);
+
+        window.previewStudentAvatar = function (input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('avatarPreviewImage');
+                    if (preview) preview.src = e.target.result;
+                    const asideAvatar = document.getElementById('studentAvatar');
+                    if (asideAvatar) {
+                        asideAvatar.innerHTML = '<img src="' + e.target.result + '" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+                        window.hasCustomAvatar = true;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
         function updatePreview() {
             const name = document.getElementById('studentName').value.trim();
             const phone = document.getElementById('studentPhone').value.trim();
@@ -36,7 +54,9 @@
             const statusBox = document.getElementById('previewStatus');
 
             document.getElementById('previewStudentName').textContent = name || (isArabic ? 'طالب جديد' : 'New student');
-            document.getElementById('studentAvatar').textContent = (name || (isArabic ? 'ط' : 'S')).charAt(0).toLocaleUpperCase();
+            if (!window.hasCustomAvatar) {
+                document.getElementById('studentAvatar').textContent = (name || (isArabic ? 'ط' : 'S')).charAt(0).toLocaleUpperCase();
+            }
             document.getElementById('previewStudentContact').textContent = phone || email || '-';
             document.getElementById('previewAge').textContent = calculateAge(document.getElementById('studentBirthDate').value);
             document.getElementById('previewGender').textContent = selectedText('studentGender');

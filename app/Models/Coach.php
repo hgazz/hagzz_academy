@@ -52,7 +52,9 @@ class Coach extends Model
         'license',
         'license_type',
         'gender',
-        'birth_date'
+        'birth_date',
+        'compensation_type',
+        'compensation_value'
     ];
 
     public function academy()

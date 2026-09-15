@@ -18,6 +18,7 @@ use App\Models\Country;
 use App\Models\Follow;
 use App\Models\Invoice;
 use App\Models\Join;
+use App\Models\TClass;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
@@ -101,9 +102,11 @@ class TrainingController extends Controller
             abort(403, 'غير مصرح لك بإضافة تدريب لهذه الرياضة');
         }
 
-        DB::transaction(function () use ($request, $authUser) {
+        $generatedCount = 0;
+
+        DB::transaction(function () use ($request, $authUser, &$generatedCount) {
             $translatable = TranslatableService::generateTranslatableFields($this->trainingModel::getTranslatableFields(), $request->validated());
-            $this->trainingModel->create(array_merge($translatable, [
+            $training = $this->trainingModel->create(array_merge($translatable, [
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'start_time' => $request->start_time,
@@ -123,9 +126,64 @@ class TrainingController extends Controller
                 'classes_number' => $request->classes_number,
                 'active' => 1,
             ]));
+
+            if ($request->boolean('auto_generate_classes', true) && !empty($request->classes_days) && (int) $request->classes_number > 0) {
+                $generatedCount = $this->autoGenerateClasses($training, $request);
+            }
         });
-        session()->flash('success', trans('admin.training.created_successfully'));
+
+        $successMsg = trans('admin.training.created_successfully');
+        if ($generatedCount > 0) {
+            $successMsg .= ' ' . (app()->getLocale() === 'ar'
+                ? "وتم توليد {$generatedCount} حصة تدريبية مجدولة في التقويم تلقائياً."
+                : "and {$generatedCount} scheduled sessions were automatically generated in the calendar.");
+        }
+
+        session()->flash('success', $successMsg);
         return to_route('academy.training.index');
+    }
+
+    /**
+     * Automatically generate scheduled TClass sessions for a new training
+     */
+    private function autoGenerateClasses(Training $training, Request $request): int
+    {
+        $startDateInput = $request->input('classes_start_date');
+        $currentDate = $startDateInput ? \Illuminate\Support\Carbon::parse($startDateInput) : now();
+        $targetDays = array_map('strtolower', (array) $request->classes_days);
+        $count = (int) ($request->classes_number ?: 12);
+        $generated = 0;
+        $maxDaysToScan = max(90, $count * 14);
+        $scanned = 0;
+
+        $startTime = $training->start_time ? $training->start_time->format('H:i') : $request->start_time;
+        $endTime = $training->end_time ? $training->end_time->format('H:i') : $request->end_time;
+        $arName = $training->getTranslation('name', 'ar') ?: $training->name;
+        $enName = $training->getTranslation('name', 'en') ?: $training->name;
+
+        while ($generated < $count && $scanned < $maxDaysToScan) {
+            $dayName = strtolower($currentDate->format('l'));
+            if (in_array($dayName, $targetDays)) {
+                $generated++;
+                TClass::create([
+                    'title' => [
+                        'ar' => "حصة {$generated} - {$arName}",
+                        'en' => "Session {$generated} - {$enName}",
+                    ],
+                    'date' => $currentDate->toDateString(),
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                    'training_id' => $training->id,
+                    'sport_id' => $training->sport_id,
+                    'out_comes' => ['ar' => [], 'en' => []],
+                    'bring_with_me' => ['ar' => [], 'en' => []],
+                ]);
+            }
+            $currentDate->addDay();
+            $scanned++;
+        }
+
+        return $generated;
     }
 
     public function edit(Training $training)
@@ -263,10 +321,17 @@ class TrainingController extends Controller
         /** @var \App\Models\PartnerUser $authUser */
         $authUser = auth('academy')->user();
         $service = new PartnerAccessService($authUser);
-        $data = $service->scopeTrainings($this->trainingModel->newQuery())->get();
+        $data = $service->scopeTrainings($this->trainingModel->newQuery())->with('sport')->get();
         $students = $service->scopeStudents(AcademyStudent::query())
             ->where('status', 'active')->orderBy('name')->get(['id', 'name', 'phone', 'guardian_name']);
-        return view('Academy.pages.training.create_booking', compact('data', 'students'));
+
+        $academy = ($authUser instanceof \App\Models\PartnerUser && $authUser->academy) ? $authUser->academy : $authUser;
+        $sports = $academy ? $academy->sports()->get() : collect();
+        if ($sports->isEmpty()) {
+            $sports = $data->pluck('sport')->filter()->unique('id')->values();
+        }
+
+        return view('Academy.pages.training.create_booking', compact('data', 'students', 'sports'));
     }
 
     public function getAreaByCity(Request $request)

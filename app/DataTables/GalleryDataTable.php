@@ -37,7 +37,9 @@ class GalleryDataTable extends DataTable
      */
     public function query(Gallery $model): QueryBuilder
     {
-        return $model->newQuery()->whereBelongsTo(auth('academy')->user(),'academy');
+        $user = auth('academy')->user();
+        $academyId = $user instanceof \App\Models\PartnerUser ? (int) $user->academy_id : (int) auth('academy')->id();
+        return $model->newQuery()->where('academy_id', $academyId);
     }
 
     /**

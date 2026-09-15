@@ -467,6 +467,20 @@ body.partner-login-page {
     outline: none;
 }
 
+.remember-choice-wrap {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+}
+
+.remember-checkbox {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .remember-choice {
     display: inline-flex;
     width: max-content;
@@ -483,9 +497,11 @@ body.partner-login-page {
     width: 1px;
     height: 1px;
     opacity: 0;
+    pointer-events: none;
 }
 
-.remember-choice span {
+.remember-choice span:not(.remember-text),
+.remember-choice .remember-box {
     display: grid;
     width: 19px;
     height: 19px;
@@ -494,13 +510,23 @@ body.partner-login-page {
     border-radius: 6px;
     background: #fff;
     transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    flex-shrink: 0;
+    pointer-events: none;
 }
 
+.remember-choice .remember-text {
+    pointer-events: none;
+}
+
+.remember-checkbox:checked + .remember-choice span:not(.remember-text),
+.remember-checkbox:checked + .remember-choice .remember-box,
 .remember-choice input:checked + span {
     border-color: var(--hagzz-ink);
     background: var(--hagzz-ink);
 }
 
+.remember-checkbox:checked + .remember-choice span:not(.remember-text)::after,
+.remember-checkbox:checked + .remember-choice .remember-box::after,
 .remember-choice input:checked + span::after {
     color: #fff;
     content: "✓";
@@ -508,6 +534,8 @@ body.partner-login-page {
     font-weight: 800;
 }
 
+.remember-checkbox:focus-visible + .remember-choice span:not(.remember-text),
+.remember-checkbox:focus-visible + .remember-choice .remember-box,
 .remember-choice input:focus-visible + span {
     box-shadow: 0 0 0 4px rgba(170, 244, 72, 0.22);
 }

@@ -22,6 +22,35 @@
                 </div>
             </header>
             <div class="student-section-body">
+                <div class="student-avatar-picker-box mb-4 p-3 rounded-3 bg-white border d-flex align-items-center gap-3 shadow-sm">
+                    <div class="position-relative" style="width: 80px; height: 80px; min-width: 80px;">
+                        <img id="avatarPreviewImage"
+                             src="{{ isset($student) ? $student->avatarUrl() : asset('assetsAdmin/img/default-user-male.webp') }}"
+                             alt="Student Avatar"
+                             class="rounded-circle border border-2 border-primary shadow-sm"
+                             style="width: 80px; height: 80px; object-fit: cover;"
+                             onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/img/default-user-male.webp') }}';">
+                    </div>
+                    <div class="flex-grow-1">
+                        <label for="studentImageInput" class="form-label fw-bold mb-1 d-block text-dark" style="cursor: pointer;">
+                            <i data-feather="camera" style="width: 16px; height: 16px;" class="me-1 text-primary"></i>
+                            {{ $isArabic ? 'الصورة الشخصية للاعب' : 'Player Profile Photo' }}
+                        </label>
+                        <span class="text-muted d-block small mb-2">
+                            {{ $isArabic ? 'ارفع صورة شخصية حديثة للاعب ليتم استبدال الصورة الحالية بها في ملفه وكارنيه النادي.' : 'Upload player profile photo to replace the current image across profile and cards.' }}
+                        </span>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <input type="file" id="studentImageInput" name="image" class="form-control form-control-sm" accept="image/jpeg,image/png,image/jpg,image/webp" style="max-width: 300px;" onchange="previewStudentAvatar(this)">
+                            @if(isset($student) && $student->image)
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                                    <i data-feather="check" style="width: 12px; height: 12px;"></i> {{ $isArabic ? 'توجد صورة مخصصة' : 'Custom photo set' }}
+                                </span>
+                            @endif
+                        </div>
+                        @error('image')<span class="student-field-error"><i data-feather="alert-circle"></i>{{ $message }}</span>@enderror
+                    </div>
+                </div>
+
                 <div class="student-fields-grid">
                     <div class="student-field field-full">
                         <label for="studentName">{{ trans('admin.student_management.name') }} <b>*</b></label>
@@ -202,7 +231,13 @@
 
     <aside class="student-form-aside">
         <div class="student-preview-card">
-            <div class="preview-avatar" id="studentAvatar">{{ mb_strtoupper(mb_substr(old('name', $student->name ?? ($isArabic ? 'ط' : 'S')), 0, 1)) }}</div>
+            <div class="preview-avatar" id="studentAvatar">
+                @if(isset($student) && $student->image)
+                    <img src="{{ $student->avatarUrl() }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                @else
+                    {{ mb_strtoupper(mb_substr(old('name', $student->name ?? ($isArabic ? 'ط' : 'S')), 0, 1)) }}
+                @endif
+            </div>
             <span>{{ $isArabic ? 'بطاقة الطالب' : 'Student card' }}</span>
             <h2 id="previewStudentName">{{ old('name', $student->name ?? ($isArabic ? 'طالب جديد' : 'New student')) }}</h2>
             <p id="previewStudentContact">-</p>

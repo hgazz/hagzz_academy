@@ -16,13 +16,8 @@ class EnsureVenueModule
         }
 
         $academy = $user instanceof PartnerUser ? $user->academy : $user;
-        if ($academy) {
-            $subscription = $academy->currentSubscription()->with('plan')->first();
-            if ($subscription && $subscription->plan) {
-                if (in_array($subscription->status, ['expired', 'suspended', 'cancelled'], true)) {
-                    abort(403, trans('admin.venues.subscription_inactive') ?: 'عفواً، باقة الاشتراك الحالية غير نشطة.');
-                }
-            }
+        if (!$academy || !$academy->hasVenueModule()) {
+            abort(403, trans('admin.venues.subscription_inactive') ?: 'عفواً، ميزة إدارة الملاعب غير مفعلة لنوع نشاط حسابك أو باقة اشتراكك.');
         }
 
         return $next($request);

@@ -71,14 +71,24 @@ class AddressDataTable extends DataTable
      */
     public function query(Address $model): QueryBuilder
     {
+        /** @var \App\Models\PartnerUser|null $authUser */
+        $authUser = auth('academy')->user();
+        $academyId = $authUser instanceof \App\Models\PartnerUser ? (int) $authUser->academy_id : (int) auth('academy')->id();
+        $service = $authUser instanceof \App\Models\PartnerUser ? new \App\Services\PartnerAccessService($authUser) : null;
+        $branchIds = $service?->accessibleBranchIds();
+
         $query = $model->newQuery()
-            ->with(['country', 'city', 'area', 'academy:id,commercial_name'])
-            ->whereBelongsTo(auth('academy')->user(),'academy');
+            ->with(['country', 'city', 'area', 'academy:id,commercial_name']);
+
+        if ($branchIds !== null) {
+            $query->whereIn('addresses.academy_id', $branchIds);
+        } else {
+            $query->where('addresses.academy_id', $academyId);
+        }
 
         $country = request()->input('country.name');
         if ($country) {
-            $query->whereHas('city', function ($q) use ($country) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+            $query->whereHas('country', function ($q) use ($country) {
                 $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$country}%"]);
             });
         }
@@ -86,7 +96,6 @@ class AddressDataTable extends DataTable
         $academy = request()->input('academy.commercial_name');
         if ($academy) {
             $query->whereHas('academy', function ($q) use ($academy) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
                 $q->whereRaw("JSON_SEARCH(lower(commercial_name), 'one', lower(?)) IS NOT NULL", ["%{$academy}%"]);
             });
         }
@@ -94,15 +103,13 @@ class AddressDataTable extends DataTable
         $city = request()->input('city.name');
         if ($city) {
             $query->whereHas('city', function ($q) use ($city) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
                 $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$city}%"]);
             });
         }
 
         $area = request()->input('area.name');
         if ($area) {
-            $query->whereHas('city', function ($q) use ($area) {
-                // Use JSON_SEARCH to find any occurrence of $city within the JSON column, regardless of the key (locale)
+            $query->whereHas('area', function ($q) use ($area) {
                 $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$area}%"]);
             });
         }

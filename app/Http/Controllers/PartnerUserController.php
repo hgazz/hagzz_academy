@@ -38,8 +38,11 @@ class PartnerUserController extends Controller
 
         $branches = Academies::where('branch_to', $academyId)->get();
 
-        // All sports of the main academy
+        // All sports of the main academy or all available sports
         $sports = $authUser->academy?->sports()->get() ?? collect();
+        if ($sports->isEmpty()) {
+            $sports = \App\Models\Sport::all();
+        }
 
         return view('Academy.pages.team.create', compact('roles', 'branches', 'sports'));
     }
@@ -105,17 +108,20 @@ class PartnerUserController extends Controller
             ->orWhere('academy_id', $authUser->academy_id)
             ->get();
 
-        $branches       = Academies::where('branch_to', $authUser->academy_id)->get();
-        $selectedBranches = $team->assignedBranches->pluck('id')->toArray();
-        $selectedRole   = $team->roles->first()?->id;
+        $branches          = Academies::where('branch_to', $authUser->academy_id)->get();
+        $assignedBranchIds = $team->assignedBranches->pluck('id')->toArray();
+        $selectedRole      = $team->roles->first()?->id;
 
         // Sports
-        $sports          = $authUser->academy?->sports()->get() ?? collect();
-        $selectedSports  = $team->assignedSports->pluck('id')->toArray();
+        $sports = $authUser->academy?->sports()->get() ?? collect();
+        if ($sports->isEmpty()) {
+            $sports = \App\Models\Sport::all();
+        }
+        $assignedSportIds = $team->assignedSports->pluck('id')->toArray();
 
         return view('Academy.pages.team.edit', compact(
-            'team', 'roles', 'branches', 'selectedBranches', 'selectedRole',
-            'sports', 'selectedSports'
+            'team', 'roles', 'branches', 'assignedBranchIds', 'selectedRole',
+            'sports', 'assignedSportIds'
         ));
     }
 

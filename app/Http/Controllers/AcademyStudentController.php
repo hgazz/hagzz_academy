@@ -31,15 +31,47 @@ class AcademyStudentController extends Controller
         return (int) ($user?->id ?? auth('academy')->id());
     }
 
-    public function index()
+    public function index(Request $request)
     {
         /** @var \App\Models\PartnerUser $authUser */
         $authUser = auth('academy')->user();
         $service = new \App\Services\PartnerAccessService($authUser);
 
-        $students = $service->scopeStudents(AcademyStudent::with('user'))
-            ->latest()
-            ->paginate(20);
+        $query = $service->scopeStudents(AcademyStudent::with('user'));
+
+        if ($search = trim((string) $request->input('search'))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('guardian_name', 'like', "%{$search}%")
+                  ->orWhere('guardian_phone', 'like', "%{$search}%")
+                  ->orWhere('membership_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->input('gender'));
+        }
+
+        $sort = $request->input('sort', 'latest');
+        match ($sort) {
+            'name_asc' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            'oldest' => $query->oldest('id'),
+            default => $query->latest('id'),
+        };
+
+        $perPage = (int) $request->input('per_page', 20);
+        if (!in_array($perPage, [10, 20, 50, 100], true)) {
+            $perPage = 20;
+        }
+
+        $students = $query->paginate($perPage)->withQueryString();
 
         return view('Academy.pages.students.index', compact('students'));
     }
@@ -204,12 +236,20 @@ class AcademyStudentController extends Controller
 
         session()->flash(
             'success',
-            trans('admin.student_management.import_summary', [
+            trans('admin.student_management.students_imported', [
                 'created' => $import->created,
                 'updated' => $import->updated,
                 'skipped' => $import->skipped,
             ])
         );
+
+        session()->flash('import_summary', [
+            'total' => $import->totalRows,
+            'created' => $import->created,
+            'updated' => $import->updated,
+            'skipped' => $import->skipped,
+            'errors' => $import->errors,
+        ]);
 
         return back();
     }
@@ -228,6 +268,10 @@ class AcademyStudentController extends Controller
         $this->processLocationData($data, $request);
         $data['academy_id'] = $this->getAcademyId();
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('students/avatars', 'public');
+            $data['image'] = 'storage/' . $path;
+        }
         if ($request->hasFile('medical_certificate')) {
             $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
             $data['medical_certificate'] = 'storage/' . $path;
@@ -258,6 +302,10 @@ class AcademyStudentController extends Controller
         $data = $this->validated($request);
         $this->processLocationData($data, $request);
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('students/avatars', 'public');
+            $data['image'] = 'storage/' . $path;
+        }
         if ($request->hasFile('medical_certificate')) {
             $path = $request->file('medical_certificate')->store('students/medical_certificates', 'public');
             $data['medical_certificate'] = 'storage/' . $path;
@@ -267,11 +315,42 @@ class AcademyStudentController extends Controller
             $data['club_card_file'] = 'storage/' . $path;
         }
 
+        // Strict tenant isolation: never allow changing academy_id
+        $data['academy_id'] = $this->getAcademyId();
+
         $student->update($data);
         $this->syncLinkedUser($student);
 
         session()->flash('success', trans('admin.student_management.student_updated'));
         return to_route('academy.students.index');
+    }
+
+    public function uploadAvatar(Request $request, AcademyStudent $student)
+    {
+        $this->authorizeStudent($student);
+
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+        ]);
+
+        $path = $request->file('image')->store('students/avatars', 'public');
+        $imageUrl = 'storage/' . $path;
+
+        $student->update(['image' => $imageUrl]);
+        if ($student->user_id) {
+            $student->user()->update(['image' => $imageUrl]);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'avatar_url' => asset($imageUrl),
+                'message' => trans('admin.student_management.avatar_updated_success'),
+            ]);
+        }
+
+        session()->flash('success', trans('admin.student_management.avatar_updated_success'));
+        return back();
     }
 
     public function destroy(AcademyStudent $student)
@@ -280,6 +359,39 @@ class AcademyStudentController extends Controller
         $student->delete();
 
         session()->flash('success', trans('admin.student_management.student_deleted'));
+        return to_route('academy.students.index');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $academyId = $this->getAcademyId();
+        $count = AcademyStudent::where('academy_id', $academyId)
+            ->whereIn('id', $validated['ids'])
+            ->delete();
+
+        session()->flash('success', trans('admin.student_management.bulk_deleted_success', ['count' => $count]));
+        return to_route('academy.students.index');
+    }
+
+    public function bulkStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+            'status' => ['required', 'in:active,inactive,suspended'],
+        ]);
+
+        $academyId = $this->getAcademyId();
+        $count = AcademyStudent::where('academy_id', $academyId)
+            ->whereIn('id', $validated['ids'])
+            ->update(['status' => $validated['status']]);
+
+        session()->flash('success', trans('admin.student_management.bulk_status_success', ['count' => $count]));
         return to_route('academy.students.index');
     }
 
@@ -313,6 +425,7 @@ class AcademyStudentController extends Controller
             'start_date' => ['nullable', 'date'],
             'medical_notes' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'medical_certificate' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'club_card_file' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ]);
@@ -355,7 +468,7 @@ class AcademyStudentController extends Controller
     private function syncLinkedUser(AcademyStudent $student): void
     {
         if (! $student->user_id) return;
-        $student->user()->update([
+        $userPayload = [
             'name' => $student->name,
             'phone' => $student->phone,
             'email' => $student->email,
@@ -382,7 +495,13 @@ class AcademyStudentController extends Controller
             'start_date' => $student->start_date,
             'medical_condition_details' => $student->medical_notes,
             'additional_information' => $student->notes,
-        ]);
+        ];
+
+        if ($student->image) {
+            $userPayload['image'] = $student->image;
+        }
+
+        $student->user()->update($userPayload);
     }
 
     private function authorizeStudent(AcademyStudent $student): void

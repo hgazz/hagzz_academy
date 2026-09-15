@@ -55,6 +55,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="theme-color" content="#132621">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $copy['title'] }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('assetsAdmin/logo/Tab icon.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -172,11 +173,13 @@
                         @enderror
                     </div>
 
-                    <label class="remember-choice" for="partner-remember">
-                        <input id="partner-remember" type="checkbox" name="remember" value="1" @checked(old('remember'))>
-                        <span aria-hidden="true"></span>
-                        {{ $copy['remember'] }}
-                    </label>
+                    <div class="remember-choice-wrap">
+                        <input id="partner-remember" class="remember-checkbox" type="checkbox" name="remember" value="1" @checked(old('remember'))>
+                        <label class="remember-choice" for="partner-remember">
+                            <span class="remember-box" aria-hidden="true"></span>
+                            <span class="remember-text">{{ $copy['remember'] }}</span>
+                        </label>
+                    </div>
 
                     <button class="login-submit" type="submit">
                         <span>{{ $copy['submit'] }}</span>
@@ -250,6 +253,14 @@
                     });
                 });
             }
+
+            // Auto-refresh page if user returns to tab after long idle (>15 mins) to prevent stale CSRF
+            const pageLoadedAt = Date.now();
+            window.addEventListener('focus', () => {
+                if (Date.now() - pageLoadedAt > 15 * 60 * 1000) {
+                    window.location.reload();
+                }
+            });
         })();
     </script>
 </body>

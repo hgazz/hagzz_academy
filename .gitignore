@@ -19,3 +19,11 @@ yarn-error.log
 /.idea
 /.vscode
 *.lock
+check_*.php
+inspect_*.php
+list_*.php
+reset_*.php
+update_*.php
+setup_backend.bat
+*.tar
+/public/uploads/avatars/*

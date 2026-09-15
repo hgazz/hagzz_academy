@@ -32,12 +32,16 @@ class GalleryController extends Controller
 
     public function store(GalleryRequest $request)
     {
+        $user = auth('academy')->user();
+        $academyId = $user instanceof \App\Models\PartnerUser ? (int) $user->academy_id : (int) auth('academy')->id();
+        $academy = $user instanceof \App\Models\PartnerUser ? $user->academy : $user;
+
         $image = $this->upload($request->file('image'), $this->galleryModel::PATH);
-       $gallery =  $this->galleryModel->create([
+        $gallery = $this->galleryModel->create([
             'image' => $image,
-            'academy_id' => auth('academy')->id()
+            'academy_id' => $academyId,
         ]);
-        NotificationService::dbNotification(auth('academy')->id(), Academies::class, 'new gallery added', auth('academy')->user()->commercial_name, 'Image Added', auth('academy')->user()->image, ['gallery' => $gallery->image]);
+        NotificationService::dbNotification($academyId, Academies::class, 'new gallery added', $academy?->commercial_name ?? '', 'Image Added', $academy?->logo ?? $user?->image, ['gallery' => $gallery->image]);
         session()->flash('success', trans('admin.gallery.created_successfully'));
         return to_route('academy.gallery.index');
     }

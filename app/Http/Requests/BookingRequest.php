@@ -22,23 +22,25 @@ class BookingRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = auth('academy')->user();
+        $academyId = $user instanceof \App\Models\PartnerUser ? (int) $user->academy_id : (int) auth('academy')->id();
+
         return [
             'academy_student_id' => [
                 'required',
                 Rule::exists('academy_students', 'id')->where(
-                    fn ($query) => $query->where('academy_id', auth('academy')->id())
+                    fn ($query) => $query->where('academy_id', $academyId)
                 ),
             ],
             'training_id' => [
                 'required',
                 Rule::exists('trainings', 'id')->where(
-                    fn ($query) => $query->where('academy_id', auth('academy')->id())
+                    fn ($query) => $query->where('academy_id', $academyId)
                 ),
             ],
             'paid_amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|in:cash,instapay,fawry,app_online,other',
+            'payment_method' => 'required|string|max:60',
             'payment_method_other' => 'required_if:payment_method,other|nullable|string|max:255',
-
         ];
     }
 }

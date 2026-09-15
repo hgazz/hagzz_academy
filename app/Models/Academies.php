@@ -142,6 +142,10 @@ class Academies extends Authenticatable
 
     public function hasVenueModule(?TenantSubscription $subscription = null): bool
     {
+        if (!in_array($this->business_type, ['venue', 'hybrid'], true)) {
+            return false;
+        }
+
         $subscription ??= $this->currentSubscription()->with('plan')->first();
 
         return $subscription

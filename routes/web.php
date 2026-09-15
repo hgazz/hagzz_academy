@@ -222,9 +222,12 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
         Route::get('students/export', [AcademyStudentController::class, 'export'])->name('students.export');
         Route::get('students/template', [AcademyStudentController::class, 'template'])->name('students.template');
         Route::post('students/import', [AcademyStudentController::class, 'import'])->name('students.import');
+        Route::post('students/bulk-delete', [AcademyStudentController::class, 'bulkDestroy'])->name('students.bulk-delete');
+        Route::post('students/bulk-status', [AcademyStudentController::class, 'bulkStatus'])->name('students.bulk-status');
         Route::get('students/print', [AcademyStudentController::class, 'print'])->name('students.print');
         Route::get('students/{student}/profile', [AcademyStudentController::class, 'profile'])->name('students.profile');
         Route::get('students/{student}/card', [AcademyStudentController::class, 'card'])->name('students.card');
+        Route::post('students/{student}/avatar', [AcademyStudentController::class, 'uploadAvatar'])->name('students.avatar');
         Route::resource('students', AcademyStudentController::class)->except(['show']);
         Route::resource('groups', AcademyGroupController::class)->except(['show']);
         Route::resource('competitions', AcademyCompetitionController::class);
