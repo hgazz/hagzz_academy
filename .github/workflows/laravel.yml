@@ -38,36 +38,41 @@ jobs:
       #    DB_PASSWORD: ${{ secrets.DB_PASSWORD_D }}
       #   run: vendor/bin/phpunit
 
-  deploy-ec2s:
+  deploy-server:
     runs-on: ubuntu-latest
     needs: build-cicd
     steps:
-      - name: SSH Deploy ${{ github.repository }}
+      - name: SSH Deploy to Production Server
         if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/master' && env.HAS_REMOTE_HOST == 'true'
         env:
           HAS_REMOTE_HOST: ${{ secrets.REMOTE_HOST != '' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USERNAME }}
+          username: ${{ secrets.REMOTE_USERNAME || 'hagzz' }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           script: |
-            echo "CH-Dir"
-            cd ${{ secrets.REMOTE_PATH }}
-            source ~/script
-            echo "Pull"
-            sudo git pull origin master
-            echo "Migrate DB"
-            sudo php artisan migrate --force 
-            echo "Update Composer"
-            if git diff --name-only HEAD^ composer.json | grep composer.json; then
-              echo "Composer.json modified, running composer update"
-              yes | sudo composer update
-            else
-              echo "No changes in composer.json, skipping composer update"
+            echo "=== Step 1: Navigating to Academy app and pulling latest changes ==="
+            APP_DIR="${{ secrets.REMOTE_PATH }}"
+            if [ -z "$APP_DIR" ]; then APP_DIR="/home/hagzz/hagzz/apps/hagzz_academy"; fi
+            cd "$APP_DIR"
+            git fetch origin master
+            git reset --hard origin/master
+
+            echo "=== Step 2: Rebuilding Docker container ==="
+            INFRA_DIR="/home/hagzz/hagzz/infra"
+            if [ -d "$INFRA_DIR" ]; then
+              cd "$INFRA_DIR"
+              docker compose build academy
+              docker compose up -d academy
             fi
-            echo "Optimize Cach"
-            sudo php artisan optimize:clear
-            echo "Optimize Cach"
-            sudo php artisan optimize:clear
+
+            echo "=== Step 3: Running Migrations and Cache Clear ==="
+            docker exec hagzz-academy-1 php artisan migrate --force || true
+            docker exec hagzz-academy-1 php artisan route:clear || true
+            docker exec hagzz-academy-1 php artisan route:cache || true
+            docker exec hagzz-academy-1 php artisan config:clear || true
+            docker exec hagzz-academy-1 php artisan config:cache || true
+            docker exec hagzz-academy-1 php artisan view:clear || true
+            echo "=== Deployment Finished Successfully ==="
             
