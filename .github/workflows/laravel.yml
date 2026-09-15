@@ -43,9 +43,9 @@ jobs:
     needs: build-cicd
     steps:
       - name: SSH Deploy ${{ github.repository }}
-# ${{ success() }} && 
-        if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/master' 
-
+        if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/master' && env.HAS_REMOTE_HOST == 'true'
+        env:
+          HAS_REMOTE_HOST: ${{ secrets.REMOTE_HOST != '' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
