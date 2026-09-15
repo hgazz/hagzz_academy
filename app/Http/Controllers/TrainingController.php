@@ -42,7 +42,18 @@ class TrainingController extends Controller
 
     public function index(TrainingDataTable $dataTable)
     {
-        return $dataTable->render('Academy.pages.training.index');
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+
+        $trainingsQuery = $service->scopeTrainings($this->trainingModel->newQuery());
+        $metrics = [
+            'total' => (clone $trainingsQuery)->count(),
+            'active' => (clone $trainingsQuery)->where('active', 1)->count(),
+            'inactive' => (clone $trainingsQuery)->where('active', 0)->count(),
+        ];
+
+        return $dataTable->render('Academy.pages.training.index', compact('metrics'));
     }
 
     public function create()

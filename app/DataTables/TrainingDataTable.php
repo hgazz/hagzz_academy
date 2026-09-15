@@ -23,30 +23,32 @@ class TrainingDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('name', fn($raw) => $raw->name)
-            ->editColumn('description', fn($raw) => $raw->description)
-            ->editColumn('active', fn($raw) => $raw->active ? trans('admin.training.Active') : trans('admin.training.InActive'))
+            ->editColumn('name', function (Training $training) {
+                $name = $training->name;
+                $text = is_array($name) ? ($name[app()->getLocale()] ?? reset($name) ?: '-') : (string) $name;
+                return '<span class="training-name-tag">' . e($text) . '</span>';
+            })
+            ->editColumn('description', fn($raw) => $raw->description ?: '-')
+            ->editColumn('active', function (Training $raw) {
+                return $raw->active
+                    ? '<span class="heroui-chip heroui-chip-success"><span class="chip-dot pulse"></span> ' . trans('admin.training.Active') . '</span>'
+                    : '<span class="heroui-chip heroui-chip-default">' . trans('admin.training.InActive') . '</span>';
+            })
             ->editColumn('coach_id', function (Training $training) {
                 if (!$training->coach) {
                     return '-';
                 }
                 $name = $training->coach->name;
-                if (is_array($name)) {
-                    $locale = app()->getLocale();
-                    return $name[$locale] ?? reset($name) ?: '-';
-                }
-                return (string) $name;
+                $cName = is_array($name) ? ($name[app()->getLocale()] ?? reset($name) ?: '-') : (string) $name;
+                return '<span class="heroui-chip heroui-chip-default"><i class="fas fa-user-tie me-1 text-muted"></i> ' . e($cName) . '</span>';
             })
             ->editColumn('sport_id', function (Training $training) {
                 if (!$training->sport) {
                     return '-';
                 }
                 $name = $training->sport->name;
-                if (is_array($name)) {
-                    $locale = app()->getLocale();
-                    return $name[$locale] ?? reset($name) ?: '-';
-                }
-                return (string) $name;
+                $sName = is_array($name) ? ($name[app()->getLocale()] ?? reset($name) ?: '-') : (string) $name;
+                return '<span class="heroui-chip heroui-chip-primary"><i class="fas fa-medal me-1"></i> ' . e($sName) . '</span>';
             })
             ->addColumn('action', function (Training $training) {
                 return view('Academy.pages.training.datatable.actions', compact('training'))->render();
@@ -54,8 +56,10 @@ class TrainingDataTable extends DataTable
             ->editColumn('classes_days', function (Training $training) {
                 $days = $training->classes_days;
                 if (is_array($days)) {
-                    $translated = array_map(fn($day) => trans('admin.training.' . $day), $days);
-                    return implode(', ', $translated);
+                    $badges = array_map(function ($day) {
+                        return '<span class="badge badge-light-dark me-1" style="font-size: 11px;">' . e(trans('admin.training.' . $day)) . '</span>';
+                    }, $days);
+                    return implode(' ', $badges);
                 }
                 return $days ? (string) $days : '-';
             })
@@ -63,7 +67,7 @@ class TrainingDataTable extends DataTable
                 $color = $training->color ?: '#2563eb';
                 return "<div style='background-color: {$color}; width: 20px; height: 20px; border-radius: 2px'></div>";
             })
-            ->rawColumns(['action', 'coach_id', 'sport_id', 'image', 'class', 'active', 'classes_days', 'color']);
+            ->rawColumns(['name', 'active', 'coach_id', 'sport_id', 'classes_days', 'action', 'color']);
     }
 
     /**
