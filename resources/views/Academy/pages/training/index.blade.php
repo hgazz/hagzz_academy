@@ -57,7 +57,7 @@
                     <i class="fas fa-layer-group text-primary"></i>
                     <span>{{ trans('admin.clasess.clasess') }}</span>
                 </a>
-                <a href="{{ route('academy.training.createBooking') }}" class="heroui-btn heroui-btn-light">
+                <a href="{{ route('academy.createBooking') }}" class="heroui-btn heroui-btn-light">
                     <i class="fas fa-user-plus text-success"></i>
                     <span>{{ trans('admin.training.booking') }}</span>
                 </a>
