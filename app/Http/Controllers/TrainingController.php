@@ -161,10 +161,61 @@ class TrainingController extends Controller
         $arName = $training->getTranslation('name', 'ar') ?: $training->name;
         $enName = $training->getTranslation('name', 'en') ?: $training->name;
 
+        $defaultBringWithMe = [
+            'ar' => [
+                'الزي الرياضي المناسب للتمارين',
+                'حذاء رياضي ملائم',
+                'زجاجة مياه خاصة',
+                'منشفة شخصية',
+            ],
+            'en' => [
+                'Appropriate athletic sportswear',
+                'Suitable sports training shoes',
+                'Personal water bottle',
+                'Personal towel',
+            ],
+        ];
+
         while ($generated < $count && $scanned < $maxDaysToScan) {
             $dayName = strtolower($currentDate->format('l'));
             if (in_array($dayName, $targetDays)) {
                 $generated++;
+
+                if ($generated === 1) {
+                    $outcomes = [
+                        'ar' => [
+                            'التعارف وشرح خطة وأهداف البرنامج التدريبي',
+                            'الإحماء وتقييم المستوى واللياقة البدنية الأساسية',
+                        ],
+                        'en' => [
+                            'Orientation, program overview, and training goals',
+                            'Warm-up, baseline fitness, and initial skill assessment',
+                        ],
+                    ];
+                } elseif ($generated === $count) {
+                    $outcomes = [
+                        'ar' => [
+                            'تطبيق المهارات والتكتيكات في منافسة وتدريب تطبيقي',
+                            'تقييم التطور الفردي ومراجعة الأداء الختامي',
+                        ],
+                        'en' => [
+                            'Practical match play and tactical application',
+                            'Individual progress evaluation and performance review',
+                        ],
+                    ];
+                } else {
+                    $outcomes = [
+                        'ar' => [
+                            'تطوير المهارات الفردية وبناء اللياقة البدنية',
+                            'تنفيذ تمارين تكتيكية وتطبيقات عملية مشتركة',
+                        ],
+                        'en' => [
+                            'Skill development and physical conditioning drills',
+                            'Tactical exercises and teamwork drills',
+                        ],
+                    ];
+                }
+
                 TClass::create([
                     'title' => [
                         'ar' => "حصة {$generated} - {$arName}",
@@ -174,8 +225,8 @@ class TrainingController extends Controller
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'training_id' => $training->id,
-                    'out_comes' => ['ar' => [], 'en' => []],
-                    'bring_with_me' => ['ar' => [], 'en' => []],
+                    'out_comes' => $outcomes,
+                    'bring_with_me' => $defaultBringWithMe,
                 ]);
             }
             $currentDate->addDay();

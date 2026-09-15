@@ -41,6 +41,29 @@ class TClassDataTable extends DataTable
                 return (string) ($title ?: '-');
             })
             ->editColumn('subtitle', fn($raw) => $raw->subtitle ?: '-')
+            ->editColumn('date', function (TClass $class) {
+                $dateStr = $class->date;
+                if (!$dateStr) return '-';
+                $today = now()->toDateString();
+                if ($dateStr === $today) {
+                    $badge = '<span class="badge badge-light-success fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'اليوم' : 'Today') . '</span>';
+                } elseif ($dateStr > $today) {
+                    $badge = '<span class="badge badge-light-primary fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'قادمة' : 'Upcoming') . '</span>';
+                } else {
+                    $badge = '<span class="badge badge-light-secondary fw-bold px-2 py-1 me-1">' . (app()->getLocale() === 'ar' ? 'منتهية' : 'Completed') . '</span>';
+                }
+                return '<div class="d-inline-flex align-items-center gap-1">' . $badge . '<span class="fw-semibold">' . e($dateStr) . '</span></div>';
+            })
+            ->editColumn('start_time', function (TClass $class) {
+                if (!$class->start_time) return '-';
+                $time = substr((string) $class->start_time, 0, 5);
+                return '<span class="badge badge-light-dark font-monospace px-2 py-1">' . e($time) . '</span>';
+            })
+            ->editColumn('end_time', function (TClass $class) {
+                if (!$class->end_time) return '-';
+                $time = substr((string) $class->end_time, 0, 5);
+                return '<span class="badge badge-light-dark font-monospace px-2 py-1">' . e($time) . '</span>';
+            })
             ->addColumn('action', function (TClass $class) {
                 return view('Academy.pages.clasess.datatable.actions', compact('class'))->render();
             })
@@ -49,7 +72,7 @@ class TClassDataTable extends DataTable
                     $q->whereRaw("JSON_SEARCH(lower(name), 'one', lower(?)) IS NOT NULL", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action']);
+            ->rawColumns(['date', 'start_time', 'end_time', 'action']);
     }
 
     /**
@@ -64,6 +87,19 @@ class TClassDataTable extends DataTable
         $query = $service->scopeClasses(
             $model->newQuery()->with('training')
         );
+
+        if (request()->filled('training_id')) {
+            $query->where('t_classes.training_id', request('training_id'));
+        }
+
+        $timeframe = request('timeframe', 'all');
+        if ($timeframe === 'today') {
+            $query->whereDate('t_classes.date', today());
+        } elseif ($timeframe === 'upcoming') {
+            $query->whereDate('t_classes.date', '>', today());
+        } elseif ($timeframe === 'past') {
+            $query->whereDate('t_classes.date', '<', today());
+        }
 
         $sport = request()->input('training.name');
         if ($sport) {
@@ -85,7 +121,7 @@ class TClassDataTable extends DataTable
         return $this->builder()
                     ->setTableId('tclass-table')
                     ->columns($this->getColumns())
-                    ->minifiedAjax()
+                    ->minifiedAjax('', 'data.training_id = $("#filter_training_id").val(); data.timeframe = $("input[name=\'timeframe_filter\']:checked").val() || "all";')
                     ->dom('Bfltip')
                     ->selectStyleSingle()
                     ->scrollX()
@@ -99,7 +135,8 @@ class TClassDataTable extends DataTable
                             $hideButtonsArray
                         ],
                         'order' => [
-                            0, 'desc'
+                            [3, 'asc'],
+                            [4, 'asc']
                         ],
                         'language' =>
                             (app()->getLocale() === 'ar') ?

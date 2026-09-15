@@ -28,7 +28,23 @@ class ClassesController extends Controller
 
     public function index(TClassDataTable $dataTable)
     {
-        return $dataTable->render('Academy.pages.clasess.index');
+        /** @var \App\Models\PartnerUser $authUser */
+        $authUser = auth('academy')->user();
+        $service = new PartnerAccessService($authUser);
+
+        $trainings = $service->scopeTrainings($this->trainingModel->newQuery())
+            ->orderBy('id', 'desc')
+            ->get(['id', 'name']);
+
+        $baseClassesQuery = $service->scopeClasses($this->classModel->newQuery());
+        $metrics = [
+            'total' => (clone $baseClassesQuery)->count(),
+            'today' => (clone $baseClassesQuery)->whereDate('date', today())->count(),
+            'upcoming' => (clone $baseClassesQuery)->whereDate('date', '>', today())->count(),
+            'past' => (clone $baseClassesQuery)->whereDate('date', '<', today())->count(),
+        ];
+
+        return $dataTable->render('Academy.pages.clasess.index', compact('trainings', 'metrics'));
     }
 
     public function create()
