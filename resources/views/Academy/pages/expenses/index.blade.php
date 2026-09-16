@@ -75,7 +75,9 @@
 @endpush
 
 @section('content')
-@php($ar = app()->getLocale() === 'ar')
+@php
+    $ar = app()->getLocale() === 'ar';
+@endphp
 
 <div class="middle-content container-xxl p-0 heroui-wrapper">
 
