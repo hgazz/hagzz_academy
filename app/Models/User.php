@@ -108,8 +108,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Join::class, 'user_id');
     }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'user_id');
+    }
+
     public function notifications(): MorphToMany
     {
         return $this->morphToMany(Notification::class, 'notificationable');
     }
 }
+

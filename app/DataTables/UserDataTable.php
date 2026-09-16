@@ -45,14 +45,24 @@ class UserDataTable extends DataTable
      */
     public function query(User $model): QueryBuilder
     {
+        $user = auth('academy')->user();
+        $academyId = (int) ($user?->academy_id ?? auth('academy')->id());
+
         return $model->newQuery()
             ->with(['city', 'country', 'area', 'joins', 'joins.training', 'joins.user'])
-            ->whereHas('joins', function ($q) {
-            $q->whereHas('training', function ($q) {
-                $q->where('academy_id', auth('academy')->id());
+            ->where(function ($query) use ($academyId) {
+                $query->whereHas('joins.training', function ($q) use ($academyId) {
+                    $q->where('academy_id', $academyId);
+                })
+                ->orWhereHas('invoices.training', function ($q) use ($academyId) {
+                    $q->where('academy_id', $academyId);
+                })
+                ->orWhereIn('phone', function ($q) use ($academyId) {
+                    $q->select('phone')->from('students')->where('academy_id', $academyId)->whereNotNull('phone');
+                });
             });
-        });
     }
+
 
     /**
      * Optional method if you want to use the html builder.
