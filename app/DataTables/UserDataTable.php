@@ -57,11 +57,15 @@ class UserDataTable extends DataTable
                 ->orWhereHas('invoices.training', function ($q) use ($academyId) {
                     $q->where('academy_id', $academyId);
                 })
+                ->orWhereIn('id', function ($q) use ($academyId) {
+                    $q->select('user_id')->from('academy_students')->where('academy_id', $academyId)->whereNotNull('user_id');
+                })
                 ->orWhereIn('phone', function ($q) use ($academyId) {
-                    $q->select('phone')->from('students')->where('academy_id', $academyId)->whereNotNull('phone');
+                    $q->select('phone')->from('academy_students')->where('academy_id', $academyId)->whereNotNull('phone');
                 });
             });
     }
+
 
 
     /**
