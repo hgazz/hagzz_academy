@@ -90,7 +90,7 @@
                     <nav class="breadcrumb-style-one">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('academy.reports.financial') }}">{{ $ar ? 'التقارير المالية' : 'Financial Reports' }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('academy.report.overview') }}">{{ $ar ? 'التقارير المالية' : 'Financial Reports' }}</a></li>
                             <li class="breadcrumb-item active">{{ $ar ? 'إدارة المصروفات وقيود الصرف' : 'Expenses & Journal Entries' }}</li>
                         </ol>
                     </nav>
@@ -111,7 +111,7 @@
             </p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            <a href="{{ route('academy.reports.financial') }}" class="heroui-btn heroui-btn-light">
+            <a href="{{ route('academy.report.overview') }}" class="heroui-btn heroui-btn-light">
                 <i class="fa-solid fa-chart-pie text-info"></i>
                 <span>{{ $ar ? 'التقرير المالي الشامل' : 'Full Financial Report' }}</span>
             </a>
