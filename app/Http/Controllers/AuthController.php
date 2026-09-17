@@ -8,6 +8,7 @@ use App\Models\PartnerRole;
 use App\Models\PartnerUser;
 use Illuminate\Http\Request;
 use App\Models\PartnerActivityLog;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $remember_me = $request->has('remember') ? true : false;
+        $remember_me = $request->boolean('remember');
         $credentials = $request->only('email', 'password');
 
         if (auth()->guard('academy')->attempt($credentials, $remember_me)) {

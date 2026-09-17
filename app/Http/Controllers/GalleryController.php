@@ -46,13 +46,26 @@ class GalleryController extends Controller
         return to_route('academy.gallery.index');
     }
 
+    protected function getAcademyId(): int
+    {
+        $user = auth('academy')->user();
+        return $user instanceof \App\Models\PartnerUser ? (int) $user->academy_id : (int) auth('academy')->id();
+    }
+
+    protected function authorizeGallery(Gallery $gallery): void
+    {
+        abort_if((int) $gallery->academy_id !== $this->getAcademyId(), 403, 'غير مصرح لك بالوصول إلى هذا العنصر.');
+    }
+
     public function edit(Gallery $gallery)
     {
+        $this->authorizeGallery($gallery);
         return view('Academy.pages.gallery.edit', compact('gallery'));
     }
 
     public function update(GalleryRequest $request, Gallery $gallery)
     {
+        $this->authorizeGallery($gallery);
         $image = $request->hasFile('image') ? $this->upload($request->file('image'), $this->galleryModel::PATH, $gallery->getRawOriginal('image')) : $gallery->getRawOriginal('image');
         $gallery->update([
             'image' => $image,
@@ -64,6 +77,7 @@ class GalleryController extends Controller
     public function delete(Request $request)
     {
         $gallery = $this->galleryModel->findOrFail($request->id);
+        $this->authorizeGallery($gallery);
         $gallery->delete();
         $this->deleteFile($this->galleryModel::PATH . '/' . $gallery->getRawOriginal('image'));
         return response()->json(['data' => [

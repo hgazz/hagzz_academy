@@ -6,7 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class VenueBooking extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'academy_id',
+        'venue_space_id',
+        'venue_customer_id',
+        'reference',
+        'booking_type',
+        'title',
+        'starts_at',
+        'ends_at',
+        'status',
+        'source',
+        'total_amount',
+        'paid_amount',
+        'discount_amount',
+        'discount_reason',
+        'discount_approved_at',
+        'discount_approved_by',
+        'payment_method',
+        'payment_method_other',
+        'notes',
+    ];
 
     protected $casts = [
         'starts_at' => 'datetime',

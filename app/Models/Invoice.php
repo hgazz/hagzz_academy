@@ -11,7 +11,20 @@ class Invoice extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'training_id',
+        'amount',
+        'paid_amount',
+        'order_number',
+        'status',
+        'user_type',
+        'payment_method',
+        'payment_method_other',
+        'currency',
+        'is_canceled',
+        'is_refunded',
+    ];
 
 
     public function user(): BelongsTo

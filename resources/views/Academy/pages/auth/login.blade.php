@@ -174,9 +174,20 @@
                     </div>
 
                     <div class="remember-choice-wrap">
-                        <input id="partner-remember" class="remember-checkbox" type="checkbox" name="remember" value="1" @checked(old('remember'))>
-                        <label class="remember-choice" for="partner-remember">
-                            <span class="remember-box" aria-hidden="true"></span>
+                        <label class="remember-choice" for="partner-remember" tabindex="0">
+                            <input
+                                id="partner-remember"
+                                class="remember-checkbox"
+                                type="checkbox"
+                                name="remember"
+                                value="1"
+                                @checked(old('remember'))
+                            >
+                            <span class="remember-box" aria-hidden="true">
+                                <svg class="remember-check-icon" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 5L4.5 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
                             <span class="remember-text">{{ $copy['remember'] }}</span>
                         </label>
                     </div>
@@ -252,6 +263,50 @@
                         }
                     });
                 });
+            }
+
+            // Remember Me checkbox interaction & local storage sync
+            const rememberCheckbox = document.getElementById('partner-remember');
+            const rememberLabel = document.querySelector('.remember-choice');
+            const emailInput = document.getElementById('partner-email');
+
+            if (rememberCheckbox && rememberLabel) {
+                const updateRememberUI = () => {
+                    rememberLabel.classList.toggle('is-checked', rememberCheckbox.checked);
+                    rememberLabel.setAttribute('aria-checked', String(rememberCheckbox.checked));
+                };
+
+                updateRememberUI();
+                rememberCheckbox.addEventListener('change', updateRememberUI);
+
+                rememberLabel.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.code === 'Space') {
+                        e.preventDefault();
+                        rememberCheckbox.click();
+                    }
+                });
+
+                // Auto-fill saved email if user previously chose Remember Me
+                try {
+                    const savedEmail = localStorage.getItem('hagzz_partner_remember_email');
+                    if (savedEmail && emailInput && !emailInput.value) {
+                        emailInput.value = savedEmail;
+                        rememberCheckbox.checked = true;
+                        updateRememberUI();
+                    }
+                } catch (_) {}
+
+                if (form) {
+                    form.addEventListener('submit', () => {
+                        try {
+                            if (rememberCheckbox.checked && emailInput && emailInput.value) {
+                                localStorage.setItem('hagzz_partner_remember_email', emailInput.value.trim());
+                            } else {
+                                localStorage.removeItem('hagzz_partner_remember_email');
+                            }
+                        } catch (_) {}
+                    });
+                }
             }
 
             // Auto-refresh page if user returns to tab after long idle (>15 mins) to prevent stale CSRF

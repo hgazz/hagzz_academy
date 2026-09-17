@@ -9,7 +9,15 @@ class Venue extends Model
 {
     use HasTranslations;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'academy_id',
+        'name',
+        'phone',
+        'address',
+        'timezone',
+        'currency',
+        'active',
+    ];
     public array $translatable = ['name'];
     protected $casts = ['active' => 'boolean'];
 

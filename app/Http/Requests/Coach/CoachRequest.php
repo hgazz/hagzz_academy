@@ -48,7 +48,7 @@ class CoachRequest extends FormRequest
 
     protected function checkImage()
     {
-        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096' : 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096';
+        return request()->isMethod('PUT') ? 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096' : 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096';
     }
 
     protected function failedValidation(Validator $validator)

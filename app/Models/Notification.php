@@ -8,8 +8,18 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Notification extends Model
 {
-    use HasFactory;
-    protected  $guarded = [];
+    protected $fillable = [
+        'id',
+        'notifiable_id',
+        'notifiable_type',
+        'type',
+        'title',
+        'description',
+        'image',
+        'details',
+        'data',
+        'read_at',
+    ];
 
     public function notifiable(): MorphTo
     {

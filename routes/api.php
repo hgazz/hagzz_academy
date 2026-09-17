@@ -26,10 +26,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('mobile/v1')->group(function () {
     Route::get('media/avatars/{filename}', function ($filename) {
-        $filePath = public_path('uploads/avatars/' . $filename);
-        if (!file_exists($filePath)) {
+        $safeName = basename($filename);
+        $filePath = realpath(public_path('uploads/avatars/' . $safeName));
+        $baseAvatars = realpath(public_path('uploads/avatars'));
+
+        if (!$filePath || !is_file($filePath) || ($baseAvatars && !str_starts_with($filePath, $baseAvatars . DIRECTORY_SEPARATOR))) {
             abort(404);
         }
+
         $file = file_get_contents($filePath);
         $type = mime_content_type($filePath) ?: 'image/png';
 
@@ -42,12 +46,29 @@ Route::prefix('mobile/v1')->group(function () {
     });
 
     Route::get('media/assets/{path}', function ($path) {
-        $filePath = public_path($path);
-        if (!file_exists($filePath)) {
+        if (str_contains($path, '..') || str_contains($path, '\\')) {
+            abort(403);
+        }
+
+        $basePublic = realpath(public_path());
+        $filePath = realpath(public_path($path));
+
+        if (!$filePath || !is_file($filePath) || !str_starts_with($filePath, $basePublic . DIRECTORY_SEPARATOR)) {
             abort(404);
         }
+
+        if (str_starts_with(basename($filePath), '.')) {
+            abort(403);
+        }
+
+        $allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico', 'woff', 'woff2', 'ttf', 'eot', 'css', 'js', 'json', 'pdf'];
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowedExtensions, true)) {
+            abort(403);
+        }
+
         $file = file_get_contents($filePath);
-        $type = mime_content_type($filePath) ?: 'image/png';
+        $type = mime_content_type($filePath) ?: 'application/octet-stream';
 
         return response($file, 200, [
             'Content-Type' => $type,

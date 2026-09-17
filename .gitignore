@@ -27,3 +27,4 @@ update_*.php
 setup_backend.bat
 *.tar
 /public/uploads/avatars/*
+SERVER_REFERENCE.md

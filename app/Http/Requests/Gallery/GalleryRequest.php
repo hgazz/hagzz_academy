@@ -24,8 +24,8 @@ class GalleryRequest extends FormRequest
     {
         return [
             'image' => $this->isMethod('put')
-                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-                : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                ? 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096'
+                : 'required|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ];
     }
 }

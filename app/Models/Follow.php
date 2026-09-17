@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Follow extends Model
 {
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'followable_id',
+        'followable_type',
+    ];
 
     protected $hidden = ['created_at', 'updated_at'];
 

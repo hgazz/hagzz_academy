@@ -38,6 +38,11 @@ class CoachController extends Controller
         return (int) ($user?->id ?? auth('academy')->id());
     }
 
+    private function authorizeCoach(Coach $coach): void
+    {
+        abort_if((int) $coach->academy_id !== $this->getAcademyId(), 403, 'غير مصرح لك بالوصول إلى هذا المدرب.');
+    }
+
     public function index(CoachDataTable $dataTable)
     {
         return $dataTable->render('Academy.pages.coaches.index');
@@ -121,6 +126,7 @@ class CoachController extends Controller
 
     public function edit(Coach $coach)
     {
+        $this->authorizeCoach($coach);
         $academyId = $this->getAcademyId();
         $sports = $this->sportModel::whereHas('academies', function ($q) use ($academyId) {
             $q->where('academy_id', $academyId);
@@ -131,6 +137,7 @@ class CoachController extends Controller
 
     public function update(Coach $coach, CoachRequest $request)
     {
+        $this->authorizeCoach($coach);
         $academyId = $this->getAcademyId();
 
         try {
@@ -172,6 +179,7 @@ class CoachController extends Controller
             DB::beginTransaction();
 
             $coach = $this->coachModel->findOrFail($request->id);
+            $this->authorizeCoach($coach);
             $coachTrainings = $coach->trainings()->exists();
 
             if ($coachTrainings) {
