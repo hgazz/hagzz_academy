@@ -69,6 +69,7 @@ jobs:
 
             echo "=== Step 3: Running Migrations and Cache Clear ==="
             docker exec hagzz-academy-1 php artisan migrate --force || true
+            docker exec -u root hagzz-academy-1 php artisan storage:link --force || true
             docker exec hagzz-academy-1 php artisan route:clear || true
             docker exec hagzz-academy-1 php artisan route:cache || true
             docker exec hagzz-academy-1 php artisan config:clear || true

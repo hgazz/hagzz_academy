@@ -15,6 +15,12 @@ fi
 
 chmod -R ugo+rw /.composer
 
+# Create the public/storage symlink as root (required for uploaded file serving).
+# Using --force so it safely overwrites stale symlinks after container rebuilds.
+if [ -f /var/www/html/artisan ]; then
+    php /var/www/html/artisan storage:link --force 2>/dev/null || true
+fi
+
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
         exec "$@"
