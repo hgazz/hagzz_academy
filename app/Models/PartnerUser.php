@@ -147,12 +147,17 @@ class PartnerUser extends Authenticatable
     public function getAccessibleSports()
     {
         if ($this->is_owner || $this->access_all_sports) {
-            return $this->academy
-                ? $this->academy->sports()->get()
-                : collect();
+            if ($this->academy) {
+                $sports = $this->academy->sports()->get();
+                if ($sports->isNotEmpty()) {
+                    return $sports;
+                }
+            }
+            return Sport::where('status', 'active')->get();
         }
 
-        return $this->assignedSports()->get();
+        $assigned = $this->assignedSports()->get();
+        return $assigned->isNotEmpty() ? $assigned : Sport::where('status', 'active')->get();
     }
 
     public function getCommercialNameAttribute()
