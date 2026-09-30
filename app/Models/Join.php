@@ -28,6 +28,11 @@ class Join extends Model
         return $this->belongsTo(AcademyStudent::class, 'academy_student_id');
     }
 
+    public function academyStudent(): BelongsTo
+    {
+        return $this->belongsTo(AcademyStudent::class, 'academy_student_id');
+    }
+
     public function training(): BelongsTo
     {
         return $this->belongsTo(Training::class);

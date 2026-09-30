@@ -14,37 +14,39 @@
 
 @php
     $isArabic = app()->getLocale() === 'ar';
+    $isGym = !empty($isGymFacility) || !empty($dashboard['isGym']);
+    $currency = $dashboard['currencySymbol'] ?? ($isArabic ? 'ج.م' : 'EGP');
     $copy = [
         'welcome' => $isArabic ? 'مرحباً بعودتك' : 'Welcome back',
-        'overview' => $isArabic ? 'إليك ملخص أداء أكاديميتك وأهم ما يحتاج إلى متابعتك اليوم.' : 'Here is your academy performance and what needs attention today.',
+        'overview' => $isArabic ? ($isGym ? 'إليك ملخص أداء الصالة الرياضية وأهم الحسابات والعمليات اليوم.' : 'إليك ملخص أداء أكاديميتك وأهم ما يحتاج إلى متابعتك اليوم.') : 'Here is your facility performance and what needs attention today.',
         'today' => $isArabic ? 'اليوم' : 'Today',
-        'students' => $isArabic ? 'الطلاب النشطون' : 'Active students',
+        'students' => $isArabic ? ($isGym ? 'الأعضاء النشطون' : 'الطلاب النشطون') : ($isGym ? 'Active members' : 'Active students'),
         'customers' => $isArabic ? 'عملاء التطبيق' : 'App customers',
-        'trainings' => $isArabic ? 'التدريبات' : 'Trainings',
-        'activeTrainings' => $isArabic ? 'تدريب نشط' : 'active trainings',
-        'bookings' => $isArabic ? 'الحجوزات' : 'Bookings',
-        'bookingRevenue' => $isArabic ? 'إيرادات الحجوزات' : 'Booking revenue',
-        'subscriptions' => $isArabic ? 'الاشتراكات النشطة' : 'Active subscriptions',
-        'subscriptionRevenue' => $isArabic ? 'تحصيل الاشتراكات' : 'Subscription collections',
-        'outstanding' => $isArabic ? 'مبالغ متبقية' : 'Outstanding',
-        'attendance' => $isArabic ? 'معدل الحضور' : 'Attendance rate',
-        'sessionsToday' => $isArabic ? 'جلسات اليوم' : 'Today sessions',
-        'coaches' => $isArabic ? 'المدربون' : 'Coaches',
-        'groups' => $isArabic ? 'المجموعات' : 'Groups',
+        'trainings' => $isArabic ? ($isGym ? 'باقات العضوية والمدد' : 'التدريبات') : ($isGym ? 'Membership plans' : 'Trainings'),
+        'activeTrainings' => $isArabic ? ($isGym ? 'باقة نشطة' : 'تدريب نشط') : ($isGym ? 'active plans' : 'active trainings'),
+        'bookings' => $isArabic ? 'الحجوزات والاشتراكات' : 'Bookings',
+        'bookingRevenue' => $isArabic ? ($isGym ? 'إيرادات الاشتراكات' : 'إيرادات التدريبات') : 'Booking revenue',
+        'subscriptions' => $isArabic ? ($isGym ? 'العضويات النشطة' : 'الاشتراكات النشطة') : ($isGym ? 'Active memberships' : 'Active subscriptions'),
+        'subscriptionRevenue' => $isArabic ? ($isGym ? 'تحصيل الاشتراكات والعضويات' : 'تحصيل الاشتراكات') : 'Subscription collections',
+        'outstanding' => $isArabic ? ($isGym ? 'مستحقات متبقية على الأعضاء' : 'مبالغ متبقية على الطلاب') : 'Outstanding dues',
+        'attendance' => $isArabic ? ($isGym ? 'تسجيل الدخول / البوابة' : 'معدل الحضور') : ($isGym ? 'Gate Check-in Rate' : 'Attendance rate'),
+        'sessionsToday' => $isArabic ? ($isGym ? 'دخول مسجل اليوم' : 'جلسات اليوم') : ($isGym ? 'Today check-ins' : 'Today sessions'),
+        'coaches' => $isArabic ? ($isGym ? 'الكباتن والمدربون' : 'المدربون') : ($isGym ? 'Trainers' : 'Coaches'),
+        'groups' => $isArabic ? ($isGym ? 'فئات وباقات العضوية' : 'المجموعات') : ($isGym ? 'Categories' : 'Groups'),
         'followers' => $isArabic ? 'المتابعون' : 'Followers',
         'last30' => $isArabic ? 'مقارنةً بالـ 30 يوم السابقة' : 'vs previous 30 days',
-        'financialPerformance' => $isArabic ? 'الأداء المالي والحجوزات' : 'Revenue and bookings',
-        'financialHint' => $isArabic ? 'أداء الأكاديمية خلال آخر 12 شهراً' : 'Academy performance over the last 12 months',
-        'attendanceBreakdown' => $isArabic ? 'تفاصيل الحضور' : 'Attendance breakdown',
-        'present' => $isArabic ? 'حاضر' : 'Present',
+        'financialPerformance' => $isArabic ? ($isGym ? 'الأداء المالي وحسابات الجيم' : 'الأداء المالي والاشتراكات') : ($isGym ? 'Gym Financial Performance' : 'Revenue and bookings'),
+        'financialHint' => $isArabic ? ($isGym ? 'تتبع الإيرادات المحصلة، المصروفات والتشغيل، وصافي الأرباح شهرياً' : 'أداء الأكاديمية خلال آخر 12 شهراً') : 'Facility performance over the last 12 months',
+        'attendanceBreakdown' => $isArabic ? ($isGym ? 'سجل الدخول والبوابة' : 'تفاصيل الحضور') : ($isGym ? 'Gate Check-in Breakdown' : 'Attendance breakdown'),
+        'present' => $isArabic ? ($isGym ? 'دخول في الموعد' : 'حاضر') : ($isGym ? 'Checked In' : 'Present'),
         'late' => $isArabic ? 'متأخر' : 'Late',
         'absent' => $isArabic ? 'غائب' : 'Absent',
         'excused' => $isArabic ? 'بعذر' : 'Excused',
-        'topTrainings' => $isArabic ? 'التدريبات الأكثر حجزاً' : 'Top booked trainings',
-        'expiring' => $isArabic ? 'اشتراكات تنتهي قريباً' : 'Expiring subscriptions',
+        'topTrainings' => $isArabic ? ($isGym ? 'الباقات الأكثر طلباً واشتراكاً' : 'التدريبات الأكثر حجزاً') : ($isGym ? 'Top membership plans' : 'Top booked trainings'),
+        'expiring' => $isArabic ? ($isGym ? 'عضويات تنتهي قريباً' : 'اشتراكات تنتهي قريباً') : 'Expiring subscriptions',
         'expiringHint' => $isArabic ? 'خلال الأربعة عشر يوماً القادمة' : 'Within the next 14 days',
         'recent' => $isArabic ? 'أحدث الحجوزات' : 'Recent bookings',
-        'recentHint' => $isArabic ? 'آخر عمليات الحجز في أكاديميتك' : 'Latest bookings for your academy',
+        'recentHint' => $isArabic ? 'آخر عمليات الحجز والاشتراك' : 'Latest bookings for your academy',
         'filter' => $isArabic ? 'تصفية نتائج الحجوزات' : 'Filter booking results',
         'from' => $isArabic ? 'من تاريخ' : 'From',
         'to' => $isArabic ? 'إلى تاريخ' : 'To',
@@ -58,7 +60,7 @@
         'canceled' => $isArabic ? 'ملغى' : 'Canceled',
         'viewAll' => $isArabic ? 'عرض الكل' : 'View all',
         'noData' => $isArabic ? 'لا توجد بيانات بعد' : 'No data yet',
-        'currency' => $isArabic ? 'ج.م' : 'EGP',
+        'currency' => $currency,
         'endsOn' => $isArabic ? 'ينتهي في' : 'Ends',
         'quickActions' => $isArabic ? 'إجراءات سريعة' : 'Quick actions',
     ];
@@ -84,10 +86,10 @@
             </div>
             <div class="welcome-actions">
                 <a href="{{ route('academy.students.create') }}" class="dashboard-action dashboard-action-secondary">
-                    <i data-feather="user-plus"></i><span>{{ $isArabic ? 'إضافة طالب' : 'Add student' }}</span>
+                    <i data-feather="user-plus"></i><span>{{ $isArabic ? ($isGym ? 'تسجيل مشترك جديد' : 'إضافة طالب') : ($isGym ? 'Add member' : 'Add student') }}</span>
                 </a>
                 <a href="{{ route('academy.training.create') }}" class="dashboard-action dashboard-action-primary">
-                    <i data-feather="plus-circle"></i><span>{{ $isArabic ? 'إضافة تدريب' : 'Add training' }}</span>
+                    <i data-feather="plus-circle"></i><span>{{ $isArabic ? ($isGym ? 'إضافة باقة / تمرين' : 'إضافة تدريب') : ($isGym ? 'Add plan' : 'Add training') }}</span>
                 </a>
             </div>
         </section>
@@ -107,25 +109,25 @@
                 <div class="metric-icon"><i data-feather="users"></i></div>
                 <div><span>{{ $copy['students'] }}</span><strong>{{ number_format($dashboard['activeStudents']) }}</strong><small>{{ $dashboard['activeGroups'] }} {{ $copy['groups'] }}</small></div>
             </article>
-            <article class="metric-card metric-bookings">
-                <div class="metric-icon"><i data-feather="calendar"></i></div>
-                <div><span>{{ $copy['bookings'] }}</span><strong>{{ number_format($dashboard['totalBookings']) }}</strong><small class="{{ $dashboard['bookingTrend'] >= 0 ? 'trend-up' : 'trend-down' }}"><i data-feather="{{ $dashboard['bookingTrend'] >= 0 ? 'trending-up' : 'trending-down' }}"></i> {{ abs($dashboard['bookingTrend']) }}% {{ $copy['last30'] }}</small></div>
-            </article>
-            <article class="metric-card metric-revenue">
-                <div class="metric-icon"><i data-feather="credit-card"></i></div>
-                <div><span>{{ $copy['bookingRevenue'] }}</span><strong>{{ number_format($dashboard['totalRevenue'], 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
-            </article>
             <article class="metric-card metric-subscriptions">
                 <div class="metric-icon"><i data-feather="repeat"></i></div>
                 <div><span>{{ $copy['subscriptions'] }}</span><strong>{{ number_format($dashboard['activeSubscriptions']) }}</strong><small>{{ number_format($dashboard['subscriptionRevenue'], 0) }} {{ $copy['currency'] }} {{ $copy['paid'] }}</small></div>
             </article>
+            <article class="metric-card metric-revenue">
+                <div class="metric-icon"><i data-feather="credit-card"></i></div>
+                <div><span>{{ $isArabic ? ($isGym ? 'إجمالي الإيرادات المحصلة' : 'إجمالي الإيرادات') : 'Total Collected' }}</span><strong>{{ number_format($dashboard['totalCollectedRevenue'] ?? ($dashboard['subscriptionRevenue'] + $dashboard['totalRevenue']), 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
+            </article>
             <article class="metric-card metric-outstanding">
                 <div class="metric-icon"><i data-feather="alert-circle"></i></div>
-                <div><span>{{ $copy['outstanding'] }}</span><strong>{{ number_format($dashboard['outstandingSubscriptions'], 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
+                <div><span>{{ $copy['outstanding'] }}</span><strong class="text-danger">{{ number_format($dashboard['outstandingSubscriptions'], 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
             </article>
-            <article class="metric-card metric-attendance">
-                <div class="metric-icon"><i data-feather="check-circle"></i></div>
-                <div><span>{{ $copy['attendance'] }}</span><strong>{{ $dashboard['attendanceRate'] }}%</strong><small>{{ $dashboard['todaySessions'] }} {{ $copy['sessionsToday'] }}</small></div>
+            <article class="metric-card metric-expenses" style="border-inline-start: 4px solid #ef4444;">
+                <div class="metric-icon text-danger" style="background: rgba(239, 68, 68, 0.1);"><i data-feather="dollar-sign"></i></div>
+                <div><span>{{ $isArabic ? ($isGym ? 'المصروفات ومستحقات الكباتن' : 'المصروفات التشغيلية') : 'Total Expenses' }}</span><strong class="text-danger">{{ number_format($dashboard['totalExpenses'] ?? 0, 0) }}</strong><small>{{ $copy['currency'] }}</small></div>
+            </article>
+            <article class="metric-card metric-netprofit" style="border-inline-start: 4px solid {{ ($dashboard['netProfit'] ?? 0) >= 0 ? '#10b981' : '#f59e0b' }};">
+                <div class="metric-icon {{ ($dashboard['netProfit'] ?? 0) >= 0 ? 'text-success' : 'text-warning' }}" style="background: {{ ($dashboard['netProfit'] ?? 0) >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }};"><i data-feather="trending-up"></i></div>
+                <div><span>{{ $isArabic ? ($isGym ? 'صافي أرباح الجيم' : 'صافي الدخل') : 'Net Income' }}</span><strong class="{{ ($dashboard['netProfit'] ?? 0) >= 0 ? 'text-success' : 'text-warning' }}">{{ number_format($dashboard['netProfit'] ?? 0, 0) }}</strong><small>{{ $copy['currency'] }} ({{ $dashboard['profitMargin'] ?? 0 }}%)</small></div>
             </article>
         </section>
 
@@ -133,7 +135,7 @@
             <a href="{{ route('academy.training.index') }}"><i data-feather="activity"></i><span>{{ $copy['trainings'] }}</span><strong>{{ $dashboard['activeTrainings'] }}/{{ $dashboard['totalTrainings'] }}</strong></a>
             <a href="{{ route('academy.coach') }}"><i data-feather="award"></i><span>{{ $copy['coaches'] }}</span><strong>{{ $dashboard['totalCoaches'] }}</strong></a>
             <a href="{{ route('academy.users.index') }}"><i data-feather="smartphone"></i><span>{{ $copy['customers'] }}</span><strong>{{ $dashboard['uniqueCustomers'] }}</strong></a>
-            <a href="{{ route('academy.profile.index') }}"><i data-feather="heart"></i><span>{{ $copy['followers'] }}</span><strong>{{ $dashboard['followers'] }}</strong></a>
+            <a href="{{ route('academy.attendance.index') }}"><i data-feather="check-circle"></i><span>{{ $copy['attendance'] }}</span><strong>{{ $dashboard['attendanceRate'] }}%</strong></a>
         </section>
 
         <section class="dashboard-grid dashboard-grid-main">
@@ -176,21 +178,136 @@
                 </div>
             </header>
 
-            <div class="payment-methods-content mt-3" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: center;">
-                <div class="chart-container" style="min-height: 280px; display: flex; align-items: center; justify-content: center;">
+            <div class="payment-methods-content mt-3" style="display: grid; grid-template-columns: minmax(320px, 1.15fr) 1fr; gap: 20px; align-items: center;">
+                <div class="chart-container" style="min-height: 330px; display: flex; align-items: center; justify-content: center;">
                     <div id="paymentMethodsChart" style="width: 100%;"></div>
                 </div>
 
-                <div id="paymentMethodsCards" class="payment-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+                <div id="paymentMethodsCards" class="payment-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
                 </div>
+            </div>
+        </section>
+
+        <!-- COACHES & TRAINERS FINANCIAL ACCOUNTS SECTION -->
+        <section class="dashboard-panel dashboard-panel-wide mt-4 mb-4" id="coachesAccountsSection">
+            <header class="panel-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 class="m-0">
+                        <i class="fa-solid fa-user-ninja text-primary me-2"></i>{{ $isArabic ? ($isGym ? 'حسابات ومستحقات الكباتن والمدربين' : 'حسابات ومستحقات المدربين') : 'Coaches & Trainers Financial Accounts' }}
+                    </h3>
+                    <p class="m-0 text-muted" style="font-size: 13px;">
+                        {{ $isArabic ? ($isGym ? 'متابعة مستحقات الكباتن، نسب التدريب الخاص PT، والمبالغ المسددة والمتبقية في ذمة الجيم' : 'متابعة مستحقات المدربين، نسب التدريب، والمبالغ المسددة والمتبقية') : 'Track coach dues, PT session rates, paid amounts, and remaining balances' }}
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('academy.coach') }}" class="panel-link">
+                        <i class="fa-solid fa-users me-1"></i> {{ $isArabic ? ($isGym ? 'قائمة الكباتن' : 'قائمة المدربين') : 'Coaches List' }}
+                    </a>
+                    <a href="{{ route('academy.expenses.index') }}" class="panel-link text-danger">
+                        <i class="fa-solid fa-receipt me-1"></i> {{ $isArabic ? 'سندات صرف ومصروفات' : 'Disbursements & Expenses' }}
+                    </a>
+                </div>
+            </header>
+
+            <!-- Coaches Financial Summary Chips -->
+            <div class="coach-summary-grid mt-3 mb-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; border-inline-start: 4px solid #3b82f6;">
+                    <small class="text-muted d-block" style="font-size: 12px;">{{ $isArabic ? 'إجمالي مستحقات الكباتن' : 'Total Coach Dues' }}</small>
+                    <strong class="text-primary font-monospace" style="font-size: 18px;">{{ number_format($dashboard['coachesFinancial']['totalCoachCost'] ?? 0, 2) }} {{ $copy['currency'] }}</strong>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; border-inline-start: 4px solid #10b981;">
+                    <small class="text-muted d-block" style="font-size: 12px;">{{ $isArabic ? 'المبالغ المسددة للكباتن' : 'Paid to Coaches' }}</small>
+                    <strong class="text-success font-monospace" style="font-size: 18px;">{{ number_format($dashboard['coachesFinancial']['totalCoachPaid'] ?? 0, 2) }} {{ $copy['currency'] }}</strong>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; border-inline-start: 4px solid #ef4444;">
+                    <small class="text-muted d-block" style="font-size: 12px;">{{ $isArabic ? 'المتبقي في ذمة الجيم للكباتن' : 'Remaining Due to Coaches' }}</small>
+                    <strong class="text-danger font-monospace" style="font-size: 18px;">{{ number_format($dashboard['coachesFinancial']['totalCoachRemaining'] ?? 0, 2) }} {{ $copy['currency'] }}</strong>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; border-inline-start: 4px solid #8b5cf6;">
+                    <small class="text-muted d-block" style="font-size: 12px;">{{ $isArabic ? 'المشتركون مع الكباتن (PT وجماعي)' : 'Enrolled under Coaches' }}</small>
+                    <strong class="text-dark font-monospace" style="font-size: 18px;">{{ number_format($dashboard['coachesFinancial']['totalEnrolledUnderCoaches'] ?? 0) }} {{ $isArabic ? ($isGym ? 'مشترك' : 'لاعب') : 'members' }}</strong>
+                </div>
+            </div>
+
+            <!-- Coaches Accounts Table -->
+            <div class="table-responsive" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 8px;">
+                @if(!empty($dashboard['coachesFinancial']['coaches']) && count($dashboard['coachesFinancial']['coaches']) > 0)
+                    <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                        <thead style="background: #f1f5f9; color: #475569;">
+                            <tr>
+                                <th>{{ $isArabic ? ($isGym ? 'الكابتن' : 'المدرب') : 'Coach' }}</th>
+                                <th>{{ $isArabic ? 'نظام العقد والاستحقاق' : 'Compensation' }}</th>
+                                <th>{{ $isArabic ? ($isGym ? 'المشتركون المرتبطون' : 'المتدربون') : 'Enrolled Members' }}</th>
+                                <th>{{ $isArabic ? 'إيرادات تمارينه' : 'Revenue Generated' }}</th>
+                                <th>{{ $isArabic ? 'الاستحقاق المحسوب' : 'Calculated Due' }}</th>
+                                <th>{{ $isArabic ? 'المسدد له' : 'Paid' }}</th>
+                                <th>{{ $isArabic ? 'المتبقي له' : 'Remaining' }}</th>
+                                <th class="text-end">{{ $isArabic ? 'إجراء مالي' : 'Action' }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($dashboard['coachesFinancial']['coaches'] as $c)
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                                                {{ mb_substr($c['name'], 0, 1) }}
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ $c['name'] }}</strong>
+                                                @if($c['phone'])
+                                                    <small class="text-muted font-monospace" dir="ltr" style="font-size: 11px;">{{ $c['phone'] }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $c['compensation_type'] === 'percentage' ? 'bg-purple text-white' : ($c['compensation_type'] === 'session' ? 'bg-primary text-white' : 'bg-success text-white') }}" style="{{ $c['compensation_type'] === 'percentage' ? 'background: #7e22ce !important;' : '' }}; font-size: 11px;">
+                                            {{ $c['compensation_label'] }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold">
+                                            {{ $c['enrolled_members'] }} {{ $isArabic ? ($isGym ? 'مشترك' : 'لاعب') : 'members' }}
+                                        </span>
+                                    </td>
+                                    <td class="font-monospace fw-bold text-dark">
+                                        {{ number_format($c['total_revenue'], 2) }} {{ $copy['currency'] }}
+                                    </td>
+                                    <td class="font-monospace fw-bold text-primary">
+                                        {{ number_format($c['coach_cost'], 2) }} {{ $copy['currency'] }}
+                                    </td>
+                                    <td class="font-monospace fw-bold text-success">
+                                        {{ number_format($c['actual_paid'], 2) }} {{ $copy['currency'] }}
+                                    </td>
+                                    <td>
+                                        <span class="font-monospace fw-bold {{ $c['dues_remaining'] > 0 ? 'text-danger' : 'text-muted' }}">
+                                            {{ number_format($c['dues_remaining'], 2) }} {{ $copy['currency'] }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ route('academy.expenses.index') }}?coach_id={{ $c['id'] }}" class="btn btn-sm btn-outline-danger px-2 py-1" style="font-size: 11px;" title="{{ $isArabic ? 'صرف مستحقات أو تسجيل سند صرف للكابتن' : 'Disburse coach dues' }}">
+                                            <i class="fa-solid fa-money-bill-wave me-1"></i>{{ $isArabic ? 'صرف مستحقات' : 'Pay Dues' }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-user-tie fa-2x text-muted mb-2 d-block opacity-50"></i>
+                        {{ $isArabic ? 'لا توجد بيانات كباتن مسجلة حتى الآن' : 'No coaches recorded yet' }}
+                    </div>
+                @endif
             </div>
         </section>
 
         <section class="dashboard-panel dashboard-panel-wide mt-4 mb-4" id="partialPaymentsSection">
             <header class="panel-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
                 <div>
-                    <h3 class="m-0"><i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i>{{ $isArabic ? 'المدفوعات الجزئية والمبالغ المتبقية على الطلاب' : 'Partial Payments & Student Outstanding Dues' }}</h3>
-                    <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? 'تتبع الطلاب الذين قاموا بالسداد الجزئي، والماليات المتبقية والمستحقة على الطلاب' : 'Track students with partial payments and remaining balances' }}</p>
+                    <h3 class="m-0"><i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i>{{ $isArabic ? ($isGym ? 'المدفوعات الجزئية والمبالغ المتبقية على الأعضاء' : 'المدفوعات الجزئية والمبالغ المتبقية على الطلاب') : ($isGym ? 'Partial Payments & Member Outstanding Dues' : 'Partial Payments & Student Outstanding Dues') }}</h3>
+                    <p class="m-0 text-muted" style="font-size: 13px;">{{ $isArabic ? ($isGym ? 'تتبع الأعضاء الذين قاموا بالسداد الجزئي، والماليات المتبقية والمستحقة' : 'تتبع الطلاب الذين قاموا بالسداد الجزئي، والماليات المتبقية والمستحقة على الطلاب') : 'Track members with partial payments and remaining balances' }}</p>
                 </div>
                 <a href="{{ route('academy.report.overview') }}" class="panel-link">
                     <i class="fa-solid fa-chart-line me-1"></i> {{ $isArabic ? 'تقرير المستحقات التفصيلي' : 'Detailed Dues Report' }}
@@ -204,20 +321,20 @@
                     
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top" style="border-color: #cbd5e1 !important;">
                         <div>
-                            <small class="text-muted d-block">{{ $isArabic ? 'إجمالي المتبقي على الطلاب' : 'Total Remaining Dues' }}</small>
+                            <small class="text-muted d-block">{{ $isArabic ? ($isGym ? 'إجمالي المتبقي على الأعضاء' : 'إجمالي المتبقي على الطلاب') : 'Total Remaining Dues' }}</small>
                             <strong class="text-danger" style="font-size: 18px;">{{ number_format($dashboard['partialPayments']['totalRemaining'] ?? 0, 2) }} {{ $dashboard['partialPayments']['currency'] ?? '' }}</strong>
                         </div>
                         <div>
                             <small class="text-muted d-block">{{ $isArabic ? 'اشتراكات مدفوعة جزئياً' : 'Partially Paid Subscriptions' }}</small>
-                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 13px;">{{ number_format($dashboard['partialPayments']['partialCount'] ?? 0) }} {{ $isArabic ? 'طالب' : 'students' }}</span>
+                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 13px;">{{ number_format($dashboard['partialPayments']['partialCount'] ?? 0) }} {{ $isArabic ? ($isGym ? 'عضو' : 'طالب') : 'members' }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="table-responsive" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px;">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-                        <h6 class="fw-bold m-0 text-dark"><i class="fa-solid fa-users text-primary me-2"></i>{{ $isArabic ? 'أبرز الطلاب أصحاب المدفوعات الجزئية والمتبقي' : 'Top Students with Remaining Balances' }}</h6>
-                        <small class="text-muted">{{ count($dashboard['partialPayments']['topStudents'] ?? []) }} {{ $isArabic ? 'طالب' : 'students' }}</small>
+                        <h6 class="fw-bold m-0 text-dark"><i class="fa-solid fa-users text-primary me-2"></i>{{ $isArabic ? ($isGym ? 'أبرز الأعضاء أصحاب المدفوعات الجزئية والمتبقي' : 'أبرز الطلاب أصحاب المدفوعات الجزئية والمتبقي') : ($isGym ? 'Top Members with Remaining Balances' : 'Top Students with Remaining Balances') }}</h6>
+                        <small class="text-muted">{{ count($dashboard['partialPayments']['topStudents'] ?? []) }} {{ $isArabic ? ($isGym ? 'عضو' : 'طالب') : 'members' }}</small>
                     </div>
 
                     @if(count($dashboard['partialPayments']['topStudents'] ?? []) > 0)
@@ -275,14 +392,23 @@
                 <div id="trainingsChart" class="chart-slot"></div>
             </article>
             <article class="dashboard-panel quick-panel">
-                <header class="panel-header"><div><h3>{{ $copy['quickActions'] }}</h3><p>{{ $isArabic ? 'الوصول السريع إلى مهام الأكاديمية اليومية' : 'Shortcuts to daily academy work' }}</p></div></header>
+                <header class="panel-header"><div><h3>{{ $copy['quickActions'] }}</h3><p>{{ $isArabic ? ($isGym ? 'الوصول السريع إلى مهام الصالة اليومية' : 'الوصول السريع إلى مهام الأكاديمية اليومية') : 'Shortcuts to daily operations' }}</p></div></header>
                 <div class="quick-grid">
-                    <a href="{{ route('academy.attendance.create') }}"><i data-feather="user-check"></i><span>{{ $isArabic ? 'تسجيل الحضور' : 'Take attendance' }}</span></a>
-                    <a href="{{ route('academy.subscriptions.create') }}"><i data-feather="file-plus"></i><span>{{ $isArabic ? 'اشتراك جديد' : 'New subscription' }}</span></a>
-                    <a href="{{ route('academy.groups.create') }}"><i data-feather="grid"></i><span>{{ $isArabic ? 'إنشاء مجموعة' : 'Create group' }}</span></a>
-                    <a href="{{ route('academy.createBooking') }}"><i data-feather="calendar"></i><span>{{ $isArabic ? 'حجز مباشر' : 'Direct booking' }}</span></a>
-                    <a href="{{ route('academy.student-reports.index') }}"><i data-feather="bar-chart-2"></i><span>{{ $isArabic ? 'تقارير الطلاب' : 'Student reports' }}</span></a>
-                    <a href="{{ route('academy.calendar.index') }}"><i data-feather="clock"></i><span>{{ $isArabic ? 'جدول الأكاديمية' : 'Academy calendar' }}</span></a>
+                    @if($isGym)
+                        <a href="{{ route('academy.gym-gate.scanner') }}"><i data-feather="log-in"></i><span>{{ $isArabic ? 'بوابة الدخول السريع' : 'Gate Check-in' }}</span></a>
+                        <a href="{{ route('academy.subscriptions.create') }}"><i data-feather="file-plus"></i><span>{{ $isArabic ? 'عضوية جديدة' : 'New membership' }}</span></a>
+                        <a href="{{ route('academy.students.create') }}"><i data-feather="user-plus"></i><span>{{ $isArabic ? 'تسجيل عضو جديد' : 'New member' }}</span></a>
+                        <a href="{{ route('academy.createBooking') }}"><i data-feather="calendar"></i><span>{{ $isArabic ? 'اشتراك مباشر' : 'Direct booking' }}</span></a>
+                        <a href="{{ route('academy.gym-gate.log') }}"><i data-feather="clock"></i><span>{{ $isArabic ? 'سجل الدخول اليومي' : 'Daily Entry Log' }}</span></a>
+                        <a href="{{ route('academy.student-reports.index') }}"><i data-feather="bar-chart-2"></i><span>{{ $isArabic ? 'تقارير الأعضاء' : 'Member reports' }}</span></a>
+                    @else
+                        <a href="{{ route('academy.attendance.create') }}"><i data-feather="user-check"></i><span>{{ $isArabic ? 'تسجيل الحضور' : 'Take attendance' }}</span></a>
+                        <a href="{{ route('academy.subscriptions.create') }}"><i data-feather="file-plus"></i><span>{{ $isArabic ? 'اشتراك جديد' : 'New subscription' }}</span></a>
+                        <a href="{{ route('academy.groups.create') }}"><i data-feather="grid"></i><span>{{ $isArabic ? 'إنشاء مجموعة' : 'Create group' }}</span></a>
+                        <a href="{{ route('academy.createBooking') }}"><i data-feather="calendar"></i><span>{{ $isArabic ? 'حجز مباشر' : 'Direct booking' }}</span></a>
+                        <a href="{{ route('academy.student-reports.index') }}"><i data-feather="bar-chart-2"></i><span>{{ $isArabic ? 'تقارير الطلاب' : 'Student reports' }}</span></a>
+                        <a href="{{ route('academy.calendar.index') }}"><i data-feather="clock"></i><span>{{ $isArabic ? 'جدول الأكاديمية' : 'Calendar' }}</span></a>
+                    @endif
                 </div>
             </article>
         </section>
@@ -330,7 +456,7 @@
             <article class="dashboard-panel">
                 <header class="panel-header">
                     <div>
-                        <h3>{{ $isArabic ? 'تنازلي انتهاء اشتراكات الطلاب (10 أيام إلى اليوم)' : 'Subscribers Expiration Countdown (10 Days to Today)' }}</h3>
+                        <h3>{{ $isArabic ? ($isGym ? 'تنازلي انتهاء اشتراكات الأعضاء (10 أيام إلى اليوم)' : 'تنازلي انتهاء اشتراكات الطلاب (10 أيام إلى اليوم)') : 'Subscribers Expiration Countdown' }}</h3>
                         <p>{{ $isArabic ? 'عدد الاشتراكات المقاربة على الانتهاء مصنفة حسب الأيام المتبقية' : 'Active subscriptions categorized by days remaining' }}</p>
                     </div>
                     <span class="panel-badge bg-danger text-white">{{ $isArabic ? 'تنبيه انتهاء' : 'Expiring Alert' }}</span>
@@ -341,7 +467,7 @@
             <article class="dashboard-panel data-panel">
                 <header class="panel-header">
                     <div>
-                        <h3>{{ $isArabic ? 'قائمة الطلاب المقاربين على الانتهاء' : 'Expiring Subscribers List' }}</h3>
+                        <h3>{{ $isArabic ? ($isGym ? 'قائمة الأعضاء المقاربين على الانتهاء' : 'قائمة الطلاب المقاربين على الانتهاء') : 'Expiring Subscribers List' }}</h3>
                         <p>{{ $isArabic ? 'تواصل سريع عبر واتساب للتذكير بالتجديد' : 'Quick WhatsApp reminder to renew' }}</p>
                     </div>
                     <a href="{{ route('academy.subscriptions.index') }}" class="panel-link">{{ $copy['viewAll'] }}</a>
@@ -401,15 +527,26 @@
                 bookings: finiteNumbers(@json($dashboard['monthlyBookings'])),
                 bookingRevenue: finiteNumbers(@json($dashboard['monthlyBookingRevenue'])),
                 subscriptionRevenue: finiteNumbers(@json($dashboard['monthlySubscriptionRevenue'])),
+                totalRevenue: finiteNumbers(@json($dashboard['monthlyTotalRevenue'])),
+                expenses: finiteNumbers(@json($dashboard['monthlyExpenses'])),
+                netProfit: finiteNumbers(@json($dashboard['monthlyNetProfit'])),
                 attendance: finiteNumbers(@json($dashboard['attendanceStatuses'])),
                 trainingLabels: @json($dashboard['topTrainings']->pluck('name')),
                 trainingBookings: finiteNumbers(@json($dashboard['topTrainings']->pluck('bookings')))
             };
             const labels = {
-                bookings: @json($copy['bookings']), bookingRevenue: @json($copy['bookingRevenue']),
-                subscriptionRevenue: @json($copy['subscriptionRevenue']), present: @json($copy['present']),
-                late: @json($copy['late']), absent: @json($copy['absent']), excused: @json($copy['excused']),
-                attendance: @json($copy['attendance']), currency: @json($copy['currency'])
+                bookings: @json($isArabic ? ($isGym ? 'المشتركون والتجديدات' : 'عدد المشتركين') : 'Subscribers Count'),
+                totalRevenue: @json($isArabic ? ($isGym ? 'إيرادات العضويات والاشتراكات' : 'إجمالي الإيرادات المحصلة') : 'Total Collected Revenue'),
+                expenses: @json($isArabic ? ($isGym ? 'المصروفات والتشغيل ومستحقات الكباتن' : 'المصروفات التشغيلية') : 'Total Expenses'),
+                netProfit: @json($isArabic ? ($isGym ? 'صافي الدخل / الأرباح' : 'صافي الدخل') : 'Net Profit'),
+                bookingRevenue: @json($copy['bookingRevenue']),
+                subscriptionRevenue: @json($copy['subscriptionRevenue']),
+                present: @json($copy['present']),
+                late: @json($copy['late']),
+                absent: @json($copy['absent']),
+                excused: @json($copy['excused']),
+                attendance: @json($copy['attendance']),
+                currency: @json($copy['currency'])
             };
             const dark = document.body.classList.contains('dark');
             const text = dark ? '#cbd5e1' : '#64748b';
@@ -418,28 +555,45 @@
             const noData = { text: @json($copy['noData']), align: 'center', verticalAlign: 'middle', style: { color: text } };
 
             const financialElement = document.querySelector('#financialChart');
-            const financialTotal = data.bookings.reduce((sum, v) => sum + v, 0) +
-                                   data.bookingRevenue.reduce((sum, v) => sum + v, 0) +
-                                   data.subscriptionRevenue.reduce((sum, v) => sum + v, 0);
+            const financialTotal = data.totalRevenue.reduce((sum, v) => sum + v, 0) +
+                                   data.expenses.reduce((sum, v) => sum + v, 0) +
+                                   data.bookings.reduce((sum, v) => sum + v, 0);
             if (financialTotal > 0) {
                 new ApexCharts(financialElement, {
                     chart: { ...common, type: 'line', height: 460 },
                     series: [
-                        { name: labels.bookings, type: 'column', data: data.bookings },
-                        { name: labels.bookingRevenue, type: 'area', data: data.bookingRevenue },
-                        { name: labels.subscriptionRevenue, type: 'line', data: data.subscriptionRevenue }
+                        { name: labels.totalRevenue, type: 'area', data: data.totalRevenue },
+                        { name: labels.expenses, type: 'area', data: data.expenses },
+                        { name: labels.netProfit, type: 'line', data: data.netProfit },
+                        { name: labels.bookings, type: 'column', data: data.bookings }
                     ],
-                    colors: ['#2563eb', '#14b8a6', '#7c3aed'], stroke: { width: [0, 3, 3], curve: 'smooth' },
-                    fill: { type: ['solid', 'gradient', 'solid'], gradient: { opacityFrom: .3, opacityTo: .04 } },
-                    plotOptions: { bar: { borderRadius: 5, columnWidth: '38%' } }, dataLabels: { enabled: false },
+                    colors: ['#10b981', '#ef4444', '#3b82f6', '#f59e0b'],
+                    stroke: { width: [3, 2, 3, 0], curve: 'smooth' },
+                    fill: { type: ['gradient', 'gradient', 'solid', 'solid'], gradient: { opacityFrom: .35, opacityTo: .04 } },
+                    plotOptions: { bar: { borderRadius: 5, columnWidth: '32%' } },
+                    dataLabels: { enabled: false },
                     grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
                     xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
                     yaxis: [
-                        { min: 0, forceNiceScale: true },
+                        { min: 0, forceNiceScale: true, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
+                        { min: 0, forceNiceScale: true, show: false },
+                        { forceNiceScale: true, show: false },
                         { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }
                     ],
                     legend: { position: 'top', horizontalAlign: 'center', offsetY: -5, fontSize: '13px', fontWeight: 700, itemMargin: { horizontal: 15, vertical: 8 } },
-                    tooltip: { shared: true, intersect: false }, noData
+                    tooltip: {
+                        shared: true,
+                        intersect: false,
+                        y: {
+                            formatter: function (val, opt) {
+                                if (opt.seriesIndex === 3) {
+                                    return Number(val).toLocaleString();
+                                }
+                                return Number(val).toLocaleString() + ' ' + labels.currency;
+                            }
+                        }
+                    },
+                    noData
                 }).render();
             } else {
                 financialElement.classList.add('empty-state');
@@ -552,7 +706,7 @@
                 if (totalExpiringSum > 0) {
                     new ApexCharts(countdownElement, {
                         chart: { ...common, type: 'bar', height: 460 },
-                        series: [{ name: @json($isArabic ? 'عدد الطلاب' : 'Subscribers Count'), data: extraData.expiringCountdownCounts }],
+                        series: [{ name: @json($isArabic ? ($isGym ? 'عدد الأعضاء' : 'عدد الطلاب') : 'Subscribers Count'), data: extraData.expiringCountdownCounts }],
                         colors: ['#f43f5e'],
                         plotOptions: { bar: { borderRadius: 6, columnWidth: '45%', distributed: true } },
                         dataLabels: { enabled: true, style: { colors: ['#ffffff'], fontSize: '11px', fontWeight: 700 } },
@@ -588,10 +742,12 @@
                 const cardsContainer = document.getElementById('paymentMethodsCards');
                 if (cardsContainer) {
                     cardsContainer.innerHTML = methods.map(m => `
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; border-top: 4px solid ${m.color}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <div style="color: ${m.color}; font-size: 13px; font-weight: 700; margin-bottom: 4px;">${m.name}</div>
-                            <div style="font-size: 18px; font-weight: 800; color: #1e293b;">${Number(m.amount).toLocaleString()} <small style="font-size: 11px; color: #64748b;">${countryInfo.currency}</small></div>
-                            <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">${m.count} ${@json($isArabic ? 'عملية' : 'transactions')}</div>
+                        <div title="${m.name}" style="background: var(--heroui-surface, #ffffff); border: 1.5px solid var(--heroui-border, #e2e8f0); border-radius: 10px; padding: 10px 6px 8px; text-align: center; border-top: 3px solid ${m.color}; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 82px; transition: transform 0.15s, box-shadow 0.15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.07)'" onmouseleave="this.style.transform='none';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'">
+                            <div style="height: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">
+                                ${m.logo ? `<img src="${m.logo}" alt="${m.name}" style="height: 28px; max-width: 65px; object-fit: contain;">` : `<div style="color: ${m.color}; font-size: 12px; font-weight: 800;">${m.name}</div>`}
+                            </div>
+                            <div style="font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.15; margin-top: 2px;">${Number(m.amount).toLocaleString()} <small style="font-size: 10px; color: #64748b; font-weight: 700;">${countryInfo.currency}</small></div>
+                            <div style="font-size: 11px; margin-top: 4px;"><span style="background: rgba(99,102,241,0.08); color: #4f46e5; font-weight: 700; padding: 2px 7px; border-radius: 6px; font-size: 10.5px;">${m.count} ${@json($isArabic ? 'عملية' : 'tx')}</span></div>
                         </div>
                     `).join('');
                 }
@@ -608,18 +764,36 @@
                     colors: hasData ? colorsList : ['#cbd5e1'],
                     chart: {
                         type: 'donut',
-                        height: 280,
+                        height: 330,
                         fontFamily: 'Cairo, sans-serif'
                     },
                     plotOptions: {
                         pie: {
                             donut: {
-                                size: '68%',
+                                size: '70%',
                                 labels: {
                                     show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        color: '#64748b'
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '22px',
+                                        fontWeight: 800,
+                                        color: '#0f172a',
+                                        formatter: function (val) {
+                                            return parseFloat(val).toLocaleString() + ' ' + countryInfo.currency;
+                                        }
+                                    },
                                     total: {
                                         show: true,
                                         label: countryInfo.country_name,
+                                        fontSize: '14px',
+                                        fontWeight: 700,
+                                        color: '#64748b',
                                         formatter: function () {
                                             if (!hasData) return '0';
                                             const total = seriesList.reduce((a, b) => a + b, 0);

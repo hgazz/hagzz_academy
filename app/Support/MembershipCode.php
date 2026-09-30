@@ -44,12 +44,16 @@ class MembershipCode
             }
         }
 
-        // 4. Fallback direct lookup in AcademyStudent table
+        // 4. Fallback direct lookup in AcademyStudent table (phone, club_card_number, email)
+        $cleanPhone = preg_replace('/[^\d]/', '', $code);
         $student = AcademyStudent::where('academy_id', $academyId)
-            ->where(function ($q) use ($code) {
-                $q->where('membership_code', $code)
-                  ->orWhere('phone', $code)
-                  ->orWhere('national_id', $code);
+            ->where(function ($q) use ($code, $cleanPhone) {
+                $q->where('phone', $code)
+                  ->orWhere('club_card_number', $code)
+                  ->orWhere('email', $code);
+                if (!empty($cleanPhone) && strlen($cleanPhone) >= 7) {
+                    $q->orWhere('phone', 'like', "%{$cleanPhone}%");
+                }
             })->first();
 
         return $student?->id;

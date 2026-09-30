@@ -387,6 +387,10 @@ class PartnerAuthController extends Controller
                     'total_days' => 30,
                     'status' => $s->status ?: 'active',
                     'payment_status' => $s->payment_status ?: 'unpaid',
+                    'guest_visits_total' => (int) ($s->guest_visits_total ?? 0),
+                    'guest_visits_used' => (int) ($s->guest_visits_used ?? 0),
+                    'guest_visits_remaining' => (int) $s->remaining_guest_visits,
+                    'has_guest_passes' => ($s->guest_visits_total ?? 0) > 0,
                 ];
             }
         } catch (\Throwable $e) {}

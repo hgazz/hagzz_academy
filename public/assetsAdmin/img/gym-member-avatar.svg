@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="60" fill="url(#bgGrad)"/>
+  <!-- Head -->
+  <circle cx="60" cy="46" r="20" fill="#94a3b8"/>
+  <!-- Athletic Shoulders/Body -->
+  <path d="M22 104 C24 76, 42 68, 60 68 C78 68, 96 76, 98 104 Z" fill="#94a3b8"/>
+  <!-- Fitness Accent Badge -->
+  <circle cx="86" cy="86" r="16" fill="url(#accentGrad)" stroke="#0f172a" stroke-width="2.5"/>
+  <path d="M80 86 L84 90 L93 81" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

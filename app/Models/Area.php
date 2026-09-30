@@ -13,6 +13,15 @@ class Area extends Model
 
     public $translatable = ['name'];
     protected $fillable = ['name', 'city_id'];
+    protected static function booted()
+    {
+        static::creating(function ($area) {
+            if (empty($area->city_id)) {
+                $area->city_id = 1; // Default fallback to Cairo / primary city
+            }
+        });
+    }
+
     public static $translatableColumns = [
         'name'=>[
             'type'=>'text',

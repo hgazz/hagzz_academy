@@ -116,6 +116,10 @@ class PartnerStudentController extends Controller
                 'payment_status' => $subscription->payment_status,
                 'amount' => (float) $subscription->amount,
                 'remaining' => $subscription->remaining_amount,
+                'guest_visits_total' => (int) ($subscription->guest_visits_total ?? 0),
+                'guest_visits_used' => (int) ($subscription->guest_visits_used ?? 0),
+                'guest_visits_remaining' => (int) $subscription->remaining_guest_visits,
+                'has_guest_passes' => ($subscription->guest_visits_total ?? 0) > 0,
             ] : null,
             'attendance' => [
                 'present' => (int) $attendance->get('present', 0),
@@ -174,6 +178,10 @@ class PartnerStudentController extends Controller
                             'payment_status' => $s->payment_status ?: 'paid',
                             'starts_on' => is_string($s->starts_on) ? $s->starts_on : ($s->starts_on?->format('Y-m-d') ?: null),
                             'ends_on' => is_string($s->ends_on) ? $s->ends_on : ($s->ends_on?->format('Y-m-d') ?: null),
+                            'guest_visits_total' => (int) ($s->guest_visits_total ?? 0),
+                            'guest_visits_used' => (int) ($s->guest_visits_used ?? 0),
+                            'guest_visits_remaining' => (int) $s->remaining_guest_visits,
+                            'has_guest_passes' => ($s->guest_visits_total ?? 0) > 0,
                         ];
                     }
                 }
@@ -210,6 +218,10 @@ class PartnerStudentController extends Controller
                             'payment_status' => $s->payment_status ?: 'paid',
                             'starts_on' => is_string($s->starts_on) ? $s->starts_on : ($s->starts_on?->format('Y-m-d') ?: null),
                             'ends_on' => is_string($s->ends_on) ? $s->ends_on : ($s->ends_on?->format('Y-m-d') ?: null),
+                            'guest_visits_total' => (int) ($s->guest_visits_total ?? 0),
+                            'guest_visits_used' => (int) ($s->guest_visits_used ?? 0),
+                            'guest_visits_remaining' => (int) $s->remaining_guest_visits,
+                            'has_guest_passes' => ($s->guest_visits_total ?? 0) > 0,
                         ];
                     }
                 }
@@ -250,6 +262,10 @@ class PartnerStudentController extends Controller
                         'payment_status' => $s->payment_status ?: 'paid',
                         'starts_on' => is_string($s->starts_on) ? $s->starts_on : ($s->starts_on?->format('Y-m-d') ?: null),
                         'ends_on' => is_string($s->ends_on) ? $s->ends_on : ($s->ends_on?->format('Y-m-d') ?: null),
+                        'guest_visits_total' => (int) ($s->guest_visits_total ?? 0),
+                        'guest_visits_used' => (int) ($s->guest_visits_used ?? 0),
+                        'guest_visits_remaining' => (int) $s->remaining_guest_visits,
+                        'has_guest_passes' => ($s->guest_visits_total ?? 0) > 0,
                     ];
                 })->toArray();
             } catch (\Throwable $e) {}

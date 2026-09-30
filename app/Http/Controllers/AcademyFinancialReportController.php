@@ -59,15 +59,29 @@ class AcademyFinancialReportController extends Controller
             ? $breakdown
             : [$filters['source'] => $breakdown[$filters['source']] ?? ['billed' => 0, 'collected' => 0, 'remaining' => 0, 'records' => 0, 'cancelled' => 0]];
 
+        $totalExpenses = (float) PartnerExpense::where('academy_id', $academyId)
+            ->when($filters['start_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '>=', $d))
+            ->when($filters['end_date'] ?? null, fn ($q, $d) => $q->whereDate('expense_date', '<=', $d))
+            ->when($filters['branch_id'] ?? null, fn ($q, $b) => $q->where('branch_id', $b))
+            ->sum(DB::raw('COALESCE(base_amount, amount)'));
+
+        $totalCollectedSum = (float) collect($summarySources)->sum('collected');
+        $netProfitSum = round($totalCollectedSum - $totalExpenses, 2);
+
         $summary = [
             'billed' => collect($summarySources)->sum('billed'),
-            'collected' => collect($summarySources)->sum('collected'),
+            'collected' => $totalCollectedSum,
             'remaining' => collect($summarySources)->sum('remaining'),
+            'expenses' => $totalExpenses,
+            'net_profit' => $netProfitSum,
             'records' => collect($summarySources)->sum('records'),
             'cancelled' => collect($summarySources)->sum('cancelled'),
         ];
         $summary['collection_rate'] = $summary['billed'] > 0
             ? round(($summary['collected'] / $summary['billed']) * 100, 1)
+            : 0;
+        $summary['profit_margin'] = $summary['collected'] > 0
+            ? round(($summary['net_profit'] / $summary['collected']) * 100, 1)
             : 0;
 
         // Custom Detailed Reports
@@ -341,8 +355,14 @@ class AcademyFinancialReportController extends Controller
             ->when($filters['start_date'], fn (Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['end_date'], fn (Builder $query, $date) => $query->whereDate('created_at', '<=', $date))
             ->when($filters['payment_status'] !== 'all', fn (Builder $query) => $query->where('payment_status', $filters['payment_status']))
-            ->when($filters['branch_id'], function (Builder $query, $branchId) {
-                $query->whereHas('group.training', fn (Builder $tr) => $tr->where('address_id', $branchId));
+            ->when($filters['branch_id'], function (Builder $query, $branchId) use ($academyId) {
+                $query->where(function (Builder $subQ) use ($branchId, $academyId) {
+                    $subQ->whereHas('group.training', fn (Builder $tr) => $tr->where('address_id', $branchId));
+                    $primaryBranch = Address::where('academy_id', $academyId)->orderBy('id')->first();
+                    if ($primaryBranch && (int) $primaryBranch->id === (int) $branchId) {
+                        $subQ->orWhereHas('group', fn ($g) => $g->whereNull('training_id'));
+                    }
+                });
             })
             ->when($filters['sport_id'], function (Builder $query, $sportId) {
                 $query->whereHas('group', function (Builder $g) use ($sportId) {
@@ -885,8 +905,14 @@ class AcademyFinancialReportController extends Controller
     {
         $groupsQuery = \App\Models\AcademyGroup::where('academy_id', $academyId)
             ->with(['sport', 'training.address', 'coach', 'subscriptions.payments'])
-            ->when($filters['branch_id'], function ($q, $branchId) {
-                $q->whereHas('training', fn ($tr) => $tr->where('address_id', $branchId));
+            ->when($filters['branch_id'], function ($q, $branchId) use ($academyId) {
+                $q->where(function ($subQ) use ($branchId, $academyId) {
+                    $subQ->whereHas('training', fn ($tr) => $tr->where('address_id', $branchId));
+                    $primaryBranch = Address::where('academy_id', $academyId)->orderBy('id')->first();
+                    if ($primaryBranch && (int) $primaryBranch->id === (int) $branchId) {
+                        $subQ->orWhereNull('training_id');
+                    }
+                });
             })
             ->when($filters['sport_id'], function ($q, $sportId) {
                 $q->where('sport_id', $sportId)->orWhereHas('training', fn ($tr) => $tr->where('sport_id', $sportId));

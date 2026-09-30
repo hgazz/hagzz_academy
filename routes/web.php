@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AcademyAttendanceController;
 use App\Http\Controllers\AcademyCompetitionController;
+use App\Http\Controllers\GymGateController;
 use App\Http\Controllers\AcademyGroupController;
 use App\Http\Controllers\AcademyFinancialReportController;
 use App\Http\Controllers\AcademyStudentReportController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerExpenseController;
 use App\Http\Controllers\PartnerCampController;
 use App\Http\Controllers\PartnerShiftClosingController;
+use App\Http\Controllers\PartnerStaffAttendanceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettlementController;
@@ -110,6 +112,14 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
         });
         Route::get('/logout', 'logout')->name('logout')->middleware('auth:academy');
     });
+
+    // Mobile staff QR attendance routes (rate limited against brute force and scraping)
+    Route::get('/partner/staff-attendance/scan', [PartnerStaffAttendanceController::class, 'processScan'])
+        ->middleware('throttle:20,1')
+        ->name('academy.staff-attendance.process-scan');
+    Route::post('/partner/staff-attendance/confirm-scan', [PartnerStaffAttendanceController::class, 'confirmScan'])
+        ->middleware('throttle:10,1')
+        ->name('academy.staff-attendance.confirm-scan');
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -225,6 +235,7 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
         Route::post('students/bulk-delete', [AcademyStudentController::class, 'bulkDestroy'])->name('students.bulk-delete');
         Route::post('students/bulk-status', [AcademyStudentController::class, 'bulkStatus'])->name('students.bulk-status');
         Route::get('students/print', [AcademyStudentController::class, 'print'])->name('students.print');
+        Route::get('students/cards/print', [AcademyStudentController::class, 'cardsPrint'])->name('students.cards.print');
         Route::get('students/{student}/profile', [AcademyStudentController::class, 'profile'])->name('students.profile');
         Route::get('students/{student}/card', [AcademyStudentController::class, 'card'])->name('students.card');
         Route::post('students/{student}/avatar', [AcademyStudentController::class, 'uploadAvatar'])->name('students.avatar');
@@ -242,6 +253,18 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
             ->name('subscriptions.apply-discount');
         Route::post('subscriptions/{subscription}/remove-discount', [AcademyStudentSubscriptionController::class, 'removeDiscount'])
             ->name('subscriptions.remove-discount');
+        // تجميد / إلغاء تجميد / جلسة
+        Route::post('subscriptions/{subscription}/freeze', [AcademyStudentSubscriptionController::class, 'freeze'])
+            ->name('subscriptions.freeze');
+        Route::post('subscriptions/{subscription}/unfreeze', [AcademyStudentSubscriptionController::class, 'unfreeze'])
+            ->name('subscriptions.unfreeze');
+        Route::post('subscriptions/{subscription}/consume-session', [AcademyStudentSubscriptionController::class, 'consumeSession'])
+            ->name('subscriptions.consume-session');
+        // ── ماسح بوابة الجيم والمركز الصحي (بدون حصة) ─────────────
+        Route::get('gym-gate', [GymGateController::class, 'scanner'])->name('gym-gate.scanner');
+        Route::post('gym-gate/scan', [GymGateController::class, 'scan'])->name('gym-gate.scan');
+        Route::post('gym-gate/guest-entry', [GymGateController::class, 'registerGuest'])->name('gym-gate.guest-entry');
+        Route::get('gym-gate/log', [GymGateController::class, 'log'])->name('gym-gate.log');
         Route::get('attendance', [AcademyAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('attendance/create', [AcademyAttendanceController::class, 'create'])->name('attendance.create');
         Route::get('attendance/scanner', [AcademyAttendanceController::class, 'scanner'])->name('attendance.scanner');
@@ -302,11 +325,15 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
                 Route::get('coach/export','coachExport')->name('coach.export');
             });
 
+        Route::get('joins', [ReportController::class, 'joins'])->name('joins');
+        Route::get('joins/export/{join}', [ReportController::class, 'exportBookingFile'])->name('export-booking-file');
+
         Route::middleware('partner.permission:settlements.view')->group(function () {
             Route::prefix('report')->as('report.')->group(function () {
                 Route::get('overview', [AcademyFinancialReportController::class, 'index'])->name('overview');
                 Route::get('overview/export/{type}', [AcademyFinancialReportController::class, 'export'])->name('overview.export');
             });
+            Route::get('financial-reports', [AcademyFinancialReportController::class, 'index'])->name('financial-reports.index');
             Route::resource('shift-closings', PartnerShiftClosingController::class)->only(['index', 'create', 'store', 'show']);
         });
 
@@ -330,5 +357,13 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
             Route::put('/{team}', 'update')->name('update');
             Route::delete('/{team}', 'destroy')->name('destroy');
             Route::patch('/{team}/status', 'updateStatus')->name('updateStatus');
+        });
+
+        Route::prefix('staff-attendance')->as('staff-attendance.')->controller(PartnerStaffAttendanceController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/live-screen', 'liveScreen')->name('live-screen');
+            Route::get('/get-qr-token', 'getQrToken')->name('get-qr-token');
+            Route::post('/manual', 'storeManual')->name('manual');
+            Route::delete('/{attendance}', 'destroy')->name('destroy');
         });
     });

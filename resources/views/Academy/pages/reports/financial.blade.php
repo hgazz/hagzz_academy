@@ -66,6 +66,19 @@
             background: linear-gradient(90deg, #10b981, #059669);
             border-radius: 999px;
         }
+        .fr-kpis {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+        }
+        .fr-kpi.is-expenses > i {
+            background: #fef2f2 !important;
+            color: #dc2626 !important;
+        }
+        .fr-kpi.is-profit > i {
+            background: #ecfdf5 !important;
+            color: #059669 !important;
+        }
         .fr-print-header {
             display: none;
         }
@@ -131,29 +144,37 @@
 
 @php
     $ar = app()->getLocale() === 'ar';
+    $facType = \App\Support\FacilityTerminology::currentType();
+    $termMemberPlural = facility_term('student', $facType, true);
+    $termMemberSingle = facility_term('student', $facType, false);
+    $termTrainerPlural = facility_term('coach', $facType, true);
+    $termTrainerSingle = facility_term('coach', $facType, false);
+    $termSubPlural = facility_term('subscription', $facType, true);
+    $termGroupPlural = facility_term('group', $facType, true);
+
     $copy = $ar ? [
         'title' => 'مركز التقارير المالية والتشغيلية', 
-        'subtitle' => 'صورة مفصلة ومطبوخة لكل فرع، المدربين، مستحقات الطلاب، المجموعات، المعسكرات، البطولات، أنواع الرياضة وطرق التحصيل.',
+        'subtitle' => 'صورة مفصلة ودقيقة للفروع، ' . $termTrainerPlural . '، مستحقات ' . $termMemberPlural . '، ' . $termGroupPlural . '، وعوائد الاشتراكات.',
         'billed' => 'إجمالي المستحق', 'collected' => 'إجمالي المحصل', 'remaining' => 'إجمالي المتبقي',
         'rate' => 'نسبة التحصيل', 'records' => 'سجل مالي', 'cancelled' => 'ملغي', 'currency' => 'ج.م',
-        'filters' => 'تصفية التصفية المتقدمة', 'from' => 'من تاريخ', 'to' => 'إلى تاريخ', 'source' => 'مصدر التقرير',
-        'branch' => 'الفرع / المقر', 'sport' => 'الرياضة / اللعبة', 'payment_method' => 'طريقة التحصيل',
+        'filters' => 'تصفية الفلاتر المتقدمة', 'from' => 'من تاريخ', 'to' => 'إلى تاريخ', 'source' => 'مصدر التقرير',
+        'branch' => 'الفرع / المقر', 'sport' => 'النشاط / الفئة', 'payment_method' => 'طريقة التحصيل',
         'payment' => 'حالة السداد', 'search' => 'بحث بالاسم، الهاتف، المرجع', 'apply' => 'تطبيق الفلترة', 'reset' => 'إلغاء الفلاتر',
-        'print' => 'طباعة التقرير', 'all' => 'الكل / جميع الفروع', 'subscriptions' => 'حسابات واشتراكات الطلاب', 
-        'training' => 'حجوزات التدريبات', 'venues' => 'حجوزات الملاعب', 'camps' => 'معسكرات تدريبية',
+        'print' => 'طباعة التقرير', 'all' => 'الكل / جميع الفروع', 'subscriptions' => 'حسابات واشتراكات ' . $termMemberPlural, 
+        'training' => 'حجوزات الحصص والجلسات', 'venues' => 'حجوزات المساحات', 'camps' => 'المعسكرات والفعاليات',
         'paid' => 'مدفوع', 'partial' => 'مدفوع جزئيًا', 'unpaid' => 'غير مدفوع', 'export' => 'تصدير CSV',
-        'customer' => 'العميل / الطالب', 'service' => 'الخدمة / المجموعة', 'date' => 'التاريخ', 'amount' => 'المستحق',
+        'customer' => $termMemberSingle . ' / العميل', 'service' => 'الخدمة / ' . $termGroupPlural, 'date' => 'التاريخ', 'amount' => 'المستحق',
         'paidAmount' => 'المحصل', 'remainingAmount' => 'المتبقي', 'method' => 'وسيلة الدفع', 'status' => 'الحالة',
         'reference' => 'المرجع', 'phone' => 'الهاتف', 'noData' => 'لا توجد بيانات مطابقة للفلاتر الحالية.',
 
         // Tabs & Headers
         'tab_branches' => 'تقرير الفروع والمجمع',
-        'tab_groups' => 'تقرير المجموعات (حسب الرياضة والفرع)',
-        'tab_coaches' => 'معدل تشغيل المدربين والمستحقات',
-        'tab_dues' => 'مستحقات الطلاب (الدفع الجزئي)',
-        'tab_camps' => 'تقرير المعسكرات المالي',
-        'tab_competitions' => 'تقرير المباريات والبطولات',
-        'tab_sports' => 'تقارير الرياضات',
+        'tab_groups' => 'تقرير ' . $termGroupPlural . ' (حسب الفئة والفرع)',
+        'tab_coaches' => 'معدل تشغيل ' . $termTrainerPlural . ' والمستحقات',
+        'tab_dues' => 'مستحقات ' . $termMemberPlural . ' (الدفع الجزئي والآجل)',
+        'tab_camps' => 'تقرير المعسكرات والفعاليات',
+        'tab_competitions' => 'تقرير البطولات واللقاءات',
+        'tab_sports' => 'تقارير الأنشطة والخدمات',
         'tab_payments' => 'طرق التحصيل',
 
         // Section Headers
@@ -163,25 +184,25 @@
         'direct_expenses' => 'المصروفات المباشرة',
         'net_income' => 'صافي الدخل (الأرباح)',
 
-        'groups_head' => 'التقرير المالي والتشغيلي للمجموعات التدريبية',
-        'groups_sub' => 'عرض التفاصيل المالية والتشغيلية لكل مجموعة مقسمة طبقاً للرياضة والفرع',
-        'group_name' => 'اسم المجموعة',
-        'capacity_enrolled' => 'الطلاب / السعة',
+        'groups_head' => 'التقرير المالي والتشغيلي لـ ' . $termGroupPlural,
+        'groups_sub' => 'عرض التفاصيل المالية والتشغيلية مقسمة طبقاً للنشاط والفرع',
+        'group_name' => 'اسم ' . $termGroupPlural,
+        'capacity_enrolled' => $termMemberPlural . ' / السعة',
         'fill_rate' => 'نسبة الإشغال (%)',
 
-        'coaches_head' => 'تقرير معدل تشغيل المدربين ومستحقاتهم',
-        'coaches_sub' => 'معدل إشغال طاقات المدربين، إجمالي الدخل المحقق، نظام الاستحقاق (مرتب / نسبة) وتكلفة كل مدرب',
-        'coach_name' => 'اسم المدرب',
-        'sports_assigned' => 'الرياضات المسندة',
-        'groups_count' => 'المجموعات/التدريبات',
+        'coaches_head' => 'تقرير معدل تشغيل ' . $termTrainerPlural . ' ومستحقاتهم',
+        'coaches_sub' => 'معدل إشغال الطاقات، إجمالي الدخل المحقق، نظام الاستحقاق (مرتب / نسبة / جلسات) وتكلفة كل مسؤول',
+        'coach_name' => 'اسم ' . $termTrainerSingle,
+        'sports_assigned' => 'الأنشطة المسندة',
+        'groups_count' => 'الفئات / الحصص',
         'comp_system' => 'نظام الاستحقاق',
-        'coach_cost' => 'مستحق المدرب (التكلفة)',
+        'coach_cost' => 'مستحق ' . $termTrainerSingle . ' (التكلفة)',
         'net_profit' => 'صافي الربح المحقق',
 
-        'dues_head' => 'تقرير مستحقات الطلاب (الدفع الجزئي والغير مدفوع)',
-        'dues_sub' => 'حصر جميع المبالغ المتبقية على الطلاب للمتابعة الفورية والتواصل',
-        'student_name' => 'اسم الطالب / العميل',
-        'dues_remaining' => 'المتبقي على الطالب',
+        'dues_head' => 'تقرير مستحقات ' . $termMemberPlural . ' (الدفع الجزئي والغير مدفوع)',
+        'dues_sub' => 'حصر جميع المبالغ المتبقية على ' . $termMemberPlural . ' للمتابعة الفورية والتحصيل',
+        'student_name' => 'اسم ' . $termMemberSingle,
+        'dues_remaining' => 'المتبقي على ' . $termMemberSingle,
 
         'camps_head' => 'التقرير المالي والتشغيلي للمعسكرات التدريبية',
         'camps_sub' => 'تحليل الإيرادات والمكاسب والمصروفات الإجمالية والصافية لجميع المعسكرات',
@@ -361,6 +382,22 @@
                         <small>{{ $copy['currency'] }}</small>
                     </div>
                 </article>
+                <article class="fr-kpi is-expenses">
+                    <i class="fa-solid fa-receipt"></i>
+                    <div>
+                        <span>{{ $ar ? 'إجمالي المصروفات' : 'Total Expenses' }}</span>
+                        <strong class="text-danger">{{ $money($summary['expenses']) }}</strong>
+                        <small><a href="{{ route('academy.expenses.index') }}" class="text-muted text-decoration-none"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> {{ $ar ? 'سندات الصرف' : 'Vouchers' }}</a></small>
+                    </div>
+                </article>
+                <article class="fr-kpi is-profit">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                    <div>
+                        <span>{{ $ar ? 'صافي الربح الفعلي' : 'Net Realized Profit' }}</span>
+                        <strong class="{{ $summary['net_profit'] >= 0 ? 'text-success' : 'text-danger' }}">{{ $money($summary['net_profit']) }}</strong>
+                        <small>{{ $ar ? 'الهامش: ' : 'Margin: ' }}<strong>{{ number_format($summary['profit_margin'], 1) }}%</strong></small>
+                    </div>
+                </article>
                 <article class="fr-kpi is-rate">
                     <i class="fa-solid fa-chart-line"></i>
                     <div>
@@ -464,12 +501,14 @@
                 <button type="button" class="fr-nav-tab" onclick="switchTab('student-dues-tab', this)">
                     <i class="fa-solid fa-file-invoice-dollar"></i> {{ $copy['tab_dues'] }}
                 </button>
-                <button type="button" class="fr-nav-tab" onclick="switchTab('camps-report-tab', this)">
-                    <i class="fa-solid fa-campground"></i> {{ $copy['tab_camps'] }}
-                </button>
-                <button type="button" class="fr-nav-tab" onclick="switchTab('competitions-tab', this)">
-                    <i class="fa-solid fa-trophy"></i> {{ $copy['tab_competitions'] }}
-                </button>
+                @if($facType === 'academy')
+                    <button type="button" class="fr-nav-tab" onclick="switchTab('camps-report-tab', this)">
+                        <i class="fa-solid fa-campground"></i> {{ $copy['tab_camps'] }}
+                    </button>
+                    <button type="button" class="fr-nav-tab" onclick="switchTab('competitions-tab', this)">
+                        <i class="fa-solid fa-trophy"></i> {{ $copy['tab_competitions'] }}
+                    </button>
+                @endif
                 <button type="button" class="fr-nav-tab" onclick="switchTab('sports-tab', this)">
                     <i class="fa-solid fa-volleyball"></i> {{ $copy['tab_sports'] }}
                 </button>
@@ -674,7 +713,14 @@
                                         </td>
                                         <td class="text-muted fw-bold">{{ $money($coach['coach_cost']) }} {{ $copy['currency'] }}</td>
                                         <td class="text-danger fw-bold">{{ $money($coach['actual_paid']) }} {{ $copy['currency'] }}</td>
-                                        <td class="{{ $coach['dues_remaining'] > 0 ? 'text-warning' : 'text-success' }} fw-bold">{{ $money($coach['dues_remaining']) }} {{ $copy['currency'] }}</td>
+                                        <td class="{{ $coach['dues_remaining'] > 0 ? 'text-warning' : 'text-success' }} fw-bold">
+                                            {{ $money($coach['dues_remaining']) }} {{ $copy['currency'] }}
+                                            @if($coach['dues_remaining'] > 0)
+                                                <a href="{{ route('academy.expenses.index', ['coach_id' => $coach['id']]) }}" class="badge bg-danger text-white text-decoration-none ms-1 btn-print-hide" title="{{ $ar ? 'صرف المستحق عبر سند صرف جديد' : 'Disburse via Expense Voucher' }}">
+                                                    <i class="fa-solid fa-money-bill-transfer"></i> {{ $ar ? 'صرف' : 'Pay' }}
+                                                </a>
+                                            @endif
+                                        </td>
                                         <td>
                                             <strong class="{{ $coach['net_revenue'] >= 0 ? 'text-success' : 'text-danger' }}">
                                                 {{ $money($coach['net_revenue']) }} {{ $copy['currency'] }}
@@ -761,6 +807,7 @@
                 </article>
             </div>
 
+            @if($facType === 'academy')
             <!-- TAB 5: Camps Financial Report -->
             <div id="camps-report-tab" class="fr-tab-pane">
                 <article class="fr-report-panel">
@@ -809,7 +856,7 @@
                                         <td class="text-danger">{{ $money($cItem['expenses']) }} {{ $copy['currency'] }}</td>
                                         <td>
                                             <strong class="{{ $cItem['net_profit'] >= 0 ? 'text-success' : 'text-danger' }}" style="font-size:13px;">
-                                                {{ $money($cItem['net_profit']) }} {{ $copy['currency'] }}
+                                                 {{ $money($cItem['net_profit']) }} {{ $copy['currency'] }}
                                             </strong>
                                         </td>
                                     </tr>
@@ -891,6 +938,7 @@
                     </div>
                 </article>
             </div>
+            @endif
 
             <!-- TAB 7: Sports Breakdown Report -->
             <div id="sports-tab" class="fr-tab-pane">

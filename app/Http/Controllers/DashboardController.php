@@ -212,13 +212,20 @@ class DashboardController extends Controller
             $month = $monthStart->copy()->addMonths($offset);
             $key = $month->format('Y-m');
             $booking = $monthlyBookings->get($key);
+            $bookingRev = round((float) ($booking->revenue ?? 0), 2);
+            $subRev = round((float) ($monthlyPayments->get($key, 0)), 2);
+            $totalRev = round($bookingRev + $subRev, 2);
+            $exp = round((float) ($monthlyExpenses->get($key, 0)), 2);
+            $net = round($totalRev - $exp, 2);
 
             return [
                 'label' => $month->locale(app()->getLocale())->translatedFormat('M Y'),
                 'bookings' => (int) ($booking->bookings_count ?? 0),
-                'bookingRevenue' => round((float) ($booking->revenue ?? 0), 2),
-                'subscriptionRevenue' => round((float) ($monthlyPayments->get($key, 0)), 2),
-                'expenses' => round((float) ($monthlyExpenses->get($key, 0)), 2),
+                'bookingRevenue' => $bookingRev,
+                'subscriptionRevenue' => $subRev,
+                'totalRevenue' => $totalRev,
+                'expenses' => $exp,
+                'netProfit' => $net,
             ];
         });
 
@@ -233,6 +240,20 @@ class DashboardController extends Controller
                 'bookings' => (int) $training->joins_count,
             ]);
 
+        // For Gyms or facilities with membership plans, include plan subscription counts
+        $topGroups = AcademyGroup::where('academy_id', $academyId)
+            ->withCount(['subscriptions' => fn($q) => $q->where('status', 'active')])
+            ->orderByDesc('subscriptions_count')
+            ->limit(6)
+            ->get();
+
+        if ($topGroups->sum('subscriptions_count') > 0) {
+            $topTrainings = $topGroups->map(fn ($g) => [
+                'name' => $this->localizedValue($g->name),
+                'bookings' => (int) $g->subscriptions_count,
+            ]);
+        }
+
         $recentBookings = Join::query()
             ->with(['user:id,name,phone', 'training:id,name,academy_id', 'invoice:id,status,is_canceled'])
             ->whereHas('training', fn ($query) => $query->where('academy_id', $academyId))
@@ -244,11 +265,22 @@ class DashboardController extends Controller
             ? Settlement::where('partner_id', $academyId)->latest()->first()
             : null;
 
+        $totalCollectedRevenue = (float) ($subscriptionRevenue + $totalRevenue);
+        $totalExpenses = (float) \App\Models\PartnerExpense::where('academy_id', $academyId)->sum(DB::raw('COALESCE(base_amount, amount)'));
+        $netProfit = (float) ($totalCollectedRevenue - $totalExpenses);
+        $profitMargin = $totalCollectedRevenue > 0 ? round(($netProfit / $totalCollectedRevenue) * 100, 1) : 0;
+        $isGymFacilityType = in_array($academy->business_type, ['gym', 'fitness_center', 'crossfit', 'health_club'], true);
+        $coachesFinancial = $this->getCoachesFinancialSummary($academyId);
+
         $dashboard = [
             'academyName' => $this->localizedValue($academy->getRawOriginal('commercial_name')),
             'ownerName' => $academy->owner_name ?: $academy->first_name ?: $academy->name,
             'totalBookings' => $totalBookings,
             'totalRevenue' => $totalRevenue,
+            'totalCollectedRevenue' => $totalCollectedRevenue,
+            'totalExpenses' => $totalExpenses,
+            'netProfit' => $netProfit,
+            'profitMargin' => $profitMargin,
             'uniqueCustomers' => $uniqueCustomers,
             'bookingTrend' => $this->percentageChange($currentBookings, $previousBookings),
             'totalTrainings' => $totalTrainings,
@@ -267,7 +299,9 @@ class DashboardController extends Controller
             'monthlyBookings' => $months->pluck('bookings'),
             'monthlyBookingRevenue' => $months->pluck('bookingRevenue'),
             'monthlySubscriptionRevenue' => $months->pluck('subscriptionRevenue'),
+            'monthlyTotalRevenue' => $months->pluck('totalRevenue'),
             'monthlyExpenses' => $months->pluck('expenses'),
+            'monthlyNetProfit' => $months->pluck('netProfit'),
             'expenseCategories' => $expenseCategoriesBreakdown->pluck('name'),
             'expenseCategoryTotals' => $expenseCategoriesBreakdown->pluck('total'),
             'expiringCountdownLabels' => $expiringCountdown->pluck('label'),
@@ -286,6 +320,9 @@ class DashboardController extends Controller
             'dashboardMode' => $academy->business_type === 'hybrid' ? 'hybrid' : 'academy',
             'paymentBreakdown' => $this->getPaymentMethodBreakdown($academyId),
             'partialPayments' => $this->getStudentPartialPaymentsSummary($academyId),
+            'coachesFinancial' => $coachesFinancial,
+            'currencySymbol' => $academy->currency_symbol ?: (app()->getLocale() === 'ar' ? 'ج.م' : 'EGP'),
+            'isGym' => $isGymFacilityType,
         ];
 
         return view('Academy.index', compact('dashboard'));
@@ -693,6 +730,7 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('EG', ['instapay']),
                     'count' => $getCountryCount('EG', ['instapay']),
                     'color' => '#8b5cf6',
+                    'logo' => asset('assetsAdmin/img/payments/instapay.png'),
                     'icon' => 'zap',
                 ],
                 [
@@ -701,14 +739,16 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('EG', ['fawry']),
                     'count' => $getCountryCount('EG', ['fawry']),
                     'color' => '#f59e0b',
+                    'logo' => asset('assetsAdmin/img/payments/fawry.png'),
                     'icon' => 'dollar-sign',
                 ],
                 [
                     'key' => 'card',
                     'name' => $isArabic ? 'كارت / فيزا (Card)' : 'Card / Visa',
-                    'amount' => $getCountryAmount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online']),
-                    'count' => $getCountryCount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online']),
+                    'amount' => $getCountryAmount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online', 'card_bank']),
+                    'count' => $getCountryCount('EG', ['card', 'visa', 'mastercard', 'online', 'app_online', 'card_bank']),
                     'color' => '#3b82f6',
+                    'logo' => asset('assetsAdmin/img/payments/card_bank.png'),
                     'icon' => 'credit-card',
                 ],
                 [
@@ -717,7 +757,17 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('EG', ['cash']),
                     'count' => $getCountryCount('EG', ['cash']),
                     'color' => '#10b981',
+                    'logo' => asset('assetsAdmin/img/payments/cash.png'),
                     'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'wallet',
+                    'name' => $isArabic ? 'محفظة إلكترونية' : 'E-Wallet',
+                    'amount' => $getCountryAmount('EG', ['wallet', 'e_wallet', 'vodafone_cash']),
+                    'count' => $getCountryCount('EG', ['wallet', 'e_wallet', 'vodafone_cash']),
+                    'color' => '#ef4444',
+                    'logo' => asset('assetsAdmin/img/payments/wallet.jpg'),
+                    'icon' => 'smartphone',
                 ],
                 [
                     'key' => 'bank_transfer',
@@ -725,6 +775,7 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('EG', ['bank_transfer', 'bank']),
                     'count' => $getCountryCount('EG', ['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
+                    'logo' => asset('assetsAdmin/img/payments/bank_transfer.jpg'),
                     'icon' => 'send',
                 ],
             ],
@@ -738,19 +789,39 @@ class DashboardController extends Controller
             'methods' => [
                 [
                     'key' => 'mada',
-                    'name' => $isArabic ? 'مدى / بطاقات (Mada/Card)' : 'Mada / Card',
+                    'name' => $isArabic ? 'مدى (Mada)' : 'Mada',
                     'amount' => $getCountryAmount('SA', ['mada', 'card', 'visa', 'online']),
                     'count' => $getCountryCount('SA', ['mada', 'card', 'visa', 'online']),
                     'color' => '#059669',
+                    'logo' => asset('assetsAdmin/img/payments/mada.png'),
                     'icon' => 'credit-card',
                 ],
                 [
                     'key' => 'stc_pay',
-                    'name' => $isArabic ? 'سداد / STC Pay / Apple Pay' : 'Sadad / STC Pay / Apple Pay',
-                    'amount' => $getCountryAmount('SA', ['stc_pay', 'apple_pay', 'sadad']),
-                    'count' => $getCountryCount('SA', ['stc_pay', 'apple_pay', 'sadad']),
+                    'name' => $isArabic ? 'STC Pay' : 'STC Pay',
+                    'amount' => $getCountryAmount('SA', ['stc_pay', 'stc']),
+                    'count' => $getCountryCount('SA', ['stc_pay', 'stc']),
                     'color' => '#7c3aed',
+                    'logo' => asset('assetsAdmin/img/payments/stc_pay.png'),
                     'icon' => 'smartphone',
+                ],
+                [
+                    'key' => 'apple_pay',
+                    'name' => $isArabic ? 'Apple Pay' : 'Apple Pay',
+                    'amount' => $getCountryAmount('SA', ['apple_pay', 'apple']),
+                    'count' => $getCountryCount('SA', ['apple_pay', 'apple']),
+                    'color' => '#000000',
+                    'logo' => asset('assetsAdmin/img/payments/apple_pay.png'),
+                    'icon' => 'smartphone',
+                ],
+                [
+                    'key' => 'sadad_ksa',
+                    'name' => $isArabic ? 'سداد (Sadad KSA)' : 'Sadad KSA',
+                    'amount' => $getCountryAmount('SA', ['sadad_ksa', 'sadad']),
+                    'count' => $getCountryCount('SA', ['sadad_ksa', 'sadad']),
+                    'color' => '#0284c7',
+                    'logo' => asset('assetsAdmin/img/payments/sadad_ksa.png'),
+                    'icon' => 'shield',
                 ],
                 [
                     'key' => 'cash',
@@ -758,6 +829,7 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('SA', ['cash']),
                     'count' => $getCountryCount('SA', ['cash']),
                     'color' => '#10b981',
+                    'logo' => asset('assetsAdmin/img/payments/cash.png'),
                     'icon' => 'dollar-sign',
                 ],
                 [
@@ -766,6 +838,7 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('SA', ['bank_transfer', 'bank']),
                     'count' => $getCountryCount('SA', ['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
+                    'logo' => asset('assetsAdmin/img/payments/bank_transfer.jpg'),
                     'icon' => 'send',
                 ],
             ],
@@ -778,20 +851,49 @@ class DashboardController extends Controller
             'currency' => $isArabic ? 'ر.ق' : 'QAR',
             'methods' => [
                 [
-                    'key' => 'card',
-                    'name' => $isArabic ? 'كارت محلي / بطاقات (Card)' : 'Card / Visa',
-                    'amount' => $getCountryAmount('QA', ['card', 'visa', 'online']),
-                    'count' => $getCountryCount('QA', ['card', 'visa', 'online']),
-                    'color' => '#3b82f6',
+                    'key' => 'naps',
+                    'name' => $isArabic ? 'بطاقة الخصم (NAPS قطر)' : 'NAPS Qatar',
+                    'amount' => $getCountryAmount('QA', ['naps', 'local_card']),
+                    'count' => $getCountryCount('QA', ['naps', 'local_card']),
+                    'color' => '#800020',
+                    'logo' => asset('assetsAdmin/img/payments/naps.jpg'),
                     'icon' => 'credit-card',
                 ],
                 [
-                    'key' => 'naps',
-                    'name' => $isArabic ? 'NAPS / سداد قطر' : 'NAPS / Sadad Qatar',
-                    'amount' => $getCountryAmount('QA', ['naps', 'sadad']),
-                    'count' => $getCountryCount('QA', ['naps', 'sadad']),
-                    'color' => '#800020',
+                    'key' => 'fawran',
+                    'name' => $isArabic ? 'فوران قطر (Fawran)' : 'Fawran Qatar',
+                    'amount' => $getCountryAmount('QA', ['fawran']),
+                    'count' => $getCountryCount('QA', ['fawran']),
+                    'color' => '#b91c1c',
+                    'logo' => asset('assetsAdmin/img/payments/fawran.jpg'),
+                    'icon' => 'zap',
+                ],
+                [
+                    'key' => 'sadad_qa',
+                    'name' => $isArabic ? 'سداد قطر (Sadad QA)' : 'Sadad Qatar',
+                    'amount' => $getCountryAmount('QA', ['sadad_qa', 'sadad']),
+                    'count' => $getCountryCount('QA', ['sadad_qa', 'sadad']),
+                    'color' => '#0369a1',
+                    'logo' => asset('assetsAdmin/img/payments/sadad_qa.png'),
                     'icon' => 'shield',
+                ],
+                [
+                    'key' => 'card',
+                    'name' => $isArabic ? 'بطاقة بنكية (Card)' : 'Bank Card',
+                    'amount' => $getCountryAmount('QA', ['card', 'visa', 'online', 'card_bank']),
+                    'count' => $getCountryCount('QA', ['card', 'visa', 'online', 'card_bank']),
+                    'color' => '#3b82f6',
+                    'logo' => asset('assetsAdmin/img/payments/card_bank.png'),
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'apple_pay',
+                    'name' => $isArabic ? 'Apple Pay' : 'Apple Pay',
+                    'amount' => $getCountryAmount('QA', ['apple_pay', 'apple']),
+                    'count' => $getCountryCount('QA', ['apple_pay', 'apple']),
+                    'color' => '#000000',
+                    'logo' => asset('assetsAdmin/img/payments/apple_pay.png'),
+                    'icon' => 'smartphone',
                 ],
                 [
                     'key' => 'cash',
@@ -799,15 +901,8 @@ class DashboardController extends Controller
                     'amount' => $getCountryAmount('QA', ['cash']),
                     'count' => $getCountryCount('QA', ['cash']),
                     'color' => '#10b981',
+                    'logo' => asset('assetsAdmin/img/payments/cash.png'),
                     'icon' => 'dollar-sign',
-                ],
-                [
-                    'key' => 'bank_transfer',
-                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
-                    'amount' => $getCountryAmount('QA', ['bank_transfer', 'bank']),
-                    'count' => $getCountryCount('QA', ['bank_transfer', 'bank']),
-                    'color' => '#06b6d4',
-                    'icon' => 'send',
                 ],
             ],
         ];
@@ -824,15 +919,35 @@ class DashboardController extends Controller
                     'amount' => $getAllAmount(['cash']),
                     'count' => $getAllCount(['cash']),
                     'color' => '#10b981',
+                    'logo' => asset('assetsAdmin/img/payments/cash.png'),
                     'icon' => 'dollar-sign',
                 ],
                 [
-                    'key' => 'card',
-                    'name' => $isArabic ? 'كارت / بطاقات أونلاين' : 'Card / Online',
-                    'amount' => $getAllAmount(['card', 'visa', 'mastercard', 'online', 'app_online', 'mada']),
-                    'count' => $getAllCount(['card', 'visa', 'mastercard', 'online', 'app_online', 'mada']),
-                    'color' => '#3b82f6',
+                    'key' => 'mada',
+                    'name' => $isArabic ? 'مدى (Mada)' : 'Mada',
+                    'amount' => $getAllAmount(['mada']),
+                    'count' => $getAllCount(['mada']),
+                    'color' => '#059669',
+                    'logo' => asset('assetsAdmin/img/payments/mada.png'),
                     'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'card',
+                    'name' => $isArabic ? 'كارت / بطاقات بنكية' : 'Card / Bank Cards',
+                    'amount' => $getAllAmount(['card', 'visa', 'mastercard', 'online', 'app_online', 'card_bank']),
+                    'count' => $getAllCount(['card', 'visa', 'mastercard', 'online', 'app_online', 'card_bank']),
+                    'color' => '#3b82f6',
+                    'logo' => asset('assetsAdmin/img/payments/card_bank.png'),
+                    'icon' => 'credit-card',
+                ],
+                [
+                    'key' => 'apple_pay',
+                    'name' => $isArabic ? 'Apple Pay' : 'Apple Pay',
+                    'amount' => $getAllAmount(['apple_pay', 'apple']),
+                    'count' => $getAllCount(['apple_pay', 'apple']),
+                    'color' => '#000000',
+                    'logo' => asset('assetsAdmin/img/payments/apple_pay.png'),
+                    'icon' => 'smartphone',
                 ],
                 [
                     'key' => 'instapay',
@@ -840,6 +955,7 @@ class DashboardController extends Controller
                     'amount' => $getAllAmount(['instapay']),
                     'count' => $getAllCount(['instapay']),
                     'color' => '#8b5cf6',
+                    'logo' => asset('assetsAdmin/img/payments/instapay.png'),
                     'icon' => 'zap',
                 ],
                 [
@@ -848,14 +964,16 @@ class DashboardController extends Controller
                     'amount' => $getAllAmount(['fawry']),
                     'count' => $getAllCount(['fawry']),
                     'color' => '#f59e0b',
+                    'logo' => asset('assetsAdmin/img/payments/fawry.png'),
                     'icon' => 'dollar-sign',
                 ],
                 [
-                    'key' => 'sadad',
-                    'name' => $isArabic ? 'مدى / سداد / NAPS' : 'Mada / Sadad / NAPS',
-                    'amount' => $getAllAmount(['sadad', 'naps', 'stc_pay', 'apple_pay']),
-                    'count' => $getAllCount(['sadad', 'naps', 'stc_pay', 'apple_pay']),
+                    'key' => 'stc_pay',
+                    'name' => $isArabic ? 'STC Pay' : 'STC Pay',
+                    'amount' => $getAllAmount(['stc_pay', 'stc']),
+                    'count' => $getAllCount(['stc_pay', 'stc']),
                     'color' => '#7c3aed',
+                    'logo' => asset('assetsAdmin/img/payments/stc_pay.png'),
                     'icon' => 'smartphone',
                 ],
                 [
@@ -864,6 +982,7 @@ class DashboardController extends Controller
                     'amount' => $getAllAmount(['bank_transfer', 'bank']),
                     'count' => $getAllCount(['bank_transfer', 'bank']),
                     'color' => '#06b6d4',
+                    'logo' => asset('assetsAdmin/img/payments/bank_transfer.jpg'),
                     'icon' => 'send',
                 ],
             ],
@@ -998,4 +1117,99 @@ class DashboardController extends Controller
         ];
     }
 
+    private function getCoachesFinancialSummary(int $academyId): array
+    {
+        $coaches = Coach::where('academy_id', $academyId)->get();
+        $isAr = app()->getLocale() === 'ar';
+        $items = [];
+        $totalCoachCost = 0.0;
+        $totalCoachPaid = 0.0;
+
+        foreach ($coaches as $coach) {
+            $assignedGroups = AcademyGroup::where('academy_id', $academyId)
+                ->where(function ($q) use ($coach) {
+                    $q->where('coach_id', $coach->id)
+                      ->orWhereHas('training', fn ($t) => $t->where('coach_id', $coach->id));
+                })
+                ->with(['subscriptions.payments'])
+                ->get();
+
+            $assignedTrainings = Training::where('academy_id', $academyId)
+                ->where('coach_id', $coach->id)
+                ->with(['joins'])
+                ->get();
+
+            $enrolledCount = 0;
+            $totalBilled = 0.0;
+            $totalCollected = 0.0;
+
+            foreach ($assignedTrainings as $training) {
+                $enrolledCount += $training->joins->count();
+                $totalBilled += (float) $training->joins->sum('price');
+                $totalCollected += (float) $training->joins->sum('net_amount');
+            }
+
+            foreach ($assignedGroups as $group) {
+                foreach ($group->subscriptions as $sub) {
+                    $enrolledCount++;
+                    $totalBilled += (float) $sub->amount;
+                    $totalCollected += (float) $sub->payments->sum('amount');
+                }
+            }
+
+            $compType = $coach->compensation_type ?: 'session';
+            $compVal = (float) ($coach->compensation_value ?? 0);
+            $coachCost = 0.0;
+
+            $conductedSessions = AcademyAttendanceSession::whereHas('group', fn ($q) => 
+                $q->where('academy_id', $academyId)->where(function ($gq) use ($coach) {
+                    $gq->where('coach_id', $coach->id)
+                       ->orWhereHas('training', fn ($t) => $t->where('coach_id', $coach->id));
+                })
+            )->count();
+
+            if ($compType === 'session') {
+                $sessionCount = $conductedSessions > 0 ? $conductedSessions : max(1, ($assignedGroups->count() + $assignedTrainings->count()) * 4);
+                $coachCost = $compVal > 0 ? ($sessionCount * $compVal) : 0;
+                $compLabel = number_format($compVal, 2) . ($isAr ? ' ج.م / للحصة' : ' EGP / session');
+            } elseif ($compType === 'percentage') {
+                $coachCost = ($totalCollected * $compVal) / 100;
+                $compLabel = $compVal . ($isAr ? '% من الإيراد' : '% of revenue');
+            } else {
+                $coachCost = $compVal; // fixed monthly salary
+                $compLabel = number_format($compVal, 2) . ($isAr ? ' ج.م راتب شهري' : ' EGP salary');
+            }
+
+            $actualPaid = (float) \App\Models\PartnerExpense::where('academy_id', $academyId)
+                ->where('coach_id', $coach->id)
+                ->sum(DB::raw('COALESCE(base_amount, amount)'));
+
+            $duesRemaining = max(0, $coachCost - $actualPaid);
+            $totalCoachCost += $coachCost;
+            $totalCoachPaid += $actualPaid;
+
+            $items[] = [
+                'id' => $coach->id,
+                'name' => $this->localizedValue($coach->getRawOriginal('name')),
+                'phone' => $coach->phone,
+                'image' => $coach->image,
+                'compensation_type' => $compType,
+                'compensation_value' => $compVal,
+                'compensation_label' => $compLabel,
+                'enrolled_members' => $enrolledCount,
+                'total_revenue' => $totalCollected,
+                'coach_cost' => $coachCost,
+                'actual_paid' => $actualPaid,
+                'dues_remaining' => $duesRemaining,
+            ];
+        }
+
+        return [
+            'coaches' => $items,
+            'totalCoachCost' => round($totalCoachCost, 2),
+            'totalCoachPaid' => round($totalCoachPaid, 2),
+            'totalCoachRemaining' => round(max(0, $totalCoachCost - $totalCoachPaid), 2),
+            'totalEnrolledUnderCoaches' => collect($items)->sum('enrolled_members'),
+        ];
+    }
 }

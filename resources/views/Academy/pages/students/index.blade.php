@@ -140,6 +140,91 @@
         .bottom-view-spacer {
             padding-bottom: 70px;
         }
+
+        /* Compact Header & Stat Cards for Students View */
+        .heroui-header-banner.compact-banner {
+            padding: 14px 20px;
+            margin-bottom: 14px;
+            border-radius: 12px;
+        }
+        .heroui-header-banner.compact-banner .heroui-header-title {
+            font-size: 1.2rem;
+            gap: 10px;
+        }
+        .heroui-header-banner.compact-banner .title-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        .heroui-header-banner.compact-banner .heroui-header-subtitle {
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        .compact-stat-row {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        @media (max-width: 1200px) {
+            .compact-stat-row {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 768px) {
+            .compact-stat-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 480px) {
+            .compact-stat-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .compact-stat-card {
+            background: var(--heroui-surface, #ffffff);
+            border: 1px solid var(--heroui-border, #e2e8f0);
+            border-radius: 10px;
+            padding: 10px 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            min-height: 62px;
+        }
+        .compact-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .compact-stat-card .stat-label {
+            font-size: 0.76rem;
+            color: #64748b;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
+        .compact-stat-card .stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            color: #0f172a;
+        }
+        .compact-stat-card .heroui-stat-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            font-size: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 @endpush
 
@@ -147,7 +232,7 @@
     <div class="middle-content container-xxl p-0 heroui-wrapper bottom-view-spacer">
 
         <!--  BEGIN BREADCRUMBS  -->
-        <div class="secondary-nav mb-4">
+        <div class="secondary-nav mb-2">
             <div class="breadcrumbs-container" data-page-heading="Analytics">
                 <header class="header navbar navbar-expand-sm">
                     <a href="javascript:void(0);" class="btn-toggle sidebarCollapse" data-placement="bottom">
@@ -168,86 +253,126 @@
         </div>
         <!--  END BREADCRUMBS  -->
 
-        <!-- HeroUI Header Banner -->
-        <div class="heroui-header-banner">
+        <!-- HeroUI Header Banner (Compact) -->
+        @php
+            $termListTitle = facility_term('students_list');
+            $termAddBtn    = facility_term('add_student');
+        @endphp
+        <div class="heroui-header-banner compact-banner">
             <div>
                 <h1 class="heroui-header-title">
-                    <span class="title-icon"><i class="fas fa-user-graduate"></i></span>
-                    {{ trans('admin.student_management.students') }}
+                    <span class="title-icon"><i class="fas fa-id-card"></i></span>
+                    {{ $termListTitle }}
                 </h1>
                 <p class="heroui-header-subtitle">
-                    {{ app()->getLocale() === 'ar' ? 'إدارة ومتابعة سجلات المشتركين، عضوياتهم، الحضور، والتواصل المباشر' : 'Manage and track student profiles, memberships, attendance, and direct messaging' }}
+                    {{ app()->getLocale() === 'ar' ? 'إدارة ومتابعة سجلات الأعضاء، الاشتراكات، وبطاقات الدخول' : 'Manage and track member profiles, memberships, and cards' }}
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{{ route('academy.whatsapp.compose') }}" class="heroui-btn heroui-btn-light text-success">
+                <a href="{{ route('academy.students.create') }}" class="heroui-btn heroui-btn-primary py-2 px-3">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>{{ $termAddBtn }}</span>
+                </a>
+                <a href="{{ route('academy.whatsapp.compose') }}" class="heroui-btn heroui-btn-light text-success py-2 px-3">
                     <i class="fa-brands fa-whatsapp"></i>
                     <span>{{ app()->getLocale() === 'ar' ? 'إرسال جماعي' : 'Bulk WhatsApp' }}</span>
                 </a>
-                <a href="{{ route('academy.students.export') }}" class="heroui-btn heroui-btn-light">
-                    <i class="fa-solid fa-file-excel text-success"></i>
-                    <span>{{ trans('admin.student_management.export_excel') }}</span>
+                <a href="{{ route('academy.students.cards.print') }}" target="_blank" class="heroui-btn heroui-btn-light py-2 px-3" title="{{ app()->getLocale() === 'ar' ? 'طباعة كروت الأعضاء (4 كروت بالورقة A4)' : 'Print Member Cards (4 per A4)' }}">
+                    <i class="fa-solid fa-address-card text-primary"></i>
+                    <span>{{ app()->getLocale() === 'ar' ? 'طباعة الكروت' : 'Cards' }}</span>
                 </a>
-                <a href="{{ route('academy.students.template') }}" class="heroui-btn heroui-btn-light">
-                    <i class="fa-solid fa-download text-muted"></i>
-                    <span>{{ trans('admin.student_management.download_students_template') }}</span>
-                </a>
-                <a href="{{ route('academy.students.print') }}" target="_blank" class="heroui-btn heroui-btn-light">
-                    <i class="fa-solid fa-print"></i>
-                    <span>{{ trans('admin.student_management.print_pdf') }}</span>
-                </a>
-                <a href="{{ route('academy.students.create') }}" class="heroui-btn heroui-btn-primary">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>{{ trans('admin.student_management.add_student') }}</span>
-                </a>
+                <button class="heroui-btn heroui-btn-light py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#importBoxCollapse" aria-expanded="false" title="{{ trans('admin.student_management.import_students') }}">
+                    <i class="fa-solid fa-cloud-arrow-up text-primary"></i>
+                    <span>{{ app()->getLocale() === 'ar' ? 'استيراد' : 'Import' }}</span>
+                </button>
+                <div class="dropdown d-inline-block">
+                    <button class="heroui-btn heroui-btn-light py-2 px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-file-export text-muted"></i>
+                        <span>{{ app()->getLocale() === 'ar' ? 'تصدير وطباعة' : 'Export' }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2" style="font-size: 13px; min-width: 190px; border-radius: 10px;">
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" href="{{ route('academy.students.export') }}">
+                                <i class="fa-solid fa-file-excel text-success"></i>
+                                <span>{{ trans('admin.student_management.export_excel') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" href="{{ route('academy.students.print') }}" target="_blank">
+                                <i class="fa-solid fa-file-pdf text-danger"></i>
+                                <span>{{ trans('admin.student_management.print_pdf') }}</span>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" href="{{ route('academy.students.template') }}">
+                                <i class="fa-solid fa-download text-muted"></i>
+                                <span>{{ trans('admin.student_management.download_students_template') }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <!-- HeroUI Metric Stat Cards -->
-        <div class="heroui-stat-grid">
-            <div class="heroui-stat-card primary">
-                <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي المشتركين' : 'Total Students' }}</span>
-                    <h2 class="stat-value">{{ number_format($metrics['total'] ?? $students->total()) }}</h2>
+        <!-- HeroUI Metric Stat Cards (Compact 5-in-1 Row) -->
+        <div class="compact-stat-row">
+            <div class="compact-stat-card">
+                <div>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي الأعضاء' : 'Total' }}</span>
+                    <h3 class="stat-value">{{ number_format($metrics['total'] ?? $students->total()) }}</h3>
                 </div>
                 <div class="heroui-stat-icon primary">
                     <i class="fas fa-users"></i>
                 </div>
             </div>
 
-            <div class="heroui-stat-card success">
-                <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'المشتركون النشطون' : 'Active Students' }}</span>
-                    <h2 class="stat-value text-success">{{ number_format($metrics['active'] ?? 0) }}</h2>
+            <div class="compact-stat-card">
+                <div>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'النشطون' : 'Active' }}</span>
+                    <h3 class="stat-value text-success">{{ number_format($metrics['active'] ?? 0) }}</h3>
                 </div>
                 <div class="heroui-stat-icon success">
                     <i class="fas fa-user-check"></i>
                 </div>
             </div>
 
-            <div class="heroui-stat-card secondary">
-                <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'غير النشطين' : 'Inactive Students' }}</span>
-                    <h2 class="stat-value text-muted">{{ number_format($metrics['inactive'] ?? 0) }}</h2>
+            <div class="compact-stat-card">
+                <div>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'غير النشطين' : 'Inactive' }}</span>
+                    <h3 class="stat-value text-muted">{{ number_format($metrics['inactive'] ?? 0) }}</h3>
                 </div>
                 <div class="heroui-stat-icon secondary">
                     <i class="fas fa-user-xmark"></i>
                 </div>
             </div>
 
-            <div class="heroui-stat-card info">
-                <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'التوزيع (ذكور / إناث)' : 'Gender Ratio (M / F)' }}</span>
-                    <h2 class="stat-value text-info fs-4">
-                        <i class="fas fa-mars text-primary fs-6 me-1"></i>{{ $metrics['male'] ?? 0 }}
+            <div class="compact-stat-card">
+                <div>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'النوع (ذكور / إناث)' : 'Gender Ratio' }}</span>
+                    <h3 class="stat-value text-info fs-5" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-mars text-primary fs-6"></i>{{ $metrics['male'] ?? 0 }}
                         <span class="text-muted mx-1">/</span>
-                        <i class="fas fa-venus text-danger fs-6 me-1"></i>{{ $metrics['female'] ?? 0 }}
-                    </h2>
+                        <i class="fas fa-venus text-danger fs-6"></i>{{ $metrics['female'] ?? 0 }}
+                    </h3>
                 </div>
                 <div class="heroui-stat-icon info">
                     <i class="fas fa-venus-mars"></i>
                 </div>
             </div>
+
+            <a href="{{ route('academy.students.index', array_merge(request()->except('page'), ['special_care' => request('special_care') ? null : '1'])) }}" class="compact-stat-card text-decoration-none {{ request('special_care') ? 'border border-2 border-warning shadow-sm' : '' }}" style="cursor: pointer; background: {{ request('special_care') ? '#fef3c7' : '#ffffff' }};" title="{{ request('special_care') ? (app()->getLocale() === 'ar' ? 'إلغاء التصفية' : 'Clear filter') : (app()->getLocale() === 'ar' ? 'تصفية الرعاية الخاصة' : 'Filter special care') }}">
+                <div>
+                    <span class="stat-label text-warning-emphasis fw-bold">
+                        <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>
+                        {{ app()->getLocale() === 'ar' ? 'رعاية خاصة' : 'Special Care' }}
+                    </span>
+                    <h3 class="stat-value text-warning">{{ number_format($metrics['special_care'] ?? 0) }}</h3>
+                </div>
+                <div class="heroui-stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+            </a>
         </div>
 
         @if(session('import_summary'))
@@ -312,33 +437,35 @@
             </div>
         @endif
 
-        <!-- HeroUI Quick Import Box -->
-        <div class="heroui-filter-panel mb-3 py-3">
-            <form action="{{ route('academy.students.import') }}" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center justify-content-between gap-3 m-0">
-                @csrf
-                <div class="d-flex align-items-center gap-2">
-                    <div class="heroui-stat-icon primary" style="width: 38px; height: 38px; font-size: 16px;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <!-- HeroUI Quick Import Box (Collapsible) -->
+        <div class="collapse {{ session('import_summary') ? 'show' : '' }} mb-3" id="importBoxCollapse">
+            <div class="heroui-filter-panel py-3">
+                <form action="{{ route('academy.students.import') }}" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center justify-content-between gap-3 m-0">
+                    @csrf
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="heroui-stat-icon primary" style="width: 38px; height: 38px; font-size: 16px;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block" style="font-size: 14px;">{{ trans('admin.student_management.import_students') }}</strong>
+                            <small class="text-muted">{{ app()->getLocale() === 'ar' ? 'رفع ملف Excel أو CSV لإضافة أو تحديث المشتركين' : 'Upload Excel/CSV file to bulk create or update students' }}</small>
+                        </div>
                     </div>
-                    <div>
-                        <strong class="d-block" style="font-size: 14px;">{{ trans('admin.student_management.import_students') }}</strong>
-                        <small class="text-muted">{{ app()->getLocale() === 'ar' ? 'رفع ملف Excel أو CSV لإضافة أو تحديث المشتركين' : 'Upload Excel/CSV file to bulk create or update students' }}</small>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <input type="file" name="students_file" class="form-control form-control-sm" style="max-width: 320px; border-radius: var(--heroui-radius-md);" accept=".xlsx,.xls,.csv" required>
+                        <button class="heroui-btn heroui-btn-primary py-2 px-3">
+                            <i class="fa-solid fa-upload me-1"></i> {{ trans('admin.student_management.upload_students_file') }}
+                        </button>
                     </div>
-                </div>
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <input type="file" name="students_file" class="form-control form-control-sm" style="max-width: 320px; border-radius: var(--heroui-radius-md);" accept=".xlsx,.xls,.csv" required>
-                    <button class="heroui-btn heroui-btn-primary py-2 px-3">
-                        <i class="fa-solid fa-upload me-1"></i> {{ trans('admin.student_management.upload_students_file') }}
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
         <!-- HeroUI Smart Filter Panel -->
         <div class="heroui-filter-panel mb-4">
             <form method="GET" action="{{ route('academy.students.index') }}">
                 <div class="row g-3 align-items-center">
-                    <div class="col-lg-4 col-md-12">
+                    <div class="col-lg-3 col-md-12">
                         <label class="heroui-filter-label">
                             <i class="fa fa-search text-primary"></i>
                             <span>{{ trans('admin.student_management.search_placeholder') }}</span>
@@ -386,11 +513,23 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-12 col-sm-6 d-flex gap-2 align-items-end" style="height: 100%;">
-                        <button type="submit" class="heroui-btn heroui-btn-primary flex-fill py-2">
-                            <i class="fa fa-filter"></i> {{ trans('admin.student_management.filter') }}
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <label class="heroui-filter-label">
+                            <i class="fa fa-notes-medical text-warning"></i>
+                            <span>{{ app()->getLocale() === 'ar' ? 'تنبيه صحي' : 'Special Care' }}</span>
+                        </label>
+                        <div class="heroui-select-wrap">
+                            <select name="special_care" class="heroui-select">
+                                <option value="">{{ app()->getLocale() === 'ar' ? 'الكل' : 'All' }}</option>
+                                <option value="1" {{ request('special_care') === '1' ? 'selected' : '' }}>{{ app()->getLocale() === 'ar' ? '⚠️ رعاية خاصة / إصابة / حساسية' : '⚠️ Special Care' }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col-md-12 col-sm-6 d-flex gap-1 align-items-end" style="height: 100%;">
+                        <button type="submit" class="heroui-btn heroui-btn-primary flex-fill py-2" title="{{ trans('admin.student_management.filter') }}">
+                            <i class="fa fa-filter"></i>
                         </button>
-                        @if(request()->anyFilled(['search', 'status', 'gender']) || (request()->filled('sort') && request('sort') !== 'latest'))
+                        @if(request()->anyFilled(['search', 'status', 'gender', 'special_care']) || (request()->filled('sort') && request('sort') !== 'latest'))
                             <a href="{{ route('academy.students.index') }}" class="heroui-btn heroui-btn-reset py-2" title="{{ trans('admin.student_management.reset') }}">
                                 <i class="fa fa-rotate-left"></i>
                             </a>
@@ -435,10 +574,32 @@
                                 >
                             </td>
                             <td>
-                                <button type="button" class="student-profile-trigger btn btn-link p-0 fw-bold text-decoration-none text-dark d-flex align-items-center gap-1" data-student-profile-url="{{ route('academy.students.profile', $student) }}">
-                                    <span>{{ $student->name }}</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-muted" style="font-size: 11px;"></i>
-                                </button>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <button type="button" class="student-profile-trigger btn btn-link p-0 fw-bold text-decoration-none text-dark d-flex align-items-center gap-1" data-student-profile-url="{{ route('academy.students.profile', $student) }}">
+                                        <span>{{ $student->name }}</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-muted" style="font-size: 11px;"></i>
+                                    </button>
+
+                                    @if($student->hasSpecialCare())
+                                        @php($care = $student->specialCareSummary())
+                                        @php($tooltipTitle = '<strong>⚠️ تنبيه طبي / معاملة خاصة:</strong><br>' . (!empty($care['injury']) ? '• إصابة: ' . e($care['injury']) . '<br>' : '') . (!empty($care['allergy']) ? '• حساسية: ' . e($care['allergy']) . '<br>' : '') . (!empty($care['notes']) ? '• ملاحظة: ' . e($care['notes']) . '<br>' : '') . '<span style=\'color:#dc2626;font-size:11px;\'>يرجى الانتباه (الجاكوزي / لوكر / تمارين مخصصة)</span>')
+                                        <span class="badge border d-inline-flex align-items-center gap-1 px-2 py-1 shadow-sm js-special-care-badge"
+                                              style="background-color: #fef3c7 !important; color: #92400e !important; border-color: #fde68a !important; font-size: 11px; font-weight: 700; cursor: help;"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="top"
+                                              data-bs-html="true"
+                                              title="{!! $tooltipTitle !!}">
+                                            <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                            <span>{{ app()->getLocale() === 'ar' ? 'رعاية خاصة' : 'Special Care' }}</span>
+                                            @if(!empty($care['allergy']))
+                                                <span class="badge bg-danger text-white rounded-pill px-1" style="font-size: 9px;" title="{{ app()->getLocale() === 'ar' ? 'حساسية' : 'Allergy' }}">🌿</span>
+                                            @endif
+                                            @if(!empty($care['injury']))
+                                                <span class="badge bg-warning text-dark rounded-pill px-1" style="font-size: 9px;" title="{{ app()->getLocale() === 'ar' ? 'إصابة' : 'Injury' }}">⚠️</span>
+                                            @endif
+                                        </span>
+                                    @endif
+                                </div>
                                 @if($student->membership_number)
                                     <span class="heroui-time-chip mt-1" style="font-size: 11px;">
                                         <i class="fa fa-id-badge text-primary me-1"></i>{{ $student->membership_number }}
@@ -723,6 +884,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             bulkStatusForm.submit();
         });
+    });
+
+    // Initialize Bootstrap Tooltips for Special Care Badges
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });
 </script>

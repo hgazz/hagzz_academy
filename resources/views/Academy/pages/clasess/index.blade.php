@@ -44,13 +44,13 @@
                     {{ trans('admin.clasess.clasess') }}
                 </h1>
                 <p class="heroui-header-subtitle">
-                    {{ app()->getLocale() === 'ar' ? 'إدارة ومتابعة الحصص التدريبية المنظمة، التوقيت، وجداول الحضور' : 'Organize and track scheduled training sessions, timing, and attendance' }}
+                    {{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'إدارة ومتابعة حصص اللياقة وجداول الحضور والمدربين' : (!empty($isHealthFacility) ? 'إدارة ومتابعة مواعيد الجلسات العلاجية ومواعيد الحضور' : 'إدارة ومتابعة الحصص التدريبية المنظمة، التوقيت، وجداول الحضور')) : (!empty($isGymFacility) ? 'Manage fitness classes, schedules, and attendance' : 'Organize and track scheduled training sessions, timing, and attendance') }}
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <a href="{{ route('academy.training.create') }}" class="heroui-btn heroui-btn-light">
                     <i class="fas fa-plus-circle text-primary"></i>
-                    <span>{{ app()->getLocale() === 'ar' ? 'تدريب جديد' : 'New Training' }}</span>
+                    <span>{{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'باقة جديدة' : (!empty($isHealthFacility) ? 'خدمة جديدة' : 'تدريب جديد')) : (!empty($isGymFacility) ? 'New Plan' : 'New Training') }}</span>
                 </a>
                 <a href="{{ route('academy.class.create') }}" class="heroui-btn heroui-btn-primary">
                     <i class="fas fa-plus"></i>
@@ -63,7 +63,7 @@
         <div class="heroui-stat-grid">
             <div class="heroui-stat-card primary">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي الحصص' : 'Total Sessions' }}</span>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'إجمالي حصص اللياقة' : (!empty($isHealthFacility) ? 'إجمالي مواعيد الجلسات' : 'إجمالي الحصص')) : 'Total Sessions' }}</span>
                     <h2 class="stat-value">{{ number_format($metrics['total'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon primary">

@@ -1,6 +1,13 @@
 @extends('Academy.Layouts.master')
 
-@section('title', trans('admin.bookings.bookings'))
+@php
+    $ar = app()->getLocale() === 'ar';
+    $academy = auth('academy')->user()?->academy ?: auth('academy')->user();
+    $isGym = ($academy?->business_type === 'gym');
+    $pageTitle = $isGym ? ($ar ? 'سجل الاشتراكات والعضويات' : 'Subscriptions & Memberships') : trans('admin.bookings.bookings');
+@endphp
+
+@section('title', $pageTitle)
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
@@ -9,6 +16,96 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/dt-global_style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/plugins/css/dark/table/datatable/custom_dt_miscellaneous.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assetsAdmin/src/assets/css/heroui-theme.css') }}">
+    <style>
+        .heroui-card-table {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            overflow: visible;
+        }
+        .heroui-table-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .heroui-table-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+        .heroui-table thead th {
+            background: #f8fafc !important;
+            color: #475569 !important;
+            font-weight: 700 !important;
+            font-size: 12.5px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 12px 14px !important;
+            border-bottom: 2px solid #e2e8f0 !important;
+            white-space: nowrap;
+        }
+        .heroui-table tbody td {
+            padding: 14px !important;
+            vertical-align: middle !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            font-size: 13px;
+        }
+        .heroui-table tbody tr:hover td {
+            background-color: #f8fafc !important;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            position: relative;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #4f46e5 !important;
+            color: #ffffff !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            border-radius: 8px !important;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 10px !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+            margin-inline-start: 8px !important;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 10px !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+        }
+        .dropdown-menu {
+            z-index: 1080 !important;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -26,7 +123,7 @@
                             <nav class="breadcrumb-style-one" aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">
                                     <li class="breadcrumb-item"><a href="{{ route('academy.index') }}">{{ trans('admin.dashboard') }}</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">{{ trans('admin.bookings.bookings') }}</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ $pageTitle }}</li>
                                 </ol>
                             </nav>
                         </div>
@@ -41,16 +138,25 @@
             <div>
                 <h1 class="heroui-header-title">
                     <span class="title-icon"><i class="fas fa-ticket-alt"></i></span>
-                    {{ trans('admin.bookings.bookings') }}
+                    {{ $pageTitle }}
                 </h1>
                 <p class="heroui-header-subtitle">
-                    {{ app()->getLocale() === 'ar' ? 'متابعة وإدارة طلبات الانضمام للبرامج التدريبية، الاشتراكات الأونلاين والمدفوعات' : 'Manage and track training registrations, online subscriptions, and payments' }}
+                    @if($isGym)
+                        {{ $ar ? 'متابعة وإدارة عضويات النادي، الاشتراكات المباشرة والتطبيق، والمدفوعات والفواتير الموحدة' : 'Manage gym memberships, direct club registrations, online app bookings, and unified invoices' }}
+                    @else
+                        {{ $ar ? 'متابعة وإدارة طلبات الانضمام للبرامج التدريبية، الاشتراكات الأونلاين والمباشرة والمدفوعات' : 'Manage and track training registrations, online subscriptions, and payments' }}
+                    @endif
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('academy.createBooking') }}" class="heroui-btn heroui-btn-primary shadow-sm">
+                    <i class="fa fa-plus-circle"></i>
+                    <span>{{ $isGym ? ($ar ? 'تسجيل اشتراك جديد' : 'New Subscription') : ($ar ? 'تسجيل حجز جديد' : 'New Booking') }}</span>
+                </a>
                 <a href="{{ route('academy.report.offline-joins') }}" class="heroui-btn heroui-btn-light">
                     <i class="fas fa-store text-warning"></i>
                     <span>{{ trans('admin.bookings.offline_bookings') }}</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ $metrics['offline'] ?? 0 }}</span>
                 </a>
                 <a href="{{ route('academy.report.join.export') }}" class="heroui-btn heroui-btn-light">
                     <i class="fa-solid fa-file-excel text-success"></i>
@@ -63,7 +169,7 @@
         <div class="heroui-stat-grid">
             <div class="heroui-stat-card primary">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي الحجوزات' : 'Total Bookings' }}</span>
+                    <span class="stat-label">{{ $isGym ? ($ar ? 'إجمالي الاشتراكات' : 'Total Subscriptions') : ($ar ? 'إجمالي الحجوزات' : 'Total Bookings') }}</span>
                     <h2 class="stat-value">{{ number_format($metrics['total'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon primary">
@@ -73,7 +179,7 @@
 
             <div class="heroui-stat-card success">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'حجوزات اليوم' : "Today's Bookings" }}</span>
+                    <span class="stat-label">{{ $ar ? 'اشتراكات اليوم' : "Today's Bookings" }}</span>
                     <h2 class="stat-value text-success">{{ number_format($metrics['today'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon success">
@@ -83,21 +189,21 @@
 
             <div class="heroui-stat-card info">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'الحجوزات الإلكترونية' : 'Online Bookings' }}</span>
+                    <span class="stat-label">{{ $ar ? 'حجوزات التطبيق (أونلاين)' : 'Online App Bookings' }}</span>
                     <h2 class="stat-value text-info">{{ number_format($metrics['online'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon info">
-                    <i class="fas fa-globe"></i>
+                    <i class="fas fa-mobile-screen-button"></i>
                 </div>
             </div>
 
             <div class="heroui-stat-card secondary">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'الحجوزات المباشرة' : 'Direct / Offline' }}</span>
+                    <span class="stat-label">{{ $ar ? 'الحجوزات المباشرة (النادي)' : 'Direct / In-Club' }}</span>
                     <h2 class="stat-value text-muted">{{ number_format($metrics['offline'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon secondary">
-                    <i class="fas fa-cash-register"></i>
+                    <i class="fas fa-store"></i>
                 </div>
             </div>
         </div>
@@ -106,23 +212,26 @@
         <div class="heroui-filter-panel">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pb-3 border-bottom">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="fw-bold fs-6">{{ app()->getLocale() === 'ar' ? 'نوع الحجوزات المعروضة:' : 'Display Bookings:' }}</span>
+                    <span class="fw-bold fs-6 text-dark">
+                        <i class="fas fa-sliders text-primary me-1"></i>
+                        {{ $ar ? 'عرض السجلات حسب النوع:' : 'Filter View:' }}
+                    </span>
                 </div>
                 <div class="heroui-tabs-container m-0">
                     <a href="{{ route('academy.report.joins') }}" class="heroui-tab-btn active text-decoration-none">
                         <i class="fas fa-list-check"></i>
-                        <span>{{ app()->getLocale() === 'ar' ? 'جميع الحجوزات' : 'All Bookings' }}</span>
+                        <span>{{ $ar ? 'جميع الاشتراكات والحجوزات' : 'All Bookings' }}</span>
                         <span class="heroui-tab-badge">{{ $metrics['total'] ?? 0 }}</span>
                     </a>
                     <a href="{{ route('academy.report.offline-joins') }}" class="heroui-tab-btn text-decoration-none">
                         <i class="fas fa-store"></i>
-                        <span>{{ app()->getLocale() === 'ar' ? 'الحجوزات المباشرة' : 'Offline Bookings' }}</span>
+                        <span>{{ $ar ? 'الحجوزات المباشرة' : 'Direct / Offline' }}</span>
                         <span class="heroui-tab-badge">{{ $metrics['offline'] ?? 0 }}</span>
                     </a>
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('academy.report.join.filter') }}" class="mt-2">
+            <form method="GET" action="{{ route('academy.report.join.filter') }}" class="mt-3">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5 col-sm-6">
                         <label class="heroui-filter-label">
@@ -154,8 +263,26 @@
 
         <!-- HeroUI Card Table -->
         <div class="heroui-card-table">
+            <div class="heroui-table-header-bar">
+                <div>
+                    <h3 class="heroui-table-title">
+                        <i class="fas fa-table-list text-primary"></i>
+                        <span>{{ $ar ? 'قائمة الاشتراكات والعمليات المسجلة' : 'Registered Bookings & Invoices' }}</span>
+                    </h3>
+                    <p class="text-muted mb-0" style="font-size: 12.5px;">
+                        {{ $ar ? 'عرض تفصيلي لبيانات المشتركين، الباقات، المدفوعات، وإجراءات الطباعة والتواصل السريع' : 'Detailed view of members, plans, payments, printing, and fast communication' }}
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap" style="font-size: 12px;">
+                    <span class="text-muted fw-semibold me-1">{{ $ar ? 'دليل السداد:' : 'Status Legend:' }}</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill"><i class="fa fa-circle-check me-1"></i> {{ $ar ? 'مسدد' : 'Paid' }}</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill"><i class="fa fa-clock me-1"></i> {{ $ar ? 'جزئي' : 'Partial' }}</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill"><i class="fa fa-circle-xmark me-1"></i> {{ $ar ? 'غير مسدد' : 'Unpaid' }}</span>
+                </div>
+            </div>
+
             <div class="table-responsive">
-                {!! $dataTable->table(['class' => 'table heroui-table dt-table-hover dataTable', 'id' => 'join-table']) !!}
+                {!! $dataTable->table(['class' => 'table heroui-table dt-table-hover dataTable w-100', 'id' => 'join-table']) !!}
             </div>
         </div>
 

@@ -63,9 +63,10 @@
                 <div class="dropdown-menu position-absolute" aria-labelledby="notificationDropdown">
                     <div class="notification-scroll">
                         <div class="drodpown-title notification mt-2">
-                            <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-{{ auth()->user('academy')->unreadNotifications->count() > 0 ? 'secondary' : 'warning' }}">{{ auth('academy')->user()->unreadNotifications->count() }}</span></h6>
+                            @php($unreadCount = auth('academy')->user()?->unreadNotifications?->count() ?? 0)
+                            <h6 class="d-flex justify-content-between"><span class="align-self-center">{{ trans('admin.notifications.notifications') }}</span> <span class="badge badge-{{ $unreadCount > 0 ? 'secondary' : 'warning' }}">{{ $unreadCount }}</span></h6>
                         </div>
-                       @foreach(auth()->user()->unreadNotifications as $notification)
+                       @foreach(auth('academy')->user()?->unreadNotifications ?? [] as $notification)
                            @include('Academy.Layouts.inc.notifications')
                        @endforeach
                         <div class="drodpown-title notification mt-2">
@@ -82,7 +83,8 @@
                 <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar-container">
                         <div class="avatar avatar-sm avatar-indicators avatar-online">
-                            <img alt="avatar" src="{{ auth()->user('academy')->logo }}" width="40px" height="40px" class="rounded-circle"
+                            @php($userLogo = auth('academy')->user()?->academy?->logo ?: auth('academy')->user()?->logo)
+                            <img alt="avatar" src="{{ $userLogo ?: asset('assetsAdmin/logo/Icon-Primary.svg') }}" width="40px" height="40px" class="rounded-circle"
                                  onerror="this.onerror=null;this.src='{{ asset('assetsAdmin/logo/Icon-Primary.svg') }}';">
                         </div>
                     </div>
@@ -95,8 +97,8 @@
                                 &#x1F44B;
                             </div>
                             <div class="media-body">
-                                <h5>{{ auth('academy')->user()->owner_name }}</h5>
-                                <p>{{ auth('academy')->user()->commercial_name }}</p>
+                                <h5>{{ auth('academy')->user()?->name ?: auth('academy')->user()?->owner_name }}</h5>
+                                <p>{{ auth('academy')->user()?->academy?->name ?: auth('academy')->user()?->commercial_name }}</p>
                             </div>
                         </div>
                     </div>

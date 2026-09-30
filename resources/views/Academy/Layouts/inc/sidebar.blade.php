@@ -1,14 +1,29 @@
 @php
     $servicesActive = Request::routeIs('academy.training.*', 'academy.calendar.*', 'academy.class.*');
-    $studentsActive = Request::routeIs('academy.students.*', 'academy.groups.*', 'academy.competitions.*', 'academy.attendance.*', 'academy.subscriptions.*', 'academy.student-reports.*');
-    $reportsActive = Request::routeIs('academy.report.*');
-    $venueActive = Request::routeIs('academy.venues.*', 'academy.venue-spaces.*', 'academy.venue-bookings.*');
+    $studentsActive = Request::routeIs('academy.students.*', 'academy.groups.*', 'academy.competitions.*', 'academy.attendance.*', 'academy.subscriptions.*', 'academy.student-reports.*', 'academy.gym-gate.*');
+    $reportsActive  = Request::routeIs('academy.report.*');
+    $venueActive    = Request::routeIs('academy.venues.*', 'academy.venue-spaces.*', 'academy.venue-bookings.*');
     $whatsappActive = Request::routeIs('academy.whatsapp.*');
-    $authUser = auth('academy')->user();
+    $authUser    = auth('academy')->user();
     $hasVenueModule = $authUser?->hasVenueModule();
-    $isVenueOnly = $authUser?->business_type === 'venue';
-    $isArabic = session('locale', app()->getLocale()) === 'ar';
-    $can = fn(string $permission) => $authUser?->hasPermissionTo($permission) ?? true;
+    $isVenueOnly    = $authUser?->business_type === 'venue';
+    $isArabic       = session('locale', app()->getLocale()) === 'ar';
+    $can            = fn(string $permission) => ($authUser && method_exists($authUser, 'hasPermissionTo')) ? $authUser->hasPermissionTo($permission) : true;
+    // نوع المنشأة للمصطلحات الديناميكية
+    $facilityType   = ($authUser instanceof \App\Models\Academies)
+                        ? ($authUser->business_type ?? 'academy')
+                        : ($authUser instanceof \App\Models\PartnerUser ? ($authUser->academy?->business_type ?? 'academy') : 'academy');
+    $isGymFacility          = in_array($facilityType, ['gym', 'health_center', 'hybrid']);
+    $isHealthFacility        = in_array($facilityType, ['health_center', 'hybrid']);
+    $hasCampsModule          = in_array($facilityType, ['academy', 'hybrid']);
+    // مصطلحات المنشأة
+    $termStudent     = facility_term('student', $facilityType);
+    $termStudentsPlural = facility_term('students_list', $facilityType);
+    $termCoaches     = facility_term('coaches_list', $facilityType);
+    $termTraining    = facility_term('training', $facilityType, true);
+    $termAttendance  = facility_term('attendance', $facilityType);
+    $termSubscriptions = facility_term('subscription', $facilityType, true);
+    $termGroups      = facility_term('group', $facilityType, true);
 @endphp
 
 <style>
@@ -107,16 +122,16 @@
 
             @unless($isVenueOnly)
                 @if($can('bookings.manage') || $can('bookings.view'))
-                    <li class="menu {{ Request::routeIs('academy.createBooking') ? 'active' : '' }}"><a href="{{ route('academy.createBooking') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-plus menu-icon"></i><span>{{ $isArabic ? 'إضافة حجز جديد' : 'Add New Booking' }}</span></div></a></li>
+                    <li class="menu {{ Request::routeIs('academy.createBooking') ? 'active' : '' }}"><a href="{{ route('academy.createBooking') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-plus menu-icon"></i><span>{{ $isArabic ? ($isGymFacility ? 'تسجيل اشتراك جديد' : ($isHealthFacility ? 'حجز موعد جلسة' : 'إضافة حجز جديد')) : ($isGymFacility ? 'Register Membership' : ($isHealthFacility ? 'New Appointment' : 'Add New Booking')) }}</span></div></a></li>
                 @endif
 
                 @if($can('trainings.view') || $can('trainings.manage'))
                     <li class="menu {{ $servicesActive ? 'active' : '' }}">
-                        <a href="#services" data-bs-toggle="collapse" aria-expanded="{{ $servicesActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $servicesActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-dumbbell menu-icon"></i><span>{{ $isArabic ? 'التدريبات والأنشطة' : 'Trainings & Services' }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
+                        <a href="#services" data-bs-toggle="collapse" aria-expanded="{{ $servicesActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $servicesActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-dumbbell menu-icon"></i><span>{{ $isArabic ? ($isGymFacility ? 'باقات العضوية والاشتراكات' : ($isHealthFacility ? 'الخدمات والجلسات' : 'التدريبات والأنشطة')) : ($isGymFacility ? 'Membership & Plans' : ($isHealthFacility ? 'Services & Sessions' : 'Trainings & Services')) }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
                         <ul class="collapse submenu list-unstyled {{ $servicesActive ? 'show' : '' }}" id="services" data-bs-parent="#accordionExample">
                             <li class="menu {{ Request::routeIs('academy.calendar.*') ? 'active' : '' }}"><a href="{{ route('academy.calendar.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-calendar-days menu-icon"></i><span>{{ trans('admin.training.calendar') }}</span></div></a></li>
                             <li class="menu {{ Request::routeIs('academy.training.*') ? 'active' : '' }}"><a href="{{ route('academy.training.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-person-running menu-icon"></i><span>{{ trans('admin.training.training') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.class.*') ? 'active' : '' }}"><a href="{{ route('academy.class.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-roof menu-icon"></i><span>{{ $isArabic ? 'الحصص والمواعيد' : 'Classes & sessions' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.class.*') ? 'active' : '' }}"><a href="{{ route('academy.class.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-roof menu-icon"></i><span>{{ $isArabic ? ($isGymFacility ? 'حصص اللياقة' : ($isHealthFacility ? 'مواعيد الجلسات' : 'الحصص والمواعيد')) : ($isGymFacility ? 'Fitness Classes' : ($isHealthFacility ? 'Appointments' : 'Classes & sessions')) }}</span></div></a></li>
                         </ul>
                     </li>
                 @endif
@@ -124,15 +139,24 @@
                 @if($can('bookings.view') || $can('bookings.manage') || $can('trainings.view'))
                     <li class="navigation-section"><span>{{ $isArabic ? 'الأشخاص والفريق' : 'People & team' }}</span></li>
                     <li class="menu {{ $studentsActive ? 'active' : '' }}">
-                        <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ $studentsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $studentsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-graduation-cap menu-icon"></i><span>{{ trans('admin.student_management.menu') }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
+                        <a href="#students-management" data-bs-toggle="collapse" aria-expanded="{{ $studentsActive ? 'true' : 'false' }}" class="dropdown-toggle {{ $studentsActive ? '' : 'collapsed' }}"><div><i class="fa-solid fa-id-card menu-icon"></i><span>{{ $termStudentsPlural }}</span></div><div><i class="fa-solid fa-chevron-right menu-chevron"></i></div></a>
                         <ul class="collapse submenu list-unstyled {{ $studentsActive ? 'show' : '' }}" id="students-management" data-bs-parent="#accordionExample">
-                            <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}"><a href="{{ route('academy.students.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-graduate menu-icon"></i><span>{{ trans('admin.student_management.students') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.groups.*') ? 'active' : '' }}"><a href="{{ route('academy.groups.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-group menu-icon"></i><span>{{ trans('admin.student_management.groups') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}"><a href="{{ route('academy.subscriptions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-receipt menu-icon"></i><span>{{ trans('admin.student_management.subscriptions') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.attendance.*') && !Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-clipboard-check menu-icon"></i><span>{{ trans('admin.student_management.attendance') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon"></i><span>{{ $isArabic ? 'ماسح الحضور' : 'Attendance scanner' }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.competitions.*') ? 'active' : '' }}"><a href="{{ route('academy.competitions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-trophy menu-icon"></i><span>{{ trans('admin.student_management.competitions') }}</span></div></a></li>
-                            <li class="menu {{ Request::routeIs('academy.camps.*') ? 'active' : '' }}"><a href="{{ route('academy.camps.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-plane-departure menu-icon"></i><span>{{ $isArabic ? 'المعسكرات التدريبية' : 'Training Camps' }}</span></div></a></li>
+                            <li class="menu {{ Request::routeIs('academy.students.*') ? 'active' : '' }}"><a href="{{ route('academy.students.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-circle menu-icon"></i><span>{{ $termStudentsPlural }}</span></div></a></li>
+                            @if(!$isGymFacility)
+                                <li class="menu {{ Request::routeIs('academy.groups.*') ? 'active' : '' }}"><a href="{{ route('academy.groups.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-people-group menu-icon"></i><span>{{ $termGroups }}</span></div></a></li>
+                            @endif
+                            <li class="menu {{ Request::routeIs('academy.subscriptions.*') ? 'active' : '' }}"><a href="{{ route('academy.subscriptions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-receipt menu-icon"></i><span>{{ $termSubscriptions }}</span></div></a></li>
+                            @if($isGymFacility)
+                                <li class="menu {{ Request::routeIs('academy.gym-gate.scanner') ? 'active' : '' }}"><a href="{{ route('academy.gym-gate.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-door-open menu-icon"></i><span>{{ $isArabic ? 'ماسح بوابة الدخول السريع' : 'Gate Check-in Scanner' }}</span></div></a></li>
+                                <li class="menu {{ Request::routeIs('academy.gym-gate.log') ? 'active' : '' }}"><a href="{{ route('academy.gym-gate.log') }}" class="dropdown-toggle"><div><i class="fa-solid fa-clock-rotate-left menu-icon"></i><span>{{ $isArabic ? 'سجل دخول البوابة' : 'Gate Entry Log' }}</span></div></a></li>
+                            @else
+                                <li class="menu {{ Request::routeIs('academy.attendance.*') && !Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-clipboard-check menu-icon"></i><span>{{ $termAttendance }}</span></div></a></li>
+                                <li class="menu {{ Request::routeIs('academy.attendance.scanner') ? 'active' : '' }}"><a href="{{ route('academy.attendance.scanner') }}" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon"></i><span>{{ $isArabic ? 'ماسح الحضور' : 'Attendance scanner' }}</span></div></a></li>
+                            @endif
+                            @if($hasCampsModule)
+                                <li class="menu {{ Request::routeIs('academy.competitions.*') ? 'active' : '' }}"><a href="{{ route('academy.competitions.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-trophy menu-icon"></i><span>{{ trans('admin.student_management.competitions') }}</span></div></a></li>
+                                <li class="menu {{ Request::routeIs('academy.camps.*') ? 'active' : '' }}"><a href="{{ route('academy.camps.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-plane-departure menu-icon"></i><span>{{ $isArabic ? 'المعسكرات التدريبية' : 'Training Camps' }}</span></div></a></li>
+                            @endif
                             <li class="menu {{ Request::routeIs('academy.student-reports.*') ? 'active' : '' }}"><a href="{{ route('academy.student-reports.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-chart-line menu-icon"></i><span>{{ trans('admin.student_management.reports') }}</span></div></a></li>
                         </ul>
                     </li>
@@ -143,9 +167,11 @@
                 @endif
 
                 @if($can('users.view') || $can('users.manage'))
-                    <li class="menu {{ Request::routeIs('academy.users.*') ? 'active' : '' }}"><a href="{{ route('academy.users.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users menu-icon"></i><span>{{ trans('admin.profile.user') }}</span></div></a></li>
-                    <li class="menu {{ Request::routeIs('academy.team.*') ? 'active' : '' }}"><a href="{{ route('academy.team.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users-gear menu-icon"></i><span>{{ $isArabic ? 'طاقم العمل والصلاحيات' : 'Team & Permissions' }}</span></div></a></li>
+                    <li class="menu {{ Request::routeIs('academy.team.*') ? 'active' : '' }}"><a href="{{ route('academy.team.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-users-gear menu-icon"></i><span>{{ $isArabic ? ($isGymFacility ? 'فريق عمل النادي والصلاحيات' : ($isHealthFacility ? 'طاقم العمل والممارسين' : 'فريق العمل والصلاحيات')) : 'Team & Staff' }}</span></div></a></li>
                 @endif
+
+                <li class="menu {{ Request::routeIs('academy.staff-attendance.index') ? 'active' : '' }}"><a href="{{ route('academy.staff-attendance.index') }}" class="dropdown-toggle"><div><i class="fa-solid fa-user-clock menu-icon text-success"></i><span>{{ $isArabic ? 'حضور وانصراف الكوادر و' . $termCoaches : 'Staff Attendance' }}</span></div></a></li>
+                <li class="menu"><a href="{{ route('academy.staff-attendance.live-screen') }}" target="_blank" class="dropdown-toggle"><div><i class="fa-solid fa-qrcode menu-icon text-warning"></i><span>{{ $isArabic ? 'شاشة الحضور (Live QR)' : 'Live QR Kiosk' }}</span></div></a></li>
             @endunless
 
             <li class="navigation-section"><span>{{ $isArabic ? 'التواصل والمحتوى' : 'Communication & content' }}</span></li>

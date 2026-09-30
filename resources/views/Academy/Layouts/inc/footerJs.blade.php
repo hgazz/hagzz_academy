@@ -31,7 +31,7 @@
     </script>
 @endif
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <script>
         console.error('[Hagzz] Validation failed', @json($errors->toArray()));
         Swal.fire({

@@ -17,7 +17,18 @@
         'save_image'=>'Save as Image (PNG)',
         'signed'=>'Digitally issued and signed through Hagzz Digital Sports Technology Platform','sigref'=>'Digital signature reference','footer'=>'This invoice was electronically generated and approved by Hagzz Platform.',
     ];
-    $types = $ar ? ['booking'=>'فاتورة حجز تدريب','student_subscription'=>'فاتورة اشتراك طالب','venue_booking'=>'فاتورة حجز ملعب','platform_subscription'=>'فاتورة اشتراك منصة Hagzz'] : ['booking'=>'Training booking invoice','student_subscription'=>'Student subscription invoice','venue_booking'=>'Venue booking invoice','platform_subscription'=>'Hagzz platform subscription invoice'];
+    $isGymDoc = ($document['is_gym'] ?? false) || (($document['facility_type'] ?? '') === 'gym');
+    $types = $ar ? [
+        'booking' => $isGymDoc ? 'فاتورة عضوية واشتراك بالنادي' : 'فاتورة حجز تدريب',
+        'student_subscription' => $isGymDoc ? 'فاتورة اشتراك عضوية' : 'فاتورة اشتراك طالب',
+        'venue_booking' => 'فاتورة حجز صالة / مساحة',
+        'platform_subscription' => 'فاتورة اشتراك منصة Hagzz'
+    ] : [
+        'booking' => $isGymDoc ? 'Gym Membership Invoice' : 'Training booking invoice',
+        'student_subscription' => $isGymDoc ? 'Member Subscription Invoice' : 'Student subscription invoice',
+        'venue_booking' => 'Space / Venue Booking Invoice',
+        'platform_subscription' => 'Hagzz platform subscription invoice'
+    ];
     $statuses = $ar ? ['paid'=>'مدفوعة','partial'=>'مدفوعة جزئيًا','unpaid'=>'غير مدفوعة','issued'=>'مستحقة','overdue'=>'متأخرة','void'=>'ملغاة','cancelled'=>'ملغاة','draft'=>'مسودة'] : ['paid'=>'Paid','partial'=>'Partially paid','unpaid'=>'Unpaid','issued'=>'Due','overdue'=>'Overdue','void'=>'Void','cancelled'=>'Cancelled','draft'=>'Draft'];
     $money = fn ($value) => number_format((float) $value, 2);
     $pageSize = $paper === 'pos' ? '80mm auto' : strtoupper($paper);

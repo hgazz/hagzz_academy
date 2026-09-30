@@ -80,13 +80,14 @@ class ReportController extends Controller
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
+            $academyId = $this->getAcademyId();
             $joins = Join::with([
                 'invoice',
-                'training'=>function($model){
-                    $model->where('academy_id',auth('academy')->id())->get();
+                'training'=>function($model) use ($academyId) {
+                    $model->where('academy_id', $academyId);
                 }
-            ])->whereHas('training', function ($q) {
-                $q->where('academy_id', auth('academy')->id());
+            ])->whereHas('training', function ($q) use ($academyId) {
+                $q->where('academy_id', $academyId);
             })->whereBetween('created_at', [$startDate, $endDate]);
 
             $joinsData = $joins->get();
@@ -104,9 +105,10 @@ class ReportController extends Controller
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
+            $academyId = $this->getAcademyId();
             $joins = Join::with(['invoice', 'user', 'training'])
-                ->whereHas('training', function ($q) {
-                    $q->where('academy_id', auth('academy')->id());
+                ->whereHas('training', function ($q) use ($academyId) {
+                    $q->where('academy_id', $academyId);
                 })
                 ->whereHas('invoice', function ($query) {
                     $query->where('user_type', 'offline');
@@ -122,9 +124,14 @@ class ReportController extends Controller
         return $dataTable->render('Academy.pages.joinsOffline.index', compact('metrics'));
     }
 
+    private function getAcademyId(): int
+    {
+        return (int) (auth('academy')->user()?->academy_id ?: auth('academy')->id());
+    }
+
     private function getJoinMetrics(): array
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $base = Join::whereHas('training', fn($q) => $q->where('academy_id', $academyId));
         return [
             'total' => (clone $base)->count(),
@@ -136,7 +143,7 @@ class ReportController extends Controller
 
     private function getOfflineJoinMetrics(): array
     {
-        $academyId = auth('academy')->id();
+        $academyId = $this->getAcademyId();
         $base = Join::whereHas('training', fn($q) => $q->where('academy_id', $academyId))
             ->whereHas('invoice', fn($q) => $q->where('user_type', 'offline'));
         return [

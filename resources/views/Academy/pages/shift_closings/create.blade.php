@@ -69,10 +69,14 @@
                         <div class="metric-card metric-cash">
                             <div class="metric-title text-success" style="color:#065f46 !important;">
                                 <i class="fa-solid fa-money-bill-wave fa-lg"></i>
-                                <span>{{ app()->getLocale() === 'ar' ? 'مقبوضات الكاش (نقداً)' : 'Cash Collected' }}</span>
+                                <span>{{ app()->getLocale() === 'ar' ? 'صافي الكاش المطلوب بالدرج' : 'Net Cash Expected' }}</span>
                             </div>
                             <div class="metric-value text-success" style="color:#047857 !important;" id="sysCashValue">
-                                {{ number_format($metrics['cash'], 2) }} <span class="metric-currency">EGP</span>
+                                {{ number_format($metrics['net_expected_cash'], 2) }} <span class="metric-currency">EGP</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center" style="font-size: 11px;">
+                                <span class="text-success"><i class="fa-solid fa-arrow-down me-1"></i> {{ app()->getLocale() === 'ar' ? 'مقبوض:' : 'In:' }} +{{ number_format($metrics['cash_in'], 2) }}</span>
+                                <span class="text-danger"><i class="fa-solid fa-arrow-up me-1"></i> {{ app()->getLocale() === 'ar' ? 'منصرف:' : 'Out:' }} -{{ number_format($metrics['cash_out'], 2) }}</span>
                             </div>
                         </div>
                     </div>
@@ -87,6 +91,9 @@
                             <div class="metric-value text-primary" style="color:#1d4ed8 !important;">
                                 {{ number_format($metrics['card'], 2) }} <span class="metric-currency">EGP</span>
                             </div>
+                            <div class="mt-2 pt-2 border-top text-muted" style="font-size: 11px;">
+                                <i class="fa-solid fa-building me-1"></i> {{ app()->getLocale() === 'ar' ? 'مباشرة للحساب البنكي' : 'Direct to Bank' }}
+                            </div>
                         </div>
                     </div>
 
@@ -99,6 +106,9 @@
                             </div>
                             <div class="metric-value" style="color:#6d28d9 !important;">
                                 {{ number_format($metrics['instapay'], 2) }} <span class="metric-currency">EGP</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top text-muted" style="font-size: 11px;">
+                                <i class="fa-solid fa-bolt me-1"></i> {{ app()->getLocale() === 'ar' ? 'تحويلات رقمية فورية' : 'Instant Transfers' }}
                             </div>
                         </div>
                     </div>
@@ -113,6 +123,9 @@
                             <div class="metric-value" style="color:#b45309 !important;">
                                 {{ number_format($metrics['fawry'] + $metrics['bank_transfer'] + $metrics['other'], 2) }} <span class="metric-currency">EGP</span>
                             </div>
+                            <div class="mt-2 pt-2 border-top text-muted" style="font-size: 11px;">
+                                <i class="fa-solid fa-receipt me-1"></i> {{ app()->getLocale() === 'ar' ? 'فوري وبنوك وقنوات إضافية' : 'Fawry & Other' }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,13 +133,25 @@
                 <!-- Shift Overall Summary -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2 px-2">
-                            <span class="fs-6 text-muted fw-bold">{{ app()->getLocale() === 'ar' ? 'إجمالي الخصومات والتسويات المعتمدة:' : 'Approved Discounts:' }}</span>
-                            <span class="fw-bold fs-6" style="color:#7e22ce;">- {{ number_format($metrics['discounts'], 2) }} EGP</span>
+                        <div class="d-flex justify-content-between align-items-center mb-1 px-2">
+                            <span class="fs-6 text-muted fw-bold">{{ app()->getLocale() === 'ar' ? 'إجمالي المقبوضات الكلية:' : 'Total Shift Collections:' }}</span>
+                            <span class="fw-bold fs-6 text-success">+ {{ number_format($metrics['total_collected'], 2) }} EGP</span>
                         </div>
+                        @if($metrics['total_expenses'] > 0)
+                            <div class="d-flex justify-content-between align-items-center mb-1 px-2">
+                                <span class="fs-6 text-muted fw-bold">{{ app()->getLocale() === 'ar' ? 'إجمالي المصروفات المنصرفة بالوردية:' : 'Shift Expenses Paid Out:' }}</span>
+                                <span class="fw-bold fs-6 text-danger">- {{ number_format($metrics['total_expenses'], 2) }} EGP</span>
+                            </div>
+                        @endif
+                        @if($metrics['discounts'] > 0)
+                            <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+                                <span class="fs-6 text-muted fw-bold">{{ app()->getLocale() === 'ar' ? 'الخصومات والتسويات المعتمدة:' : 'Approved Discounts:' }}</span>
+                                <span class="fw-bold fs-6" style="color:#7e22ce;">- {{ number_format($metrics['discounts'], 2) }} EGP</span>
+                            </div>
+                        @endif
                         <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f0fdf4; border: 1px solid #bbf7d0;">
-                            <span class="fs-5 fw-bold text-dark">{{ app()->getLocale() === 'ar' ? 'إجمالي التحصيلات الكلية للوردية:' : 'Total Shift Collections:' }}</span>
-                            <span class="fs-4 fw-bold text-success">{{ number_format($metrics['total_collected'], 2) }} EGP</span>
+                            <span class="fs-5 fw-bold text-dark">{{ app()->getLocale() === 'ar' ? 'صافي سيولة / دخل الوردية:' : 'Net Shift Income / Liquidity:' }}</span>
+                            <span class="fs-4 fw-bold text-success">{{ number_format($metrics['net_total_shift'], 2) }} EGP</span>
                         </div>
                     </div>
                 </div>
@@ -136,7 +161,7 @@
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold text-dark">
                             <i class="fa-solid fa-list-check me-2 text-primary"></i> 
-                            {{ app()->getLocale() === 'ar' ? 'تفاصيل عمليات وتحصيلات الوردية (' . count($metrics['transactions']) . ' عملية)' : 'Shift Transactions Breakdown' }}
+                            {{ app()->getLocale() === 'ar' ? 'تفاصيل عمليات وتحصيلات ومصروفات الوردية (' . count($metrics['transactions']) . ' عملية)' : 'Shift Transactions Breakdown' }}
                         </h5>
                     </div>
                     <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
@@ -144,24 +169,28 @@
                             <thead class="table-light sticky-top">
                                 <tr>
                                     <th>{{ app()->getLocale() === 'ar' ? 'الوقت' : 'Time' }}</th>
-                                    <th>{{ app()->getLocale() === 'ar' ? 'البيان / العميل' : 'Customer / Details' }}</th>
+                                    <th>{{ app()->getLocale() === 'ar' ? 'البيان / العميل / البند' : 'Customer / Item Details' }}</th>
                                     <th>{{ app()->getLocale() === 'ar' ? 'طريقة الدفع' : 'Method' }}</th>
                                     <th class="text-end">{{ app()->getLocale() === 'ar' ? 'المبلغ' : 'Amount' }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($metrics['transactions'] as $tx)
-                                    <tr>
+                                    <tr style="{{ ($tx['is_expense'] ?? false) ? 'background-color:#fff5f5;' : '' }}">
                                         <td class="text-nowrap text-muted">
                                             <i class="fa-solid fa-clock me-1" style="font-size: 11px;"></i>
                                             {{ $tx['time'] ? Carbon\Carbon::parse($tx['time'])->format('H:i') : '-' }}
                                         </td>
                                         <td>
-                                            <strong class="d-block text-dark">{{ $tx['customer'] }}</strong>
+                                            <strong class="d-block {{ ($tx['is_expense'] ?? false) ? 'text-danger' : 'text-dark' }}">{{ $tx['customer'] }}</strong>
                                             <small class="text-muted">{{ $tx['type_label'] }} · {{ $tx['ref'] }}</small>
                                         </td>
                                         <td>
-                                            @if($tx['method_key'] === 'cash')
+                                            @if(($tx['is_expense'] ?? false))
+                                                <span class="badge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca;">
+                                                    <i class="fa-solid fa-receipt me-1"></i> {{ $tx['method_label'] }}
+                                                </span>
+                                            @elseif($tx['method_key'] === 'cash')
                                                 <span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">
                                                     <i class="fa-solid fa-money-bill me-1"></i> {{ $tx['method_label'] }}
                                                 </span>
@@ -184,10 +213,12 @@
                                             @endif
                                         </td>
                                         <td class="text-end text-nowrap">
-                                            @if($tx['amount'] > 0)
+                                            @if(($tx['is_expense'] ?? false))
+                                                <strong class="text-danger fs-6">{{ number_format($tx['amount'], 2) }}</strong>
+                                            @elseif($tx['amount'] > 0)
                                                 <strong class="text-success fs-6">+ {{ number_format($tx['amount'], 2) }}</strong>
                                             @endif
-                                            @if($tx['discount'] > 0)
+                                            @if(($tx['discount'] ?? 0) > 0)
                                                 <small class="d-block fw-bold" style="color:#7e22ce;">- {{ number_format($tx['discount'], 2) }} (خصم)</small>
                                             @endif
                                         </td>
@@ -237,8 +268,8 @@
                                 <span class="input-group-text fw-bold">EGP</span>
                             </div>
                             <div class="mt-2 text-end">
-                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-bold" onclick="document.getElementById('actualCashInput').value = {{ $metrics['cash'] }}; calculateDifference();">
-                                    {{ app()->getLocale() === 'ar' ? 'مطابقة مع كاش النظام تلقائياً' : 'Match System Cash' }}
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-bold" onclick="document.getElementById('actualCashInput').value = {{ $metrics['net_expected_cash'] }}; calculateDifference();">
+                                    {{ app()->getLocale() === 'ar' ? 'مطابقة مع صافي الكاش المطلوب تلقائياً' : 'Match Net Expected Cash' }}
                                 </button>
                             </div>
                         </div>
@@ -270,7 +301,7 @@
 
 @push('js')
 <script>
-    const sysCash = {{ (float) $metrics['cash'] }};
+    const sysCash = {{ (float) $metrics['net_expected_cash'] }};
     const isAr = {{ app()->getLocale() === 'ar' ? 'true' : 'false' }};
 
     function calculateDifference() {

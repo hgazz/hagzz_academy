@@ -165,8 +165,8 @@ class PartnerAttendanceController extends Controller
         if (!$studentId) {
             $student = AcademyStudent::where('academy_id', $academyId)
                 ->where(function($q) use ($data) {
-                    $q->where('membership_code', $data['code'])
-                      ->orWhere('phone', $data['code'])
+                    $q->where('phone', $data['code'])
+                      ->orWhere('club_card_number', $data['code'])
                       ->orWhere('id', (int)filter_var($data['code'], FILTER_SANITIZE_NUMBER_INT));
                 })->first();
             $studentId = $student?->id;

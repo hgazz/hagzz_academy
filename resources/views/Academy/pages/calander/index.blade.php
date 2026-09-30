@@ -9,33 +9,68 @@
 
 @php
     $isArabic = app()->getLocale() === 'ar';
+    $isGym = !empty($isGymFacility);
+    $isHealth = !empty($isHealthFacility);
+
     $copy = [
-        'title' => $isArabic ? 'جدول الأكاديمية' : 'Academy calendar',
-        'subtitle' => $isArabic ? 'تابع مواعيد التدريبات والجلسات الأسبوعية من مكان واحد.' : 'Manage weekly trainings and sessions in one place.',
+        'title' => $isArabic
+            ? ($isGym ? 'جدول الصالة الرياضية' : ($isHealth ? 'جدول المواعيد والجلسات' : 'جدول الأكاديمية'))
+            : ($isGym ? 'Gym & Fitness Schedule' : ($isHealth ? 'Clinic & Sessions Schedule' : 'Academy calendar')),
+        'subtitle' => $isArabic
+            ? ($isGym ? 'تابع مواعيد حصص اللياقة وباقات التدريب من مكان واحد.' : ($isHealth ? 'تابع مواعيد الجلسات والخدمات العلاجية من مكان واحد.' : 'تابع مواعيد التدريبات والجلسات الأسبوعية من مكان واحد.'))
+            : ($isGym ? 'Manage gym fitness classes and membership sessions in one place.' : ($isHealth ? 'Manage appointments and therapy sessions in one place.' : 'Manage weekly trainings and sessions in one place.')),
         'today' => $isArabic ? 'اليوم' : 'Today',
         'month' => $isArabic ? 'شهر' : 'Month',
         'week' => $isArabic ? 'أسبوع' : 'Week',
         'day' => $isArabic ? 'يوم' : 'Day',
         'list' => $isArabic ? 'قائمة' : 'List',
-        'trainings' => $isArabic ? 'التدريبات النشطة' : 'Active trainings',
-        'weeklySessions' => $isArabic ? 'جلسات أسبوعية' : 'Weekly sessions',
-        'todaySessions' => $isArabic ? 'جلسات اليوم' : 'Today sessions',
-        'bookings' => $isArabic ? 'إجمالي الحجوزات' : 'Total bookings',
-        'todaySchedule' => $isArabic ? 'جدول اليوم' : 'Today schedule',
-        'todayHint' => $isArabic ? 'الجلسات المجدولة لهذا اليوم' : 'Sessions scheduled for today',
+        'trainings' => $isArabic
+            ? ($isGym ? 'باقات العضوية النشطة' : ($isHealth ? 'الخدمات النشطة' : 'التدريبات النشطة'))
+            : ($isGym ? 'Active Memberships' : ($isHealth ? 'Active Services' : 'Active trainings')),
+        'weeklySessions' => $isArabic
+            ? ($isGym ? 'حصص أسبوعية' : ($isHealth ? 'جلسات أسبوعية' : 'جلسات أسبوعية'))
+            : 'Weekly sessions',
+        'todaySessions' => $isArabic
+            ? ($isGym ? 'حصص اليوم' : ($isHealth ? 'جلسات اليوم' : 'جلسات اليوم'))
+            : 'Today sessions',
+        'bookings' => $isArabic
+            ? ($isGym ? 'إجمالي المشتركين' : ($isHealth ? 'إجمالي المراجعين' : 'إجمالي الحجوزات'))
+            : ($isGym ? 'Total Members' : ($isHealth ? 'Total Clients' : 'Total bookings')),
+        'todaySchedule' => $isArabic
+            ? ($isGym ? 'جدول حصص اليوم' : ($isHealth ? 'مواعيد جلسات اليوم' : 'جدول اليوم'))
+            : 'Today schedule',
+        'todayHint' => $isArabic
+            ? ($isGym ? 'حصص اللياقة المجدولة لهذا اليوم' : ($isHealth ? 'الجلسات والمواعيد المجدولة لهذا اليوم' : 'الجلسات المجدولة لهذا اليوم'))
+            : 'Sessions scheduled for today',
         'noToday' => $isArabic ? 'لا توجد جلسات مجدولة اليوم.' : 'No sessions scheduled today.',
-        'details' => $isArabic ? 'تفاصيل التدريب' : 'Training details',
-        'coach' => $isArabic ? 'المدرب' : 'Coach',
-        'sport' => $isArabic ? 'الرياضة' : 'Sport',
+        'details' => $isArabic
+            ? ($isGym ? 'تفاصيل باقة العضوية / الحصة' : ($isHealth ? 'تفاصيل الخدمة / الجلسة' : 'تفاصيل التدريب'))
+            : ($isGym ? 'Plan Details' : 'Training details'),
+        'coach' => $isArabic
+            ? ($isGym ? 'الكابتن / المدرب الشخصي' : ($isHealth ? 'الأخصائي / المعالج' : 'المدرب'))
+            : ($isGym ? 'Captain / PT' : ($isHealth ? 'Specialist' : 'Coach')),
+        'sport' => $isArabic
+            ? ($isGym ? 'نوع اللياقة / النشاط' : ($isHealth ? 'التخصص / الخدمة' : 'الرياضة'))
+            : ($isGym ? 'Activity' : ($isHealth ? 'Service' : 'Sport')),
         'location' => $isArabic ? 'الموقع' : 'Location',
         'time' => $isArabic ? 'الوقت' : 'Time',
-        'capacity' => $isArabic ? 'الحجوزات والسعة' : 'Bookings and capacity',
+        'capacity' => $isArabic
+            ? ($isGym ? 'المشتركون والسعة القصوى' : ($isHealth ? 'المراجعون والسعة' : 'الحجوزات والسعة'))
+            : 'Capacity & Bookings',
         'level' => $isArabic ? 'المستوى' : 'Level',
-        'edit' => $isArabic ? 'تعديل التدريب' : 'Edit training',
+        'edit' => $isArabic
+            ? ($isGym ? 'تعديل الباقة' : ($isHealth ? 'تعديل الخدمة' : 'تعديل التدريب'))
+            : ($isGym ? 'Edit Plan' : 'Edit training'),
         'close' => $isArabic ? 'إغلاق' : 'Close',
-        'addTraining' => $isArabic ? 'إضافة تدريب' : 'Add training',
-        'attendance' => $isArabic ? 'تسجيل الحضور' : 'Take attendance',
-        'calendar' => $isArabic ? 'التقويم' : 'Calendar',
+        'addTraining' => $isArabic
+            ? ($isGym ? 'إضافة باقة عضوية' : ($isHealth ? 'إضافة خدمة علاجية' : 'إضافة تدريب'))
+            : ($isGym ? 'Add Membership Plan' : ($isHealth ? 'Add Service' : 'Add training')),
+        'attendance' => $isArabic
+            ? ($isGym ? 'دخول البوابة / الحضور' : ($isHealth ? 'تأكيد موعد الجلسة' : 'تسجيل الحضور'))
+            : ($isGym ? 'Gate Check-in' : ($isHealth ? 'Check-in' : 'Take attendance')),
+        'calendar' => $isArabic
+            ? ($isGym ? 'تقويم الحصص' : ($isHealth ? 'تقويم المواعيد' : 'التقويم'))
+            : 'Calendar',
         'notSpecified' => $isArabic ? 'غير محدد' : 'Not specified',
         'now' => $isArabic ? 'الوقت الآن' : 'Current time',
         'live' => $isArabic ? 'مباشر' : 'Live',

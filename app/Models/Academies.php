@@ -179,4 +179,49 @@ class Academies extends Authenticatable
     {
         return $this->belongsTo(Academies::class, 'branch_to');
     }
+
+    // ─── دوال فحص نوع النشاط ──────────────────────────────────────────────────
+
+    /** هل المنشأة صالة جيم (أو هجينة تضم جيماً)؟ */
+    public function isGym(): bool
+    {
+        return in_array($this->business_type, ['gym', 'hybrid'], true);
+    }
+
+    /** هل المنشأة مركز صحي وتأهيلي (أو هجينة تضمه)؟ */
+    public function isHealthCenter(): bool
+    {
+        return in_array($this->business_type, ['health_center', 'hybrid'], true);
+    }
+
+    /** هل المنشأة أكاديمية رياضية (أو هجينة تضمها)؟ */
+    public function isAcademy(): bool
+    {
+        return in_array($this->business_type, ['academy', 'hybrid'], true);
+    }
+
+    /** هل المنشأة هجينة (تجمع أكثر من نشاط)؟ */
+    public function isHybrid(): bool
+    {
+        return $this->business_type === 'hybrid';
+    }
+
+    /** هل تدعم المنشأة وحدة المعسكرات والبطولات؟ (للأكاديميات فقط) */
+    public function hasCampsAndCompetitions(): bool
+    {
+        return in_array($this->business_type, ['academy', 'hybrid'], true);
+    }
+
+    /** هل يُعرض حقل ولي الأمر؟ (للأكاديميات وناشئي الأطفال فقط) */
+    public function showGuardianFields(): bool
+    {
+        return $this->business_type === 'academy';
+    }
+
+    /** مالك المنشأة لديه كامل الصلاحيات دائماً */
+    public function hasPermissionTo(string $permissionName): bool
+    {
+        return true;
+    }
 }
+

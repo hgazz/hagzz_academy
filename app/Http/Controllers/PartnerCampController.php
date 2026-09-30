@@ -421,9 +421,7 @@ class PartnerCampController extends Controller
         }
 
         try {
-            $dbCities = City::where('country_id', $countryId)
-                ->orWhere('county_id', $countryId)
-                ->get();
+            $dbCities = City::where('country_id', $countryId)->get();
 
             if ($dbCities->isNotEmpty()) {
                 $result = $dbCities->map(fn ($city) => [

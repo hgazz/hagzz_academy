@@ -44,28 +44,57 @@
             }
         };
 
+        const defaultMemberName = isArabic ? (@json(!empty($isGymFacility) ? 'عضو جديد' : (!empty($isHealthFacility) ? 'عميل جديد' : 'طالب جديد'))) : 'New member';
+        const defaultMemberInitial = isArabic ? (@json(!empty($isGymFacility) || !empty($isHealthFacility) ? 'ع' : 'ط')) : 'M';
+
         function updatePreview() {
-            const name = document.getElementById('studentName').value.trim();
-            const phone = document.getElementById('studentPhone').value.trim();
-            const email = document.getElementById('studentEmail').value.trim();
-            const guardian = document.getElementById('guardianName').value.trim();
-            const guardianPhone = document.getElementById('guardianPhone').value.trim();
+            const nameEl = document.getElementById('studentName');
+            const phoneEl = document.getElementById('studentPhone');
+            const emailEl = document.getElementById('studentEmail');
+            const guardianEl = document.getElementById('guardianName');
+            const guardianPhoneEl = document.getElementById('guardianPhone');
             const statusInput = document.getElementById('studentStatus');
             const statusBox = document.getElementById('previewStatus');
 
-            document.getElementById('previewStudentName').textContent = name || (isArabic ? 'طالب جديد' : 'New student');
+            const name = nameEl ? nameEl.value.trim() : '';
+            const phone = phoneEl ? phoneEl.value.trim() : '';
+            const email = emailEl ? emailEl.value.trim() : '';
+            const guardian = guardianEl ? guardianEl.value.trim() : '';
+            const guardianPhone = guardianPhoneEl ? guardianPhoneEl.value.trim() : '';
+
+            const previewNameEl = document.getElementById('previewStudentName');
+            if (previewNameEl) previewNameEl.textContent = name || defaultMemberName;
+
             if (!window.hasCustomAvatar) {
-                document.getElementById('studentAvatar').textContent = (name || (isArabic ? 'ط' : 'S')).charAt(0).toLocaleUpperCase();
+                const asideAvatar = document.getElementById('studentAvatar');
+                if (asideAvatar) asideAvatar.textContent = (name || defaultMemberInitial).charAt(0).toLocaleUpperCase();
             }
-            document.getElementById('previewStudentContact').textContent = phone || email || '-';
-            document.getElementById('previewAge').textContent = calculateAge(document.getElementById('studentBirthDate').value);
-            document.getElementById('previewGender').textContent = selectedText('studentGender');
-            document.getElementById('previewGuardian').textContent = guardian || '-';
-            document.getElementById('previewGuardianPhone').textContent = guardianPhone || '-';
+
+            const previewContactEl = document.getElementById('previewStudentContact');
+            if (previewContactEl) previewContactEl.textContent = phone || email || '-';
+
+            const previewAgeEl = document.getElementById('previewAge');
+            const birthDateEl = document.getElementById('studentBirthDate');
+            if (previewAgeEl && birthDateEl) previewAgeEl.textContent = calculateAge(birthDateEl.value);
+
+            const previewGenderEl = document.getElementById('previewGender');
+            if (previewGenderEl) previewGenderEl.textContent = selectedText('studentGender');
+
+            const previewPhoneEl = document.getElementById('previewPhone');
+            if (previewPhoneEl) previewPhoneEl.textContent = phone || '-';
+
+            const pGuardianEl = document.getElementById('previewGuardian');
+            if (pGuardianEl) pGuardianEl.textContent = guardian || '-';
+
+            const pGuardianPhoneEl = document.getElementById('previewGuardianPhone');
+            if (pGuardianPhoneEl) pGuardianPhoneEl.textContent = guardianPhone || '-';
             
-            const currentVal = statusInput.value || 'active';
-            statusBox.dataset.status = currentVal;
-            statusBox.querySelector('span').textContent = statusLabels[currentVal] || currentVal;
+            if (statusInput && statusBox) {
+                const currentVal = statusInput.value || 'active';
+                statusBox.dataset.status = currentVal;
+                const span = statusBox.querySelector('span');
+                if (span) span.textContent = statusLabels[currentVal] || currentVal;
+            }
         }
 
         // Status Toggle Pill Selector Click Event
@@ -85,11 +114,25 @@
         const clubBox = document.getElementById('clubDetailsBox');
         if (clubSelect && clubBox) {
             clubSelect.addEventListener('change', function () {
-                if (this.value === 'yes') {
-                    clubBox.style.display = 'block';
-                } else {
-                    clubBox.style.display = 'none';
-                }
+                clubBox.style.display = (this.value === 'yes') ? 'block' : 'none';
+            });
+        }
+
+        // Medical Condition / Injuries Toggle Box
+        const medSelect = document.getElementById('medicalConditionSelect');
+        const injuryBox = document.getElementById('injuryTypeBox');
+        if (medSelect && injuryBox) {
+            medSelect.addEventListener('change', function () {
+                injuryBox.style.display = (this.value === 'yes') ? 'block' : 'none';
+            });
+        }
+
+        // Allergy Toggle Box
+        const allergySelect = document.getElementById('hasAllergySelect');
+        const allergyBox = document.getElementById('allergyTypeBox');
+        if (allergySelect && allergyBox) {
+            allergySelect.addEventListener('change', function () {
+                allergyBox.style.display = (this.value === 'yes') ? 'block' : 'none';
             });
         }
 

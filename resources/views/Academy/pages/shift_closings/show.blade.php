@@ -13,7 +13,12 @@
         . "🏷️ *الوردية:* {$shiftClosing->shift_title}\n"
         . "👤 *مسؤول الوردية:* {$shiftClosing->closed_by_name}\n"
         . "⏰ *التوقيت:* {$shiftClosing->started_at->format('Y-m-d H:i')} — {$shiftClosing->closed_at->format('H:i')}\n\n"
-        . "💵 *كاش النظام:* " . $money($shiftClosing->total_cash_system) . " EGP\n"
+        . "💵 *مقبوضات الكاش:* " . $money($shiftClosing->total_cash_system) . " EGP\n";
+    if ((float) $shiftClosing->total_cash_expenses_system > 0) {
+        $waMessage .= "💸 *مصروفات الكاش (من الدرج):* -" . $money($shiftClosing->total_cash_expenses_system) . " EGP\n";
+    }
+    $expectedCashVal = (float) ($shiftClosing->net_cash_expected_system > 0 ? $shiftClosing->net_cash_expected_system : max(0, $shiftClosing->total_cash_system - $shiftClosing->total_cash_expenses_system));
+    $waMessage .= "🎯 *صافي الكاش المطلوب بالدرج:* " . $money($expectedCashVal) . " EGP\n"
         . "💰 *الكاش الفعلي بالدرج:* " . $money($shiftClosing->actual_cash_counted) . " EGP\n"
         . "⚖️ *الفارق:* " . ($diff >= 0 ? '+' : '') . $money($diff) . " EGP\n"
         . "💳 *البطاقات / POS:* " . $money($shiftClosing->total_card_system) . " EGP\n"
@@ -132,8 +137,18 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>💵 {{ $ar ? 'كاش النظام المسجل' : 'System Cash' }}</td>
-                    <td>{{ $money($shiftClosing->total_cash_system) }} EGP</td>
+                    <td>💵 {{ $ar ? 'إجمالي مقبوضات الكاش' : 'Cash Collected (In)' }}</td>
+                    <td>+{{ $money($shiftClosing->total_cash_system) }} EGP</td>
+                </tr>
+                @if((float) $shiftClosing->total_cash_expenses_system > 0)
+                    <tr style="color:#b91c1c;">
+                        <td>💸 {{ $ar ? 'مصروفات الكاش (من الدرج)' : 'Cash Expenses (Drawer Out)' }}</td>
+                        <td>-{{ $money($shiftClosing->total_cash_expenses_system) }} EGP</td>
+                    </tr>
+                @endif
+                <tr style="background:#f8fafc; font-weight:bold;">
+                    <td>🎯 {{ $ar ? 'صافي الكاش المطلوب بالدرج' : 'Net Expected Drawer Cash' }}</td>
+                    <td>{{ $money($expectedCashVal) }} EGP</td>
                 </tr>
                 <tr style="background:#f0fdf4; font-weight:bold;">
                     <td>💰 {{ $ar ? 'الكاش الفعلي المستلم بالدرج' : 'Actual Cash Counted' }}</td>

@@ -49,7 +49,7 @@
                     {{ trans('admin.training.training') }}
                 </h1>
                 <p class="heroui-header-subtitle">
-                    {{ app()->getLocale() === 'ar' ? 'إدارة البرامج والأنشطة التدريبية، المدربين، وجداول الحصص' : 'Manage training programs, coaches, schedules, and class assignments' }}
+                    {{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'إدارة باقات العضوية، الكباتن والمدربين، ومواعيد الحصص' : (!empty($isHealthFacility) ? 'إدارة الخدمات والجلسات العلاجية، الأخصائيين، ومواعيد الحجوزات' : 'إدارة البرامج والأنشطة التدريبية، المدربين، وجداول الحصص')) : (!empty($isGymFacility) ? 'Manage membership plans, trainers, and fitness classes' : 'Manage training programs, coaches, schedules, and class assignments') }}
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -72,7 +72,7 @@
         <div class="heroui-stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
             <div class="heroui-stat-card primary">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'إجمالي البرامج التدريبية' : 'Total Programs' }}</span>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'إجمالي باقات العضوية' : (!empty($isHealthFacility) ? 'إجمالي الخدمات والجلسات' : 'إجمالي البرامج التدريبية')) : (!empty($isGymFacility) ? 'Total Membership Plans' : 'Total Programs') }}</span>
                     <h2 class="stat-value">{{ number_format($metrics['total'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon primary">
@@ -82,7 +82,7 @@
 
             <div class="heroui-stat-card success">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'البرامج النشطة' : 'Active Programs' }}</span>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'باقات العضوية النشطة' : (!empty($isHealthFacility) ? 'الخدمات النشطة' : 'البرامج النشطة')) : (!empty($isGymFacility) ? 'Active Membership Plans' : 'Active Programs') }}</span>
                     <h2 class="stat-value text-success">{{ number_format($metrics['active'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon success">
@@ -92,7 +92,7 @@
 
             <div class="heroui-stat-card secondary">
                 <div class="heroui-stat-content">
-                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? 'البرامج غير النشطة' : 'Inactive Programs' }}</span>
+                    <span class="stat-label">{{ app()->getLocale() === 'ar' ? (!empty($isGymFacility) ? 'باقات العضوية غير النشطة' : (!empty($isHealthFacility) ? 'الخدمات غير النشطة' : 'البرامج غير النشطة')) : (!empty($isGymFacility) ? 'Inactive Membership Plans' : 'Inactive Programs') }}</span>
                     <h2 class="stat-value text-muted">{{ number_format($metrics['inactive'] ?? 0) }}</h2>
                 </div>
                 <div class="heroui-stat-icon secondary">

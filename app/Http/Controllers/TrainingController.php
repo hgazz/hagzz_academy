@@ -392,7 +392,16 @@ class TrainingController extends Controller
             $sports = $data->pluck('sport')->filter()->unique('id')->values();
         }
 
-        return view('Academy.pages.training.create_booking', compact('data', 'students', 'sports'));
+        $facilityType = $academy?->business_type ?? 'academy';
+        $isGymFacility = in_array($facilityType, ['gym', 'health_center', 'fitness']);
+
+        $recentJoins = $service->scopeBookings(Join::query())
+            ->with(['user', 'student', 'training', 'invoice'])
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
+        return view('Academy.pages.training.create_booking', compact('data', 'students', 'sports', 'academy', 'facilityType', 'isGymFacility', 'recentJoins'));
     }
 
     public function getAreaByCity(Request $request)
@@ -450,10 +459,28 @@ class TrainingController extends Controller
             }
         }
 
-        $result = collect($list)->map(fn ($areaName) => [
-            'id' => $areaName,
-            'name' => $areaName,
-        ]);
+        $dbCityId = is_numeric($cityId) ? (int)$cityId : (City::where('name->ar', $cityNameStr)->orWhere('name->en', $cityNameStr)->value('id') ?? 1);
+        $result = collect($list)->map(function ($areaName) use ($dbCityId) {
+            $existing = Area::where('city_id', $dbCityId)
+                ->where(function ($q) use ($areaName) {
+                    $q->where('name->ar', $areaName)
+                      ->orWhere('name->en', $areaName)
+                      ->orWhere('name', $areaName)
+                      ->orWhere('name', 'like', "%\"{$areaName}\"%");
+                })->first();
+
+            if (!$existing) {
+                $existing = Area::firstOrCreate([
+                    'city_id' => $dbCityId,
+                    'name' => ['ar' => $areaName, 'en' => $areaName],
+                ]);
+            }
+
+            return [
+                'id' => $existing->id,
+                'name' => $areaName,
+            ];
+        });
 
         return response()->json($result->values());
     }
@@ -471,7 +498,6 @@ class TrainingController extends Controller
         try {
             $dbCities = City::query()
                 ->where('country_id', $countryId)
-                ->orWhere('county_id', $countryId)
                 ->get();
 
             if ($dbCities->isNotEmpty()) {
@@ -553,10 +579,23 @@ class TrainingController extends Controller
 
         $list = $isArabic ? ($citiesMapAr[$iso] ?? []) : ($citiesMapEn[$iso] ?? $citiesMapAr[$iso] ?? []);
 
-        $result = collect($list)->map(function ($cityName) {
-            $existing = City::where('name', 'like', "%{$cityName}%")->first();
+        $result = collect($list)->map(function ($cityName) use ($countryId) {
+            $existing = City::where('country_id', $countryId)
+                ->where(function ($q) use ($cityName) {
+                    $q->where('name->ar', $cityName)
+                      ->orWhere('name->en', $cityName)
+                      ->orWhere('name', $cityName)
+                      ->orWhere('name', 'like', "%\"{$cityName}\"%");
+                })->first();
+
+            if (!$existing) {
+                $existing = City::firstOrCreate(
+                    ['country_id' => $countryId, 'name' => ['ar' => $cityName, 'en' => $cityName]]
+                );
+            }
+
             return [
-                'id' => $existing ? $existing->id : $cityName,
+                'id' => $existing->id,
                 'name' => $cityName,
             ];
         });
@@ -591,25 +630,24 @@ class TrainingController extends Controller
 
             DB::beginTransaction();
             $user = $student->user ?: User::where('phone', $student->phone)->first();
+            $userData = [
+                'name' => $student->name,
+                'phone' => $student->phone,
+                'gender' => $student->gender,
+                'birth_date' => $student->birth_date,
+                'country_id' => $student->country_id,
+                'city_id' => $student->city_id,
+                'area_id' => $student->area_id,
+                'medical_certificate' => $student->medical_certificate,
+                'club_card_number' => $student->club_card_number,
+                'club_card_file' => $student->club_card_file,
+            ];
+            if ($student->image) {
+                $userData['image'] = $student->image;
+            }
             $user = User::updateOrCreate(
                 ['id' => $user?->id],
-                [
-                    'name' => $student->name, 'phone' => $student->phone,
-                    'gender' => $student->gender, 'country_code' => $student->country_code,
-                    'country_id' => $student->country_id, 'city_id' => $student->city_id,
-                    'area_id' => $student->area_id,
-                    'user_type' => 'system',
-                    'birth_date' => $student->birth_date, 'club_member' => $student->club_member,
-                    'email' => $student->email, 'child_type' => $student->child_type,
-                    'school_name' => $student->school_name, 'parent_name' => $student->guardian_name,
-                    'parent_phone' => $student->guardian_phone, 'coach_preference' => $student->coach_preference,
-                    'frequent_attendance' => $student->frequent_attendance,
-                    'relation_with_child' => $student->relation_with_child,
-                    'referral_source' => $student->referral_source, 'delivery_service' => $student->delivery_service,
-                    'medical_condition' => $student->medical_condition, 'start_date' => $student->start_date,
-                    'medical_condition_details' => $student->medical_notes,
-                    'additional_information' => $student->notes,
-                ]
+                $userData
             );
             if ((int) $student->user_id !== (int) $user->id) $student->update(['user_id' => $user->id]);
             $booking = Invoice::create([
@@ -631,7 +669,90 @@ class TrainingController extends Controller
                 'invoice_id' => $booking->id,
             ]);
             DB::commit();
-            session()->flash('success', __('admin.training.Booking created successfully'));
+
+            $academy = ($authUser instanceof \App\Models\PartnerUser && $authUser->academy) ? $authUser->academy : $authUser;
+            $ar = app()->getLocale() === 'ar';
+            $currency = $academy?->currency_symbol ?: 'SAR';
+            $facilityName = $academy?->commercial_name ?: ($academy?->name ?: 'النادي الرياضي');
+            $facilityType = $academy?->business_type ?? 'academy';
+            $isGym = in_array($facilityType, ['gym', 'health_center', 'fitness']);
+            $itemName = $training->name ?: ($isGym ? 'باقة اشتراك الجيم' : 'البرنامج التدريبي');
+            $remaining = max(0, $totalAmount - $paidAmount);
+            $publicInvUrl = route('invoices.public.view', ['type' => 'booking', 'id' => $booking->id]);
+
+            // Format clean phone for WhatsApp
+            $rawPhone = (string) $student->phone;
+            $digits = preg_replace('/\D+/', '', $rawPhone);
+            if (str_starts_with($digits, '00')) {
+                $cleanPhone = substr($digits, 2);
+            } elseif (str_starts_with($digits, '01') && strlen($digits) === 11) {
+                $cleanPhone = '20' . substr($digits, 1);
+            } elseif (str_starts_with($digits, '05') && strlen($digits) === 10) {
+                $cleanPhone = '966' . substr($digits, 1);
+            } elseif (str_starts_with($digits, '0') && strlen($digits) > 7) {
+                $cleanPhone = substr($digits, 1);
+            } else {
+                $cleanPhone = $digits;
+            }
+
+            if (app()->getLocale() === 'ar') {
+                $waText = "مرحباً بك كابتن *{$student->name}* 🌟\n"
+                    . "يسعدنا تأكيد تسجيل وتفعيل اشتراكك في *{$facilityName}*:\n\n"
+                    . "📋 *باقة الاشتراك:* {$itemName}\n"
+                    . "🔢 *رقم الفاتورة:* #{$booking->order_number}\n"
+                    . "💰 *الإجمالي:* " . number_format($totalAmount, 2) . " {$currency}\n"
+                    . "✅ *المسدد:* " . number_format($paidAmount, 2) . " {$currency}\n"
+                    . "⏳ *المتبقي:* " . number_format($remaining, 2) . " {$currency}\n\n"
+                    . "🔗 *رابط الفاتورة الإلكترونية الموحدة:* \n{$publicInvUrl}\n\n"
+                    . "نتمنى لك أوقاتاً ممتعة وتدريباً رائعاً! 💪🔥";
+            } else {
+                $waText = "Hello *{$student->name}* 🌟\n"
+                    . "We are pleased to confirm your membership at *{$facilityName}*:\n\n"
+                    . "📋 *Plan:* {$itemName}\n"
+                    . "🔢 *Invoice #:* #{$booking->order_number}\n"
+                    . "💰 *Total:* " . number_format($totalAmount, 2) . " {$currency}\n"
+                    . "✅ *Paid:* " . number_format($paidAmount, 2) . " {$currency}\n"
+                    . "⏳ *Balance:* " . number_format($remaining, 2) . " {$currency}\n\n"
+                    . "🔗 *Electronic Invoice:* \n{$publicInvUrl}\n\n"
+                    . "Have a great workout! 💪🔥";
+            }
+
+            $waUrl = 'https://api.whatsapp.com/send?' . ($cleanPhone ? 'phone=' . $cleanPhone . '&' : '') . 'text=' . urlencode($waText);
+
+            $sentViaCloudApi = false;
+            try {
+                $channel = \App\Models\WhatsAppChannel::where('academy_id', $academy?->id)->first();
+                if ($channel && $channel->isReady() && $cleanPhone) {
+                    $waService = app(\App\Services\WhatsAppCloudService::class);
+                    $waService->sendText($channel, $cleanPhone, $waText);
+                    $sentViaCloudApi = true;
+                }
+            } catch (\Throwable $waErr) {
+                \Log::warning('WhatsApp Cloud API booking notification error: ' . $waErr->getMessage());
+            }
+
+            session()->flash('new_booking', [
+                'join_id' => $join->id,
+                'invoice_id' => $booking->id,
+                'student_id' => $student->id,
+                'student_name' => $student->name,
+                'student_phone' => $student->phone,
+                'clean_phone' => $cleanPhone,
+                'plan_name' => $itemName,
+                'total' => $totalAmount,
+                'paid' => $paidAmount,
+                'remaining' => $remaining,
+                'currency' => $currency,
+                'whatsapp_url' => $waUrl,
+                'whatsapp_text' => $waText,
+                'print_a4_url' => route('academy.invoices.bookings.print', ['invoice' => $booking->id, 'paper' => 'a4']),
+                'print_pos_url' => route('academy.invoices.bookings.print', ['invoice' => $booking->id, 'paper' => 'pos']),
+                'card_url' => route('academy.students.card', $student->id),
+                'details_url' => route('academy.report.view-booking-details', $join->id),
+                'sent_via_cloud_api' => $sentViaCloudApi,
+            ]);
+
+            session()->flash('success', $isGym ? ($ar ? 'تم تسجيل وتفعيل اشتراك العضو بنجاح' : 'Membership registered and activated successfully') : __('admin.training.Booking created successfully'));
             return back();
         } catch (ValidationException $e) {
             throw $e;

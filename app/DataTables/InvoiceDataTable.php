@@ -83,9 +83,10 @@ class InvoiceDataTable extends DataTable
             return $this->query;
         }
 
+        $academyId = (int) (auth('academy')->user()?->academy_id ?: auth('academy')->id());
         return $model->newQuery()->with(['training' => ['academy'], 'user'])
-            ->whereHas('training', function ($q) {
-            $q->where('academy_id', auth('academy')->id());
+            ->whereHas('training', function ($q) use ($academyId) {
+            $q->where('academy_id', $academyId);
         });
     }
 

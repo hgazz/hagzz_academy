@@ -35,7 +35,7 @@ class TrainingCalendarController extends Controller
                 'startTime' => optional($training->start_time)->format('H:i:s'),
                 'endTime' => optional($training->end_time)->format('H:i:s'),
                 'color' => $this->safeColor($training->color),
-                'days' => $training->classes_days ?: [],
+                'days' => is_array($training->classes_days) ? $training->classes_days : (is_string($training->classes_days) ? (json_decode($training->classes_days, true) ?: []) : []),
                 'coach' => $this->localizedValue($training->coach?->getRawOriginal('name')),
                 'sport' => $this->localizedValue($training->sport?->getRawOriginal('name')),
                 'location' => $this->localizedValue($training->address?->getRawOriginal('address')),
@@ -53,7 +53,10 @@ class TrainingCalendarController extends Controller
 
         $calendarSummary = [
             'trainings' => $trainings->count(),
-            'weeklySessions' => $trainings->sum(fn ($training) => count($training->classes_days ?: [])),
+            'weeklySessions' => $trainings->sum(function ($training) {
+                $days = is_array($training->classes_days) ? $training->classes_days : (is_string($training->classes_days) ? json_decode($training->classes_days, true) : []);
+                return is_array($days) ? count($days) : 0;
+            }),
             'todaySessions' => $todayTrainings->count(),
             'bookings' => $trainings->sum('joins_count'),
             'todayTrainings' => $todayTrainings,

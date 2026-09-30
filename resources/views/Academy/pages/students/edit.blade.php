@@ -16,21 +16,21 @@
                     <i data-feather="menu"></i>
                 </button>
                 <div>
-                    <span>{{ $isArabic ? 'إدارة الطلاب' : 'Student management' }}</span>
+                    <span>{{ $isArabic ? ('إدارة ' . ($termStudentsPlural ?? 'الأعضاء')) : 'Management' }}</span>
                     <h1>{{ trans('admin.student_management.edit_student') }}</h1>
-                    <p>{{ $isArabic ? 'حدّث بيانات الطالب وولي الأمر والحالة والملاحظات المسجلة.' : 'Update the student, guardian, status and recorded notes.' }}</p>
+                    <p>{{ $isArabic ? (!empty($isGymFacility) ? 'حدّث بيانات العضو الشخصية ومعلومات الاتصال وحالة العضوية.' : 'حدّث بيانات الطالب وولي الأمر والحالة والملاحظات المسجلة.') : 'Update member profile, contact info and membership status.' }}</p>
                 </div>
             </div>
             <a href="{{ route('academy.students.index') }}" class="student-back-link">
                 <i data-feather="{{ $isArabic ? 'arrow-right' : 'arrow-left' }}"></i>
-                <span>{{ $isArabic ? 'العودة إلى الطلاب' : 'Back to students' }}</span>
+                <span>{{ $isArabic ? ('العودة إلى ' . ($termStudentsPlural ?? 'الأعضاء')) : 'Back' }}</span>
             </a>
         </header>
 
         @if ($errors->any())
             <div class="student-error-summary" role="alert">
                 <i data-feather="alert-triangle"></i>
-                <div><strong>{{ $isArabic ? 'يرجى مراجعة بيانات الطالب' : 'Please review the student details' }}</strong><p>{{ $errors->first() }}</p></div>
+                <div><strong>{{ $isArabic ? ('يرجى مراجعة بيانات ' . ($termStudent ?? 'العضو')) : 'Please review details' }}</strong><p>{{ $errors->first() }}</p></div>
             </div>
         @endif
 

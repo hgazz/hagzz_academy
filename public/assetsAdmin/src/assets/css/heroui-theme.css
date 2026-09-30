@@ -535,58 +535,63 @@ body.dark,
     animation: pulse-dot 2s infinite;
 }
 
-/* HeroUI Payment Method Radio Cards */
+/* HeroUI Payment Method Radio Cards - Sleek Compact Badges */
 .heroui-payment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
 .heroui-payment-card {
     border: 1.5px solid var(--heroui-border);
-    border-radius: var(--heroui-radius-md);
+    border-radius: 12px;
     background: var(--heroui-surface);
-    padding: 12px 16px;
-    display: flex;
+    padding: 8px 14px;
+    height: 46px;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     user-select: none;
+    margin-bottom: 0;
 }
 
 .heroui-payment-card:hover {
     border-color: var(--heroui-primary);
     background: var(--heroui-surface-hover);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: var(--heroui-shadow-sm);
 }
 
 .heroui-payment-card.active,
 .heroui-payment-card:has(input[type="radio"]:checked) {
     border-color: var(--heroui-primary);
-    background: var(--heroui-primary-light);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.08);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .heroui-payment-card input[type="radio"] {
     accent-color: var(--heroui-primary);
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
     margin: 0;
 }
 
 .heroui-payment-card img {
-    height: 28px;
-    width: 48px;
+    height: 22px;
+    max-width: 44px;
     object-fit: contain;
     border-radius: 4px;
 }
 
 .heroui-payment-card span {
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--heroui-text);
+    white-space: nowrap;
 }
+

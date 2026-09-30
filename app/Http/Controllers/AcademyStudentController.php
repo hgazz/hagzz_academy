@@ -58,6 +58,18 @@ class AcademyStudentController extends Controller
             $query->where('gender', $request->input('gender'));
         }
 
+        if ($request->filled('special_care')) {
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('medical_condition', 'yes')->whereNotNull('injury_type')->where('injury_type', '!=', '');
+                })->orWhere(function ($sub) {
+                    $sub->where('has_allergy', 'yes')->whereNotNull('allergy_type')->where('allergy_type', '!=', '');
+                })->orWhere(function ($sub) {
+                    $sub->whereNotNull('medical_notes')->where('medical_notes', '!=', '');
+                });
+            });
+        }
+
         $sort = $request->input('sort', 'latest');
         match ($sort) {
             'name_asc' => $query->orderBy('name', 'asc'),
@@ -80,6 +92,15 @@ class AcademyStudentController extends Controller
             'inactive' => (clone $baseQuery)->where('status', 'inactive')->count(),
             'male' => (clone $baseQuery)->where('gender', 'male')->count(),
             'female' => (clone $baseQuery)->where('gender', 'female')->count(),
+            'special_care' => (clone $baseQuery)->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('medical_condition', 'yes')->whereNotNull('injury_type')->where('injury_type', '!=', '');
+                })->orWhere(function ($sub) {
+                    $sub->where('has_allergy', 'yes')->whereNotNull('allergy_type')->where('allergy_type', '!=', '');
+                })->orWhere(function ($sub) {
+                    $sub->whereNotNull('medical_notes')->where('medical_notes', '!=', '');
+                });
+            })->count(),
         ];
 
         return view('Academy.pages.students.index', compact('students', 'metrics'));
@@ -97,6 +118,7 @@ class AcademyStudentController extends Controller
         $student->load([
             'country', 'city', 'area', 'user.country', 'user.city', 'user.area', 'groups',
             'subscriptions.group', 'subscriptions.payments', 'attendanceRecords.session.group',
+            'bookings.training', 'bookings.invoice',
         ]);
         $subscriptions = $student->subscriptions->sortByDesc('starts_on');
         $subscription = $subscriptions->first();
@@ -104,6 +126,13 @@ class AcademyStudentController extends Controller
         $totalPaid = (float) $student->subscriptions->sum(fn ($item) => $item->payments->sum('amount'));
         $totalDue = (float) $student->subscriptions->sum('amount');
         $totalDiscount = (float) $student->subscriptions->sum('discount_amount');
+
+        foreach ($student->bookings as $booking) {
+            $inv = $booking->invoice;
+            $totalDue += (float) ($inv?->amount ?? $booking->price ?? 0);
+            $totalPaid += (float) ($inv?->paid_amount ?? 0);
+        }
+
         $totalRemaining = max(0, round($totalDue - $totalPaid - $totalDiscount, 2));
         $remainingDays = $subscription?->ends_on && $subscription->ends_on->isFuture()
             ? now()->startOfDay()->diffInDays($subscription->ends_on)
@@ -137,7 +166,42 @@ class AcademyStudentController extends Controller
                     'notes' => $p->notes,
                 ])->values(),
             ];
-        })->values();
+        });
+
+        $bookingItems = $student->bookings->sortByDesc('created_at')->map(function ($booking) {
+            $inv = $booking->invoice;
+            $amount = (float) ($inv?->amount ?? $booking->price ?? 0);
+            $paid = (float) ($inv?->paid_amount ?? 0);
+            $rem = max(0, round($amount - $paid, 2));
+            $paymentStatus = ($rem == 0 && $amount > 0) ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid');
+            $createdDate = $booking->created_at ? $booking->created_at->format('Y-m-d') : '-';
+            $endDate = $booking->training?->end_date ? \Illuminate\Support\Carbon::parse($booking->training->end_date)->format('Y-m-d') : '-';
+
+            return [
+                'id' => 'B-' . $booking->id,
+                'group' => $booking->training?->name ?: 'حجز مباشر / باقة عضوية',
+                'starts_on' => $createdDate,
+                'ends_on' => $endDate,
+                'amount' => $amount,
+                'paid' => $paid,
+                'discount' => 0,
+                'discount_reason' => null,
+                'discount_approved_by' => null,
+                'remaining' => $rem,
+                'status' => 'active',
+                'payment_status' => $paymentStatus,
+                'invoice_url' => route('academy.report.offline-joins'),
+                'payments' => ($inv && $paid > 0) ? [[
+                    'amount' => $paid,
+                    'paid_at' => $inv->created_at ? $inv->created_at->format('Y-m-d') : $createdDate,
+                    'method' => $inv->payment_method_label ?: $inv->payment_method ?: 'كاش',
+                    'reference' => $inv->order_number,
+                    'notes' => null,
+                ]] : [],
+            ];
+        });
+
+        $subscriptionsList = $subscriptionsList->concat($bookingItems)->values();
 
         return response()->json([
             'id' => $student->id,
@@ -153,11 +217,21 @@ class AcademyStudentController extends Controller
             'guardian_name' => $student->guardian_name ?: $student->user?->parent_name,
             'guardian_phone' => $student->guardian_phone ?: $student->user?->parent_phone,
             'location' => collect([$student->area?->name ?: $student->user?->area?->name, $student->city?->name ?: $student->user?->city?->name, $student->country?->name ?: $student->user?->country?->name])->filter()->join(' - '),
+            'country_name' => $student->country?->name ?: $student->user?->country?->name,
+            'city_name' => $student->city?->name ?: $student->user?->city?->name,
+            'area_name' => $student->area?->name ?: $student->user?->area?->name,
             'school_name' => $student->school_name,
             'club_member' => $student->club_member,
+            'previous_club_name' => $student->previous_club_name,
             'child_type' => $student->child_type,
             'referral_source' => $student->referral_source,
-            'groups' => $student->groups->pluck('name')->filter()->values(),
+            'groups' => $student->groups->pluck('name')->merge($student->bookings->map(fn($b) => $b->training?->name))->filter()->unique()->values(),
+            'medical_condition' => $student->medical_condition,
+            'injury_type' => $student->injury_type,
+            'has_allergy' => $student->has_allergy,
+            'allergy_type' => $student->allergy_type,
+            'has_special_care' => $student->hasSpecialCare(),
+            'special_care_summary' => $student->specialCareSummary(),
             'medical_notes' => $student->medical_notes ?: $student->user?->medical_condition_details,
             'notes' => $student->notes ?: $student->user?->additional_information,
             'subscription' => $subscription ? [
@@ -176,7 +250,23 @@ class AcademyStudentController extends Controller
                 'status' => $subscription->status,
                 'payment_status' => $subscription->payment_status,
                 'last_payment_method' => $subscription->payments->sortByDesc('paid_at')->first()?->method_label,
-            ] : null,
+            ] : ($student->bookings->isNotEmpty() ? [
+                'id' => 'B-' . $student->bookings->last()->id,
+                'group' => $student->bookings->last()->training?->name,
+                'starts_on' => $student->bookings->last()->created_at?->format('Y-m-d'),
+                'ends_on' => $student->bookings->last()->training?->end_date ? \Illuminate\Support\Carbon::parse($student->bookings->last()->training->end_date)->format('Y-m-d') : null,
+                'duration_days' => null,
+                'remaining_days' => 0,
+                'amount' => (float) ($student->bookings->last()->invoice?->amount ?? $student->bookings->last()->price),
+                'paid' => (float) ($student->bookings->last()->invoice?->paid_amount ?? 0),
+                'discount' => 0,
+                'discount_reason' => null,
+                'discount_approved_by' => null,
+                'remaining' => max(0, round((float) ($student->bookings->last()->invoice?->amount ?? $student->bookings->last()->price) - (float) ($student->bookings->last()->invoice?->paid_amount ?? 0), 2)),
+                'status' => 'active',
+                'payment_status' => ((float) ($student->bookings->last()->invoice?->paid_amount ?? 0) >= (float) ($student->bookings->last()->invoice?->amount ?? $student->bookings->last()->price)) ? 'paid' : ((float) ($student->bookings->last()->invoice?->paid_amount ?? 0) > 0 ? 'partial' : 'unpaid'),
+                'last_payment_method' => $student->bookings->last()->invoice?->payment_method_label ?: $student->bookings->last()->invoice?->payment_method,
+            ] : null),
             'all_subscriptions' => $subscriptionsList,
             'financials' => [
                 'total_due' => $totalDue,
@@ -202,22 +292,134 @@ class AcademyStudentController extends Controller
         ]);
     }
 
-    public function card(AcademyStudent $student)
+    public function card(Request $request, AcademyStudent $student)
     {
         $this->authorizeStudent($student);
+
+        if ($request->has('bulk')) {
+            return $this->cardsPrint($request);
+        }
+
         $student->load(['academy', 'user', 'groups.sport', 'subscriptions.group', 'subscriptions.payments']);
         $membershipCode = MembershipCode::make($student);
         $subscription = $student->subscriptions->sortByDesc('starts_on')->first();
         $qrResult = (new SvgWriter())->write(new QrCode(data: $membershipCode, size: 280, margin: 8));
         $barcode = (new BarcodeGeneratorSVG())->getBarcode($membershipCode, BarcodeGeneratorSVG::TYPE_CODE_128, 1.55, 54);
 
+        $student->computed_membership_code = $membershipCode;
+        $student->computed_subscription = $subscription;
+        $student->computed_qr = $qrResult->getDataUri();
+        $student->computed_barcode = $barcode;
+
+        $layout = (int) $request->input('layout', 1);
+        if (!in_array($layout, [1, 2, 4, 8])) {
+            $layout = 1;
+        }
+
         return view('Academy.pages.students.card', [
             'student' => $student,
+            'students' => collect([$student]),
             'academy' => $student->academy ?: Academies::find($this->getAcademyId()),
             'subscription' => $subscription,
             'membershipCode' => $membershipCode,
             'qrDataUri' => $qrResult->getDataUri(),
             'barcodeSvg' => $barcode,
+            'layout' => $layout,
+            'isBulk' => false,
+        ]);
+    }
+
+    public function cardsPrint(Request $request)
+    {
+        $academy = Academies::find($this->getAcademyId());
+        $service = new \App\Services\PartnerAccessService(auth('academy')->user());
+        $query = $service->scopeStudents(
+            AcademyStudent::with(['academy', 'user', 'groups.sport', 'subscriptions.group', 'subscriptions.payments'])
+        );
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', (string) $request->ids);
+            $query->whereIn('id', array_filter($ids));
+        } else {
+            if ($search = trim((string) $request->input('search'))) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('membership_number', 'like', "%{$search}%");
+                });
+            }
+            if ($status = $request->input('status')) {
+                $query->where('status', $status);
+            }
+            if ($gender = $request->input('gender')) {
+                $query->where('gender', $gender);
+            }
+        }
+
+        $students = $query->orderBy('name')->limit(300)->get();
+
+        $svgWriter = new SvgWriter();
+        $barcodeGen = new BarcodeGeneratorSVG();
+
+        foreach ($students as $st) {
+            $code = MembershipCode::make($st);
+            $sub = $st->subscriptions->sortByDesc('starts_on')->first();
+            $qrResult = $svgWriter->write(new QrCode(data: $code, size: 260, margin: 6));
+            $barcode = $barcodeGen->getBarcode($code, BarcodeGeneratorSVG::TYPE_CODE_128, 1.4, 46);
+
+            $st->computed_membership_code = $code;
+            $st->computed_subscription = $sub;
+            $st->computed_qr = $qrResult->getDataUri();
+            $st->computed_barcode = $barcode;
+        }
+
+        $layout = (int) $request->input('layout', 4);
+        if (!in_array($layout, [1, 2, 4, 8])) {
+            $layout = 4;
+        }
+
+        return view('Academy.pages.students.card', [
+            'students' => $students,
+            'student' => $students->first(),
+            'academy' => $academy,
+            'subscription' => $students->first()?->computed_subscription,
+            'membershipCode' => $students->first()?->computed_membership_code,
+            'qrDataUri' => $students->first()?->computed_qr,
+            'barcodeSvg' => $students->first()?->computed_barcode,
+            'layout' => $layout,
+            'isBulk' => true,
+        ]);
+    }
+
+    public function print(Request $request)
+    {
+        $academy = Academies::find($this->getAcademyId());
+        $service = new \App\Services\PartnerAccessService(auth('academy')->user());
+        $query = $service->scopeStudents(
+            AcademyStudent::with(['user', 'groups.sport', 'subscriptions'])
+        );
+
+        if ($search = trim((string) $request->input('search'))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('membership_number', 'like', "%{$search}%");
+            });
+        }
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+        if ($gender = $request->input('gender')) {
+            $query->where('gender', $gender);
+        }
+
+        $students = $query->orderBy('name')->get();
+
+        return view('Academy.pages.students.print', [
+            'academy' => $academy,
+            'students' => $students,
         ]);
     }
 
@@ -261,14 +463,6 @@ class AcademyStudentController extends Controller
         ]);
 
         return back();
-    }
-
-    public function print()
-    {
-        $academy = Academies::find($this->getAcademyId());
-        $students = $this->studentsQuery()->get();
-
-        return view('Academy.pages.students.print', compact('academy', 'students'));
     }
 
     public function store(Request $request)
@@ -424,6 +618,7 @@ class AcademyStudentController extends Controller
             'child_type' => ['nullable', 'string', 'max:100'],
             'school_name' => ['nullable', 'string', 'max:255'],
             'club_member' => ['nullable', 'string', 'max:100'],
+            'previous_club_name' => ['nullable', 'string', 'max:255'],
             'club_card_number' => ['nullable', 'string', 'max:100'],
             'coach_preference' => ['nullable', 'string', 'max:255'],
             'frequent_attendance' => ['nullable', 'string', 'max:255'],
@@ -431,6 +626,9 @@ class AcademyStudentController extends Controller
             'referral_source' => ['nullable', 'string', 'max:255'],
             'delivery_service' => ['nullable', 'string', 'max:255'],
             'medical_condition' => ['nullable', 'string', 'max:255'],
+            'injury_type' => ['nullable', 'string', 'max:255'],
+            'has_allergy' => ['nullable', 'string', 'max:50'],
+            'allergy_type' => ['nullable', 'string', 'max:255'],
             'start_date' => ['nullable', 'date'],
             'medical_notes' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
@@ -445,27 +643,88 @@ class AcademyStudentController extends Controller
     private function processLocationData(array &$data, Request $request): void
     {
         $cityId = $request->input('city_id');
-        $areaId = $request->input('area_id');
+        if ($cityId === '__custom__' || blank($cityId)) {
+            $cityId = $request->input('custom_city_name');
+        }
 
-        if (is_numeric($cityId)) {
+        $areaId = $request->input('area_id');
+        if ($areaId === '__custom__' || blank($areaId)) {
+            $areaId = $request->input('custom_area_name');
+        }
+
+        $countryId = !empty($data['country_id']) ? (int) $data['country_id'] : 4;
+
+        if (is_numeric($cityId) && (int) $cityId > 0) {
             $data['city_id'] = (int) $cityId;
         } elseif (!empty($cityId)) {
-            $city = City::firstOrCreate(
-                ['name' => $cityId],
-                ['country_id' => $data['country_id'] ?? null]
-            );
+            // Find existing city by country first, matching translatable JSON or raw string
+            $city = City::where('country_id', $countryId)
+                ->where(function ($q) use ($cityId) {
+                    $q->where('name->ar', $cityId)
+                      ->orWhere('name->en', $cityId)
+                      ->orWhere('name', $cityId)
+                      ->orWhere('name', 'LIKE', '%"' . $cityId . '"%');
+                })->first();
+
+            // Fallback: check across all countries
+            if (!$city) {
+                $city = City::where(function ($q) use ($cityId) {
+                    $q->where('name->ar', $cityId)
+                      ->orWhere('name->en', $cityId)
+                      ->orWhere('name', $cityId)
+                      ->orWhere('name', 'LIKE', '%"' . $cityId . '"%');
+                })->first();
+            }
+
+            // If not exists, create with translatable name and country_id
+            if (!$city) {
+                $city = City::create([
+                    'name' => [
+                        'ar' => $cityId,
+                        'en' => $cityId,
+                    ],
+                    'country_id' => $countryId,
+                ]);
+            }
             $data['city_id'] = $city->id;
         } else {
             $data['city_id'] = null;
         }
 
-        if (is_numeric($areaId)) {
+        if (is_numeric($areaId) && (int) $areaId > 0) {
             $data['area_id'] = (int) $areaId;
         } elseif (!empty($areaId)) {
-            $area = Area::firstOrCreate(
-                ['name' => $areaId],
-                ['city_id' => $data['city_id'] ?? null]
-            );
+            $cityIdForArea = $data['city_id'] ?? null;
+            $area = null;
+
+            if ($cityIdForArea) {
+                $area = Area::where('city_id', $cityIdForArea)
+                    ->where(function ($q) use ($areaId) {
+                        $q->where('name->ar', $areaId)
+                          ->orWhere('name->en', $areaId)
+                          ->orWhere('name', $areaId)
+                          ->orWhere('name', 'LIKE', '%"' . $areaId . '"%');
+                    })->first();
+            }
+
+            if (!$area) {
+                $area = Area::where(function ($q) use ($areaId) {
+                    $q->where('name->ar', $areaId)
+                      ->orWhere('name->en', $areaId)
+                      ->orWhere('name', $areaId)
+                      ->orWhere('name', 'LIKE', '%"' . $areaId . '"%');
+                })->first();
+            }
+
+            if (!$area) {
+                $area = Area::create([
+                    'name' => [
+                        'ar' => $areaId,
+                        'en' => $areaId,
+                    ],
+                    'city_id' => $cityIdForArea ?: 1,
+                ]);
+            }
             $data['area_id'] = $area->id;
         } else {
             $data['area_id'] = null;
@@ -477,33 +736,18 @@ class AcademyStudentController extends Controller
     private function syncLinkedUser(AcademyStudent $student): void
     {
         if (! $student->user_id) return;
+        $userCols = ['name', 'phone', 'gender', 'birth_date', 'country_id', 'city_id', 'area_id', 'medical_certificate', 'club_card_number', 'club_card_file'];
         $userPayload = [
             'name' => $student->name,
             'phone' => $student->phone,
-            'email' => $student->email,
             'gender' => $student->gender,
             'birth_date' => $student->birth_date,
-            'country_code' => $student->country_code,
             'country_id' => $student->country_id,
             'city_id' => $student->city_id,
             'area_id' => $student->area_id,
-            'child_type' => $student->child_type,
-            'school_name' => $student->school_name,
-            'club_member' => $student->club_member,
+            'medical_certificate' => $student->medical_certificate,
             'club_card_number' => $student->club_card_number,
             'club_card_file' => $student->club_card_file,
-            'medical_certificate' => $student->medical_certificate,
-            'parent_name' => $student->guardian_name,
-            'parent_phone' => $student->guardian_phone,
-            'coach_preference' => $student->coach_preference,
-            'frequent_attendance' => $student->frequent_attendance,
-            'relation_with_child' => $student->relation_with_child,
-            'referral_source' => $student->referral_source,
-            'delivery_service' => $student->delivery_service,
-            'medical_condition' => $student->medical_condition,
-            'start_date' => $student->start_date,
-            'medical_condition_details' => $student->medical_notes,
-            'additional_information' => $student->notes,
         ];
 
         if ($student->image) {
