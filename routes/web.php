@@ -123,6 +123,7 @@ Route::get('/{locale}/partner/{path?}', function ($locale, $path = null) {
 
     Route::group(['prefix' => 'partner', 'middleware' => 'auth:academy', 'as' => 'academy.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::get('operating-guide', \App\Http\Controllers\PartnerOperatingGuideController::class)->name('operating-guide');
         Route::get('billing-invoices', [InvoicePrintController::class, 'index'])->name('billing-invoices.index');
         Route::get('invoices/bookings/{invoice}/print', [InvoicePrintController::class, 'booking'])->name('invoices.bookings.print');
         Route::get('invoices/students/{subscription}/print', [InvoicePrintController::class, 'student'])->name('invoices.students.print');
