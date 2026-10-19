@@ -35,3 +35,4 @@
 <link href="{{ asset('assetsAdmin/src/assets/css/heroui-theme.css') }}" rel="stylesheet" type="text/css" />
 <!-- END GLOBAL MANDATORY STYLES -->
 @stack('css')
+<link href="{{ asset('assetsAdmin/src/assets/css/partner-ui.css') }}?v={{ filemtime(public_path('assetsAdmin/src/assets/css/partner-ui.css')) }}" rel="stylesheet" type="text/css" />

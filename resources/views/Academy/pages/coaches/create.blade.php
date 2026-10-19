@@ -45,12 +45,10 @@
                     @include('Academy.pages.coaches.partials._form')
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success mt-3" id="coach-submit-button"
-                            onclick="document.getElementById('coach-submit-status').textContent = 'تم الضغط على الحفظ'; console.info('[Coach Form] Save button clicked');">
+                    <button type="submit" class="btn btn-success mt-3" id="coach-submit-button">
                         {{ trans('admin.submit') }}
                     </button>
                     <span id="coach-submit-status" class="ms-3 text-muted" aria-live="polite"></span>
-                    <small class="d-block mt-2 text-muted">coach-form-20260623-3</small>
                 </div>
             </div>
         </form>

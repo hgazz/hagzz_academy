@@ -31,7 +31,7 @@
         }
     </style>
 </head>
-<body class="layout-boxed">
+<body class="layout-boxed partner-dashboard">
 <!-- BEGIN LOADER -->
 <div id="load_screen">
     <div class="loader">

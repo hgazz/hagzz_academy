@@ -1,0 +1,368 @@
+/* Shared visual foundation for authenticated partner pages. Load after page styles. */
+body.partner-dashboard {
+    --partner-bg: #f5f7fb;
+    --partner-surface: #fff;
+    --partner-soft: #f0f4fa;
+    --partner-text: #17243b;
+    --partner-muted: #526176;
+    --partner-line: #d3dce8;
+    --partner-field-line: #7b8799;
+    --partner-primary: #2455d6;
+    --partner-action-text: #fff;
+    --partner-primary-hover: #1c43ab;
+    --partner-ring: rgb(36 85 214 / 18%);
+    --partner-danger: #be2538;
+    --partner-shadow: 0 4px 16px rgb(23 36 59 / 5%);
+    --heroui-bg: var(--partner-bg);
+    --heroui-surface: var(--partner-surface);
+    --heroui-surface-hover: var(--partner-soft);
+    --heroui-border: var(--partner-line);
+    --heroui-border-light: var(--partner-line);
+    --heroui-text: var(--partner-text);
+    --heroui-text-muted: var(--partner-muted);
+    --heroui-primary: var(--partner-primary);
+    --heroui-primary-hover: var(--partner-primary-hover);
+    --heroui-radius-md: 10px;
+    --heroui-radius-lg: 14px;
+    --heroui-radius-xl: 14px;
+    --heroui-shadow-sm: var(--partner-shadow);
+    --heroui-shadow-md: var(--partner-shadow);
+    background: var(--partner-bg);
+    color: var(--partner-text);
+    font-family: var(--heroui-font);
+}
+
+body.partner-dashboard.dark {
+    --partner-bg: #0f1726;
+    --partner-surface: #172338;
+    --partner-soft: #202e45;
+    --partner-text: #edf2fa;
+    --partner-muted: #b4c1d5;
+    --partner-line: #3b4b63;
+    --partner-field-line: #8595ad;
+    --partner-primary: #8eb1ff;
+    --partner-action-text: #12203a;
+    --partner-primary-hover: #aec7ff;
+    --partner-ring: rgb(142 177 255 / 24%);
+    --partner-danger: #ff8fa0;
+    --partner-shadow: 0 4px 16px rgb(0 0 0 / 14%);
+    color-scheme: dark;
+}
+
+/* Bridge the existing form/report systems onto one palette. */
+body.partner-dashboard :is(.training-create-page, .group-form-page, .student-form-page, .attendance-page, .competition-page, .financial-reports) {
+    --surface: var(--partner-surface);
+    --soft: var(--partner-soft);
+    --border: var(--partner-line);
+    --text: var(--partner-text);
+    --muted: var(--partner-muted);
+    --primary: var(--partner-primary);
+    --shadow: var(--partner-shadow);
+    --att-bg: var(--partner-bg);
+    --att-surface: var(--partner-surface);
+    --att-ink: var(--partner-text);
+    --att-muted: var(--partner-muted);
+    --att-line: var(--partner-line);
+    --att-primary: var(--partner-primary);
+    --att-primary-dark: var(--partner-primary-hover);
+    --att-shadow: var(--partner-shadow);
+    --cmp-surface: var(--partner-surface);
+    --cmp-ink: var(--partner-text);
+    --cmp-muted: var(--partner-muted);
+    --cmp-line: var(--partner-line);
+    --cmp-primary: var(--partner-primary);
+    --cmp-shadow: var(--partner-shadow);
+    --fr-ink: var(--partner-text);
+    --fr-muted: var(--partner-muted);
+    --fr-line: var(--partner-line);
+    --fr-green: var(--partner-primary);
+    --fr-bg: var(--partner-bg);
+}
+
+/* Native fields: exclude hidden/custom controls so their behavior is preserved. */
+body.partner-dashboard #content :is(
+    input:not([type]), input[type="text"], input[type="email"], input[type="password"],
+    input[type="tel"], input[type="url"], input[type="search"], input[type="number"],
+    input[type="date"], input[type="datetime-local"], input[type="time"], input[type="month"],
+    input[type="week"], textarea, select
+):where(:not(.select2-search__field)) {
+    border: 1px solid var(--partner-field-line);
+    border-radius: 8px;
+    background-color: var(--partner-surface);
+    color: var(--partner-text);
+    min-height: 46px;
+    padding-block: 10px;
+    padding-inline-start: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+body.partner-dashboard #content .form-control[type="file"] {
+    border: 1px solid var(--partner-field-line);
+    border-radius: 8px;
+    background: var(--partner-surface);
+    color: var(--partner-text);
+    min-height: 46px;
+    font-size: 14px;
+}
+body.partner-dashboard #content textarea:not(.select2-search__field) { min-height: 112px; }
+body.partner-dashboard #content select[multiple] { min-height: 112px; }
+body.partner-dashboard #content input::placeholder,
+body.partner-dashboard #content textarea::placeholder { color: var(--partner-muted); opacity: 1; }
+
+/* Icon-wrapped controls get a single visible border on the wrapper. */
+body.partner-dashboard #content :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell,
+    .student-search-shell, .attendance-input, .select2-selection
+) {
+    border: 1px solid var(--partner-field-line);
+    border-radius: 8px;
+    background: var(--partner-surface);
+    color: var(--partner-text);
+    min-height: 46px;
+    height: auto;
+    box-shadow: none;
+}
+
+body.partner-dashboard #content :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell,
+    .student-search-shell, .attendance-input
+) > :is(input, select, textarea) {
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+    min-width: 0;
+    min-height: 44px;
+}
+
+body.partner-dashboard #content :is(.student-textarea-shell, .group-textarea-shell, .textarea-shell) > textarea {
+    min-height: 112px;
+    padding-inline-start: 40px;
+}
+
+body.partner-dashboard #content :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--partner-primary);
+    outline-offset: 2px;
+}
+body.partner-dashboard #content :is(input, select, textarea):focus {
+    border-color: var(--partner-primary);
+    box-shadow: 0 0 0 3px var(--partner-ring);
+}
+body.partner-dashboard #content :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell,
+    .student-search-shell, .attendance-input, .select2-selection
+):focus-within {
+    border-color: var(--partner-primary);
+    box-shadow: 0 0 0 3px var(--partner-ring);
+}
+body.partner-dashboard #content :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell,
+    .student-search-shell, .attendance-input
+) > :is(input, select, textarea):focus { box-shadow: none; outline: none; }
+
+body.partner-dashboard #content :is(input, select, textarea):is(:disabled, [readonly]) {
+    background-color: var(--partner-soft);
+    color: var(--partner-muted);
+}
+body.partner-dashboard #content :is(input, select, textarea):disabled { cursor: not-allowed; }
+body.partner-dashboard #content :is(input, select, textarea):is(.is-invalid, [aria-invalid="true"]),
+body.partner-dashboard #content .was-validated :is(input, select, textarea):invalid {
+    border-color: var(--partner-danger);
+    outline-color: var(--partner-danger);
+}
+body.partner-dashboard #content :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell,
+    .attendance-input
+):has(> :is(.is-invalid, [aria-invalid="true"])) {
+    border-color: var(--partner-danger);
+}
+body.partner-dashboard #content :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--partner-primary); }
+body.partner-dashboard #content :is(.group-day-option, .group-student-option, .status-toggle, .scan-mode label):has(input:focus-visible) {
+    outline: 2px solid var(--partner-primary);
+    outline-offset: 3px;
+}
+
+/* Select2 must match native fields without boxing its inline search control. */
+body.partner-dashboard .select2-container { max-width: 100%; }
+body.partner-dashboard #content .select2-selection { padding: 6px 10px; }
+body.partner-dashboard #content .select2-selection__rendered { color: var(--partner-text); line-height: 30px; }
+body.partner-dashboard #content .select2-selection__choice {
+    background: var(--partner-soft);
+    border-color: var(--partner-line);
+    color: var(--partner-text);
+    border-radius: 5px;
+}
+body.partner-dashboard #content .select2-search__field {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--partner-text);
+    min-height: 28px;
+}
+body.partner-dashboard .select2-dropdown {
+    background: var(--partner-surface);
+    color: var(--partner-text);
+    border-color: var(--partner-field-line);
+}
+
+/* Shared page surfaces, headings and spacing across legacy and modern views. */
+body.partner-dashboard #content :is(
+    .card, .heroui-card-table, .training-form-section, .group-form-section, .student-form-section,
+    .attendance-form-panel, .attendance-student-card, .competition-panel,
+    .fr-filter-panel, .fr-report-panel, .scan-box, .scan-result
+) {
+    border: 1px solid var(--partner-line);
+    border-radius: 14px;
+    background-color: var(--partner-surface);
+    color: var(--partner-text);
+    box-shadow: var(--partner-shadow);
+}
+body.partner-dashboard #content :is(.card-header, .form-section-header, .group-section-header, .student-section-header) {
+    background-color: var(--partner-soft);
+    border-bottom: 1px solid var(--partner-line);
+    padding: 18px 22px;
+}
+body.partner-dashboard #content :is(.card-body, .form-section-body, .group-section-body, .student-section-body) { padding: 22px; }
+body.partner-dashboard #content .card-footer {
+    background: var(--partner-surface);
+    border-top: 1px solid var(--partner-line);
+    padding: 16px 22px;
+}
+body.partner-dashboard #content :is(
+    .heroui-header-banner, .training-page-header, .student-page-header, .group-page-header,
+    .attendance-hero, .competition-hero, .fr-hero
+) {
+    background: var(--partner-surface);
+    border: 1px solid var(--partner-line);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    min-height: 0;
+    box-shadow: var(--partner-shadow);
+    color: var(--partner-text);
+    backdrop-filter: none;
+}
+body.partner-dashboard #content .fr-hero::after { display: none; }
+body.partner-dashboard #content :is(.heroui-header-title, .training-page-header h1, .student-page-header h1, .group-page-header h1, .attendance-hero h1, .competition-hero h1, .fr-hero h1) {
+    color: var(--partner-text);
+    font-size: clamp(23px, 2.2vw, 28px);
+    font-weight: 800;
+    line-height: 1.5;
+}
+body.partner-dashboard #content :is(.card-header h3, .form-section-header h2, .group-section-header h2, .student-section-header h2) {
+    color: var(--partner-text);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+body.partner-dashboard #content :is(.heroui-header-subtitle, .training-page-header p, .student-page-header p, .group-page-header p, .attendance-hero p, .competition-hero p, .fr-hero p) {
+    color: var(--partner-muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+body.partner-dashboard #content :is(.form-label, .modern-field > label, .training-field > label, .group-field > label, .student-field > label, .attendance-field > span) {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--partner-text);
+}
+body.partner-dashboard #content .fr-hero-meta { background: var(--partner-soft); border-color: var(--partner-line); }
+body.partner-dashboard #content :is(.fr-kicker, .fr-hero-meta strong) { color: var(--partner-primary); }
+body.partner-dashboard #content .fr-hero-meta small { color: var(--partner-muted); }
+body.partner-dashboard #content :is(.fr-kpi, .fr-source-card) { background: var(--partner-surface); }
+body.partner-dashboard #content :is(.fr-report-panel th, .fr-report-panel tbody tr:hover) { background: var(--partner-soft); }
+body.partner-dashboard #content .fr-report-panel td { color: var(--partner-text); border-color: var(--partner-line); }
+body.partner-dashboard #content .fr-report-panel td.is-positive { color: #148151; }
+body.partner-dashboard #content .fr-report-panel td.is-negative { color: #c14822; }
+
+/* One primary action style; danger and attendance status colors retain their meaning. */
+body.partner-dashboard #content :is(.btn, .heroui-btn, .training-submit-button, .student-submit-button, .group-submit-button, .attendance-save-btn, .attendance-primary-action, .competition-primary-btn, .scan-submit) {
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+    box-shadow: none;
+}
+body.partner-dashboard #content :is(.btn-primary, .heroui-btn-primary, .training-submit-button, .student-submit-button, .group-submit-button, .attendance-save-btn, .attendance-primary-action, .competition-primary-btn, .scan-submit, form .btn-success) {
+    background: var(--partner-primary);
+    border: 1px solid var(--partner-primary);
+    /* The legacy button theme sets its foreground with !important. */
+    color: var(--partner-action-text) !important;
+    min-height: 44px;
+    padding: 10px 18px;
+}
+
+body.partner-dashboard #content :is(.btn-primary, .heroui-btn-primary, .training-submit-button, .student-submit-button, .group-submit-button, .attendance-save-btn, .attendance-primary-action, .competition-primary-btn, .scan-submit, form .btn-success):hover {
+    background: var(--partner-primary-hover);
+    border-color: var(--partner-primary-hover);
+    transform: none;
+}
+body.partner-dashboard #content :is(.btn-light, .btn-outline-primary, .heroui-btn-light, .training-back-link, .student-back-link, .group-back-link, .training-cancel-button, .student-cancel-button, .group-cancel-button, .attendance-cancel-btn) {
+    border: 1px solid var(--partner-line);
+    border-radius: 8px;
+    background: var(--partner-surface);
+    color: var(--partner-primary);
+}
+body.partner-dashboard #content :is(button, a.btn, .heroui-btn):focus-visible {
+    outline: 2px solid var(--partner-primary);
+    outline-offset: 3px;
+}
+body.partner-dashboard #content .dataTables_filter input { width: auto; margin-inline-start: 8px; }
+body.partner-dashboard #content :is(.fr-search input, .competition-search input) { padding-inline-start: 40px; }
+
+@media (max-width: 767px) {
+    body.partner-dashboard #content :is(.card-body, .form-section-body, .group-section-body, .student-section-body) { padding: 16px; }
+    body.partner-dashboard #content :is(.heroui-header-banner, .training-page-header, .student-page-header, .group-page-header, .attendance-hero, .competition-hero, .fr-hero) { padding: 18px; }
+    body.partner-dashboard #content :is(input, select, textarea):where(:not(.select2-search__field)) { font-size: 16px; }
+}
+
+body.partner-dashboard #content :is(.training-back-link, .student-back-link, .group-back-link) { padding: 9px 14px; min-height: 44px; }
+
+body.partner-dashboard #content .fr-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+body.partner-dashboard #content :is(input, select, textarea):is(.is-invalid, [aria-invalid="true"]):focus {
+    box-shadow: 0 0 0 3px rgb(190 37 56 / 16%);
+}
+@media (max-width: 767px) {
+    body.partner-dashboard #content .fr-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 479px) {
+    body.partner-dashboard #content .fr-kpis { grid-template-columns: 1fr; }
+}
+
+/* Preserve contrast in shared Bootstrap utilities on dark partner pages. */
+body.partner-dashboard.dark #content .bg-white { background-color: var(--partner-surface) !important; }
+body.partner-dashboard.dark #content .text-dark { color: var(--partner-text) !important; }
+body.partner-dashboard.dark #content .text-muted { color: var(--partner-muted) !important; }
+body.partner-dashboard.dark #sidebar .menu-categories .menu > a { color: var(--partner-text); }
+body.partner-dashboard.dark #sidebar .menu-categories .menu.active > a { background: var(--partner-soft); color: var(--partner-primary); }
+body.partner-dashboard .select2-dropdown .select2-search__field {
+    border: 1px solid var(--partner-field-line);
+    border-radius: 8px;
+    background: var(--partner-surface);
+    color: var(--partner-text);
+    min-height: 42px;
+}
+body.partner-dashboard .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background: var(--partner-primary);
+    color: var(--partner-action-text);
+}
+body.partner-dashboard #content :is(.student-field, .group-field, .modern-field, .competition-field):has(> [class$="-field-error"], > .field-error) :is(
+    .input-shell, .select-shell, .textarea-shell, .student-input-shell, .student-select-shell,
+    .student-textarea-shell, .group-input-shell, .group-select-shell, .group-textarea-shell
+) { border-color: var(--partner-danger); }
+body.partner-dashboard #content .card > .card-header:first-child {
+    border-start-start-radius: 13px;
+    border-start-end-radius: 13px;
+}
+body.partner-dashboard #content .card > .card-footer:last-child {
+    border-end-start-radius: 13px;
+    border-end-end-radius: 13px;
+}
