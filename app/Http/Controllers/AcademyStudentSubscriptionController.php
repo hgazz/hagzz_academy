@@ -94,12 +94,9 @@ class AcademyStudentSubscriptionController extends Controller
         }
 
         DB::transaction(function () use ($subscription, $data) {
-            $subscription->payments()->create($data);
-
-            $paid = (float) $subscription->payments()->sum('amount');
-            $subscription->update([
-                'payment_status' => $paid >= (float) $subscription->amount ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid'),
-            ]);
+            $locked = AcademyStudentSubscription::whereKey($subscription->id)->lockForUpdate()->firstOrFail();
+            $locked->payments()->create($data);
+            $locked->save();
         });
 
         session()->flash('success', trans('admin.student_management.payment_recorded') ?: 'تم تسجيل تحصيل الدفعة بنجاح وتحديث الاشتراك.');
@@ -119,7 +116,7 @@ class AcademyStudentSubscriptionController extends Controller
             'discount_approved_by' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $approver = $data['discount_approved_by'] ?: (auth('academy')->user()?->name ?: 'الإدارة');
+        $approver = ($data['discount_approved_by'] ?? null) ?: (auth('academy')->user()?->name ?: 'الإدارة');
 
         $notes    = $subscription->notes;
         $noteEntry = 'خصم معتمد بقيمة: ' . number_format($data['discount_amount'], 2) . ' (السبب: ' . $data['discount_reason'] . ' - اعتماد: ' . $approver . ')';
@@ -131,7 +128,6 @@ class AcademyStudentSubscriptionController extends Controller
             'discount_approved_by' => $approver,
             'discount_approved_at' => now(),
             'notes'                => $notes,
-            'payment_status'       => ($paid + (float) $data['discount_amount'] >= (float) $subscription->amount) ? 'paid' : ($paid > 0 || (float) $data['discount_amount'] > 0 ? 'partial' : 'unpaid'),
         ]);
 
         session()->flash('success', 'تم اعتماد وتطبيق الخصم بنجاح وتحديث الاشتراك.');
@@ -151,14 +147,12 @@ class AcademyStudentSubscriptionController extends Controller
         $notes = $subscription->notes;
         $notes = trim(($notes ? $notes . ' | ' : '') . 'تم استرداد وإلغاء خصم سابق بقيمة: ' . $prevDiscount . ' بواسطة: ' . $reverser);
 
-        $paid = (float) $subscription->payments()->sum('amount');
         $subscription->update([
             'discount_amount'      => 0,
             'discount_reason'      => null,
             'discount_approved_by' => null,
             'discount_approved_at' => null,
             'notes'                => $notes,
-            'payment_status'       => $paid >= (float) $subscription->amount ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid'),
         ]);
 
         session()->flash('success', 'تم إلغاء واسترداد الخصم وإعادة المبلغ لرصيد المتبقي.');
@@ -278,7 +272,6 @@ class AcademyStudentSubscriptionController extends Controller
             'ends_on'            => ['required', 'date', 'after_or_equal:starts_on'],
             'amount'             => ['required', 'numeric', 'min:0'],
             'status'             => ['required', 'in:pending,active,frozen,expired,cancelled'],
-            'payment_status'     => ['required', 'in:unpaid,partial,paid'],
             'sessions_total'     => ['nullable', 'integer', 'min:1'],
             'notes'              => ['nullable', 'string'],
         ]);

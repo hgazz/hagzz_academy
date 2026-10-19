@@ -102,6 +102,15 @@ class InvoicePrintController extends Controller
         $discount = (float) ($subscription->discount_amount ?? 0);
         $total = max(0, $subtotal - $discount);
 
+        $payments = $subscription->payments->sortBy([
+            ['paid_at', 'asc'], ['id', 'asc'],
+        ])->values()->map(fn ($payment) => [
+            'date' => $payment->paid_at?->format('Y-m-d'),
+            'amount' => (float) $payment->amount,
+            'method' => $payment->method_label,
+            'reference' => $payment->reference,
+        ]);
+
         return $this->render($request, [
             'id' => $subscription->id,
             'type' => 'student_subscription',
@@ -121,7 +130,8 @@ class InvoicePrintController extends Controller
             'balance' => $subscription->remaining_amount,
             'currency' => $subscription->student?->academy?->currency_symbol ?: 'SAR',
             'status' => $subscription->status === 'cancelled' ? 'cancelled' : $subscription->payment_status,
-            'payment_method' => $subscription->payments->sortByDesc('paid_at')->first()?->method_label,
+            'payment_method' => $payments->pluck('method')->unique()->implode(' / '),
+            'payment_details' => $payments->all(),
             'notes' => $subscription->notes,
         ], $isPublic);
     }

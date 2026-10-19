@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Support\PartnerAcademy;
 use App\Models\Coach;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -17,7 +18,7 @@ class CoachExport implements FromView
         if (!empty($coachesData) && count($coachesData) > 0) {
             $this->coachesExport = $coachesData;
         } else {
-            $coachesExport = Coach::where('academy_id',auth('academy')->id())->get();
+            $coachesExport = Coach::where('academy_id',PartnerAcademy::id())->get();
             $this->coachesExport = $coachesExport;
         }
     }

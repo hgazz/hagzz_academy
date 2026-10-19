@@ -37,4 +37,24 @@ class MembershipCodeTest extends TestCase
 
         $this->assertNull(MembershipCode::studentId(str_replace('-41-', '-42-', $code), 7));
     }
+
+    public function test_invalid_signed_codes_cannot_fall_back_to_legacy_lookup(): void
+    {
+        $student = new AcademyStudent();
+        $student->id = 41;
+        $student->academy_id = 7;
+        $code = MembershipCode::make($student);
+        $last = substr($code, -1);
+        foreach ([substr($code, 0, -1).($last === 'A' ? 'B' : 'A'), substr($code, 0, -1), $code.'extra', 'HZ-7-41-invalid'] as $invalid) {
+            $this->assertNull(MembershipCode::studentId($invalid, 7));
+        }
+    }
+
+    public function test_signed_codes_accept_scanner_whitespace_and_lowercase(): void
+    {
+        $student = new AcademyStudent();
+        $student->id = 41;
+        $student->academy_id = 7;
+        $this->assertSame(41, MembershipCode::studentId(' '.strtolower(MembershipCode::make($student))."\r\n", 7));
+    }
 }

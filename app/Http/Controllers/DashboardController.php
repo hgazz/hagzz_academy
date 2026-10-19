@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\Http\Traits\BookingFilterTrait;
 use App\Http\Traits\TrainingsTrait;
 use App\Http\Traits\UsersTrait;
@@ -393,7 +394,7 @@ class DashboardController extends Controller
     {
         $startDate = $request->start_date;
         $endDate = $request->end_date;
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
 
         $totalBookingBalance = $this->getTotalBookingBalance($startDate, $endDate, $academyId);
         $totalBookingRefundCount = $this->getTotalBookingRefundCount($startDate, $endDate, $academyId);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\Models\AcademyAttendanceSession;
 use App\Models\AcademyGroup;
 use App\Models\AcademyStudent;
@@ -21,7 +22,7 @@ class AcademyAttendanceController extends Controller
                 'records as absent_count' => fn($query) => $query->where('status', 'absent'),
                 'records as excused_count' => fn($query) => $query->where('status', 'excused'),
             ])
-            ->whereHas('group', fn($query) => $query->where('academy_id', auth('academy')->id()))
+            ->whereHas('group', fn($query) => $query->where('academy_id', PartnerAcademy::id()))
             ->latest('session_date')
             ->paginate(20);
 
@@ -30,7 +31,7 @@ class AcademyAttendanceController extends Controller
 
     public function create()
     {
-        $groups = AcademyGroup::where('academy_id', auth('academy')->id())
+        $groups = AcademyGroup::where('academy_id', PartnerAcademy::id())
             ->where('status', 'active')
             ->withCount('students')
             ->orderBy('name')
@@ -43,7 +44,7 @@ class AcademyAttendanceController extends Controller
     {
         $sessions = AcademyAttendanceSession::with('group')
             ->whereDate('session_date', today())
-            ->whereHas('group', fn ($query) => $query->where('academy_id', auth('academy')->id()))
+            ->whereHas('group', fn ($query) => $query->where('academy_id', PartnerAcademy::id()))
             ->orderBy('starts_at')->get();
 
         return view('Academy.pages.attendance.scanner', compact('sessions'));
@@ -56,7 +57,7 @@ class AcademyAttendanceController extends Controller
             'session_id' => ['required', 'integer', 'exists:academy_attendance_sessions,id'],
             'mode' => ['required', 'in:auto,check_in,check_out'],
         ]);
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
         $studentId = MembershipCode::studentId($data['code'], $academyId);
         abort_unless($studentId, 422, app()->getLocale() === 'ar' ? 'الكارت غير صالح لهذه الأكاديمية.' : 'This card is not valid for this academy.');
 
@@ -112,7 +113,7 @@ class AcademyAttendanceController extends Controller
         ]);
 
         $group = AcademyGroup::with('students')->findOrFail($data['academy_group_id']);
-        abort_unless($group->academy_id === auth('academy')->id(), 404);
+        abort_unless($group->academy_id === PartnerAcademy::id(), 404);
 
         $session = DB::transaction(function () use ($data, $group) {
             $session = AcademyAttendanceSession::firstOrCreate(
@@ -139,7 +140,7 @@ class AcademyAttendanceController extends Controller
     public function show(AcademyAttendanceSession $attendance)
     {
         $attendance->load(['group.students', 'records.student']);
-        abort_unless($attendance->group->academy_id === auth('academy')->id(), 404);
+        abort_unless($attendance->group->academy_id === PartnerAcademy::id(), 404);
 
         foreach ($attendance->group->students as $student) {
             $attendance->records()->firstOrCreate([
@@ -167,7 +168,7 @@ class AcademyAttendanceController extends Controller
     public function update(Request $request, AcademyAttendanceSession $attendance)
     {
         $attendance->load('group');
-        abort_unless($attendance->group->academy_id === auth('academy')->id(), 404);
+        abort_unless($attendance->group->academy_id === PartnerAcademy::id(), 404);
 
         $records = $request->validate([
             'records' => ['required', 'array'],

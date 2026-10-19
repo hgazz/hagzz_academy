@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\Models\AcademyAttendanceRecord;
 use App\Models\AcademyGroup;
 use App\Models\AcademyStudent;
@@ -13,7 +14,7 @@ class AcademyStudentReportController extends Controller
 {
     public function index()
     {
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
 
         $attendanceByStatus = AcademyAttendanceRecord::query()
             ->select('status', DB::raw('COUNT(*) as total'))

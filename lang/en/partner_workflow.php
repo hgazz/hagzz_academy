@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'payment_status_automatic' => 'Payment status is calculated from recorded payments after discounts. Record actual collections using Add payment.',
     'title' => 'Operating guide',
     'menu_heading' => 'Your workflow',
     'eyebrow' => 'Start in the right order',

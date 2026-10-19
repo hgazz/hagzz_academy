@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Support\PartnerAcademy;
 use App\Models\Join;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -20,10 +21,10 @@ class JoinExport implements FromView
             $joins = Join::with([
                 'invoice',
                 'training'=>function($model){
-                    $model->where('academy_id',auth('academy')->id())->get();
+                    $model->where('academy_id',PartnerAcademy::id())->get();
                 }
             ])->whereHas('training', function ($q) {
-                $q->where('academy_id', auth('academy')->id());
+                $q->where('academy_id', PartnerAcademy::id());
             })->get();
             $this->joins = $joins;
         }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Chart;
 
+use App\Support\PartnerAcademy;
 use App\Models\Invoice;
 use App\Models\Join;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,7 +35,7 @@ class ChartsService
 
         // Add condition to include only records where is_canceled is 1
         $query->whereHas('training',function ($q){
-            $q->where('academy_id', auth('academy')->id());
+            $q->where('academy_id', PartnerAcademy::id());
         })->where('is_canceled', 1);
 
         $orderReturns = $this->getGroupedByMonth(
@@ -72,7 +73,7 @@ class ChartsService
             $query = $model::query();
         }
         $query->whereHas('training',function ($q){
-            $q->where('academy_id', auth('academy')->id());
+            $q->where('academy_id', PartnerAcademy::id());
         });
 
         $array = [];

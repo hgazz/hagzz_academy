@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Support\PartnerAcademy;
 use App\Models\Settlement;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -13,7 +14,7 @@ class SettlementExport implements FromView
     public function __construct()
     {
         $settlementData = session('settlementData', []);
-        $settlements = Settlement::where('partner_id',auth('academy')->id())->get();
+        $settlements = Settlement::where('partner_id',PartnerAcademy::id())->get();
         if (!empty($settlementData) && count($settlementData) > 0){
             $this->data = $settlementData;
         }else{

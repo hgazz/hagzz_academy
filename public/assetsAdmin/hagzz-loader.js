@@ -66,7 +66,7 @@
         document.addEventListener('submit', function (event) {
             var form = event.target;
             if (!form || form.dataset.noLoader === 'true') return;
-            if (form.method && form.method.toLowerCase() === 'get') return;
+            if ((form.getAttribute('method') || 'get').toLowerCase() === 'get') return;
 
             showTransition(
                 document.documentElement.lang === 'ar' ? 'جار حفظ التغييرات' : 'Saving changes',

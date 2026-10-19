@@ -5,7 +5,7 @@
         'seller'=>'مقدم الخدمة','buyer'=>'العميل / المستلم','taxno'=>'الرقم الضريبي','phone'=>'الهاتف','email'=>'البريد','address'=>'العنوان',
         'desc'=>'البيان','qty'=>'الكمية','price'=>'السعر','subtotal'=>'قبل الخصم','discount'=>'الخصم','tax'=>'الضريبة','total'=>'الإجمالي',
         'paid'=>'المدفوع','balance'=>'المتبقي','status'=>'حالة الدفع','method'=>'طريقة الدفع','notes'=>'ملاحظات','print'=>'طباعة / حفظ PDF',
-        'send_whatsapp'=>'إرسال عبر واتساب',
+        'send_whatsapp'=>'إرسال عبر واتساب', 'payments'=>'تفاصيل الدفعات', 'reference'=>'مرجع العملية', 'paid_at'=>'تاريخ التحصيل',
         'save_image'=>'حفظ كصورة (PNG)',
         'signed'=>'صادرة وموقعة إلكترونيًا عبر منصة حجز الرقمية للتكنولوجيا الرياضية','sigref'=>'مرجع التوقيع الرقمي','footer'=>'تم إنشاء هذه الفاتورة واعتمادها إلكترونيًا بواسطة منصة حجز.',
     ] : [
@@ -13,7 +13,7 @@
         'seller'=>'Service provider','buyer'=>'Customer / Recipient','taxno'=>'Tax number','phone'=>'Phone','email'=>'Email','address'=>'Address',
         'desc'=>'Description','qty'=>'Qty','price'=>'Price','subtotal'=>'Subtotal','discount'=>'Discount','tax'=>'Tax','total'=>'Total',
         'paid'=>'Paid','balance'=>'Balance','status'=>'Payment status','method'=>'Payment method','notes'=>'Notes','print'=>'Print / Save PDF',
-        'send_whatsapp'=>'Send via WhatsApp',
+        'send_whatsapp'=>'Send via WhatsApp', 'payments'=>'Payment details', 'reference'=>'Transaction reference', 'paid_at'=>'Payment date',
         'save_image'=>'Save as Image (PNG)',
         'signed'=>'Digitally issued and signed through Hagzz Digital Sports Technology Platform','sigref'=>'Digital signature reference','footer'=>'This invoice was electronically generated and approved by Hagzz Platform.',
     ];
@@ -295,6 +295,25 @@
                 <span>{{ $l['method'] }}: <b>{{ $document['payment_method'] }}</b></span>
             @endif
         </div>
+
+        @if(!empty($document['payment_details']))
+            <section aria-label="{{ $l['payments'] }}">
+                <h3>{{ $l['payments'] }}</h3>
+                <table class="items">
+                    <thead><tr><th>{{ $l['paid_at'] }}</th><th>{{ $l['method'] }}</th><th>{{ $l['reference'] }}</th><th class="num">{{ $l['paid'] }}</th></tr></thead>
+                    <tbody>
+                        @foreach($document['payment_details'] as $payment)
+                            <tr>
+                                <td>{{ $payment['date'] ?: '—' }}</td>
+                                <td>{{ $payment['method'] }}</td>
+                                <td style="overflow-wrap:anywhere">{{ $payment['reference'] ?: '—' }}</td>
+                                <td class="num">{{ $money($payment['amount']) }} {{ $document['currency'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </section>
+        @endif
 
         @if(!empty($document['notes']))
             <div class="notes">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\Models\Academies;
 use App\Models\AcademyCompetition;
 use App\Models\AcademyStudent;
@@ -14,7 +15,7 @@ class AcademyCompetitionController extends Controller
     {
         $competitions = AcademyCompetition::with(['sport'])
             ->withCount('students')
-            ->where('academy_id', auth('academy')->id())
+            ->where('academy_id', PartnerAcademy::id())
             ->latest('competition_date')
             ->paginate(20);
 
@@ -29,10 +30,11 @@ class AcademyCompetitionController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
-        $data['academy_id'] = auth('academy')->id();
+        $students = $this->studentSyncPayload($request);
+        $data['academy_id'] = PartnerAcademy::id();
 
         $competition = AcademyCompetition::create($data);
-        $competition->students()->sync($this->studentSyncPayload($request));
+        $competition->students()->sync($students);
 
         session()->flash('success', trans('admin.student_management.competition_created'));
         return to_route('academy.competitions.show', $competition);
@@ -56,8 +58,10 @@ class AcademyCompetitionController extends Controller
     public function update(Request $request, AcademyCompetition $competition)
     {
         $this->authorizeCompetition($competition);
-        $competition->update($this->validated($request));
-        $competition->students()->sync($this->studentSyncPayload($request));
+        $data = $this->validated($request);
+        $students = $this->studentSyncPayload($request);
+        $competition->update($data);
+        $competition->students()->sync($students);
 
         session()->flash('success', trans('admin.student_management.competition_updated'));
         return to_route('academy.competitions.show', $competition);
@@ -98,7 +102,7 @@ class AcademyCompetitionController extends Controller
 
     private function formData(): array
     {
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
         $academy = Academies::find($academyId);
 
         return [
@@ -146,9 +150,12 @@ class AcademyCompetitionController extends Controller
 
     private function studentSyncPayload(Request $request): array
     {
-        return AcademyStudent::where('academy_id', auth('academy')->id())
-            ->whereIn('id', $request->input('student_ids', []))
-            ->pluck('id')
+        $requested = array_unique((array) $request->input('student_ids', []));
+        $studentIds = AcademyStudent::where('academy_id', PartnerAcademy::id())
+            ->whereIn('id', $requested)->pluck('id');
+        abort_unless($studentIds->count() === count($requested), 404);
+
+        return $studentIds
             ->mapWithKeys(fn($studentId) => [$studentId => []])
             ->all();
     }
@@ -158,7 +165,7 @@ class AcademyCompetitionController extends Controller
         if (! empty($data['sport_id'])) {
             abort_unless(
                 Sport::whereKey($data['sport_id'])
-                    ->whereHas('academies', fn($query) => $query->where('academy_id', auth('academy')->id()))
+                    ->whereHas('academies', fn($query) => $query->where('academy_id', PartnerAcademy::id()))
                     ->exists(),
                 404
             );
@@ -167,7 +174,7 @@ class AcademyCompetitionController extends Controller
 
     private function authorizeCompetition(AcademyCompetition $competition): void
     {
-        abort_unless($competition->academy_id === auth('academy')->id(), 404);
+        abort_unless($competition->academy_id === PartnerAcademy::id(), 404);
     }
 
     private function localizedValue(mixed $value): string

@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Support\PartnerAcademy;
 use App\Http\Traits\DataTablesTrait;
 use App\Models\Settlement;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -57,7 +58,7 @@ class SettlementDataTable extends DataTable
             return $this->query;
         }
 
-        return $model->newQuery()->where('partner_id', auth('academy')->id());
+        return $model->newQuery()->where('partner_id', PartnerAcademy::id());
     }
 
     /**

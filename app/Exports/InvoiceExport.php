@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Support\PartnerAcademy;
 use App\Models\Invoice;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -17,11 +18,11 @@ class InvoiceExport implements FromView
         $invoiceData = session('invoiceData', []);
         $invoices = Invoice::with([
             'training' => function ($q) {
-                $q->where('academy_id', auth('academy')->id());
+                $q->where('academy_id', PartnerAcademy::id());
             },
             'user'
         ])->whereHas('training', function ($q) {
-            $q->where('academy_id', auth('academy')->id());
+            $q->where('academy_id', PartnerAcademy::id());
         })->get();
 
         if (!empty($invoiceData) && count($invoiceData) > 0){

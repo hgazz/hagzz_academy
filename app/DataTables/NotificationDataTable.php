@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Support\PartnerAcademy;
 use App\Models\Academies;
 use App\Models\Notification;
 use App\Models\Training;
@@ -57,7 +58,7 @@ class NotificationDataTable extends DataTable
     public function query(Notification $model): QueryBuilder
     {
         return $model->newQuery()
-            ->where(['notifiable_type' => Academies::class, 'notifiable_id' => auth('academy')->id()])
+            ->where(['notifiable_type' => Academies::class, 'notifiable_id' => PartnerAcademy::id()])
             ->orderBy('created_at', 'desc');
     }
 

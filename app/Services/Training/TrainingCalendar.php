@@ -2,6 +2,7 @@
 
 namespace App\Services\Training;
 
+use App\Support\PartnerAcademy;
 use App\Models\Training;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -16,7 +17,7 @@ class TrainingCalendar
             ->whereNotNull('classes_days')
             ->where([
                 ['active', 1],
-                ['academy_id', auth('academy')->id()]
+                ['academy_id', PartnerAcademy::id()]
             ])
             ->get();
 //        return $trainings->map(function ($training) use ($month, $year) {

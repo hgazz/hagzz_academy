@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\Models\AcademyGroup;
 use App\Models\AcademyStudent;
 use App\Models\Coach;
@@ -15,7 +16,7 @@ class AcademyGroupController extends Controller
     {
         $groups = AcademyGroup::withCount('students')
             ->with(['coach', 'training', 'sport'])
-            ->where('academy_id', auth('academy')->id())
+            ->where('academy_id', PartnerAcademy::id())
             ->latest()
             ->paginate(20);
 
@@ -30,10 +31,11 @@ class AcademyGroupController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
-        $data['academy_id'] = auth('academy')->id();
+        $students = $this->studentSyncPayload($request);
+        $data['academy_id'] = PartnerAcademy::id();
 
         $group = AcademyGroup::create($data);
-        $group->students()->sync($this->studentSyncPayload($request));
+        $group->students()->sync($students);
 
         session()->flash('success', trans('admin.student_management.group_created'));
         return to_route('academy.groups.index');
@@ -49,8 +51,10 @@ class AcademyGroupController extends Controller
     public function update(Request $request, AcademyGroup $group)
     {
         $this->authorizeGroup($group);
-        $group->update($this->validated($request));
-        $group->students()->sync($this->studentSyncPayload($request));
+        $data = $this->validated($request);
+        $students = $this->studentSyncPayload($request);
+        $group->update($data);
+        $group->students()->sync($students);
 
         session()->flash('success', trans('admin.student_management.group_updated'));
         return to_route('academy.groups.index');
@@ -67,7 +71,7 @@ class AcademyGroupController extends Controller
 
     private function formData(): array
     {
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
 
         return [
             'groupTrainings' => Training::where('academy_id', $academyId)->orderBy('name')->get(),
@@ -104,9 +108,12 @@ class AcademyGroupController extends Controller
 
     private function studentSyncPayload(Request $request): array
     {
-        $studentIds = AcademyStudent::where('academy_id', auth('academy')->id())
-            ->whereIn('id', $request->input('student_ids', []))
+        $requested = array_unique((array) $request->input('student_ids', []));
+        $studentIds = AcademyStudent::where('academy_id', PartnerAcademy::id())
+            ->whereIn('id', $requested)
             ->pluck('id');
+
+        abort_unless($studentIds->count() === count($requested), 404);
 
         return $studentIds
             ->mapWithKeys(fn($studentId) => [
@@ -120,7 +127,7 @@ class AcademyGroupController extends Controller
 
     private function authorizeOwnedRelations(array $data): void
     {
-        $academyId = auth('academy')->id();
+        $academyId = PartnerAcademy::id();
 
         if (! empty($data['training_id'])) {
             abort_unless(Training::where('academy_id', $academyId)->whereKey($data['training_id'])->exists(), 404);
@@ -142,6 +149,6 @@ class AcademyGroupController extends Controller
 
     private function authorizeGroup(AcademyGroup $group): void
     {
-        abort_unless($group->academy_id === auth('academy')->id(), 404);
+        abort_unless($group->academy_id === PartnerAcademy::id(), 404);
     }
 }

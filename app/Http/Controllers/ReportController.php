@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PartnerAcademy;
 use App\DataTables\InvoiceDataTable;
 use App\DataTables\JoinDataTable;
 use App\DataTables\OfflineJoinDataTable;
@@ -26,14 +27,13 @@ class ReportController extends Controller
 
     public function filter(Request $request, SettlementDataTable $dataTable)
     {
-        $query = Settlement::query();
+        $query = Settlement::where('partner_id', PartnerAcademy::id());
 
         if ($request->has('start_date') && $request->has('end_date')) {
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
-            $query->where('partner_id', auth('academy')->id())
-               ->whereBetween('created_at', [$startDate, $endDate]);
+            $query->whereBetween('created_at', [$startDate, $endDate]);
            $settlement = $query->get();
             session(['settlementData' => $settlement]);
         }

@@ -53,6 +53,16 @@ class AcademyStudentSubscription extends Model
         'guest_visits_used'    => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $subscription): void {
+            // A payment label must never substitute for an actual collection entry.
+            $paid = $subscription->exists ? (float) $subscription->payments()->sum('amount') : 0.0;
+            $subscription->payment_status = (int) round($paid * 100) >= (int) round($subscription->net_amount * 100)
+                ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid');
+        });
+    }
+
     // ── العلاقات ────────────────────────────────────────────────────────
 
     public function student(): BelongsTo

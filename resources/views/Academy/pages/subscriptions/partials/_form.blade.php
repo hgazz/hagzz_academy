@@ -43,11 +43,8 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label class="form-label">{{ trans('admin.student_management.payment_status') }} *</label>
-                <select name="payment_status" class="form-select" required>
-                    @foreach(['unpaid', 'partial', 'paid'] as $status)
-                        <option value="{{ $status }}" @selected(old('payment_status', $subscription->payment_status ?? 'unpaid') === $status)>{{ trans('admin.student_management.' . $status) }}</option>
-                    @endforeach
-                </select>
+                <p class="form-control-plaintext mb-1">{{ trans('admin.student_management.' . ($subscription->payment_status ?? 'unpaid')) }}</p>
+                <small class="text-muted">{{ trans('partner_workflow.payment_status_automatic') }}</small>
             </div>
             <div class="col-md-8 mb-3">
                 <label class="form-label">{{ trans('admin.student_management.notes') }}</label>
