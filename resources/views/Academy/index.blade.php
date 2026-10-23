@@ -34,7 +34,7 @@
         'coaches' => $isArabic ? ($isGym ? 'الكباتن والمدربون' : 'المدربون') : ($isGym ? 'Trainers' : 'Coaches'),
         'groups' => $isArabic ? ($isGym ? 'فئات وباقات العضوية' : 'المجموعات') : ($isGym ? 'Categories' : 'Groups'),
         'followers' => $isArabic ? 'المتابعون' : 'Followers',
-        'last30' => $isArabic ? 'مقارنةً بالـ 30 يوم السابقة' : 'vs previous 30 days',
+        'last30' => $isArabic ? 'سجلات آخر 30 يومًا' : 'Records in the last 30 days',
         'financialPerformance' => $isArabic ? ($isGym ? 'الأداء المالي وحسابات الجيم' : 'الأداء المالي والاشتراكات') : ($isGym ? 'Gym Financial Performance' : 'Revenue and bookings'),
         'financialHint' => $isArabic ? ($isGym ? 'تتبع الإيرادات المحصلة، المصروفات والتشغيل، وصافي الأرباح شهرياً' : 'أداء الأكاديمية خلال آخر 12 شهراً') : 'Facility performance over the last 12 months',
         'attendanceBreakdown' => $isArabic ? ($isGym ? 'سجل الدخول والبوابة' : 'تفاصيل الحضور') : ($isGym ? 'Gate Check-in Breakdown' : 'Attendance breakdown'),
@@ -535,7 +535,7 @@
                 trainingBookings: finiteNumbers(@json($dashboard['topTrainings']->pluck('bookings')))
             };
             const labels = {
-                bookings: @json($isArabic ? ($isGym ? 'المشتركون والتجديدات' : 'عدد المشتركين') : 'Subscribers Count'),
+                bookings: @json($isArabic ? 'حجوزات التطبيق' : 'App bookings'),
                 totalRevenue: @json($isArabic ? ($isGym ? 'إيرادات العضويات والاشتراكات' : 'إجمالي الإيرادات المحصلة') : 'Total Collected Revenue'),
                 expenses: @json($isArabic ? ($isGym ? 'المصروفات والتشغيل ومستحقات الكباتن' : 'المصروفات التشغيلية') : 'Total Expenses'),
                 netProfit: @json($isArabic ? ($isGym ? 'صافي الدخل / الأرباح' : 'صافي الدخل') : 'Net Profit'),
@@ -558,6 +558,10 @@
             const financialTotal = data.totalRevenue.reduce((sum, v) => sum + v, 0) +
                                    data.expenses.reduce((sum, v) => sum + v, 0) +
                                    data.bookings.reduce((sum, v) => sum + v, 0);
+            // All monetary series share a scale; only booking counts use the right axis.
+            const moneyMin = Math.min(0, ...data.totalRevenue, ...data.expenses, ...data.netProfit);
+            const moneyMax = Math.max(1, ...data.totalRevenue, ...data.expenses, ...data.netProfit);
+            const moneyAxis = { min: moneyMin, max: moneyMax, tickAmount: 5, forceNiceScale: false };
             if (financialTotal > 0) {
                 new ApexCharts(financialElement, {
                     chart: { ...common, type: 'line', height: 460 },
@@ -575,9 +579,9 @@
                     grid: { borderColor: grid, strokeDashArray: 4, padding: { top: 30, right: 50, bottom: 65, left: 50 } },
                     xaxis: { categories: data.labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: -45, rotateAlways: true, minHeight: 70, style: { colors: text, fontSize: '11px', fontWeight: 600 } } },
                     yaxis: [
-                        { min: 0, forceNiceScale: true, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
-                        { min: 0, forceNiceScale: true, show: false },
-                        { forceNiceScale: true, show: false },
+                        { ...moneyAxis, labels: { formatter: value => Math.round(value).toLocaleString() + ' ' + labels.currency } },
+                        { ...moneyAxis, show: false },
+                        { ...moneyAxis, show: false },
                         { opposite: true, min: 0, labels: { formatter: value => Math.round(value).toLocaleString() } }
                     ],
                     legend: { position: 'top', horizontalAlign: 'center', offsetY: -5, fontSize: '13px', fontWeight: 700, itemMargin: { horizontal: 15, vertical: 8 } },
@@ -610,7 +614,7 @@
                     chart: { ...common, type: 'donut', height: 380 }, series: data.attendance,
                     labels: [labels.present, labels.late, labels.absent, labels.excused],
                     colors: ['#14b8a6', '#f59e0b', '#ef4444', '#64748b'], stroke: { width: 0 }, dataLabels: { enabled: false },
-                    legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: labels.attendance, formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
+                    legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: @json($isArabic ? 'سجلات الحضور' : 'Attendance records'), formatter: chart => chart.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString() } } } } }, noData
                 }).render();
             } else {
                 attendanceElement.classList.add('empty-state');

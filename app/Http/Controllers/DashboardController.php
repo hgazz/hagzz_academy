@@ -167,21 +167,7 @@ class DashboardController extends Controller
             ->groupBy('month_key')
             ->pluck('total', 'month_key');
 
-        $expenseCategoriesBreakdown = \App\Models\PartnerExpenseCategory::where(function ($q) use ($academyId) {
-                $q->whereNull('academy_id')->orWhere('academy_id', $academyId);
-            })
-            ->withSum(['expenses' => function ($q) use ($academyId) {
-                $q->where('academy_id', $academyId);
-            }], DB::raw('COALESCE(base_amount, amount)'))
-            ->get()
-            ->map(function ($cat) {
-                return [
-                    'name' => app()->getLocale() === 'ar' ? $cat->name_ar : ($cat->name_en ?: $cat->name_ar),
-                    'total' => (float) ($cat->expenses_sum_coalescebase_amount_amount ?? 0),
-                ];
-            })
-            ->filter(fn ($cat) => $cat['total'] > 0)
-            ->values();
+        $expenseCategoriesBreakdown = $this->expenseCategoriesBreakdown($academyId);
 
         // Expiring subscriptions 10 to 0 days countdown data
         $expiringCountdown = collect(range(10, 0, -1))->map(function ($days) use ($academyId, $now) {
@@ -612,6 +598,25 @@ class DashboardController extends Controller
             ?? $value;
     }
 
+    private function expenseCategoriesBreakdown(int $academyId): \Illuminate\Support\Collection
+    {
+        return \App\Models\PartnerExpenseCategory::where(function ($q) use ($academyId) {
+                $q->whereNull('academy_id')->orWhere('academy_id', $academyId);
+            })
+            ->withSum(['expenses as total_expenses' => function ($q) use ($academyId) {
+                $q->where('academy_id', $academyId);
+            }], DB::raw('COALESCE(base_amount, amount)'))
+            ->get()
+            ->map(function ($cat) {
+                return [
+                    'name' => app()->getLocale() === 'ar' ? $cat->name_ar : ($cat->name_en ?: $cat->name_ar),
+                    'total' => (float) ($cat->total_expenses ?? 0),
+                ];
+            })
+            ->filter(fn ($cat) => $cat['total'] > 0)
+            ->values();
+    }
+
     private function getPaymentMethodBreakdown(int $academyId): array
     {
         $isArabic = app()->getLocale() === 'ar';
@@ -904,6 +909,15 @@ class DashboardController extends Controller
                     'color' => '#10b981',
                     'logo' => asset('assetsAdmin/img/payments/cash.png'),
                     'icon' => 'dollar-sign',
+                ],
+                [
+                    'key' => 'bank_transfer',
+                    'name' => $isArabic ? 'تحويل بنكي' : 'Bank Transfer',
+                    'amount' => $getCountryAmount('QA', ['bank_transfer', 'bank']),
+                    'count' => $getCountryCount('QA', ['bank_transfer', 'bank']),
+                    'color' => '#06b6d4',
+                    'logo' => asset('assetsAdmin/img/payments/bank_transfer.jpg'),
+                    'icon' => 'send',
                 ],
             ],
         ];
