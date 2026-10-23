@@ -1,13 +1,25 @@
 {
-  "edition": "02",
-  "pages": 33,
-  "size_bytes": 4890023,
-  "sha256": "339667c168ea1c67c8821ae080a982bc44215b0cd5ed2e1b4ac288d157e66e76",
-  "links": 39,
-  "layout_overflow_pages": [],
-  "language": "ar",
+  "edition": "03",
   "date": "2026-10-23",
-  "dashboard_images": "Local application with synthetic data",
-  "mobile_images": "Clearly labeled illustrative flow diagrams",
-  "cover_art": "AI-generated abstract sports architecture, not a real venue"
+  "files": [
+    {
+      "file": "Hagzz-Academy-Qatar-Management-AR.pdf",
+      "pages": 18,
+      "links": 6,
+      "size_bytes": 3332215,
+      "sha256": "f96b187ac8f0b31105e6372793a59e7e8cabb32c8d0308bf4761df965ec71b34"
+    },
+    {
+      "file": "Hagzz-Academy-Qatar-Manual-AR.pdf",
+      "pages": 41,
+      "links": 47,
+      "size_bytes": 5676949,
+      "sha256": "8c949b6392bfe163bb9ff580e3fb19fa330747a5e37cb3353e7d219fdfe414bc"
+    }
+  ],
+  "layout_overflow_pages": [],
+  "source": "Native dashboard screenshots of local synthetic operational records",
+  "production_data_changed": false,
+  "php_validation": "15 tests, 105 assertions",
+  "browser_validation": "8 charts; no page errors; financial scales and totals reconciled"
 }

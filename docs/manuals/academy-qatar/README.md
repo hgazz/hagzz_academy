@@ -1,20 +1,29 @@
-# Hagzz Academy onboarding manual — Qatar
+# Hagzz academy management presentation and operating manual — Qatar
 
-[Download the Arabic PDF](Hagzz-Academy-Qatar-Manual-AR.pdf) · [Cover preview](cover.png)
+**Edition 03 — management first.**
 
-Edition 02: 33-page, A4 Arabic guide for prospective academy customers. Covers partner web setup, locations, coaches, programs, classes, students/guardians, groups, subscriptions, collection, attendance, reports and team access. Product roles follow the owner's clarification: **Hagzz Partner** has separate owner and guardian accounts; **Hagzz** is the customer app for discovering/selecting training.
+- [Management presentation, Arabic PDF — 18 pages](Hagzz-Academy-Qatar-Management-AR.pdf): the primary prospect-facing document. Native dashboard screenshots connect each metric/graph to a management question and next action, before introducing roles, onboarding and the grant.
+- [Complete operating manual, Arabic PDF — 41 pages](Hagzz-Academy-Qatar-Manual-AR.pdf): the same management section followed by the illustrated operational instructions.
+- [Dashboard preview](dashboard-preview.png) · [Cover preview](cover.png).
 
-Includes the owner-provided grant description with Qatar Science & Technology Park, contact +974 7054 2458, WhatsApp QR and the existing website pricing link. No discount percentage or free-month count is invented. No third-party logo is used.
+## Data provenance and scope
 
-Edition 02 adds a restrained editorial design, warm paper backgrounds, deep green chapter dividers, larger dashboard images, new owner-focused introduction and a single closing contact page. The architectural sports cover is original AI-generated illustration, not a photograph of an actual facility or a claim of ownership.
+All dashboard images come from the **actual local Hagzz application**, not mock UI or graphics with manually replaced values. The academy is the synthetic training tenant. Local demonstration records were added for August, September and October through **23 October 2026**, enabling a meaningful monthly comparison and populated October operations. No production/customer database was changed. These numbers are illustrative, **not actual customer results or a performance guarantee**.
 
-Dashboard screenshots were captured from the local application with synthetic training data, without modifying production. Mobile onboarding uses clearly labeled illustrative diagrams; no unverified Partner store URL or exact guardian interface is presented as fact. Partner installation is routed through the supplied onboarding contact. The published customer app may differ from candidate builds under review.
+Snapshot highlights: 72 active students, six groups, 72 active subscriptions; cumulative collection QAR 95,000 and outstanding QAR 13,100; October collection QAR 49,600 and expenses QAR 14,100, giving a recorded cash difference of QAR 35,500. Attendance is 438 present/late cases out of 498 cases (88%), not 498 distinct students. Fourteen active subscriptions approach expiry. The document distinguishes cumulative totals, October totals, last-30-day attendance and upcoming expiry dates. Cash difference is not audited accounting profit.
 
-## Sources and regeneration
+`dashboard-data.json` preserves the controller-generated snapshot. `chart-verification.json` confirms shared monetary axes, expense category and Qatar payment reconciliation. Dashboard defects discovered while preparing the demo were fixed and documented in [maintenance notes](../../maintenance/2026-10-23-dashboard-summary.md); they require no migration or production demo data.
 
-- `Hagzz-Academy-Qatar-Manual.html` + `assets/`: standalone editable print source; no external asset dependencies.
-- `build.py` + `content.py` + `premium.css`: regenerate the HTML and page list using Python 3 (standard library only).
-- Serve this directory with a local HTTP server. Render in Chromium using A4, zero margins, background graphics enabled, headers/footers disabled, and CSS page size preferred. Load fonts before printing; use installed Noto Sans Arabic. Do not use the file:// scheme where browser policy blocks it.
-- Latest PDF validation: 33 nonempty A4 pages, 39 links, no missing images or content/footer overlaps. Inspected rendered PDF pages for Arabic shaping and readability. See `verification.json` for the SHA-256 checksum.
+## Product scope and content
 
-This is the academy volume. Gym/health center and venue/facility manuals are separate future volumes.
+Covers partner web setup, locations, coaches, programs, classes, students/guardians, groups, subscriptions, collection, attendance, reports and team access. **Hagzz Partner** has separate owner and guardian accounts; **Hagzz** is the customer app for discovering/selecting training. Mobile onboarding remains clearly labeled flow diagrams; no unverified Partner store URL or exact guardian UI is presented as a verified screenshot.
+
+Includes the owner-provided grant description with Qatar Science & Technology Park, contact +974 7054 2458, WhatsApp QR and existing pricing-page link. No discount percentage/free-month count or third-party logo is invented. The cover is AI-generated abstract sports architecture, not an actual customer venue.
+
+## Regeneration and checks
+
+`build.py`, `content.py`, `management.py`, `premium.css`, `dashboard-data.json` and `assets/` produce the two HTML sources using standard Python 3. Serve the directory over local HTTP; print both HTML files using Chromium, A4, zero margins, background graphics and CSS page size, with fonts loaded and browser headers/footers disabled. Noto Sans Arabic and Noto Kufi Arabic are required. The complete HTML prints to `Hagzz-Academy-Qatar-Manual-AR.pdf`.
+
+Validation: 18 and 41 nonempty A4 pages; 6 and 47 links respectively; no missing images or content/footer overlap. Rendered PDF pages inspected for Arabic readability. Eight native dashboard charts rendered without page errors. Reporting fixes: 15 PHP tests / 105 assertions passed. Checksums are in `verification.json`.
+
+This volume covers academies; gym/health center and venue/facility volumes are separate future work.

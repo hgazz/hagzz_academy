@@ -1,0 +1,142 @@
+{
+    "totalExpenses": 28100,
+    "netProfit": 66900,
+    "activeStudents": 72,
+    "activeGroups": 6,
+    "activeSubscriptions": 72,
+    "subscriptionRevenue": 95000,
+    "outstandingSubscriptions": 13100,
+    "attendanceRate": 88,
+    "todaySessions": 5,
+    "monthLabels": [
+        "نوفمبر 2025",
+        "ديسمبر 2025",
+        "يناير 2026",
+        "فبراير 2026",
+        "مارس 2026",
+        "أبريل 2026",
+        "مايو 2026",
+        "يونيو 2026",
+        "يوليو 2026",
+        "أغسطس 2026",
+        "سبتمبر 2026",
+        "أكتوبر 2026"
+    ],
+    "monthlySubscriptionRevenue": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10500,
+        34900,
+        49600
+    ],
+    "monthlyExpenses": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4900,
+        9100,
+        14100
+    ],
+    "monthlyNetProfit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5600,
+        25800,
+        35500
+    ],
+    "expenseCategories": [
+        "مستلزمات التدريب - مثال",
+        "إيجار المواقع",
+        "مستحقات التدريب",
+        "تشغيل وتجهيزات",
+        "تسويق وتواصل"
+    ],
+    "expenseCategoryTotals": [
+        100,
+        9200,
+        13600,
+        3400,
+        1800
+    ],
+    "expiringCountdownLabels": [
+        "10 أيام متبقية",
+        "9 أيام متبقية",
+        "8 أيام متبقية",
+        "7 أيام متبقية",
+        "6 أيام متبقية",
+        "5 أيام متبقية",
+        "4 أيام متبقية",
+        "3 أيام متبقية",
+        "2 أيام متبقية",
+        "1 أيام متبقية",
+        "ينتهي اليوم"
+    ],
+    "expiringCountdownCounts": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        1,
+        2,
+        2,
+        1,
+        0
+    ],
+    "attendanceStatuses": [
+        379,
+        59,
+        44,
+        16
+    ],
+    "topTrainings": [
+        {
+            "name": "أساسيات 6–8 سنوات",
+            "bookings": 20
+        },
+        {
+            "name": "تطوير 9–11 سنة",
+            "bookings": 16
+        },
+        {
+            "name": "مهارات 12–14 سنة",
+            "bookings": 14
+        },
+        {
+            "name": "إعداد المنافسات",
+            "bookings": 12
+        },
+        {
+            "name": "تدريب متقدم",
+            "bookings": 9
+        },
+        {
+            "name": "ناشئو كرة القدم - مجموعة تدريبية",
+            "bookings": 1
+        }
+    ],
+    "currencySymbol": "ر.ق",
+    "scope": "Local synthetic academy data, August to 23 October 2026; not client results",
+    "octoberPayments": 49600
+}
