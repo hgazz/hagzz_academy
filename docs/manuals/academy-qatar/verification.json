@@ -1,12 +1,13 @@
 {
-  "pages": 30,
-  "size_bytes": 2351752,
-  "sha256": "b7900edeaefb6390dff917a074fe6e1662980e19e552bd9878c5c9e59220373f",
-  "links": 37,
+  "edition": "02",
+  "pages": 33,
+  "size_bytes": 4890023,
+  "sha256": "339667c168ea1c67c8821ae080a982bc44215b0cd5ed2e1b4ac288d157e66e76",
+  "links": 39,
   "layout_overflow_pages": [],
   "language": "ar",
-  "scope": "Academies in Qatar",
   "date": "2026-10-23",
-  "dashboard_images": "Local application with synthetic training data",
-  "mobile_images": "Illustrative flow diagrams, not verified app screenshots"
+  "dashboard_images": "Local application with synthetic data",
+  "mobile_images": "Clearly labeled illustrative flow diagrams",
+  "cover_art": "AI-generated abstract sports architecture, not a real venue"
 }
