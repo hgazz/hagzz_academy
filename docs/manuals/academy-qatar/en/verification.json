@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-23",
+  "language": "en",
+  "body_font": "Noto Sans Display, 16 CSS px / 12 pt",
+  "heading_font": "Noto Serif",
+  "files": [
+    {
+      "file": "Hagzz-Academy-Qatar-Management-EN.pdf",
+      "pages": 18,
+      "size_bytes": 5631819,
+      "sha256": "d03c78f5682c08783feccdf54a863feed359ca6db1398684957ac12e82609246",
+      "links": 9
+    },
+    {
+      "file": "Hagzz-Academy-Qatar-Manual-EN.pdf",
+      "pages": 38,
+      "size_bytes": 8100297,
+      "sha256": "7af71be3fa5d62b2fe049004597ff63b731560f4c6068e39f2cd7f16b52014a8",
+      "links": 46
+    }
+  ],
+  "missing_images": 0,
+  "overflow_pages": [],
+  "dashboard": "Native English UI; local synthetic records; player/group labels restored after capture",
+  "photography": "Two actual photographs, no AI-generated venue imagery"
+}

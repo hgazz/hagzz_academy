@@ -27,3 +27,7 @@ Includes the owner-provided grant description with Qatar Science & Technology Pa
 Validation: 18 and 41 nonempty A4 pages; 6 and 47 links respectively; no missing images or content/footer overlap. Rendered PDF pages inspected for Arabic readability. Eight native dashboard charts rendered without page errors. Reporting fixes: 15 PHP tests / 105 assertions passed. Checksums are in `verification.json`.
 
 This volume covers academies; gym/health center and venue/facility volumes are separate future work.
+
+## English edition
+
+The [English management presentation (18 pages)](en/Hagzz-Academy-Qatar-Management-EN.pdf) and [complete guide (38 pages)](en/Hagzz-Academy-Qatar-Manual-EN.pdf) use larger type, newly captured English interface screenshots and credited real stadium photography. See [English sources and credits](en/README.md).

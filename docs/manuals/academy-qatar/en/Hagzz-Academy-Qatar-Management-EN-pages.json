@@ -1,0 +1,110 @@
+[
+  {
+    "key": "cover",
+    "title": "A clearer view. Better decisions.",
+    "sub": "Academy management, Qatar",
+    "kind": "cover"
+  },
+  {
+    "key": "welcome",
+    "title": "Big-stage thinking. Everyday clarity.",
+    "sub": "For academy owners and operations teams in Qatar",
+    "kind": "editorial"
+  },
+  {
+    "key": "overview",
+    "title": "What needs your attention today?",
+    "sub": "The owner\u2019s view: connect each number to a next action.",
+    "kind": "overview"
+  },
+  {
+    "key": "financial",
+    "title": "Does activity turn into collection?",
+    "sub": "Financial performance / read the month before making commitments.",
+    "kind": "chart"
+  },
+  {
+    "key": "demand",
+    "title": "Where is demand concentrated?",
+    "sub": "Registration and programmes / the active group mix.",
+    "kind": "chart"
+  },
+  {
+    "key": "outstanding",
+    "title": "See outstanding balances early.",
+    "sub": "Subscriptions and collection / follow the payment record.",
+    "kind": "chart"
+  },
+  {
+    "key": "attendance",
+    "title": "Attendance is a follow-up signal.",
+    "sub": "Daily operations / understand the session record.",
+    "kind": "chart"
+  },
+  {
+    "key": "renewals",
+    "title": "Renewal starts before expiry.",
+    "sub": "Retention workflow / prioritise the next conversation.",
+    "kind": "chart"
+  },
+  {
+    "key": "expenses",
+    "title": "Where is the operating budget going?",
+    "sub": "Expense oversight / review the recorded categories.",
+    "kind": "chart"
+  },
+  {
+    "key": "payments",
+    "title": "How does money reach the academy?",
+    "sub": "Collection oversight / Qatar payment-method view.",
+    "kind": "chart"
+  },
+  {
+    "key": "apps",
+    "title": "Two apps. Distinct account journeys.",
+    "sub": "Give each user the right starting point.",
+    "kind": "editorial"
+  },
+  {
+    "key": "rollout",
+    "title": "Start with one complete operating journey.",
+    "sub": "A controlled first experience for your team.",
+    "kind": "editorial"
+  },
+  {
+    "key": "guardian",
+    "title": "The guardian has a separate account.",
+    "sub": "Hagzz Partner / a clear activation and follow-up journey.",
+    "kind": "editorial"
+  },
+  {
+    "key": "customer",
+    "title": "Choose training with the right information.",
+    "sub": "Hagzz customer app / discovery before commitment.",
+    "kind": "editorial"
+  },
+  {
+    "key": "ready",
+    "title": "A readiness check, before the first invitation.",
+    "sub": "Agree on the operating basics once.",
+    "kind": "editorial"
+  },
+  {
+    "key": "grant",
+    "title": "Digital transformation. Open to every academy.",
+    "sub": "An initiative from Hagzz and Qatar Science & Technology Park.",
+    "kind": "editorial"
+  },
+  {
+    "key": "credits",
+    "title": "Real venues. Clear attribution.",
+    "sub": "Photography, product images and data scope.",
+    "kind": "editorial"
+  },
+  {
+    "key": "contact",
+    "title": "Let\u2019s start with your academy.",
+    "sub": "Hagzz / Qatar",
+    "kind": "editorial"
+  }
+]
